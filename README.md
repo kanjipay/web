@@ -3,6 +3,7 @@
 ## setup
 
     brew install node
+    npm install
     npm install firebase-tools -g
     firebase login
 
@@ -28,3 +29,9 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+## Deploy to firebase
+
+    npm run build
+    firebase deploy
+
+    
