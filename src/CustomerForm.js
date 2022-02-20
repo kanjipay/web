@@ -15,12 +15,13 @@ export function CustomerForm({ page, setPage }) {
       console.log("no bank");
       return;
     }
-
+    /*
     addDoc(collection(db, "customer"), {
       firstname: firstName,
       secondname: secondName,
       bank: selectedBank,
     });
+    */
     // Todo make payment
     setPage("confirm");
   };
