@@ -36,4 +36,4 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 ## Lint
 
-    npx prettier --write .
+    npm run lint

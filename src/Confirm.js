@@ -6,7 +6,7 @@ function Confirm({ setPage }) {
   };
   return (
     <div>
-      <div>Are you sure?</div>;
+      <div>Are you sure?</div>
       <button
         className="btn btn-primary btn-block mb-4"
         type="submit"
