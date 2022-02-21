@@ -14,7 +14,7 @@ function App() {
     return <Confirm setPage={setPage} />;
   }
   if (page === "summary") {
-    return <Summary />;
+    return <Summary setPage={setPage} />;
   }
 }
 
