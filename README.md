@@ -1,4 +1,4 @@
-# Kanjipay 
+# Kanjipay
 
 ## setup
 
@@ -34,4 +34,6 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
     npm run build
     firebase deploy
 
-    
+## Lint
+
+    npm run lint

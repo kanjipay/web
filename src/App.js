@@ -1,25 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React, { useState } from "react";
+import CustomerForm from "./CustomerForm";
+import Confirm from "./Confirm";
+import Summary from "./Summary";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload menu.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+  const [page, setPage] = useState("details");
+
+  if (page === "details") {
+    return <CustomerForm page={page} setPage={setPage} />;
+  }
+  if (page === "confirm") {
+    return <Confirm setPage={setPage} />;
+  }
+  if (page === "summary") {
+    return <Summary />;
+  }
 }
 
 export default App;
