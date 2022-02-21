@@ -28,6 +28,7 @@ export function CustomerForm({ page, setPage }) {
 
   return (
     <div className="App p-5 bg-light">
+      <h1>testing firebase autodeploy</h1>
       <h2 className="mb-3">Your Payment Summary</h2>
       <h5 className="mb-3">Payment</h5>
       <span className="paymentAmount">£30.00</span>
