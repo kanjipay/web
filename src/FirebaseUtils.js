@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseApp = initializeApp({
+initializeApp({
   apiKey: "AIzaSyD_mPx2fE-VuAtVK01xI4tDGaZTAX7ErvQ",
   authDomain: "mercadopay.firebaseapp.com",
   projectId: "mercadopay",
@@ -13,4 +13,4 @@ const firebaseApp = initializeApp({
 });
 const db = getFirestore();
 
-export default { firebaseApp, db };
+export default  db;
