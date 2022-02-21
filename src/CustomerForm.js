@@ -15,19 +15,18 @@ export function CustomerForm({ page, setPage }) {
       console.log("no bank");
       return;
     }
-    /*
     addDoc(collection(db, "customer"), {
       firstname: firstName,
       secondname: secondName,
       bank: selectedBank,
     });
-    */
     // Todo make payment
     setPage("confirm");
   };
 
   return (
     <div className="App p-5 bg-light">
+      <h1>testing firebase autodeploy</h1>
       <h2 className="mb-3">Your Payment Summary</h2>
       <h5 className="mb-3">Payment</h5>
       <span className="paymentAmount">£30.00</span>

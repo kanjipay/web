@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 function BankTile({ bank, selectedBank, setBank }) {
   function onClickBank(event) {
@@ -9,7 +9,7 @@ function BankTile({ bank, selectedBank, setBank }) {
   let imgPath = "/img/" + bank + ".webp";
   return (
     <div className="col" onClick={onClickBank}>
-      <img src={imgPath} className="img-fluid icon" />
+      <img src={imgPath} alt={bank} className="img-fluid icon" />
     </div>
   );
 }
