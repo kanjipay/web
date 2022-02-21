@@ -3,13 +3,13 @@ import { getFirestore } from "firebase/firestore";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyDOuYMXVQItrr0Czc7KubacaJBTlAXH58I",
-  authDomain: "kanjipay.firebaseapp.com",
-  projectId: "kanjipay",
-  storageBucket: "kanjipay.appspot.com",
-  messagingSenderId: "701281117844",
-  appId: "1:701281117844:web:50f05cf073b7d546837681",
-  measurementId: "G-926D1WML6N",
+    apiKey: "AIzaSyD_mPx2fE-VuAtVK01xI4tDGaZTAX7ErvQ",
+    authDomain: "mercadopay.firebaseapp.com",
+    projectId: "mercadopay",
+    storageBucket: "mercadopay.appspot.com",
+    messagingSenderId: "318216209877",
+    appId: "1:318216209877:web:d974381faf6ce9946be95c",
+    measurementId: "G-41M1VDVV2M"
 });
 const db = getFirestore();
 
