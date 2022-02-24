@@ -3,7 +3,7 @@ import "./Home.css"
 import useWindowSize from "./utils/useWindowSize"
 
 export default function Home() {
-  const { width } = useWindowSize()
+  // const { width } = useWindowSize()
 
   useEffect(() => {
     document.title = "Home"
