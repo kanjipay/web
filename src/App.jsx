@@ -8,12 +8,8 @@ import NotFound from "./NotFound";
 export default function App() {
   return (
     <Routes>
-
       <Route path="/" element={<Home />} />
-      <Route
-        path="/checkout/:merchant_id"
-        element={<Menu />}
-      />
+      <Route path="/checkout/:merchant_id" element={<Menu />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )
