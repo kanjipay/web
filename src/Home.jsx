@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import "./Home.css"
-import useWindowSize from "./utils/useWindowSize"
+// import useWindowSize from "./utils/useWindowSize"
 
 export default function Home() {
   // const { width } = useWindowSize()
