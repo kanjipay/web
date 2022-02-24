@@ -15,7 +15,7 @@
 
 .Home__headerLogo {
   font-family: var(--font-title);
-  font-size: 60px;
+  font-size: 3rem;
   color: var(--color-primary);
   padding: 16px;
 }
@@ -25,16 +25,22 @@
   text-align: center;
   max-width: 900px;
   margin: auto;
+  padding: 0 16px;
 }
 
 .Home__title {
   font-family: var(--font-title);
   font-weight: bold;
   color: var(--color-primary-dark);
-  font-size: 120px;
+  font-size: 8rem;
   margin: auto;
   margin-bottom: 32px;
+}
 
+@media (max-width: 900px) {
+  .Home__title {
+    font-size: 14vw;
+  }
 }
 
 .Home__titleHighlight {
@@ -43,11 +49,11 @@
 
 .Home__salesCopy {
   font-weight: 500;
-  font-size: 22px;
+  font-size: 1.3rem;
   margin-bottom: 16px;
 }
 
-.Home__screenshotDesktop {
+.Home__screenshots {
   width: 100%;
   margin-top: 64px;
   margin-bottom: 64px;
