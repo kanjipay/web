@@ -5,7 +5,7 @@ import Home from "./Home";
 import Menu from "./Menu";
 import NotFound from "./NotFound";
 
-function App() {
+export default function App() {
   return (
     <Routes>
 
@@ -18,5 +18,3 @@ function App() {
     </Routes>
   )
 }
-
-export default App;
