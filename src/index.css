@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+}
+
+:root {
+  --color-primary-light-shaded: #DFEFFF;
+  --color-primary-light: #EBF5FF;
+  --color-primary: #2695FF;
+  --color-primary-shaded: #2182DF;
+  --color-primary-dark: #051320;
+
+  --font-title: 'Rubik', sans-serif;
+
+  --color-off-white: #EBEBEB;
+  --color-off-white-light: #F8F8F8;
+  --color-text-gray: #F8F8F8;
+}
