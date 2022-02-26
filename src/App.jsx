@@ -13,10 +13,16 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/checkout/:merchant_id" element={<Menu />} />
-      <Route path="/merchant/test/dashboard/385as2als921hsa" element = {<MerchantDashboard />} />
-      <Route path="/checkout/test/385as2als921hsa" element = {<DummyOrderPage />} />
-      <Route path="/checkout/test/109sjkba2al21s" element = {<CustomerForm />} />
+      <Route
+        path="/merchant/test/dashboard/385as2als921hsa"
+        element={<MerchantDashboard />}
+      />
+      <Route
+        path="/checkout/test/385as2als921hsa"
+        element={<DummyOrderPage />}
+      />
+      <Route path="/checkout/test/109sjkba2al21s" element={<CustomerForm />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
-  )
+  );
 }
