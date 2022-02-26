@@ -14,7 +14,7 @@ const firebaseApp = initializeApp({
   measurementId: "G-41M1VDVV2M",
 });
 
-const appCheck = initializeAppCheck(firebaseApp, {
+initializeAppCheck(firebaseApp, {
   provider: new ReCaptchaV3Provider('6LfUoJ4eAAAAADZ0Z8TNS1WMtHfJH2JKZnNy03wi'),
   isTokenAutoRefreshEnabled: true
 });
