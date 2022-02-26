@@ -1,15 +1,9 @@
 import React from "react";
 // import './EditList.css';
-import AddItem from "./AddItem/AddItem";
 import ItemList from "./ItemList/ItemList";
 
 function EditList(props) {
-  const { orderListId, user, onCloseOrderList, userId } = props;
-
-  function onCreateListClick(e) {
-    e.preventDefault();
-    onCloseOrderList();
-  }
+  const { orderListId } = props;
 
   return (
     <div>
