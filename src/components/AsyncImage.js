@@ -6,8 +6,6 @@ import { storage } from "../FirebaseUtils";
 export default function AsyncImage({ storagePath, alt, className }) {
   const imgId = nextId()
 
-  console.log("imageId: ", imgId)
-
   useEffect(() => {
     const imageRef = ref(storage, storagePath)
 

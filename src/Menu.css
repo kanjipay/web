@@ -1,12 +1,17 @@
 .Menu {
-  max-width: 900px;
+  max-width: 600px;
   margin: auto;
 }
 
 .MenuItem__image {
-  width: 100vw;
+  width: 100%;
+  border-radius: 8px;
 }
 
-.Menu__image {
-  width: 100vw;
+.Menu__content {
+  padding: 0 16px;
+}
+
+.Menu__headerImage {
+  width: 100%;
 }
