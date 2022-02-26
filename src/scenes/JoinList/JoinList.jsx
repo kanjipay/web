@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 // import './JoinList.css';
-import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import * as FirestoreService from "../../services/firestore";
-
 function JoinList(props) {
-  const { users, orderListId, onSelectUser, onCloseOrderList, userId } = props;
+  const { users, onSelectUser, onCloseOrderList } = props;
 
-  const [error, setError] = useState();
 
   function addExistingUser(e) {
     e.preventDefault();
@@ -37,7 +33,6 @@ function JoinList(props) {
           <form name="addUserToListForm">
             <p>Select your name if you previously joined the list...</p>
             {getUserButtonList()}
-            <ErrorMessage errorCode={error}></ErrorMessage>
             <p>
               ...or{" "}
               <a href="/" onClick={onCreateListClick}>
