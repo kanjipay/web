@@ -1,0 +1,12 @@
+.Menu {
+  max-width: 900px;
+  margin: auto;
+}
+
+.MenuItem__image {
+  width: 100vw;
+}
+
+.Menu__image {
+  width: 100vw;
+}

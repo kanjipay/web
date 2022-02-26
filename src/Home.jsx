@@ -1,4 +1,3 @@
-// import { useEffect } from "react"
 import { Helmet } from "react-helmet"
 import "./Home.css"
 import useWindowSize from "./utils/useWindowSize"
