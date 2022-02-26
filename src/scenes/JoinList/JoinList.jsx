@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 // import './JoinList.css';
 function JoinList(props) {
   const { users, onSelectUser, onCloseOrderList } = props;
