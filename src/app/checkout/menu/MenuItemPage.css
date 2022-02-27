@@ -1,28 +1,18 @@
 .MenuItemPage {
   max-width: 600px;
   margin: auto;
-  position: relative;
-  left: 0;
-  top: 0;
 }
 
 .MenuItemPage__headerImage {
   width: 100%;
-  position: relative;
-  left: 0;
-  top: 0;
 }
 
 .MenuItemPage__content {
-  padding: 32px 20px;
-  background-color: white;
-  border-radius: 24px;
-  margin-top: -40px;
-  position: absolute;
-  width: calc(100% + 8px);
-  margin-left: -4px;
-  left: 0;
-  top: 200px;
+  padding: 0 16px;
+}
+
+.MenuItemPage__disclaimer {
+  text-align: center;
 }
 
 .MenuItemPage__button {

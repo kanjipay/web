@@ -1,26 +1,7 @@
-.Menu {
-  max-width: 600px;
-  margin: auto;
-}
-
-.Menu__title {
-  font-family: 'Nunito', sans-serif;
-  font-weight: 800;
-}
-
-.MenuItem__image {
-  width: 100%;
-  border-radius: 8px;
-}
-
 .Menu__content {
   padding: 0 16px;
 }
 
 .Menu__headerImage {
   width: 100%;
-}
-
-.MenuItem__price {
-  font-weight: 500;
 }
