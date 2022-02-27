@@ -1,12 +1,12 @@
-import { useLocation, useParams } from "react-router-dom"
-import AsyncImage from "../../../components/AsyncImage"
-import "./MenuItemPage.css"
+import { useLocation, useParams } from "react-router-dom";
+import AsyncImage from "../../../components/AsyncImage";
+import "./MenuItemPage.css";
 
 export default function MenuItemPage() {
-  const location = useLocation()
-  const { merchantId, itemId } = useParams()
-  const { item } = location.state
-  console.log(location.state)
+  const location = useLocation();
+  const { merchantId, itemId } = useParams();
+  const { item } = location.state;
+  console.log(location.state);
   return (
     <div className="MenuItemPage">
       <AsyncImage
@@ -19,6 +19,5 @@ export default function MenuItemPage() {
         <button className="MenuItemPage__button">Add to basket</button>
       </div>
     </div>
-
-  )
+  );
 }

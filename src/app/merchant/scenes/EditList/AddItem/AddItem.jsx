@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // import './AddItem.css';
-import * as FirestoreService from "../../../../../utils/services/firestore";
+import * as FirestoreService from "../../../../../utils/services/FirestoreOrders";
 import ErrorMessage from "../../../../../components/ErrorMessage/ErrorMessage";
 
 function AddItem(props) {

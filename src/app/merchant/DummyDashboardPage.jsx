@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import * as FirestoreService from "../../utils/services/firestore";
+import * as FirestoreService from "../../utils/services/FirestoreOrders";
 import * as FirestoreAuth from "../../utils/services/FirestoreAuth";
 
 import CreateList from "./scenes/CreateList/CreateList";
@@ -9,12 +9,11 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 
 import useQueryString from "../../utils/hooks/useQueryString";
 
-function MerchantDashboard() {
+function DummyMerchantDashboard() {
   const [merchant, setMerchant] = useState("");
   const [orderList, setOrderList] = useState("");
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
-  const [authToken, setAuthToken] = useState();
 
   const [orderListId, setOrderListId] = useQueryString("listId");
 
@@ -53,11 +52,6 @@ function MerchantDashboard() {
     setMerchant();
   }
 
-
-  function onAuthentication() {
-    setAuthToken(localStorage.getItem('Auth Token'))
-  }
-
   function onSelectUser(userName) {
     setMerchant(userName);
     FirestoreService.getOrderList(orderListId)
@@ -88,4 +82,4 @@ function MerchantDashboard() {
   );
 }
 
-export default MerchantDashboard;
+export default DummyMerchantDashboard;

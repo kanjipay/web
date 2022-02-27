@@ -1,89 +1,43 @@
 import React, { useState, useEffect } from "react";
-import * as FirestoreService from "../../utils/services/firestore";
+import * as FirestoreService from "../../utils/services/FirestoreOrders";
 import * as FirestoreAuth from "../../utils/services/FirestoreAuth";
-
-import CreateList from "./scenes/CreateList/CreateList";
-import JoinList from "./scenes/JoinList/JoinList";
+import MerchantLogin from "./authentication/Login";
 import EditList from "./scenes/EditList/EditList";
-import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-
-import useQueryString from "../../utils/hooks/useQueryString";
+import {
+  getAuth,
+  onAuthStateChanged,
+  setPersistence,
+  inMemoryPersistence,
+} from "firebase/auth";
 
 function MerchantDashboard() {
-  const [merchant, setMerchant] = useState("");
-  const [orderList, setOrderList] = useState("");
+  const [merchantId, setMerchantId] = useState("");
   const [userId, setUserId] = useState("");
-  const [error, setError] = useState("");
-  const [authToken, setAuthToken] = useState();
+  const [user, setUser] = useState("");
 
-  const [orderListId, setOrderListId] = useQueryString("listId");
+  const auth = getAuth();
+  setPersistence(auth, inMemoryPersistence);
 
   useEffect(() => {
-    FirestoreAuth.authenticateAnonymously()
-      .then((userCredential) => {
-        setUserId(userCredential.user.uid);
-        //TODO make authentication user ID link to merchant ID / orderListID
-        //TODO makesure that the OrderList can be populated if the merchant is offline (this might work by default)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+        console.log("Logged in", user.email);
+      } else {
+        console.log("no user");
+      }
+    });
+  }, []);
 
-        if (orderListId) {
-          FirestoreService.getOrderList(orderListId)
-            .then((orderList) => {
-              if (orderList.exists) {
-                setError(null);
-                setOrderList(orderList.data());
-              } else {
-                setError("order-list-missing");
-                setOrderListId();
-              }
-            })
-            .catch(() => setError("order-list-get-fail"));
-        }
-      })
-      .catch(() => setError("auth-failed"));
-  }, [orderListId, setOrderListId]);
-
-  function onOrderListCreate(orderListId, userName) {
-    setOrderListId(orderListId);
-    setMerchant(userName);
-  }
-
-  function onCloseOrderList() {
-    setOrderListId();
-    setOrderList();
-    setMerchant();
-  }
-
-
-  function onAuthentication() {
-    setAuthToken(localStorage.getItem('Auth Token'))
-  }
-
-  function onSelectUser(userName) {
-    setMerchant(userName);
-    FirestoreService.getOrderList(orderListId)
-      .then((updatedOrderList) => setOrderList(updatedOrderList.data()))
-      .catch(() => setError("order-list-get-fail"));
-  }
-
-  // render a scene based on the current state
-  if (orderList && merchant) {
-    return <EditList {...{ orderListId }}></EditList>;
-  } else if (orderList) {
-    return (
-      <div>
-        <ErrorMessage errorCode={error}></ErrorMessage>
-        <JoinList
-          users={orderList.users}
-          {...{ onSelectUser, onCloseOrderList }}
-        ></JoinList>
-      </div>
-    );
+  //  render a scene based on the current state
+  if (userId) {
+    // Display the order list
+    return <div>Here</div>;
   }
   return (
+    // Display the logon screen
     <div>
-      <ErrorMessage errorCode={error}></ErrorMessage>
-
-      <CreateList onCreate={onOrderListCreate} userId={userId}></CreateList>
+      <MerchantLogin></MerchantLogin>
     </div>
   );
 }

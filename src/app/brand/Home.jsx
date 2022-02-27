@@ -1,6 +1,6 @@
-import { Helmet } from "react-helmet"
-import "./Home.css"
-import useWindowSize from "../../utils/helpers/useWindowSize"
+import { Helmet } from "react-helmet";
+import "./Home.css";
+import useWindowSize from "../../utils/helpers/useWindowSize";
 
 export default function Home() {
   const { width } = useWindowSize();

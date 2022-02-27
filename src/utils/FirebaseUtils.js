@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseApp = initializeApp({
@@ -15,12 +15,11 @@ const firebaseApp = initializeApp({
 });
 
 initializeAppCheck(firebaseApp, {
-  provider: new ReCaptchaV3Provider('6LfUoJ4eAAAAADZ0Z8TNS1WMtHfJH2JKZnNy03wi'),
-  isTokenAutoRefreshEnabled: true
+  provider: new ReCaptchaV3Provider("6LfUoJ4eAAAAADZ0Z8TNS1WMtHfJH2JKZnNy03wi"),
+  isTokenAutoRefreshEnabled: true,
 });
 
-const db = getFirestore()
-const storage = getStorage()
+const db = getFirestore();
+const storage = getStorage();
 
-export { db, storage }
-export default firebaseApp
+export { db, storage, firebaseApp };

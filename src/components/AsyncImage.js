@@ -1,24 +1,24 @@
-import { getDownloadURL, ref } from "firebase/storage"
+import { getDownloadURL, ref } from "firebase/storage";
 import { useEffect } from "react";
 import nextId from "react-id-generator";
 import { storage } from "../utils/FirebaseUtils";
 
 export default function AsyncImage({ storagePath, alt, className }) {
-  const imgId = nextId()
+  const imgId = nextId();
 
   useEffect(() => {
-    const imageRef = ref(storage, storagePath)
+    const imageRef = ref(storage, storagePath);
 
     getDownloadURL(imageRef)
-      .then(url => {
-        const img = document.getElementById(imgId)
-        img.setAttribute('src', url)
+      .then((url) => {
+        const img = document.getElementById(imgId);
+        img.setAttribute("src", url);
       })
       .catch((error) => {
         // Handle any errors
-        console.error(error)
-      })
-  }, [storagePath, imgId])
+        console.error(error);
+      });
+  }, [storagePath, imgId]);
 
-  return <img className={className} id={imgId} alt={alt}/>
+  return <img className={className} id={imgId} alt={alt} />;
 }

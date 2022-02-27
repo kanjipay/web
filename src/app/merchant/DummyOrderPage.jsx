@@ -3,7 +3,7 @@ import AddItem from "./scenes/EditList/AddItem/AddItem";
 import useCustomerQueryString from "../../utils/hooks/useQueryString";
 
 function DummyOrderPage() {
-  const [orderListId ]  = useCustomerQueryString("listId");
+  const [orderListId] = useCustomerQueryString("listId");
 
   if (orderListId) {
     return (

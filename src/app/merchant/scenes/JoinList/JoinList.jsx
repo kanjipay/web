@@ -3,7 +3,6 @@ import React from "react";
 function JoinList(props) {
   const { users, onSelectUser, onCloseOrderList } = props;
 
-
   function addExistingUser(e) {
     e.preventDefault();
     onSelectUser(e.target.innerText);

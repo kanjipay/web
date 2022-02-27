@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as FirestoreService from "../../../../../utils/services/firestore";
+import * as FirestoreService from "../../../../../utils/services/FirestoreOrders";
 import ErrorMessage from "../../../../../components/ErrorMessage/ErrorMessage";
 
 function ItemList(props) {
