@@ -26,10 +26,7 @@ function MerchantLogin() {
       });
   };
 
-  // const handleLogin = () => {
-  //   setPassword('success')
-  // }
-
+  //TODO make this look not terrible
   return (
     <div className="login-form">
       <div>
@@ -42,7 +39,7 @@ function MerchantLogin() {
         setPassword={setPassword}
         handleAction={() => handleLogin()}
       ></PasswordForm>
-      {error == "auth-failed" && (
+      {error === "auth-failed" && (
         <h2> Incorrect email or password, please try again </h2>
       )}
       <p>
