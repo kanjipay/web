@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import * as FirestoreService from "../../utils/services/firestore";
+import * as FirestoreAuth from "../../utils/services/FirestoreAuth";
 
 import CreateList from "./scenes/CreateList/CreateList";
 import JoinList from "./scenes/JoinList/JoinList";
@@ -13,11 +14,12 @@ function MerchantDashboard() {
   const [orderList, setOrderList] = useState("");
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
+  const [authToken, setAuthToken] = useState();
 
   const [orderListId, setOrderListId] = useQueryString("listId");
 
   useEffect(() => {
-    FirestoreService.authenticateAnonymously()
+    FirestoreAuth.authenticateAnonymously()
       .then((userCredential) => {
         setUserId(userCredential.user.uid);
         //TODO make authentication user ID link to merchant ID / orderListID
@@ -49,6 +51,11 @@ function MerchantDashboard() {
     setOrderListId();
     setOrderList();
     setMerchant();
+  }
+
+
+  function onAuthentication() {
+    setAuthToken(localStorage.getItem('Auth Token'))
   }
 
   function onSelectUser(userName) {
