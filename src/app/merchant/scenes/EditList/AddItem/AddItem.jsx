@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 // import './AddItem.css';
-import * as FirestoreService from "../../../../../../utils/services/firestore";
-import ErrorMessage from "../../../../../../components/ErrorMessage/ErrorMessage";
+import * as FirestoreService from "../../../../../utils/services/firestore";
+import ErrorMessage from "../../../../../components/ErrorMessage/ErrorMessage";
 
 function AddItem(props) {
   const { orderListId, userId } = props;

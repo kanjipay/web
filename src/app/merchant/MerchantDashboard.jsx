@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import * as FirestoreService from "../../../utils/services/firestore";
+import * as FirestoreService from "../../utils/services/firestore";
 
 import CreateList from "./scenes/CreateList/CreateList";
 import JoinList from "./scenes/JoinList/JoinList";
 import EditList from "./scenes/EditList/EditList";
-import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
+import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 
-import useQueryString from "../../../utils/hooks/useQueryString";
+import useQueryString from "../../utils/hooks/useQueryString";
 
 function MerchantDashboard() {
   const [merchant, setMerchant] = useState("");

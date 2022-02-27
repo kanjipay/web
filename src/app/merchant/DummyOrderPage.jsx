@@ -1,6 +1,6 @@
 import React from "react";
 import AddItem from "./scenes/EditList/AddItem/AddItem";
-import useCustomerQueryString from "../../../utils/hooks/useQueryString";
+import useCustomerQueryString from "../../utils/hooks/useQueryString";
 
 function DummyOrderPage() {
   const [orderListId ]  = useCustomerQueryString("listId");
