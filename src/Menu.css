@@ -15,3 +15,11 @@
 .Menu__headerImage {
   width: 100%;
 }
+
+.MenuItem__price {
+  background-color: var(--color-off-white-light);
+  height: 32px;
+  border-radius: 16px;
+  padding: 0 8px;
+  align-items: center;
+}
