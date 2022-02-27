@@ -24,10 +24,6 @@ const app = initializeApp({
 });
 const db = getFirestore(app);
 
-export const authenticateAnonymously = () => {
-  return signInAnonymously(getAuth(app));
-};
-
 export const createOrderList = (userName, userId) => {
   const orderColRef = collection(db, "orderLists");
   return addDoc(orderColRef, {
