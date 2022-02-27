@@ -5,7 +5,7 @@ import Home from "../brand/HomePage";
 import Menu from "../checkout/menu/MenuPage";
 import NotFound from "./NotFoundPage";
 import MenuItemPage from "../checkout/menu/MenuItemPage";
-import MerchantDashboard from "../merchant/MerchantDashboard";
+import MerchantDashboard from "../merchant/DummyDashboardPage";
 import CustomerForm from "../checkout/order/CustomerForm";
 import DummyOrderPage from "../checkout/order/DummyOrderPage";
 import MerchantAboutPage from "../checkout/menu/MerchantAboutPage";
