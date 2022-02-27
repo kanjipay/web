@@ -1,9 +1,9 @@
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import AsyncImage from './components/AsyncImage';
-import { db } from './FirebaseUtils';
-import "./Menu.css"
+import AsyncImage from '../../../components/AsyncImage';
+import { db } from '../../../utils/FirebaseUtils';
+import "./MenuPage.css"
 
 export default function Menu() {
   let { merchantId } = useParams()
@@ -11,6 +11,7 @@ export default function Menu() {
   const [merchant, setMerchant] = useState(null)
   const [menuSections, setMenuSections] = useState([])
   const [menuItems, setMenuItems] = useState([])
+  const [openHourRanges, setOpenHourRanges] = useState([])
 
   useEffect(() => {
     const merchantRef = doc(db, "Merchant", merchantId)
@@ -21,8 +22,8 @@ export default function Menu() {
 
     const menuSectionQuery = query(collection(db, "MenuSection"), where("merchant", "==", merchantRef))
 
-    const menuSectionUnsub = onSnapshot(menuSectionQuery, sectionSnapshot => {
-      const sections = sectionSnapshot.docs.map(doc => {
+    const menuSectionUnsub = onSnapshot(menuSectionQuery, snapshot => {
+      const sections = snapshot.docs.map(doc => {
         const section = { id: doc.id, ...doc.data() }
         section.merchantId = section.merchant.id
         delete section.merchant
@@ -31,6 +32,20 @@ export default function Menu() {
       })
 
       setMenuSections(sections)
+    })
+
+    const openHourQuery = query(collection(db, "OpeningHourRange"), where("merchant", "==", merchantRef))
+
+    const hourRangeUnsub = onSnapshot(openHourQuery, snapshot => {
+      const hourRanges = snapshot.docs.map(doc => {
+        const range = { id: doc.id, ...doc.data() }
+        range.merchantId = range.merchant.id
+        delete range.merchant
+
+        return range
+      })
+
+      setOpenHourRanges(hourRanges)
     })
 
     const menuItemQuery = query(collection(db, "MenuItem"), where("merchant", "==", merchantRef))
@@ -54,6 +69,7 @@ export default function Menu() {
       merchantUnsub()
       menuSectionUnsub()
       menuItemUnsub()
+      hourRangeUnsub()
     })
   }, [merchantId])
 
@@ -70,6 +86,52 @@ export default function Menu() {
     }
   })
 
+  function generateOpenHourText() {
+    const now = new Date()
+    let dayOfWeek = now.getDay()
+
+    // The above defines day of week as 0 - 6 Sun - Sat
+    // We want 1 - 7 Mon - Sun
+    if (dayOfWeek === 0) {
+      dayOfWeek = 7
+    }
+
+    const minutes = now.getHours() * 60 + now.getMinutes()
+
+    const todayRanges = openHourRanges
+      .filter(range => range.day_of_week === dayOfWeek)
+      .sort((range1, range2) => range1.close_time - range2.close_time)
+
+
+    const openRanges = todayRanges.filter(range => range.close_time > minutes)
+
+    function formatMinutes(mins) {
+      const minsRemainder = (mins % 60).toLocaleString('en-GB', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+      })
+
+      const hours = ((mins - minsRemainder) / 60).toLocaleString('en-GB', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+      })
+
+      return `${hours}:${minsRemainder}`
+    }
+
+    if (openRanges.length === 0) {
+      if (todayRanges.length === 0) {
+        return "Closed today"
+      } else {
+        const mins = todayRanges[todayRanges.length - 1].close_time
+        return `Closed at ${formatMinutes(mins)}`
+      }
+    } else {
+      const mins = openRanges[openRanges.length - 1].close_time
+      return `Open until ${formatMinutes(mins)}`
+    }
+  }
+
   return (
     <div className='Menu'>
       { merchant &&
@@ -79,7 +141,13 @@ export default function Menu() {
           />
       }
       <div className='Menu__content'>
-        { merchant && <h1 className='Menu__title'>{merchant.display_name}</h1> }
+        { merchant &&
+          <div>
+            <h1 className='Menu__title'>{merchant.display_name}</h1>
+            <p>{merchant.tags.join(" · ")}</p>
+          </div>
+        }
+        { openHourRanges && <p>{generateOpenHourText()}</p>}
         {
           menuSections.map(section => (
             <MenuSection key={section.id} section={section}>{
@@ -106,10 +174,6 @@ function MenuSection({ section, children }) {
 
 function MenuItem({ item }) {
   const merchantId = item.merchantId
-
-  // function onItemClick() {
-
-  // }
 
   return (
     <div className='MenuItem'>
