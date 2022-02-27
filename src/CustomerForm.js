@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import db from "./FirebaseUtils";
+import db from "./services/firestore";
 import BankPicker from "./BankPicker";
 import { collection, addDoc } from "firebase/firestore";
 
