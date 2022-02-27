@@ -109,6 +109,10 @@ function MenuItem({ item }) {
 
   console.log(item)
 
+  function onItemClick() {
+
+  }
+
   return (
     <div className='MenuItem'>
       <Link to={`items/${item.id}`} state={{ item }}>
