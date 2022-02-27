@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet"
-import "./Home.css"
+import "./HomePage.css"
 import useWindowSize from "../../utils/helpers/useWindowSize"
+import Spacer from "../../components/Spacer";
 
 export default function Home() {
   const { width } = useWindowSize();
@@ -24,10 +25,11 @@ export default function Home() {
         <p className="Home__salesCopy">
           Mercado is an online menu for food stalls.
         </p>
+        <Spacer y={2} />
         <p className="Home__salesCopy">
           No set up fees. No subscription. All you need is a QR code.
         </p>
-
+        <Spacer y={2} />
         <img
           src={`/img/screenshots_${width > 500 ? "desktop" : "mobile"}.png`} // change to mobile after putting screenshots
           alt=""

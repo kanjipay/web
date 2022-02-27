@@ -1,6 +1,8 @@
 * {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  padding: 0;
+  line-height: 1;
+  font: var(--font-body);
   text-decoration: none;
   color: #333333;
 }
@@ -11,10 +13,63 @@
   --color-primary: #2695ff;
   --color-primary-shaded: #2182df;
   --color-primary-dark: #051320;
-
-  --font-title: "Rubik", sans-serif;
-
   --color-off-white: #ebebeb;
   --color-off-white-light: #f8f8f8;
-  --color-text-gray: #f8f8f8;
+  --color-text-header: black;
+  --color-text-body: #444;
+  --color-text-caption: #888;
+  --color-text-body-faded: #888;
+
+  --font-brand-title: bold 8rem "Rubik", sans-serif;
+  --font-header-l: 800 2em 'Nunito', sans-serif;
+  --font-header-m: 800 1.5em 'Nunito', sans-serif;
+  --font-header-s: 500 1.25em 'Roboto', sans-serif;
+  --font-header-xs: 400 1em 'Roboto', sans-serif;
+  --font-body: 400 1em 'Roboto', sans-serif;
+  --font-caption: 0.8em 'Roboto', sans-serif;
+  --font-disclaimer: 0.625em 'Roboto', sans-serif;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+}
+
+.header-l {
+  font: var(--font-header-l);
+  color: var(--color-text-header);
+}
+
+.header-m {
+  font: var(--font-header-m);
+  color: var(--color-text-header);
+}
+
+.header-s {
+  font: var(--font-header-s);
+  color: var(--color-text-header);
+}
+
+.header-xs {
+  font: var(--font-header-xs);
+  color: var(--color-text-header);
+}
+
+.text-body {
+  color: var(--color-text-body);
+}
+
+.text-body-faded {
+  color: var(--color-text-body-faded);
+}
+
+.text-caption {
+  font: var(--font-caption);
+  color: var(--color-text-body-faded);
+}
+
+.text-disclaimer {
+  font: var(--font-disclaimer);
+  color: var(--color-text-body-faded);
+  text-align: center;
 }

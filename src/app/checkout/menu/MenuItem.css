@@ -1,0 +1,8 @@
+.MenuItem__image {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.MenuItem__price {
+  font-weight: 500;
+}

@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AsyncImage from '../../../components/AsyncImage';
 import { db } from '../../../utils/FirebaseUtils';
+import MenuItem from './MenuItem';
+import MenuSection from './MenuSection';
 import "./MenuPage.css"
+import Spacer from '../../../components/Spacer';
+import { formatMinutes } from '../../../utils/helpers/time';
 
 export default function Menu() {
   let { merchantId } = useParams()
@@ -105,20 +109,6 @@ export default function Menu() {
 
     const openRanges = todayRanges.filter(range => range.close_time > minutes)
 
-    function formatMinutes(mins) {
-      const minsRemainder = (mins % 60).toLocaleString('en-GB', {
-        minimumIntegerDigits: 2,
-        useGrouping: false
-      })
-
-      const hours = ((mins - minsRemainder) / 60).toLocaleString('en-GB', {
-        minimumIntegerDigits: 2,
-        useGrouping: false
-      })
-
-      return `${hours}:${minsRemainder}`
-    }
-
     if (openRanges.length === 0) {
       if (todayRanges.length === 0) {
         return "Closed today"
@@ -132,64 +122,36 @@ export default function Menu() {
     }
   }
 
-  return (
-    <div className='Menu'>
-      { merchant &&
-          <AsyncImage
-            storagePath={`merchants/${merchantId}/${merchant.photo}`}
-            className='Menu__headerImage'
-          />
-      }
+  return merchant && openHourRanges ?
+    <div className='Menu container'>
+      <AsyncImage
+        storagePath={`merchants/${merchantId}/${merchant.photo}`}
+        className='Menu__headerImage'
+      />
+      <Spacer y={3}/>
       <div className='Menu__content'>
-        { merchant &&
-          <div>
-            <h1 className='Menu__title'>{merchant.display_name}</h1>
-            <p>{merchant.tags.join(" · ")}</p>
-          </div>
-        }
-        { openHourRanges && <p>{generateOpenHourText()}</p>}
+        <h1 className='Menu__title header-l'>{merchant.display_name}</h1>
+        <Spacer y={1} />
+        <Link to={`about`} state={{ merchant, openHourRanges }}>
+          <p className='text-body'>{merchant.tags.join(" · ")}</p>
+          <Spacer y={1} />
+          <p className='text-body-faded'>{generateOpenHourText()}</p>
+        </Link>
+        <Spacer y={3} />
         {
           menuSections.map(section => (
             <MenuSection key={section.id} section={section}>{
               groupedMenuItems[section.id] &&
                 groupedMenuItems[section.id].map(menuItem => (
-                  <MenuItem item={menuItem} key={menuItem.id}/>
+                  <div>
+                    <MenuItem item={menuItem} key={menuItem.id}/>
+                    <Spacer y={3} />
+                  </div>
               ))
             }</MenuSection>
           ))
         }
       </div>
-    </div>
-  )
-}
-
-function MenuSection({ section, children }) {
-  return (
-    <div className='MenuSection'>
-      <h2 className='MenuSection__title'>{section.name}</h2>
-      {children}
-    </div>
-  )
-}
-
-function MenuItem({ item }) {
-  const merchantId = item.merchantId
-
-  return (
-    <div className='MenuItem'>
-      <Link to={`items/${item.id}`} state={{ item }}>
-        <AsyncImage
-          storagePath={`merchants/${merchantId}/menu_items/${item.id}/${item.photo}`}
-          className='MenuItem__image'
-        />
-        <h3 className='MenuItem__title'>{item.title}</h3>
-        <p className='MenuItem__description'>{item.description}</p>
-        <p className='MenuItem__price'>{formatCurrency(item.price)}</p>
-      </Link>
-    </div>
-  )
-}
-
-function formatCurrency(int) {
-  return "£" + (int / 100).toFixed(2).toString()
+    </div> :
+    <div />
 }

@@ -14,7 +14,7 @@
 }
 
 .Home__headerLogo {
-  font-family: var(--font-title);
+  font-family: var(--font-brand-title);
   font-size: 3rem;
   color: var(--color-primary);
   padding: 16px;
@@ -29,10 +29,8 @@
 }
 
 .Home__title {
-  font-family: var(--font-title);
-  font-weight: bold;
+  font: var(--font-brand-title);
   color: var(--color-primary-dark);
-  font-size: 8rem;
   margin: auto;
   margin-bottom: 32px;
 }
@@ -50,7 +48,6 @@
 .Home__salesCopy {
   font-weight: 500;
   font-size: 1.3rem;
-  margin-bottom: 16px;
 }
 
 .Home__screenshots {
