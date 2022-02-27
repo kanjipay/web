@@ -5,9 +5,9 @@ import Home from "../brand/Home";
 import Menu from "../checkout/menu/MenuPage";
 import NotFound from "./NotFoundPage";
 import MenuItemPage from "../checkout/menu/MenuItemPage";
-import MerchantDashboard from "../checkout/order/Dashboard";
+import MerchantDashboard from "../merchant/MerchantDashboard";
 import CustomerForm from "../checkout/order/CustomerForm";
-import DummyOrderPage from "../checkout/order/DummyOrderPage";
+import DummyOrderPage from "../merchant/DummyOrderPage";
 
 export default function App() {
   return (
