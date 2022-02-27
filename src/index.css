@@ -3,15 +3,15 @@
 }
 
 :root {
-  --color-primary-light-shaded: #DFEFFF;
-  --color-primary-light: #EBF5FF;
-  --color-primary: #2695FF;
-  --color-primary-shaded: #2182DF;
+  --color-primary-light-shaded: #dfefff;
+  --color-primary-light: #ebf5ff;
+  --color-primary: #2695ff;
+  --color-primary-shaded: #2182df;
   --color-primary-dark: #051320;
 
-  --font-title: 'Rubik', sans-serif;
+  --font-title: "Rubik", sans-serif;
 
-  --color-off-white: #EBEBEB;
-  --color-off-white-light: #F8F8F8;
-  --color-text-gray: #F8F8F8;
+  --color-off-white: #ebebeb;
+  --color-off-white-light: #f8f8f8;
+  --color-text-gray: #f8f8f8;
 }
