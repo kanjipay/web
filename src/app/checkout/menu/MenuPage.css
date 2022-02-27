@@ -3,6 +3,11 @@
   margin: auto;
 }
 
+.Menu__title {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+}
+
 .MenuItem__image {
   width: 100%;
   border-radius: 8px;
@@ -17,9 +22,5 @@
 }
 
 .MenuItem__price {
-  background-color: var(--color-off-white-light);
-  height: 32px;
-  border-radius: 16px;
-  padding: 0 8px;
-  align-items: center;
+  font-weight: 500;
 }

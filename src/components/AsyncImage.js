@@ -1,7 +1,7 @@
 import { getDownloadURL, ref } from "firebase/storage"
 import { useEffect } from "react";
 import nextId from "react-id-generator";
-import { storage } from "../FirebaseUtils";
+import { storage } from "../utils/FirebaseUtils";
 
 export default function AsyncImage({ storagePath, alt, className }) {
   const imgId = nextId()

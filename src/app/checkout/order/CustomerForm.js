@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import db from "./services/firestore";
-import BankPicker from "./BankPicker";
+import db from "../../../utils/services/firestore";
+import BankPicker from "../pay/BankPicker";
 import { collection, addDoc } from "firebase/firestore";
+
 
 export function CustomerForm({ page, setPage }) {
   const [firstName, setFirstName] = useState("");

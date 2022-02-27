@@ -1,5 +1,5 @@
 import { useLocation, useParams } from "react-router-dom"
-import AsyncImage from "./components/AsyncImage"
+import AsyncImage from "../../../components/AsyncImage"
 import "./MenuItemPage.css"
 
 export default function MenuItemPage() {
