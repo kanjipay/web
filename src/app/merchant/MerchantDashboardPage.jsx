@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import * as FirestoreService from "../../utils/services/FirestoreOrders";
-import * as FirestoreAuth from "../../utils/services/FirestoreAuth";
 import MerchantLogin from "./authentication/Login";
-import EditList from "./scenes/EditList/EditList";
 import {
   getAuth,
   onAuthStateChanged,
@@ -11,27 +8,29 @@ import {
 } from "firebase/auth";
 
 function MerchantDashboard() {
-  const [merchantId, setMerchantId] = useState("");
+  //   const [merchantId, setMerchantId] = useState("");
   const [userId, setUserId] = useState("");
-  const [user, setUser] = useState("");
 
   const auth = getAuth();
   setPersistence(auth, inMemoryPersistence);
 
+  // TODO  this will cause a memory leak as we need to unsubscribe from listening when component is unmounted
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
-        console.log("Logged in", user.email);
+        console.log("Account", user.email, "currently authenticated");
+        //TODO query firestore to retreive merchant ID associated with this user account
       } else {
-        console.log("no user");
+        console.log("No user currently authenticated");
       }
     });
   }, []);
 
   //  render a scene based on the current state
   if (userId) {
-    // Display the order list
+    // TODO add headers that allow us to toggle between merchant shop configuration and the live stream of orders
+    // TODO add those components
     return <div>Here</div>;
   }
   return (

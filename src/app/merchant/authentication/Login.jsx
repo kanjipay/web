@@ -8,17 +8,22 @@ import PasswordForm from "../../../components/common/PasswordForm";
 function MerchantLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = () => {
     const authentication = Authentication();
-    authenticateWithEmailAndPassword(authentication, email, password).then(
-      (response) => {
+    authenticateWithEmailAndPassword(authentication, email, password)
+      .then((response) => {
         localStorage.setItem(
-          "Auth Token",
+          "Auth_Token",
           response._tokenResponse.refreshToken
         );
-      }
-    );
+        setError(null);
+      })
+      .catch(() => {
+        setError("auth-failed");
+        console.log("authentication failed for email", email);
+      });
   };
 
   // const handleLogin = () => {
@@ -29,34 +34,6 @@ function MerchantLogin() {
     <div className="login-form">
       <div>
         <div className="heading-container"></div>
-
-        {/* <Box
-                component="form"
-                sx={{
-                    '& > :not(style)': { m: 1, width: '25ch' },
-                }}
-                noValidate
-                autoComplete="off"
-            >
-                <TextField
-                    id="email"
-                    label="Enter the Email"
-                    variant="outlined"
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <TextField
-                    id="password"
-                    label="Enter the Password"
-                    variant="outlined"
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </Box>
-
-            <button title ='Login' onClick = {handleLogin} > </button> */}
-
-        {/* <Button title="login" handleAction={handleAction}/> */}
-
-        {/* <Button title={title} /> */}
       </div>
 
       <PasswordForm
@@ -65,6 +42,9 @@ function MerchantLogin() {
         setPassword={setPassword}
         handleAction={() => handleLogin()}
       ></PasswordForm>
+      {error == "auth-failed" && (
+        <h2> Incorrect email or password, please try again </h2>
+      )}
       <p>
         {" "}
         <a href={`/merchant/signup`} target="_blank" rel="noopener noreferrer">

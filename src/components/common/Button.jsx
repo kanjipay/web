@@ -6,6 +6,5 @@ export default function BasicButtons({ title, handleAction }) {
     <Button variant="contained" onClick={handleAction}>
       {title}
     </Button>
-    // <Button variant="contained">{title}</Button>
   );
 }
