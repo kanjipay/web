@@ -107,11 +107,9 @@ function MenuSection({ section, children }) {
 function MenuItem({ item }) {
   const merchantId = item.merchantId
 
-  console.log(item)
+  // function onItemClick() {
 
-  function onItemClick() {
-
-  }
+  // }
 
   return (
     <div className='MenuItem'>
