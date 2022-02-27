@@ -23,3 +23,4 @@ const db = getFirestore()
 const storage = getStorage()
 
 export { db, storage }
+export default firebaseApp
