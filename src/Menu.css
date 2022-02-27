@@ -1,0 +1,25 @@
+.Menu {
+  max-width: 600px;
+  margin: auto;
+}
+
+.MenuItem__image {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.Menu__content {
+  padding: 0 16px;
+}
+
+.Menu__headerImage {
+  width: 100%;
+}
+
+.MenuItem__price {
+  background-color: var(--color-off-white-light);
+  height: 32px;
+  border-radius: 16px;
+  padding: 0 8px;
+  align-items: center;
+}
