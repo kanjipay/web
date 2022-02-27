@@ -1,9 +1,9 @@
 import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import AsyncImage from './components/AsyncImage';
-import { db } from './FirebaseUtils';
-import "./Menu.css"
+import { Link, useParams } from 'react-router-dom';
+import AsyncImage from '../../../components/AsyncImage';
+import { db } from '../../../utils/FirebaseUtils';
+import "./MenuPage.css"
 
 export default function Menu() {
   let { merchantId } = useParams()

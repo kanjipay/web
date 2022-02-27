@@ -1,13 +1,13 @@
 import "./App.css";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Home from "./Home";
-import Menu from "./Menu";
-import NotFound from "./NotFound";
-import MenuItemPage from "./MenuItemPage";
-import MerchantDashboard from "./Dashboard";
-import CustomerForm from "./CustomerForm";
-import DummyOrderPage from "./DummyOrderPage";
+import Home from "../brand/Home";
+import Menu from "../checkout/menu/MenuPage";
+import NotFound from "./NotFoundPage";
+import MenuItemPage from "../checkout/menu/MenuItemPage";
+import MerchantDashboard from "../checkout/order/Dashboard";
+import CustomerForm from "../checkout/order/CustomerForm";
+import DummyOrderPage from "../checkout/order/DummyOrderPage";
 
 export default function App() {
   return (
