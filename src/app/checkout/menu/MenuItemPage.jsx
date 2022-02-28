@@ -1,12 +1,18 @@
-import { useLocation, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import AsyncImage from "../../../components/AsyncImage"
 import Spacer from "../../../components/Spacer"
 import "./MenuItemPage.css"
 
 export default function MenuItemPage() {
   const location = useLocation()
+  const navigate = useNavigate()
   const { merchantId, itemId } = useParams()
   const { item } = location.state
+
+  function handleAddToBasket() {
+
+    navigate(-1)
+  }
 
   return (
     <div className="MenuItemPage container">
@@ -28,7 +34,7 @@ export default function MenuItemPage() {
           This is going to be a really long disclaimer. This is going to be a really long disclaimer. This is going to be a really long disclaimer. This is going to be a really long disclaimer. This is going to be a really long disclaimer. This is going to be a really long disclaimer. This is going to be a really long disclaimer. This is going to be a really long disclaimer.
         </p>
         <Spacer y={1} />
-        <button className="MenuItemPage__button">Add to basket</button>
+        <button className="MenuItemPage__button" onClick={() => handleAddToBasket()}>Add to basket</button>
       </div>
     </div>
 
