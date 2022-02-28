@@ -22,4 +22,4 @@ initializeAppCheck(firebaseApp, {
 const db = getFirestore()
 const storage = getStorage()
 
-export { db, storage }
+export { firebaseApp, db, storage }

@@ -1,13 +1,12 @@
-import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AsyncImage from '../../../components/AsyncImage';
-import { db } from '../../../utils/FirebaseUtils';
 import MenuItem from './MenuItem';
 import MenuSection from './MenuSection';
 import "./MenuPage.css"
 import Spacer from '../../../components/Spacer';
 import { formatMinutes } from '../../../utils/helpers/time';
+import { fetchMenuItems, fetchMenuSections, fetchMerchant, fetchOpeningHours } from '../../../utils/services/MenuService';
 
 export default function Menu() {
   let { merchantId } = useParams()
@@ -18,15 +17,11 @@ export default function Menu() {
   const [openHourRanges, setOpenHourRanges] = useState([])
 
   useEffect(() => {
-    const merchantRef = doc(db, "Merchant", merchantId)
-
-    const merchantUnsub = onSnapshot(merchantRef, doc => {
+    const merchantUnsub = fetchMerchant(merchantId, doc => {
       setMerchant({ id: doc.id, ...doc.data() })
     })
 
-    const menuSectionQuery = query(collection(db, "MenuSection"), where("merchant", "==", merchantRef))
-
-    const menuSectionUnsub = onSnapshot(menuSectionQuery, snapshot => {
+    const menuSectionUnsub = fetchMenuSections(merchantId, snapshot => {
       const sections = snapshot.docs.map(doc => {
         const section = { id: doc.id, ...doc.data() }
         section.merchantId = section.merchant.id
@@ -38,9 +33,7 @@ export default function Menu() {
       setMenuSections(sections)
     })
 
-    const openHourQuery = query(collection(db, "OpeningHourRange"), where("merchant", "==", merchantRef))
-
-    const hourRangeUnsub = onSnapshot(openHourQuery, snapshot => {
+    const hourRangeUnsub = fetchOpeningHours(merchantId, snapshot => {
       const hourRanges = snapshot.docs.map(doc => {
         const range = { id: doc.id, ...doc.data() }
         range.merchantId = range.merchant.id
@@ -52,10 +45,8 @@ export default function Menu() {
       setOpenHourRanges(hourRanges)
     })
 
-    const menuItemQuery = query(collection(db, "MenuItem"), where("merchant", "==", merchantRef))
-
-    const menuItemUnsub = onSnapshot(menuItemQuery, itemSnapshot => {
-      const items = itemSnapshot.docs.map(doc => {
+    const menuItemUnsub = fetchMenuItems(merchantId, snapshot => {
+      const items = snapshot.docs.map(doc => {
         const item = { id: doc.id, ...doc.data() }
         item.merchantId = item.merchant.id
         item.sectionId = item.section.id
