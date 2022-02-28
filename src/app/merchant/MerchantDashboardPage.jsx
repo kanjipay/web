@@ -12,6 +12,9 @@ function MerchantDashboard() {
   const [userId, setUserId] = useState("");
 
   const auth = getAuth();
+
+  // This is only present for local testing as it makes it easy to retrigger the authentication flow. 
+  //In reality we should use device persistance as merchants will not want to always log back on (perhaps make this customizable?)
   setPersistence(auth, inMemoryPersistence);
 
   // TODO  this will cause a memory leak as we need to unsubscribe from listening when component is unmounted
