@@ -7,11 +7,10 @@ import { formatMinutes } from '../../../utils/helpers/time';
 import NavBar from '../../../components/NavBar';
 import { Helmet } from 'react-helmet';
 import useBasket from '../basket/useBasket';
-import { useEffect } from 'react';
 import LoadingPage from '../../../components/LoadingPage';
 
 export default function MenuPage({ merchant, menuItems = [], menuSections = [], openHourRanges = [] }) {
-  const { itemCount, clearBasket } = useBasket()
+  const { itemCount } = useBasket()
 
   const groupedMenuItems = {}
 
@@ -77,6 +76,7 @@ export default function MenuPage({ merchant, menuItems = [], menuSections = [], 
       <AsyncImage
         storagePath={`merchants/${merchant.id}/${merchant.photo}`}
         className='headerImage'
+        alt={merchant.display_name}
       />
       <Spacer y={3}/>
       <div className='content'>

@@ -17,7 +17,7 @@ export default function MenuItem({ item }) {
     dietaryBubbles.push(
       <div key="SPICE" className='MenuItem__spiceLevel bubble'>
         { Array(chilliCount).fill(
-          <img src='/img/chilli.png' className='chilli'/>
+          <img src='/img/chilli.png' alt='Chilli icon' className='chilli'/>
         ) }
       </div>
     )
@@ -42,6 +42,7 @@ export default function MenuItem({ item }) {
       <AsyncImage
         storagePath={`merchants/${merchantId}/menu_items/${item.id}/${item.photo}`}
         className={`MenuItem__image ${isAvailable ? "" : "MenuItem__imageBlur"}`}
+        alt={item.title}
       />
       { !isAvailable && <div className='MenuItem__shadow'/> }
       { !isAvailable && <div className='MenuItem__notAvailable header-s'>Not available</div> }

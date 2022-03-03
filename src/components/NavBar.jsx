@@ -12,14 +12,16 @@ export default function NavBar({ showsBackButton = true, title, titleElement, le
 
   const [opacity, setOpacity] = useState(initialOpacity)
 
-  const handleScroll = () => {
-    const yOffset = window.scrollY
-    const newOpacity = Math.max(Math.min((yOffset - transparentDepth) / (opaqueDepth - transparentDepth), 1), 0)
-
-    setOpacity(newOpacity)
-  }
-
   useEffect(() => {
+
+
+    const handleScroll = () => {
+      const yOffset = window.scrollY
+      const newOpacity = Math.max(Math.min((yOffset - transparentDepth) / (opaqueDepth - transparentDepth), 1), 0)
+
+      setOpacity(newOpacity)
+    }
+
     if (changesOpacity) {
       window.addEventListener('scroll', handleScroll)
 
@@ -27,7 +29,7 @@ export default function NavBar({ showsBackButton = true, title, titleElement, le
         window.removeEventListener('scroll', handleScroll)
       }
     }
-  }, [changesOpacity])
+  }, [transparentDepth, opaqueDepth, changesOpacity])
 
   return (
     <div className='NavBar'>
