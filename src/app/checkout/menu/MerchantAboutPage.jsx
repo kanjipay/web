@@ -1,5 +1,4 @@
 import { Helmet } from "react-helmet";
-import { useLocation } from "react-router-dom";
 import AsyncImage from "../../../components/AsyncImage";
 import CircleIcon from "../../../components/CircleIcon";
 import NavBar from "../../../components/NavBar";
@@ -45,6 +44,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         <AsyncImage
           storagePath={`merchants/${merchant.id}/${merchant.photo}`}
           className='headerImage'
+          alt={merchant.display_name}
         />
         <div className="content">
           <Spacer y={3} />

@@ -14,7 +14,7 @@ function MerchantDashboard() {
   const [orderList, setOrderList] = useState("");
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
-  const [authToken, setAuthToken] = useState();
+  // const [authToken, setAuthToken] = useState();
 
   const [orderListId, setOrderListId] = useQueryString("listId");
 
@@ -53,10 +53,9 @@ function MerchantDashboard() {
     setMerchant();
   }
 
-
-  function onAuthentication() {
-    setAuthToken(localStorage.getItem('Auth Token'))
-  }
+  // function onAuthentication() {
+  //   setAuthToken(localStorage.getItem('Auth Token'))
+  // }
 
   function onSelectUser(userName) {
     setMerchant(userName);

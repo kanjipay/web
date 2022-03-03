@@ -11,7 +11,7 @@ import {
   doc,
   serverTimestamp,
 } from "firebase/firestore";
-import { getAuth, signInAnonymously } from "firebase/auth";
+// import { getAuth, signInAnonymously } from "firebase/auth";
 
 const app = initializeApp({
   apiKey: "AIzaSyD_mPx2fE-VuAtVK01xI4tDGaZTAX7ErvQ",

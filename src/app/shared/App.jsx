@@ -2,15 +2,11 @@ import "./App.css";
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "../brand/HomePage";
-import MenuPage from "../checkout/menu/MenuPage";
 import NotFound from "./NotFoundPage";
-import MenuItemPage from "../checkout/menu/MenuItemPage";
 import MerchantDashboard from "../merchant/DummyDashboardPage";
 import CustomerForm from "../checkout/order/CustomerForm";
-import MerchantAboutPage from "../checkout/menu/MerchantAboutPage";
 import DummyOrderPage from "../merchant/DummyOrderPage";
 import { BrowserRouter } from "react-router-dom";
-import BasketPage from "../checkout/basket/BasketPage";
 import Menu from "../checkout/menu/Menu";
 
 export default function App() {

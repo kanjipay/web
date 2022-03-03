@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import AsyncImage from "../../../components/AsyncImage"
-import CircleButton, { ButtonTheme, Colors } from "../../../components/CircleButton"
+import CircleButton, { ButtonTheme } from "../../../components/CircleButton"
 import Spacer from "../../../components/Spacer"
 import "./MenuItemPage.css"
 import NavBar from "../../../components/NavBar"
@@ -67,6 +67,7 @@ export default function MenuItemPage({ merchant }) {
       <AsyncImage
         storagePath={`merchants/${merchantId}/menu_items/${itemId}/${item.photo}`}
         className="headerImage"
+        alt={item.title}
       />
 
       <Spacer y={3} />
