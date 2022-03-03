@@ -12,12 +12,14 @@ export class Colors {
   static GRAY_LIGHT = "#888"
   static WHITE = "#ffffff"
   static BLACK = "#000000"
+  static RED = "#ff0000"
 }
 
 export class ButtonTheme {
   static PRIMARY = new ButtonTheme(Colors.PRIMARY, Colors.PRIMARY_SHADED, Colors.WHITE)
   static SECONDARY = new ButtonTheme(Colors.PRIMARY_LIGHT, Colors.PRIMARY_LIGHT_SHADED, Colors.PRIMARY)
   static NAVBAR = new ButtonTheme(Colors.WHITE, Colors.OFF_WHITE_LIGHT, Colors.PRIMARY)
+  static DESTRUCTIVE = new ButtonTheme(Colors.RED, Colors.RED, Colors.WHITE)
 
   constructor(backgroundColor, pressedBackgroundColor, foregroundColor) {
     this.backgroundColor = backgroundColor
@@ -29,7 +31,7 @@ export class ButtonTheme {
   disabledForegroundColor = Colors.GRAY_LIGHT
 }
 
-export default function CircleButton({ Icon, src, buttonTheme, ...props }) {
+export default function CircleButton({ length = 32, Icon, buttonTheme, style, ...props }) {
   const [isPressed, setIsPressed] = useState(false)
 
   let backgroundColor
@@ -46,13 +48,14 @@ export default function CircleButton({ Icon, src, buttonTheme, ...props }) {
 
   const buttonStyle = {
     backgroundColor,
-    height: "32px",
-    width: "32px",
-    borderRadius: "16px",
+    height: length,
+    width: length,
+    borderRadius: length / 2,
     border: 0,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    ...style
   }
 
   const iconSize = 16
