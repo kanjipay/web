@@ -11,6 +11,7 @@ import Minus from "../../../assets/icons/Minus"
 import useBasket from "../basket/useBasket"
 import MainButton from "../../../components/MainButton"
 import { formatCurrency } from "../../../utils/helpers/money"
+import DietaryAttribute from "./DietaryAttribute"
 
 export default function MenuItemPage({ merchant }) {
   const location = useLocation()
@@ -54,6 +55,33 @@ export default function MenuItemPage({ merchant }) {
     }
   }
 
+  const dietaryBubbles = []
+
+  if (item.spice_level > 0) {
+    const chilliCount = Math.min(3, item.spice_level)
+
+    dietaryBubbles.push(
+      <div key="SPICE" className='MenuItem__spiceLevel bubble'>
+        { Array(chilliCount).fill(
+          <img src='/img/chilli.png' alt='Chilli icon' className='chilli'/>
+        ) }
+      </div>
+    )
+  }
+
+  DietaryAttribute.allItems.forEach(attr => {
+    if (item.dietary_attributes.includes(attr.name)) {
+      dietaryBubbles.push(
+        <div className="header-xs" key={attr.name} style={{
+          color: attr.foregroundColor,
+          backgroundColor: attr.backgroundColor,
+          padding: "4px 8px",
+          borderRadius: 100
+        }}>{attr.displayNameLong}</div>
+      )
+    }
+  })
+
   return (
     <div className="MenuItemPage container">
       <Helmet>
@@ -75,7 +103,11 @@ export default function MenuItemPage({ merchant }) {
       <Spacer y={3} />
       <div className="MenuItemPage__content">
         <h1 className="MenuItemPage__title header-l">{item.title}</h1>
-        <Spacer y={1} />
+        <Spacer y={2} />
+        <div style={{ display: "flex", flexWrap: "wrap", rowGap: 4, columnGap: 4 }}>
+          {dietaryBubbles}
+        </div>
+        <Spacer y={2} />
         <p className="MenuItemPage__description text-body-faded">{item.description}</p>
         <Spacer y={3} />
         <h3 className="header-s">Number of items</h3>

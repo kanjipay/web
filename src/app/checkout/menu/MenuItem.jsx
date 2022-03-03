@@ -26,7 +26,7 @@ export default function MenuItem({ item }) {
   for (var attr of DietaryAttribute.allItems) {
     if (dietaryAttrs.includes(attr.name)) {
       dietaryBubbles.push(
-        <div key={attr.name} className={`MenuItem__${attr.className} bubble`}>
+        <div key={attr.name} className="bubble" style={{ color: attr.foregroundColor, backgroundColor: attr.backgroundColor }}>
           {attr.displayName}
         </div>
       )
