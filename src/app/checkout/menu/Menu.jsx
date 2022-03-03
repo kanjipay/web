@@ -5,6 +5,7 @@ import MenuItemPage from "./MenuItemPage";
 import MenuPage from "./MenuPage";
 import MerchantAboutPage from "./MerchantAboutPage";
 import BasketPage from "../basket/BasketPage"
+import CheckoutMethodPage from "../checkout/CheckoutMethodPage";
 
 export default function Menu() {
   let { merchantId } = useParams()
@@ -71,6 +72,7 @@ export default function Menu() {
       <Route path="items/:itemId" element={<MenuItemPage merchant={merchant} />}/>
       <Route path="about" element={<MerchantAboutPage merchant={merchant} openHourRanges={openHourRanges} menuItems={menuItems} menuSections={menuSections} />}/>
       <Route path="basket" element={<BasketPage merchant={merchant} />} />
+      <Route path="checkout" element={<CheckoutMethodPage />} />
       <Route path="*" element={<MenuPage merchant={merchant} openHourRanges={openHourRanges} menuItems={menuItems} menuSections={menuSections} />} />
 
     </Routes>

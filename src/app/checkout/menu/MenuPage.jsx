@@ -8,6 +8,7 @@ import NavBar from '../../../components/NavBar';
 import { Helmet } from 'react-helmet';
 import useBasket from '../basket/useBasket';
 import LoadingPage from '../../../components/LoadingPage';
+import MainButton from '../../../components/MainButton';
 
 export default function MenuPage({ merchant, menuItems = [], menuSections = [], openHourRanges = [] }) {
   const { itemCount } = useBasket()
@@ -111,9 +112,15 @@ export default function MenuPage({ merchant, menuItems = [], menuSections = [], 
       {
         itemCount > 0 && (
           <div className="anchored-bottom">
-            <Link to={`basket`}>
-              <button className="btn btn-primary btn-main">{`View basket (${itemCount})`}</button>
-            </Link>
+            <div style={{ margin: "8px" }}>
+              <Link to="basket">
+                <MainButton
+                    title={`View basket`}
+                    style={{ boxSizing: "borderBox" }}
+                    sideMessage={`${itemCount} item${itemCount === 1 ? "": "s"}`}
+                />
+              </Link>
+            </div>
           </div>
         )
       }
