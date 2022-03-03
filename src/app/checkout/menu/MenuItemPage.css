@@ -17,15 +17,6 @@
   align-items: center;
 }
 
-.MenuItemPage__counterButton {
-  width: 32px;
-  height: 32px;
-  background-color: var(--color-primary);
-  color: white;
-  border-radius: 16px;
-  border: 0;
-}
-
 .MenuItemPage__counterButton:disabled {
   color: var(--color-gray);
   background-color: var(--color-off-white-light);
@@ -36,5 +27,12 @@
 }
 
 .MenuItemPage__counterValue {
-  margin: 0 8px;
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+  background-color: var(--color-off-white-light);
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

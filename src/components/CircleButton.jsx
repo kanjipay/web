@@ -27,7 +27,7 @@ export class ButtonTheme {
     this.foregroundColor = foregroundColor
   }
 
-  disabledBackgroundColor = Colors.OFF_WHITE_LIGHT
+  disabledBackgroundColor = Colors.OFF_WHITE
   disabledForegroundColor = Colors.GRAY_LIGHT
 }
 

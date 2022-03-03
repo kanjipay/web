@@ -112,9 +112,10 @@ export default function MenuItemPage({ merchant }) {
         <Spacer y={3} />
         <h3 className="header-s">Number of items</h3>
         <Spacer y={1} />
-        <div className="MenuItemPage__counter">
+        <div className="MenuItemPage__counter" style={{ display: "flex", columnGap: 4 }}>
           <CircleButton
             Icon={Minus}
+            length={32}
             buttonTheme={ButtonTheme.PRIMARY}
             onClick={() => decrementQuantity()}
             disabled={quantity <= minQuantity}
@@ -124,6 +125,7 @@ export default function MenuItemPage({ merchant }) {
           </div>
           <CircleButton
             Icon={Plus}
+            length={32}
             buttonTheme={ButtonTheme.PRIMARY}
             onClick={() => incrementQuantity()}
             disabled={quantity >= maxQuantity}

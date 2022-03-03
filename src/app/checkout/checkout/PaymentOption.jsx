@@ -1,6 +1,5 @@
 import Spacer from '../../../components/Spacer'
 import MainButton from '../../../components/MainButton'
-import { ButtonTheme } from '../../../components/CircleButton'
 import './PaymentOption.css'
 
 

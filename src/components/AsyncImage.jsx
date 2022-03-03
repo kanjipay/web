@@ -1,7 +1,5 @@
-import { setTokenAutoRefreshEnabled } from "firebase/app-check";
 import { getDownloadURL, ref } from "firebase/storage"
 import { useEffect, useState } from "react";
-import nextId from "react-id-generator";
 import { storage } from "../utils/FirebaseUtils";
 import { Colors } from "./CircleButton";
 

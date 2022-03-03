@@ -6,7 +6,7 @@
 .BasketItem__count {
   background-color: var(--color-off-white-light);
   font-size: 17px;
-  border-radius: 11px;
+  border-radius: 14px;
   height: 28px;
   width: 28px;
   display: flex;
