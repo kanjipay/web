@@ -18,6 +18,7 @@ export default function Home() {
         </div>
       </header>
 
+      <Spacer y={8} />
       <div className="Home__content">
         <h1 className="Home__title">
           Bring your menu <span className="Home__titleHighlight">online</span>

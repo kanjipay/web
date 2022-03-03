@@ -3,18 +3,13 @@
 }
 
 /* Header */
-
-.Home__header {
-  margin-bottom: 64px;
-}
-
 .Home__headerContainer {
   max-width: 1200px;
   margin: auto;
 }
 
 .Home__headerLogo {
-  font-family: var(--font-brand-title);
+  font: var(--font-brand-title);
   font-size: 3rem;
   color: var(--color-primary);
   padding: 16px;
@@ -43,6 +38,7 @@
 
 .Home__titleHighlight {
   color: var(--color-primary);
+  font: var(--font-brand-title);
 }
 
 .Home__salesCopy {
