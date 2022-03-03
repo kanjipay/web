@@ -31,7 +31,7 @@
   position: absolute;
   display: flex;
   top: 50%;
-  left: 14px;
+  left: 6px;
   transform: translate(0, -50%);
 }
 
@@ -39,7 +39,7 @@
   position: absolute;
   display: flex;
   top: 50%;
-  right: 14px;
+  right: 6px;
   transform: translate(0, -50%);
 }
 

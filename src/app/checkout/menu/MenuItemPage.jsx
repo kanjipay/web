@@ -9,6 +9,8 @@ import { Helmet } from "react-helmet"
 import Plus from "../../../assets/icons/Plus"
 import Minus from "../../../assets/icons/Minus"
 import useBasket from "../basket/useBasket"
+import MainButton from "../../../components/MainButton"
+import { formatCurrency } from "../../../utils/helpers/money"
 
 export default function MenuItemPage({ merchant }) {
   const location = useLocation()
@@ -98,12 +100,14 @@ export default function MenuItemPage({ merchant }) {
       </div>
 
       <div className="anchored-bottom">
-        <button
-          className="btn btn-primary btn-main"
-          onClick={() => handleAddToBasket()}
-        >
-          { isInCart ? quantity === 0 ? "Remove from basket" : "Edit amount" : "Add to basket" }
-        </button>
+        <div style={{ margin: "8px" }}>
+          <MainButton
+              title={ isInCart ? quantity === 0 ? "Remove from basket" : "Edit amount" : "Add to basket" }
+              sideMessage={quantity > 0 ? formatCurrency(item.price * quantity) : null}
+              onClick={() => handleAddToBasket()}
+              style={{ boxSizing: "borderBox" }}
+          />
+        </div>
       </div>
     </div>
   )

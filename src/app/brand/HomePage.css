@@ -30,15 +30,15 @@
   margin-bottom: 32px;
 }
 
-@media (max-width: 900px) {
-  .Home__title {
-    font-size: 14vw;
-  }
-}
-
 .Home__titleHighlight {
   color: var(--color-primary);
   font: var(--font-brand-title);
+}
+
+@media (max-width: 900px) {
+  .Home__title, .Home__titleHighlight {
+    font-size: 14vw;
+  }
 }
 
 .Home__salesCopy {

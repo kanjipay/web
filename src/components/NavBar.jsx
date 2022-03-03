@@ -13,8 +13,6 @@ export default function NavBar({ showsBackButton = true, title, titleElement, le
   const [opacity, setOpacity] = useState(initialOpacity)
 
   useEffect(() => {
-
-
     const handleScroll = () => {
       const yOffset = window.scrollY
       const newOpacity = Math.max(Math.min((yOffset - transparentDepth) / (opaqueDepth - transparentDepth), 1), 0)

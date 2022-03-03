@@ -64,6 +64,12 @@
   margin-right: 8px;
 }
 
+.MenuItem__description {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .MenuItem__vegetarian, .MenuItem__vegan {
   color: #008000;
   background-color: #E6F3E6;
