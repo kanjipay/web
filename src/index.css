@@ -1,10 +1,17 @@
 * {
   margin: 0;
   padding: 0;
-  line-height: 1;
   font: var(--font-body);
   text-decoration: none;
   color: #333333;
+}
+
+body {
+  background-color: var(--color-off-white-light);
+}
+
+img, button {
+  border: 0;
 }
 
 :root {
@@ -24,35 +31,120 @@
   --font-header-l: 800 2em 'Nunito', sans-serif;
   --font-header-m: 800 1.5em 'Nunito', sans-serif;
   --font-header-s: 500 1.25em 'Roboto', sans-serif;
-  --font-header-xs: 400 1em 'Roboto', sans-serif;
+  --font-header-xs: 500 1em 'Roboto', sans-serif;
   --font-body: 400 1em 'Roboto', sans-serif;
-  --font-caption: 0.8em 'Roboto', sans-serif;
+  --font-caption: 0.88em 'Roboto', sans-serif;
   --font-disclaimer: 0.625em 'Roboto', sans-serif;
 }
 
 .container {
   max-width: 600px;
+  min-height: 100vh;
   margin: auto;
+  background-color: white;
+  position: relative;
+}
+
+.headerImage {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 3;
+  filter: blur(0px);
+}
+
+.btn {
+  border: 0;
+}
+
+.btn:disabled {
+  background-color: var(--color-off-white-light);
+  color: var(--color-text-body);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:active {
+  background-color: var(--color-primary-shaded);
+}
+
+.btn-secondary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-shaded);
+}
+
+.btn-secondary {
+  background-color: var(--color-primary-light-shaded);
+}
+
+.centred {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.anchored-bottom {
+  position: fixed;
+  padding: 16px;
+  bottom: 0;
+  width: 100%;
+  max-width: 600px;
+}
+
+.flex-spacer {
+  flex-grow: 10;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-main {
+  height: 48px;
+  border-radius: 16px;
+  width: calc(100% - 32px);
+}
+
+.btn-circle {
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  padding: 0 16px;
 }
 
 .header-l {
   font: var(--font-header-l);
   color: var(--color-text-header);
+  line-height: 1;
 }
 
 .header-m {
   font: var(--font-header-m);
   color: var(--color-text-header);
+  line-height: 1;
 }
 
 .header-s {
   font: var(--font-header-s);
   color: var(--color-text-header);
+  line-height: 1;
 }
 
 .header-xs {
   font: var(--font-header-xs);
   color: var(--color-text-header);
+  line-height: 1;
 }
 
 .text-body {

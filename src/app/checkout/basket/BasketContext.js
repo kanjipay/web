@@ -1,47 +1,59 @@
 import { createContext, useReducer } from "react"
-import BasketReducer from "./BasketReducer"
+import BasketAction from "./BasketAction"
+import BasketReducer, { sumItems } from "./BasketReducer"
 
 export const BasketContext = createContext()
 
 const basketArray = localStorage.getItem('basket')
+const basketMerchant = localStorage.getItem('basketMerchant')
 
-const storage = basketArray ? JSON.parse(basketArray) : []
-const initialState = { items: storage }
+console.log("stored merchant string", basketMerchant)
+
+const storedBasketItems = basketArray ? JSON.parse(basketArray) : []
+const storedBasketMerchant = basketMerchant ? JSON.parse(basketMerchant) : null
+
+console.log("stored merchant", storedBasketMerchant)
+
+const initialState = {
+  basketItems: storedBasketItems,
+  ...sumItems(storedBasketItems),
+  checkout: false,
+  basketMerchant: storedBasketMerchant
+}
 
 export default function BasketContextProvider({ children }) {
   const [state, dispatch] = useReducer(BasketReducer, initialState)
 
-  const increase = payload => {
-    dispatch({type: 'INCREASE', payload})
+  const changeMerchant = payload => {
+    dispatch({type: BasketAction.CHANGE_MERCHANT, payload})
   }
 
-  const decrease = payload => {
-    dispatch({type: 'DECREASE', payload})
+  const changeQuantity = payload => {
+    dispatch({type: BasketAction.CHANGE_QUANTITY, payload})
   }
 
-  const addProduct = payload => {
-    dispatch({type: 'ADD_ITEM', payload})
+  const addItem = payload => {
+    dispatch({type: BasketAction.ADD_ITEM, payload})
   }
 
-  const removeProduct = payload => {
-    dispatch({type: 'REMOVE_ITEM', payload})
+  const removeItem = payload => {
+    dispatch({type: BasketAction.REMOVE_ITEM, payload})
   }
 
-  const clearCart = () => {
-    dispatch({type: 'CLEAR'})
+  const clearBasket = () => {
+    dispatch({type: BasketAction.CLEAR})
   }
 
   const handleCheckout = () => {
-    console.log('CHECKOUT', state);
-    dispatch({type: 'CHECKOUT'})
+    dispatch({type: BasketAction.CHECKOUT})
   }
 
   const contextValues = {
-    increase,
-    decrease,
-    addProduct,
-    removeProduct,
-    clearCart,
+    changeQuantity,
+    changeMerchant,
+    addItem,
+    removeItem,
+    clearBasket,
     handleCheckout,
     ...state
   }

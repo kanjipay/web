@@ -1,72 +1,17 @@
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AsyncImage from '../../../components/AsyncImage';
 import MenuItem from './MenuItem';
-import MenuSection from './MenuSection';
 import "./MenuPage.css"
 import Spacer from '../../../components/Spacer';
 import { formatMinutes } from '../../../utils/helpers/time';
-import { fetchMenuItems, fetchMenuSections, fetchMerchant, fetchOpeningHours } from '../../../utils/services/MenuService';
+import NavBar from '../../../components/NavBar';
+import { Helmet } from 'react-helmet';
+import useBasket from '../basket/useBasket';
+import { useEffect } from 'react';
+import LoadingPage from '../../../components/LoadingPage';
 
-export default function Menu() {
-  let { merchantId } = useParams()
-
-  const [merchant, setMerchant] = useState(null)
-  const [menuSections, setMenuSections] = useState([])
-  const [menuItems, setMenuItems] = useState([])
-  const [openHourRanges, setOpenHourRanges] = useState([])
-
-  useEffect(() => {
-    const merchantUnsub = fetchMerchant(merchantId, doc => {
-      setMerchant({ id: doc.id, ...doc.data() })
-    })
-
-    const menuSectionUnsub = fetchMenuSections(merchantId, snapshot => {
-      const sections = snapshot.docs.map(doc => {
-        const section = { id: doc.id, ...doc.data() }
-        section.merchantId = section.merchant.id
-        delete section.merchant
-
-        return section
-      })
-
-      setMenuSections(sections)
-    })
-
-    const hourRangeUnsub = fetchOpeningHours(merchantId, snapshot => {
-      const hourRanges = snapshot.docs.map(doc => {
-        const range = { id: doc.id, ...doc.data() }
-        range.merchantId = range.merchant.id
-        delete range.merchant
-
-        return range
-      })
-
-      setOpenHourRanges(hourRanges)
-    })
-
-    const menuItemUnsub = fetchMenuItems(merchantId, snapshot => {
-      const items = snapshot.docs.map(doc => {
-        const item = { id: doc.id, ...doc.data() }
-        item.merchantId = item.merchant.id
-        item.sectionId = item.section.id
-
-        delete item.merchant
-        delete item.section
-
-        return item
-      })
-
-      setMenuItems(items)
-    })
-
-    return (() => {
-      merchantUnsub()
-      menuSectionUnsub()
-      menuItemUnsub()
-      hourRangeUnsub()
-    })
-  }, [merchantId])
+export default function MenuPage({ merchant, menuItems = [], menuSections = [], openHourRanges = [] }) {
+  const { itemCount, clearBasket } = useBasket()
 
   const groupedMenuItems = {}
 
@@ -113,15 +58,29 @@ export default function Menu() {
     }
   }
 
-  return merchant && openHourRanges ?
-    <div className='Menu container'>
+  const isLoading = !merchant || menuSections.length === 0 || menuItems.length === 0 || openHourRanges.length === 0
+
+  return isLoading ?
+    <LoadingPage message="Loading" /> :
+    <div className='container'>
+      <Helmet>
+        <title>{merchant.display_name}</title>
+      </Helmet>
+
+      <NavBar
+        title={merchant.display_name}
+        transparentDepth={50}
+        opaqueDepth={100}
+        showsBackButton={false}
+      />
+
       <AsyncImage
-        storagePath={`merchants/${merchantId}/${merchant.photo}`}
-        className='Menu__headerImage'
+        storagePath={`merchants/${merchant.id}/${merchant.photo}`}
+        className='headerImage'
       />
       <Spacer y={3}/>
-      <div className='Menu__content'>
-        <h1 className='Menu__title header-l'>{merchant.display_name}</h1>
+      <div className='content'>
+        <h1 className='header-l'>{merchant.display_name}</h1>
         <Spacer y={1} />
         <Link to={`about`} state={{ merchant, openHourRanges }}>
           <p className='text-body'>{merchant.tags.join(" · ")}</p>
@@ -131,18 +90,32 @@ export default function Menu() {
         <Spacer y={3} />
         {
           menuSections.map(section => (
-            <MenuSection key={section.id} section={section}>{
-              groupedMenuItems[section.id] &&
-                groupedMenuItems[section.id].map(menuItem => (
-                  <div>
-                    <MenuItem item={menuItem} key={menuItem.id}/>
-                    <Spacer y={3} />
-                  </div>
-              ))
-            }</MenuSection>
+            <div key={section.id}>
+              <h2 className='header-m'>{section.name}</h2>
+              <Spacer y={2} />
+              {
+                groupedMenuItems[section.id] &&
+                  groupedMenuItems[section.id].map(menuItem => (
+                    <div key={menuItem.id}>
+                      <MenuItem item={menuItem} />
+                      <Spacer y={3} />
+                    </div>
+                ))
+              }
+            </div>
           ))
         }
+        <Spacer y={8} />
       </div>
-    </div> :
-    <div />
+
+      {
+        itemCount > 0 && (
+          <div className="anchored-bottom">
+            <Link to={`basket`}>
+              <button className="btn btn-primary btn-main">{`View basket (${itemCount})`}</button>
+            </Link>
+          </div>
+        )
+      }
+    </div>
 }

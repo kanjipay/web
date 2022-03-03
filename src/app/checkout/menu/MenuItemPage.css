@@ -1,10 +1,7 @@
-.MenuItemPage {
-  max-width: 600px;
-  margin: auto;
-}
-
 .MenuItemPage__headerImage {
   width: 100%;
+  object-fit: cover;
+  aspect-ratio: 3;
 }
 
 .MenuItemPage__content {
@@ -15,12 +12,29 @@
   text-align: center;
 }
 
-.MenuItemPage__button {
+.MenuItemPage__counter {
+  display: flex;
+  align-items: center;
+}
+
+.MenuItemPage__counterButton {
+  width: 32px;
+  height: 32px;
   background-color: var(--color-primary);
-  border-radius: 16px;
-  height: 48px;
-  width: 100%;
-  margin: 0;
-  border: 0;
   color: white;
+  border-radius: 16px;
+  border: 0;
+}
+
+.MenuItemPage__counterButton:disabled {
+  color: var(--color-gray);
+  background-color: var(--color-off-white-light);
+}
+
+.MenuItemPage__counterButton:active {
+  background-color: var(--color-primary-shaded);
+}
+
+.MenuItemPage__counterValue {
+  margin: 0 8px;
 }

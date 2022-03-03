@@ -1,0 +1,15 @@
+.MerchantAboutPage__openingTimeGrid {
+  display: grid;
+  row-gap: 16px;
+}
+
+.MerchantAboutPage__dayItem {
+  grid-column-start: 1;
+  grid-column-end: 2;
+}
+
+.MerchantAboutPage__hoursItem {
+  text-align: right;
+  grid-column-start: 2;
+  grid-column-end: 3;
+}
