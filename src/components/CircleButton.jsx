@@ -13,6 +13,7 @@ export class Colors {
   static WHITE = "#ffffff"
   static BLACK = "#000000"
   static RED = "#ff0000"
+  static RED_LIGHT = "#FFE6E6"
 }
 
 export class ButtonTheme {

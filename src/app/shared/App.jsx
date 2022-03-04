@@ -1,5 +1,5 @@
 import "./App.css";
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "../brand/HomePage";
 import NotFound from "./NotFoundPage";
@@ -10,6 +10,7 @@ import { BrowserRouter } from "react-router-dom";
 import Menu from "../checkout/menu/Menu";
 
 export default function App() {
+
   return (
     <BrowserRouter>
       <Routes>

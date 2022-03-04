@@ -21,7 +21,7 @@ export default function CircleIcon({
 
   return (
     <div style={backgroundStyle} {...props}>
-      <Icon color={foregroundColor} style={{ height: length, width: length, objectFit: "contain" }} />
+      <Icon color={foregroundColor} length={length} style={{ height: length, width: length, objectFit: "contain" }} />
     </div>
   )
 }
