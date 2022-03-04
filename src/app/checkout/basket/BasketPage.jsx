@@ -62,7 +62,7 @@ export default function BasketPage({ merchant }) {
 
       <div className="anchored-bottom">
         <div style={{ margin: "8px" }}>
-          <Link to="../checkout">
+          <Link to="../checkout/ob/payment-failure">
             <MainButton title="Proceed to checkout" style={{ boxSizing: "borderBox" }} />
           </Link>
         </div>

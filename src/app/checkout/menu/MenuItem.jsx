@@ -36,7 +36,6 @@ export default function MenuItem({ item }) {
   const isAvailable = item.is_available
   const textColor = isAvailable ? Colors.BLACK : Colors.GRAY_LIGHT
 
-
   const menuItemContents = <div>
     <div className='MenuItem__imageContainer'>
       <AsyncImage

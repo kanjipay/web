@@ -111,7 +111,7 @@ export default function MenuItemPage({ merchant }) {
         <p className="MenuItemPage__description text-body-faded">{item.description}</p>
         <Spacer y={3} />
         <h3 className="header-s">Number of items</h3>
-        <Spacer y={1} />
+        <Spacer y={2} />
         <div className="MenuItemPage__counter" style={{ display: "flex", columnGap: 4 }}>
           <CircleButton
             Icon={Minus}
