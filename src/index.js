@@ -4,13 +4,13 @@ import ReactDOM from "react-dom";
 // import "bootstrap/dist/css/bootstrap.css";
 import "./index.css";
 import App from "./app/shared/App";
-import { BrowserRouter } from "react-router-dom";
+import BasketContextProvider from "./app/checkout/basket/BasketContext";
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BasketContextProvider>
       <App />
-    </BrowserRouter>
+    </BasketContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

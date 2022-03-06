@@ -1,0 +1,101 @@
+.MenuItem:active {
+  opacity: 0.8;
+}
+
+.MenuItem__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+}
+
+.MenuItem__imageBlur {
+  filter: blur(1px);
+}
+
+.MenuItem__shadow {
+  width: 100%;
+  height: 100%;
+
+  background-color: black;
+  opacity: 0.4;
+  position: absolute;
+}
+
+.MenuItem__notAvailable {
+  position: absolute;
+  background-color: white;
+  border-radius: 100px;
+  padding: 6px 16px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.MenuItem__imageContainer {
+  width: 100%;
+  border-radius: 8px;
+  aspect-ratio: 2;
+  overflow: hidden;
+  position: relative;
+}
+
+.grid {
+  display: flex;
+  align-items: center;
+}
+
+.bubble {
+  font-size: 15px;
+  padding: 2px 6px;
+  border-radius: 100px;
+  font-weight: 500;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.chilli {
+  height: 1.2em;
+  margin-left: 2px;
+}
+
+.MenuItem__title {
+  margin-right: 8px;
+}
+
+.MenuItem__vegetarian, .MenuItem__vegan {
+  color: #008000;
+  background-color: #E6F3E6;
+}
+
+.MenuItem__spiceLevel {
+  color: #FF0000;
+  background-color: #FFE6E6;
+  padding-left: 6px;
+  padding-right: 8px;
+}
+
+.MenuItem__glutenFree {
+  color: #F15907;
+  background-color: #FEEFE7;
+}
+
+.MenuItem__lactoseFree {
+  color: #2695FF;
+  background-color: #EAF5FF;
+}
+
+.MenuItem__halal {
+  color: #CD06FF;
+  background-color: #FBE7FF;
+}
+
+.MenuItem__spacer {
+  flex-grow: 1;
+}
+
+.MenuItem__price {
+  margin-left: 4px;
+  background-color: var(--color-off-white-light);
+}

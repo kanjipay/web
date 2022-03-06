@@ -1,77 +1,16 @@
-import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AsyncImage from '../../../components/AsyncImage';
-import { db } from '../../../utils/FirebaseUtils';
+import MenuItem from './MenuItem';
 import "./MenuPage.css"
+import Spacer from '../../../components/Spacer';
+import { formatMinutes } from '../../../utils/helpers/time';
+import NavBar from '../../../components/NavBar';
+import { Helmet } from 'react-helmet';
+import useBasket from '../basket/useBasket';
+import LoadingPage from '../../../components/LoadingPage';
 
-export default function Menu() {
-  let { merchantId } = useParams()
-
-  const [merchant, setMerchant] = useState(null)
-  const [menuSections, setMenuSections] = useState([])
-  const [menuItems, setMenuItems] = useState([])
-  const [openHourRanges, setOpenHourRanges] = useState([])
-
-  useEffect(() => {
-    const merchantRef = doc(db, "Merchant", merchantId)
-
-    const merchantUnsub = onSnapshot(merchantRef, doc => {
-      setMerchant({ id: doc.id, ...doc.data() })
-    })
-
-    const menuSectionQuery = query(collection(db, "MenuSection"), where("merchant", "==", merchantRef))
-
-    const menuSectionUnsub = onSnapshot(menuSectionQuery, snapshot => {
-      const sections = snapshot.docs.map(doc => {
-        const section = { id: doc.id, ...doc.data() }
-        section.merchantId = section.merchant.id
-        delete section.merchant
-
-        return section
-      })
-
-      setMenuSections(sections)
-    })
-
-    const openHourQuery = query(collection(db, "OpeningHourRange"), where("merchant", "==", merchantRef))
-
-    const hourRangeUnsub = onSnapshot(openHourQuery, snapshot => {
-      const hourRanges = snapshot.docs.map(doc => {
-        const range = { id: doc.id, ...doc.data() }
-        range.merchantId = range.merchant.id
-        delete range.merchant
-
-        return range
-      })
-
-      setOpenHourRanges(hourRanges)
-    })
-
-    const menuItemQuery = query(collection(db, "MenuItem"), where("merchant", "==", merchantRef))
-
-    const menuItemUnsub = onSnapshot(menuItemQuery, itemSnapshot => {
-      const items = itemSnapshot.docs.map(doc => {
-        const item = { id: doc.id, ...doc.data() }
-        item.merchantId = item.merchant.id
-        item.sectionId = item.section.id
-
-        delete item.merchant
-        delete item.section
-
-        return item
-      })
-
-      setMenuItems(items)
-    })
-
-    return (() => {
-      merchantUnsub()
-      menuSectionUnsub()
-      menuItemUnsub()
-      hourRangeUnsub()
-    })
-  }, [merchantId])
+export default function MenuPage({ merchant, menuItems = [], menuSections = [], openHourRanges = [] }) {
+  const { itemCount } = useBasket()
 
   const groupedMenuItems = {}
 
@@ -105,20 +44,6 @@ export default function Menu() {
 
     const openRanges = todayRanges.filter(range => range.close_time > minutes)
 
-    function formatMinutes(mins) {
-      const minsRemainder = (mins % 60).toLocaleString('en-GB', {
-        minimumIntegerDigits: 2,
-        useGrouping: false
-      })
-
-      const hours = ((mins - minsRemainder) / 60).toLocaleString('en-GB', {
-        minimumIntegerDigits: 2,
-        useGrouping: false
-      })
-
-      return `${hours}:${minsRemainder}`
-    }
-
     if (openRanges.length === 0) {
       if (todayRanges.length === 0) {
         return "Closed today"
@@ -132,64 +57,65 @@ export default function Menu() {
     }
   }
 
-  return (
-    <div className='Menu'>
-      { merchant &&
-          <AsyncImage
-            storagePath={`merchants/${merchantId}/${merchant.photo}`}
-            className='Menu__headerImage'
-          />
-      }
-      <div className='Menu__content'>
-        { merchant &&
-          <div>
-            <h1 className='Menu__title'>{merchant.display_name}</h1>
-            <p>{merchant.tags.join(" · ")}</p>
-          </div>
-        }
-        { openHourRanges && <p>{generateOpenHourText()}</p>}
+  const isLoading = !merchant || menuSections.length === 0 || menuItems.length === 0 || openHourRanges.length === 0
+
+  return isLoading ?
+    <LoadingPage message="Loading" /> :
+    <div className='container'>
+      <Helmet>
+        <title>{merchant.display_name}</title>
+      </Helmet>
+
+      <NavBar
+        title={merchant.display_name}
+        transparentDepth={50}
+        opaqueDepth={100}
+        showsBackButton={false}
+      />
+
+      <AsyncImage
+        storagePath={`merchants/${merchant.id}/${merchant.photo}`}
+        className='headerImage'
+        alt={merchant.display_name}
+      />
+      <Spacer y={3}/>
+      <div className='content'>
+        <h1 className='header-l'>{merchant.display_name}</h1>
+        <Spacer y={1} />
+        <Link to={`about`} state={{ merchant, openHourRanges }}>
+          <p className='text-body'>{merchant.tags.join(" · ")}</p>
+          <Spacer y={1} />
+          <p className='text-body-faded'>{generateOpenHourText()}</p>
+        </Link>
+        <Spacer y={3} />
         {
           menuSections.map(section => (
-            <MenuSection key={section.id} section={section}>{
-              groupedMenuItems[section.id] &&
-                groupedMenuItems[section.id].map(menuItem => (
-                  <MenuItem item={menuItem} key={menuItem.id}/>
-              ))
-            }</MenuSection>
+            <div key={section.id}>
+              <h2 className='header-m'>{section.name}</h2>
+              <Spacer y={2} />
+              {
+                groupedMenuItems[section.id] &&
+                  groupedMenuItems[section.id].map(menuItem => (
+                    <div key={menuItem.id}>
+                      <MenuItem item={menuItem} />
+                      <Spacer y={3} />
+                    </div>
+                ))
+              }
+            </div>
           ))
         }
+        <Spacer y={8} />
       </div>
+
+      {
+        itemCount > 0 && (
+          <div className="anchored-bottom">
+            <Link to={`basket`}>
+              <button className="btn btn-primary btn-main">{`View basket (${itemCount})`}</button>
+            </Link>
+          </div>
+        )
+      }
     </div>
-  )
-}
-
-function MenuSection({ section, children }) {
-  return (
-    <div className='MenuSection'>
-      <h2 className='MenuSection__title'>{section.name}</h2>
-      {children}
-    </div>
-  )
-}
-
-function MenuItem({ item }) {
-  const merchantId = item.merchantId
-
-  return (
-    <div className='MenuItem'>
-      <Link to={`items/${item.id}`} state={{ item }}>
-        <AsyncImage
-          storagePath={`merchants/${merchantId}/menu_items/${item.id}/${item.photo}`}
-          className='MenuItem__image'
-        />
-        <h3 className='MenuItem__title'>{item.title}</h3>
-        <p className='MenuItem__description'>{item.description}</p>
-        <p className='MenuItem__price'>{formatCurrency(item.price)}</p>
-      </Link>
-    </div>
-  )
-}
-
-function formatCurrency(int) {
-  return "£" + (int / 100).toFixed(2).toString()
 }
