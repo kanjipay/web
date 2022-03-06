@@ -11,7 +11,7 @@ import {
   doc,
   serverTimestamp,
 } from "firebase/firestore";
-import { getAuth, signInAnonymously } from "firebase/auth";
+// import { getAuth, signInAnonymously } from "firebase/auth";
 
 const app = initializeApp({
   apiKey: "AIzaSyD_mPx2fE-VuAtVK01xI4tDGaZTAX7ErvQ",
@@ -23,10 +23,6 @@ const app = initializeApp({
   measurementId: "G-41M1VDVV2M",
 });
 const db = getFirestore(app);
-
-export const authenticateAnonymously = () => {
-  return signInAnonymously(getAuth(app));
-};
 
 export const createOrderList = (userName, userId) => {
   const orderColRef = collection(db, "orderLists");

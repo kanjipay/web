@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import nextId from "react-id-generator";
 import { storage } from "../utils/FirebaseUtils";
 
-export default function AsyncImage({ storagePath, alt, className }) {
+export default function AsyncImage({ storagePath, alt = '', ...props }) {
   const imgId = nextId()
 
   useEffect(() => {
@@ -12,6 +12,7 @@ export default function AsyncImage({ storagePath, alt, className }) {
     getDownloadURL(imageRef)
       .then(url => {
         const img = document.getElementById(imgId)
+        if (!img) { return }
         img.setAttribute('src', url)
       })
       .catch((error) => {
@@ -20,5 +21,5 @@ export default function AsyncImage({ storagePath, alt, className }) {
       })
   }, [storagePath, imgId])
 
-  return <img className={className} id={imgId} alt={alt}/>
+  return <img id={imgId} alt={alt} {...props} />
 }
