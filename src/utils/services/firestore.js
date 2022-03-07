@@ -14,13 +14,13 @@ import {
 // import { getAuth, signInAnonymously } from "firebase/auth";
 
 const app = initializeApp({
-  apiKey: process.env.REACT_APP_API_KEY,
-  authDomain: process.env.REACT_AUTH_DOMAIN_KEY,
-  projectId: "mercadopay",
-  storageBucket: "mercadopay.appspot.com",
-  messagingSenderId: "318216209877",
-  appId: "1:318216209877:web:d974381faf6ce9946be95c",
-  measurementId: "G-41M1VDVV2M",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 });
 const db = getFirestore(app);
 
