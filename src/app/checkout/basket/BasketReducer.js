@@ -61,6 +61,7 @@ export default function BasketReducer(state, action) {
 
       return {
         basketItems: [],
+        merchant: null,
         checkout: true,
         ...sumItems([]),
       }

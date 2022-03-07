@@ -12,7 +12,7 @@ const firebaseApp = initializeApp({
   messagingSenderId: "318216209877",
   appId: "1:318216209877:web:d974381faf6ce9946be95c",
   measurementId: "G-41M1VDVV2M",
-});
+})
 
 initializeAppCheck(firebaseApp, {
   provider: new ReCaptchaV3Provider('6LfUoJ4eAAAAADZ0Z8TNS1WMtHfJH2JKZnNy03wi'),

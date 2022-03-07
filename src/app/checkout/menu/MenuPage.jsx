@@ -8,8 +8,15 @@ import NavBar from '../../../components/NavBar';
 import { Helmet } from 'react-helmet';
 import useBasket from '../basket/useBasket';
 import LoadingPage from '../../../components/LoadingPage';
+import MainButton from '../../../components/MainButton';
 
-export default function MenuPage({ merchant, menuItems = [], menuSections = [], openHourRanges = [] }) {
+export default function MenuPage({
+  merchant,
+  menuItems = [],
+  menuSections = [],
+  openHourRanges = [],
+  orders = []
+}) {
   const { itemCount } = useBasket()
 
   const groupedMenuItems = {}
@@ -82,7 +89,7 @@ export default function MenuPage({ merchant, menuItems = [], menuSections = [], 
       <div className='content'>
         <h1 className='header-l'>{merchant.display_name}</h1>
         <Spacer y={1} />
-        <Link to={`about`} state={{ merchant, openHourRanges }}>
+        <Link to="about" state={{ merchant, openHourRanges }}>
           <p className='text-body'>{merchant.tags.join(" · ")}</p>
           <Spacer y={1} />
           <p className='text-body-faded'>{generateOpenHourText()}</p>
@@ -109,11 +116,27 @@ export default function MenuPage({ merchant, menuItems = [], menuSections = [], 
       </div>
 
       {
-        itemCount > 0 && (
+        (itemCount > 0 || orders.length > 0) && (
           <div className="anchored-bottom">
-            <Link to={`basket`}>
-              <button className="btn btn-primary btn-main">{`View basket (${itemCount})`}</button>
-            </Link>
+            <div style={{ margin: "16px" }}>
+              { itemCount > 0 && orders.length === 0 &&
+                <Link to="basket">
+                  <MainButton
+                      title="View basket"
+                      style={{ boxSizing: "borderBox" }}
+                      sideMessage={`${itemCount} item${itemCount === 1 ? "": "s"}`}
+                  />
+                </Link>
+              }
+              { orders.length > 0 &&
+                <Link to={`checkout/${orders[0].id}/payment-success`}>
+                  <MainButton
+                      title={`View order`}
+                      style={{ boxSizing: "borderBox" }}
+                  />
+                </Link>
+              }
+            </div>
           </div>
         )
       }
