@@ -1,8 +1,26 @@
 const functions = require("firebase-functions");
+const admin = require('firebase-admin');
+admin.initializeApp();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-exports.helloWorld = functions.https.onCall((data, context) => {
-   return "Hello from Firebase!";
+var uuid = require('uuid');
+
+function generateOrderDetails(merchantId, deviceId, menuItems) {
+    return {
+        merchantId: merchantId,
+        status: "PENDING",
+        menuItems: menuItems,
+        deviceId: deviceId,
+        createdAt: new Date().toISOString(),
+        receiptSent: false,
+    }
+}
+
+
+exports.createOrder = functions.https.onCall((data, context) => {
+    // todo validate data
+   var orderDetails = generateOrderDetails(data.merchantId, data.deviceId, data.menuItems);
+   let userId = uuid.v4();
+   admin.firestore().collection('Order').doc(userId).set(orderDetails);
+   orderDetails['orderId'] = userId;
+   return orderDetails;
 });
