@@ -15,11 +15,12 @@ const firebaseApp = initializeApp({
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 })
 
-initializeAppCheck(firebaseApp, {
-  provider: new ReCaptchaV3Provider('6LfUoJ4eAAAAADZ0Z8TNS1WMtHfJH2JKZnNy03wi'),
-  isTokenAutoRefreshEnabled: true
-});
-
+if(process.env.REACT_APP_ENV_NAME === 'PROD'){
+  initializeAppCheck(firebaseApp, {
+    provider: new ReCaptchaV3Provider('6LfUoJ4eAAAAADZ0Z8TNS1WMtHfJH2JKZnNy03wi'),
+    isTokenAutoRefreshEnabled: true
+  }); 
+}
 
 const functions = getFunctions(firebaseApp);
 
