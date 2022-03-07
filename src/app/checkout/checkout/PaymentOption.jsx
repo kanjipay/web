@@ -2,7 +2,6 @@ import Spacer from '../../../components/Spacer'
 import MainButton from '../../../components/MainButton'
 import './PaymentOption.css'
 
-
 export default function PaymentOption({ title, body, Icon, buttonTheme, ...props}) {
   return <div className="PaymentOption" {...props}>
     <h3 className="header-xs" style={{ textAlign: "center" }}>{title}</h3>

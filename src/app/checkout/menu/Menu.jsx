@@ -5,8 +5,8 @@ import MenuItemPage from "./MenuItemPage";
 import MenuPage from "./MenuPage";
 import MerchantAboutPage from "./MerchantAboutPage";
 import BasketPage from "../basket/BasketPage"
-import CheckoutMethodPage from "../checkout/CheckoutMethodPage";
-import PaymentFailurePage from "../checkout/PaymentFailurePage";
+import Order from "../checkout/Order";
+import { fetchOrders } from "../../../utils/services/OrdersService";
 
 export default function Menu() {
   let { merchantId } = useParams()
@@ -15,6 +15,9 @@ export default function Menu() {
   const [menuSections, setMenuSections] = useState([])
   const [menuItems, setMenuItems] = useState([])
   const [openHourRanges, setOpenHourRanges] = useState([])
+  const [orders, setOrders] = useState([])
+
+  const deviceId = localStorage.getItem("deviceId")
 
   useEffect(() => {
     const merchantUnsub = fetchMerchant(merchantId, doc => {
@@ -60,23 +63,41 @@ export default function Menu() {
       setMenuItems(items)
     })
 
+
+    const orderUnsub = fetchOrders(deviceId, merchantId, snapshot => {
+      const orders = snapshot.docs.map(doc => {
+        const order = { id: doc.id, ...doc.data() }
+        return order
+      })
+
+      setOrders(orders)
+    })
+
     return (() => {
       merchantUnsub()
       menuSectionUnsub()
       menuItemUnsub()
       hourRangeUnsub()
+      orderUnsub()
     })
-  }, [merchantId])
+  }, [merchantId, deviceId])
 
   return <div>
     <Routes>
       <Route path="items/:itemId" element={<MenuItemPage merchant={merchant} />}/>
       <Route path="about" element={<MerchantAboutPage merchant={merchant} openHourRanges={openHourRanges} menuItems={menuItems} menuSections={menuSections} />}/>
       <Route path="basket" element={<BasketPage merchant={merchant} />} />
-      <Route path="checkout" element={<CheckoutMethodPage />} />
-      <Route path="checkout/ob/payment-failure" element={<PaymentFailurePage />} />
-      <Route path="*" element={<MenuPage merchant={merchant} openHourRanges={openHourRanges} menuItems={menuItems} menuSections={menuSections} />} />
+      <Route path="checkout/:orderId/*" element={<Order />}/>
 
+      <Route path="*" element={
+        <MenuPage
+          merchant={merchant}
+          openHourRanges={openHourRanges}
+          menuItems={menuItems}
+          menuSections={menuSections}
+          orders={orders}
+        />
+      } />
     </Routes>
   </div>
 }
