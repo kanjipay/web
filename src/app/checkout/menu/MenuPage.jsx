@@ -118,11 +118,11 @@ export default function MenuPage({
       {
         (itemCount > 0 || orders.length > 0) && (
           <div className="anchored-bottom">
-            <div style={{ margin: "8px" }}>
-              { itemCount > 0 &&
+            <div style={{ margin: "16px" }}>
+              { itemCount > 0 && orders.length === 0 &&
                 <Link to="basket">
                   <MainButton
-                      title={`View basket`}
+                      title="View basket"
                       style={{ boxSizing: "borderBox" }}
                       sideMessage={`${itemCount} item${itemCount === 1 ? "": "s"}`}
                   />
@@ -130,11 +130,11 @@ export default function MenuPage({
               }
               { orders.length > 0 &&
                 <Link to={`checkout/${orders[0].id}/payment-success`}>
-                <MainButton
-                    title={`View order`}
-                    style={{ boxSizing: "borderBox" }}
-                />
-              </Link>
+                  <MainButton
+                      title={`View order`}
+                      style={{ boxSizing: "borderBox" }}
+                  />
+                </Link>
               }
             </div>
           </div>

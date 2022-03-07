@@ -32,29 +32,29 @@ export default function IconActionPage({
     </div>
 
     <div className="anchored-bottom">
-        <div style={{ margin: "16px" }}>
-          <MainButton
-            title={primaryActionTitle}
-            style={{ boxSizing: "borderBox" }}
-            isLoading={primaryIsLoading}
-            onClick={primaryAction}
-            buttonTheme={ButtonTheme.PRIMARY}
-          />
+      <div style={{ margin: "16px" }}>
+        <MainButton
+          title={primaryActionTitle}
+          style={{ boxSizing: "borderBox" }}
+          isLoading={primaryIsLoading}
+          onClick={primaryAction}
+          buttonTheme={ButtonTheme.PRIMARY}
+        />
 
-          {
-            secondaryActionTitle && secondaryAction && <div>
-              <Spacer y={1} />
-              <MainButton
-                title={secondaryActionTitle}
-                style={{ boxSizing: "borderBox" }}
-                isLoading={secondaryIsLoading}
-                onClick={secondaryAction}
-                buttonTheme={ButtonTheme.SECONDARY}
-              />
-            </div>
-          }
+        {
+          secondaryActionTitle && secondaryAction && <div>
+            <Spacer y={1} />
+            <MainButton
+              title={secondaryActionTitle}
+              style={{ boxSizing: "borderBox" }}
+              isLoading={secondaryIsLoading}
+              onClick={secondaryAction}
+              buttonTheme={ButtonTheme.SECONDARY}
+            />
+          </div>
+        }
 
-        </div>
       </div>
+    </div>
   </div>
 }
