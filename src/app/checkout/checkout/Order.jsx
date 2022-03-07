@@ -14,12 +14,9 @@ export default function Order() {
   const [order, setOrder] = useState(null)
 
   useEffect(() => {
-    fetchOrder(orderId)
-      .then(doc => {
-        if (doc.exists()) {
-          setOrder({ id: doc.id, ...doc.data()})
-        }
-      })
+    fetchOrder(orderId, order => {
+      setOrder(order)
+    })
   }, [orderId])
 
   return <Routes>

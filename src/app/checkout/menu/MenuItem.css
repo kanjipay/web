@@ -34,7 +34,7 @@
 
 .MenuItem__imageContainer {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 16px;
   aspect-ratio: 2;
   overflow: hidden;
   position: relative;
