@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Tick from "../../../assets/icons/Tick"
 import { Colors } from "../../../components/CircleButton"
 import IconActionPage from "../../../components/IconActionPage"

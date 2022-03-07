@@ -1,7 +1,7 @@
 import CircleIcon from "./CircleIcon"
 import MainButton from "./MainButton"
 import Spacer from "./Spacer"
-import { ButtonTheme, Colors } from "./CircleButton"
+import { ButtonTheme } from "./CircleButton"
 
 export default function IconActionPage({
   Icon,

@@ -1,4 +1,4 @@
-import { collection, doc, FieldPath, getDoc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
 import { db } from "../FirebaseUtils"
 import axios from 'axios'
 
