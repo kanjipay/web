@@ -14,8 +14,8 @@ import {
 // import { getAuth, signInAnonymously } from "firebase/auth";
 
 const app = initializeApp({
-  apiKey: "AIzaSyD_mPx2fE-VuAtVK01xI4tDGaZTAX7ErvQ",
-  authDomain: "mercadopay.firebaseapp.com",
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_AUTH_DOMAIN_KEY,
   projectId: "mercadopay",
   storageBucket: "mercadopay.appspot.com",
   messagingSenderId: "318216209877",
