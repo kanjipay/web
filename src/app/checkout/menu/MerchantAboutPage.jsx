@@ -37,6 +37,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         </Helmet>
 
         <NavBar
+          backPath=".."
           transparentDepth={50}
           opaqueDepth={100}
         />

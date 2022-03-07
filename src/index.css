@@ -10,6 +10,10 @@ body {
   background-color: var(--color-off-white-light);
 }
 
+input:focus, textarea:focus, select:focus{
+  outline: none;
+}
+
 img, button {
   border: 0;
 }
@@ -26,6 +30,7 @@ img, button {
   --color-text-body: #444;
   --color-text-caption: #888;
   --color-text-body-faded: #888;
+  --color-clear: #ffffff00;
 
   --font-brand-title: bold 8rem "Rubik", sans-serif;
   --font-header-l: 800 2em 'Nunito', sans-serif;
@@ -40,6 +45,7 @@ img, button {
 .container {
   max-width: 600px;
   min-height: 100vh;
+  border-radius: 16px;
   margin: auto;
   background-color: white;
   position: relative;
@@ -48,7 +54,7 @@ img, button {
 .headerImage {
   width: 100%;
   object-fit: cover;
-  aspect-ratio: 3;
+  height: 120px;
   filter: blur(0px);
 }
 
@@ -79,31 +85,6 @@ img, button {
   background-color: var(--color-primary-light-shaded);
 }
 
-.centred {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.anchored-bottom {
-  position: fixed;
-  padding: 16px;
-  bottom: 0;
-  width: 100%;
-  max-width: 600px;
-}
-
-.flex-spacer {
-  flex-grow: 10;
-}
-
-.flex-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .btn-main {
   height: 48px;
   border-radius: 16px;
@@ -117,6 +98,44 @@ img, button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.relative {
+  position: relative;
+}
+
+.centred {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.centred-top {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  text-align: center;
+  width: 311px;
+}
+
+.anchored-bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 600px;
+}
+
+.flex-spacer {
+  flex-grow: 10;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .content {
