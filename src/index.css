@@ -10,6 +10,10 @@ body {
   background-color: var(--color-off-white-light);
 }
 
+input:focus, textarea:focus, select:focus{
+  outline: none;
+}
+
 img, button {
   border: 0;
 }
@@ -105,6 +109,15 @@ img, button {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
+}
+
+.centred-top {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  text-align: center;
+  width: 311px;
 }
 
 .anchored-bottom {

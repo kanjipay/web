@@ -9,7 +9,7 @@ export default function CheckoutMethodPage() {
     <Helmet>
       <title>Checkout</title>
     </Helmet>
-    <NavBar title="Checkout" />
+    <NavBar title="Checkout" backPath="../.." />
 
     <div className="content">
       <Spacer y={9} />

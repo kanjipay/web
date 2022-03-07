@@ -1,0 +1,51 @@
+import { collection, doc, getDoc, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { db } from "../FirebaseUtils"
+import axios from 'axios'
+
+export function createOrder(merchantId, basketItems) {
+  const deviceId = localStorage.getItem("deviceId")
+
+  const requestBody = {
+    merchant_id: merchantId,
+    device_id: deviceId,
+    menu_items: basketItems
+      .filter(item => item.merchantId === merchantId)
+      .map(item => {
+        return { id: item.id, quantity: item.quantity }
+      })
+  }
+
+  return axios.post("/order", requestBody)
+}
+
+export function fetchOrder(orderId) {
+  const orderRef = doc(db, "Order", orderId)
+  return getDoc(orderRef)
+}
+
+export function fetchOrders(deviceId, merchantId, onComplete) {
+  const ordersCollectionRef = collection(db, "Order")
+
+  const ordersQuery = query(
+    ordersCollectionRef,
+    where("merchant_id", "==", merchantId),
+    where("device_id", "==", deviceId),
+    orderBy("created_at", "desc")
+  )
+
+  return onSnapshot(ordersQuery, onComplete)
+}
+
+export function setOrderStatus(orderId, status) {
+  const orderRef = doc(db, "Order", orderId)
+  return updateDoc(orderRef, { status })
+}
+
+export function sendOrderReceipt(orderId, email) {
+  const requestBody = {
+    order_details: "test",
+    to_email: email
+  }
+
+  return axios.post('/email-receipt', requestBody)
+}

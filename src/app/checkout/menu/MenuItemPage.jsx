@@ -89,6 +89,7 @@ export default function MenuItemPage({ merchant }) {
       </Helmet>
 
       <NavBar
+        backPath=".."
         title={item.title}
         transparentDepth={100}
         opaqueDepth={150}

@@ -6,8 +6,6 @@ import "./index.css";
 import App from "./app/shared/App";
 import BasketContextProvider from "./app/checkout/basket/BasketContext";
 
-console.log(process.env.REACT_APP_STAGE)
-
 ReactDOM.render(
   <React.StrictMode>
     <BasketContextProvider>

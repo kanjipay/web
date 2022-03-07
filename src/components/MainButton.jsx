@@ -1,8 +1,17 @@
 import { useState } from 'react'
-import { ButtonTheme } from './CircleButton'
+import Spinner from '../assets/Spinner'
+import { ButtonTheme, Colors } from './CircleButton'
 import './MainButton.css'
 
-export default function MainButton({ buttonTheme = ButtonTheme.PRIMARY, title, sideMessage, style, ...props }) {
+export default function MainButton({
+  buttonTheme = ButtonTheme.PRIMARY,
+  title,
+  sideMessage,
+  style,
+  isLoading = false,
+  onClick,
+  ...props
+}) {
   const [isPressed, setIsPressed] = useState(false)
 
   let backgroundColor
@@ -24,23 +33,31 @@ export default function MainButton({ buttonTheme = ButtonTheme.PRIMARY, title, s
     borderRadius: "16px",
     border: 0,
     display: "flex",
+    outline: "none",
     alignItems: "center",
     justifyContent: "center",
     color: foregroundColor,
     ...style
   }
 
-  return <div className="MainButton">
+  return <div className="MainButton relative">
     <button
       style={buttonStyle}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onTouchStart={() => setIsPressed(true)}
       onTouchEnd={() => setIsPressed(false)}
+      onClick={isLoading ? undefined : onClick}
       {...props}
     >
-      {title}
+      {isLoading ? "" : title}
     </button>
+    {
+      isLoading && <div className='centred'>
+        <Spinner length={32} color={Colors.WHITE} />
+      </div>
+    }
+
     { sideMessage && <div className="MainButton__sideMessage header-xs">{sideMessage}</div> }
   </div>
 

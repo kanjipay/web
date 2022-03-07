@@ -28,8 +28,8 @@ export class ButtonTheme {
     this.foregroundColor = foregroundColor
   }
 
-  disabledBackgroundColor = Colors.OFF_WHITE
-  disabledForegroundColor = Colors.GRAY_LIGHT
+  disabledBackgroundColor = Colors.GRAY_LIGHT
+  disabledForegroundColor = Colors.WHITE
 }
 
 export default function CircleButton({ length = 32, Icon, buttonTheme, style, ...props }) {
