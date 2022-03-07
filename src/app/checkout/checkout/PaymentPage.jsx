@@ -58,7 +58,7 @@ export default function PaymentPage() {
     console.log("onEvent", eventName, metadata)
   }
 
-  const { open, exit, ready } = usePlaidLink({
+  const { open, ready } = usePlaidLink({
     onSuccess,
     onExit,
     onEvent,
@@ -71,7 +71,7 @@ export default function PaymentPage() {
     if (ready && paymentAttemptId) {
       open()
     }
-  }, [ready, paymentAttemptId])
+  }, [ready, paymentAttemptId, open])
 
   useEffect(() => {
     createPaymentAttempt(orderId)
@@ -84,7 +84,7 @@ export default function PaymentPage() {
         console.log(err)
         navigate('../payment-failure')
       })
-  }, [])
+  }, [orderId, navigate])
 
   return <LoadingPage message="Processing your order" />
 }
