@@ -2,6 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
+import { getPerformance } from "firebase/performance";
+import { getAnalytics } from "firebase/analytics";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseApp = initializeApp({
@@ -14,6 +16,9 @@ const firebaseApp = initializeApp({
   measurementId: "G-41M1VDVV2M",
 })
 
+const perf = getPerformance(firebaseApp)
+const analytics = getAnalytics()
+
 initializeAppCheck(firebaseApp, {
   provider: new ReCaptchaV3Provider('6LfUoJ4eAAAAADZ0Z8TNS1WMtHfJH2JKZnNy03wi'),
   isTokenAutoRefreshEnabled: true
@@ -22,4 +27,4 @@ initializeAppCheck(firebaseApp, {
 const db = getFirestore()
 const storage = getStorage()
 
-export { firebaseApp, db, storage }
+export { firebaseApp, db, storage, analytics }
