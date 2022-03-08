@@ -15,6 +15,8 @@ export function createOrder(merchantId, basketItems) {
       })
   }
 
+  console.log(requestBody)
+
   return axios.post("/order", requestBody)
 }
 
