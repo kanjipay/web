@@ -79,12 +79,13 @@ export default function BasketPage({ merchant }) {
       </div>
 
       <div className="anchored-bottom">
-        <div style={{ margin: "8px" }}>
+        <div style={{ margin: "16px" }}>
           <MainButton
             title="Proceed to checkout"
             isLoading={isLoading}
             style={{ boxSizing: "borderBox" }}
             onClick={() => checkoutItems()}
+            disabled={basketItems.length === 0}
           />
         </div>
       </div>
