@@ -17,7 +17,7 @@ export function createOrder(merchantId, basketItems) {
 
   console.log(requestBody)
 
-  return axios.post("/order", requestBody)
+  return axios.post("/server/order", requestBody)
 }
 
 export function fetchOrder(orderId, onComplete) {
