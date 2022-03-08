@@ -16,7 +16,7 @@ const firebaseApp = initializeApp({
   measurementId: "G-41M1VDVV2M",
 })
 
-const perf = getPerformance(firebaseApp)
+getPerformance(firebaseApp)
 const analytics = getAnalytics()
 
 initializeAppCheck(firebaseApp, {
