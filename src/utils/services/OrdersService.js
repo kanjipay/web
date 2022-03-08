@@ -17,7 +17,7 @@ export function createOrder(merchantId, basketItems) {
 
   console.log(requestBody)
 
-  return axios.post("/server/order", requestBody)
+  return axios.post(`${process.env.REACT_APP_SERVER_URL}/order`, requestBody)
 }
 
 export function fetchOrder(orderId, onComplete) {
@@ -85,5 +85,5 @@ export function sendOrderReceipt(order, email) {
     to_email: email
   }
 
-  return axios.post('/email-receipt', requestBody)
+  return axios.post(`${process.env.REACT_APP_SERVER_URL}/email-receipt`, requestBody)
 }

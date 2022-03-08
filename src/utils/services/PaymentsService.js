@@ -4,7 +4,7 @@ import axios from "axios"
 
 export function createPaymentAttempt(orderId) {
   const requestBody = { order_id: orderId }
-  return axios.post("/payment-attempt", requestBody)
+  return axios.post(`${process.env.REACT_APP_SERVER_URL}/payment-attempt`, requestBody)
 }
 
 export function setPaymentAttemptStatus(paymentAttemptId, status) {
