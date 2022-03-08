@@ -6,7 +6,7 @@ import { formatCurrency } from '../../../utils/helpers/money'
 import DietaryAttribute from './DietaryAttribute'
 import './MenuItem.css'
 
-export default function MenuItem({ item }) {
+export default function MenuItem({ item, basketCount = 0 }) {
   const merchantId = item.merchantId
   const dietaryAttrs = item.dietary_attributes
   const dietaryBubbles = []
