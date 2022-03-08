@@ -14,11 +14,17 @@ export default function MenuItem({ item, basketCount = 0 }) {
   if (item.spice_level > 0) {
     const chilliCount = Math.min(3, item.spice_level)
 
+    const chilliImages = []
+
+    for (let i = 0; i < chilliCount; i++) {
+      chilliImages.push(
+        <img key={i} src='/img/chilli.png' alt='Chilli icon' className='chilli'/>
+      )
+    }
+
     dietaryBubbles.push(
       <div key="SPICE" className='MenuItem__spiceLevel bubble'>
-        { Array(chilliCount).fill(
-          <img src='/img/chilli.png' alt='Chilli icon' className='chilli'/>
-        ) }
+        {chilliImages}
       </div>
     )
   }

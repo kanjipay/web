@@ -1,6 +1,6 @@
 import { Divider } from "@mui/material"
 import { useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { ButtonTheme } from "../../../components/CircleButton"
 import Input from "../../../components/Input"
 import LoadingPage from "../../../components/LoadingPage"
@@ -14,7 +14,6 @@ import BasketItem from "../basket/BasketItem"
 
 export default function PaymentSuccessPage({ order }) {
   const navigate = useNavigate()
-  const { orderId } = useParams()
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
 
@@ -23,7 +22,7 @@ export default function PaymentSuccessPage({ order }) {
   function handleSendEmail() {
     setIsLoading(true)
 
-    sendOrderReceipt(orderId, email)
+    sendOrderReceipt(order, email)
       .then(res => {
         setIsLoading(false)
         navigate('../email-submitted')

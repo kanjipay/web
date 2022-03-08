@@ -63,9 +63,6 @@ export function fetchOrder(orderId, onComplete) {
 export function fetchOrders(deviceId, merchantId, onComplete) {
   const ordersCollectionRef = collection(db, "Order")
 
-  console.log(deviceId)
-  console.log(merchantId)
-
   const ordersQuery = query(
     ordersCollectionRef,
     where("merchant_id", "==", merchantId),
@@ -82,9 +79,9 @@ export function setOrderStatus(orderId, status) {
   return updateDoc(orderRef, { status })
 }
 
-export function sendOrderReceipt(orderId, email) {
+export function sendOrderReceipt(order, email) {
   const requestBody = {
-    order_details: "test",
+    order,
     to_email: email
   }
 

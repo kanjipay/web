@@ -2,8 +2,8 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
-import { getPerformance } from "firebase/performance";
-import { getAnalytics } from "firebase/analytics";
+// import { getPerformance } from "firebase/performance";
+// import { getAnalytics } from "firebase/analytics";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseApp = initializeApp({
@@ -16,18 +16,17 @@ const firebaseApp = initializeApp({
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 })
 
+// getPerformance(firebaseApp)
+// const analytics = getAnalytics()
 
-getPerformance(firebaseApp)
-const analytics = getAnalytics()
-
-if(process.env.REACT_APP_ENV_NAME === 'PROD'){
+if (process.env.REACT_APP_ENV_NAME === 'PROD'){
   initializeAppCheck(firebaseApp, {
-    provider: new ReCaptchaV3Provider('6LfUoJ4eAAAAADZ0Z8TNS1WMtHfJH2JKZnNy03wi'),
+    provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID),
     isTokenAutoRefreshEnabled: true
-  }); 
+  });
 }
 
 const db = getFirestore()
 const storage = getStorage()
 
-export { firebaseApp, db, storage, analytics }
+export { firebaseApp, db, storage }
