@@ -11,6 +11,8 @@ import { fetchOrders } from "../../../utils/services/OrdersService";
 export default function Menu() {
   let { merchantId } = useParams()
 
+
+
   const [merchant, setMerchant] = useState(null)
   const [menuSections, setMenuSections] = useState([])
   const [menuItems, setMenuItems] = useState([])
