@@ -34,7 +34,6 @@
     "lint": "npx prettier --write .",
     "build:stage": "env-cmd -f ./.stage.env npm run-script build"
   },
-  "proxy": "https://europe-west2-mercadopay.cloudfunctions.net",
   "eslintConfig": {
     "extends": [
       "react-app",
