@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { getFunctions } from 'firebase/functions';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -22,9 +21,7 @@ if(process.env.REACT_APP_ENV_NAME === 'PROD'){
   }); 
 }
 
-const functions = getFunctions(firebaseApp);
-
 const db = getFirestore()
 const storage = getStorage()
 
-export { firebaseApp, db, storage, functions }
+export { firebaseApp, db, storage }
