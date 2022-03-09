@@ -20,12 +20,12 @@ const firebaseApp = initializeApp({
 // getPerformance(firebaseApp)
 // const analytics = getAnalytics()
 
-if (process.env.REACT_APP_ENV_NAME === 'PROD'){
-  initializeAppCheck(firebaseApp, {
-    provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID),
-    isTokenAutoRefreshEnabled: true
-  });
-}
+// if (process.env.REACT_APP_ENV_NAME === 'PROD'){
+//   initializeAppCheck(firebaseApp, {
+//     provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID),
+//     isTokenAutoRefreshEnabled: true
+//   });
+// }
 
 const db = getFirestore()
 const storage = getStorage()

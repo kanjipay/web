@@ -12,6 +12,7 @@ import useBasket from "../basket/useBasket"
 import MainButton from "../../../components/MainButton"
 import { formatCurrency } from "../../../utils/helpers/money"
 import DietaryAttribute from "./DietaryAttribute"
+import { abandonOrder } from "../../../utils/services/OrdersService"
 
 export default function MenuItemPage({ merchant }) {
   const location = useLocation()
@@ -30,17 +31,22 @@ export default function MenuItemPage({ merchant }) {
   const [quantity, setQuantity] = useState(initialQuantity)
 
   function handleAddToBasket() {
-    if (basketItems.filter(basketItem => basketItem.merchantId === item.merchantId).length === 0) {
-      changeMerchant(merchant)
-    }
+    abandonOrder("abc")
+      .then(res => {
+        const data = res.data
+        console.log(data)
+      })
+    // if (basketItems.filter(basketItem => basketItem.merchantId === item.merchantId).length === 0) {
+    //   changeMerchant(merchant)
+    // }
 
-    if (isInCart) {
-      quantity === 0 ? removeItem(item) : changeQuantity({ itemId: item.id, quantity })
-    } else {
-      addItem(item)
-      changeQuantity({ itemId: item.id, quantity })
-    }
-    navigate(-1)
+    // if (isInCart) {
+    //   quantity === 0 ? removeItem(item) : changeQuantity({ itemId: item.id, quantity })
+    // } else {
+    //   addItem(item)
+    //   changeQuantity({ itemId: item.id, quantity })
+    // }
+    // navigate(-1)
   }
 
   function incrementQuantity() {

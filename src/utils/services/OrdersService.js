@@ -1,6 +1,7 @@
 import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
-import { db } from "../FirebaseUtils"
+import { db, functions } from "../FirebaseUtils"
 import axios from 'axios'
+import { httpsCallable } from "firebase/functions"
 
 export function createOrder(merchantId, basketItems) {
   const deviceId = localStorage.getItem("deviceId")
@@ -18,6 +19,12 @@ export function createOrder(merchantId, basketItems) {
   console.log(requestBody)
 
   return axios.post(`${process.env.REACT_APP_SERVER_URL}/order`, requestBody)
+}
+
+export function abandonOrder(orderId) {
+  const call = httpsCallable(functions, 'abandonOrder')
+
+  return call({ orderId })
 }
 
 export function fetchOrder(orderId, onComplete) {
