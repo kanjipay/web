@@ -11,7 +11,7 @@ import { fetchOrders } from "../../../utils/services/OrdersService";
 export default function Menu() {
   let { merchantId } = useParams()
 
-
+  console.log(process.env.REACT_APP_FIREBASE_APP_ID)
 
   const [merchant, setMerchant] = useState(null)
   const [menuSections, setMenuSections] = useState([])
