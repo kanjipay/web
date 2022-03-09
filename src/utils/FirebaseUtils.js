@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getFunctions } from 'firebase/functions';
 import { getStorage } from "firebase/storage";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
 // import { getPerformance } from "firebase/performance";
@@ -28,5 +29,6 @@ if (process.env.REACT_APP_ENV_NAME === 'PROD'){
 
 const db = getFirestore()
 const storage = getStorage()
+const functions = getFunctions(firebaseApp)
 
-export { firebaseApp, db, storage }
+export { firebaseApp, db, storage, functions }
