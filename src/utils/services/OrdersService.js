@@ -1,7 +1,6 @@
 import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
-import { db, functions } from "../FirebaseUtils"
+import { db } from "../FirebaseUtils"
 import axios from 'axios'
-import { httpsCallable } from "firebase/functions"
 
 export function createOrder(merchantId, basketItems) {
   const deviceId = localStorage.getItem("deviceId")
@@ -10,21 +9,17 @@ export function createOrder(merchantId, basketItems) {
     merchant_id: merchantId,
     device_id: deviceId,
     menu_items: basketItems
-      .filter(item => item.merchantId === merchantId)
+      .filter(item => item.merchant_id === merchantId)
       .map(item => {
         return { id: item.id, quantity: item.quantity }
       })
   }
 
-  console.log(requestBody)
-
-  return axios.post(`${process.env.REACT_APP_SERVER_URL}/order`, requestBody)
+  return axios.post(`${process.env.REACT_APP_SERVER_URL}/orders`, requestBody)
 }
 
 export function abandonOrder(orderId) {
-  const call = httpsCallable(functions, 'abandonOrder')
-
-  return call({ orderId })
+  return axios.put(`${process.env.REACT_APP_SERVER_URL}/orders/${orderId}/abandon`)
 }
 
 export function fetchOrder(orderId, onComplete) {
@@ -86,11 +81,11 @@ export function setOrderStatus(orderId, status) {
   return updateDoc(orderRef, { status })
 }
 
-export function sendOrderReceipt(order, email) {
+export function sendOrderReceipt(orderId, email) {
   const requestBody = {
-    order,
-    to_email: email
+    order_id: orderId,
+    email
   }
 
-  return axios.post(`${process.env.REACT_APP_SERVER_URL}/email-receipt`, requestBody)
+  return axios.post(`${process.env.REACT_APP_SERVER_URL}/orders/email-receipt`, requestBody)
 }

@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getFunctions } from 'firebase/functions';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { getStorage } from "firebase/storage";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
 // import { getPerformance } from "firebase/performance";
@@ -20,15 +20,17 @@ const firebaseApp = initializeApp({
 // getPerformance(firebaseApp)
 // const analytics = getAnalytics()
 
-// if (process.env.REACT_APP_ENV_NAME === 'PROD'){
-//   initializeAppCheck(firebaseApp, {
-//     provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID),
-//     isTokenAutoRefreshEnabled: true
-//   });
-// }
+if (process.env.REACT_APP_ENV_NAME === 'PROD') {
+  initializeAppCheck(firebaseApp, {
+    provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID),
+    isTokenAutoRefreshEnabled: true
+  });
+}
 
 const db = getFirestore()
 const storage = getStorage()
 const functions = getFunctions(firebaseApp)
+
+connectFunctionsEmulator(functions, "localhost", 5001)
 
 export { firebaseApp, db, storage, functions }

@@ -17,12 +17,10 @@ export default function PaymentSuccessPage({ order }) {
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
 
-  console.log(order)
-
   function handleSendEmail() {
     setIsLoading(true)
 
-    sendOrderReceipt(order, email)
+    sendOrderReceipt(order.id, email)
       .then(res => {
         setIsLoading(false)
         navigate('../email-submitted')
