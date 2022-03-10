@@ -11,8 +11,6 @@ import { fetchOrders } from "../../../utils/services/OrdersService";
 export default function Menu() {
   let { merchantId } = useParams()
 
-  console.log(process.env.REACT_APP_FIREBASE_APP_ID)
-
   const [merchant, setMerchant] = useState(null)
   const [menuSections, setMenuSections] = useState([])
   const [menuItems, setMenuItems] = useState([])
@@ -28,11 +26,7 @@ export default function Menu() {
 
     const menuSectionUnsub = fetchMenuSections(merchantId, snapshot => {
       const sections = snapshot.docs.map(doc => {
-        const section = { id: doc.id, ...doc.data() }
-        section.merchantId = section.merchant.id
-        delete section.merchant
-
-        return section
+        return { id: doc.id, ...doc.data() }
       })
 
       setMenuSections(sections)
@@ -40,11 +34,7 @@ export default function Menu() {
 
     const hourRangeUnsub = fetchOpeningHours(merchantId, snapshot => {
       const hourRanges = snapshot.docs.map(doc => {
-        const range = { id: doc.id, ...doc.data() }
-        range.merchantId = range.merchant.id
-        delete range.merchant
-
-        return range
+        return { id: doc.id, ...doc.data() }
       })
 
       setOpenHourRanges(hourRanges)
@@ -52,14 +42,7 @@ export default function Menu() {
 
     const menuItemUnsub = fetchMenuItems(merchantId, snapshot => {
       const items = snapshot.docs.map(doc => {
-        const item = { id: doc.id, ...doc.data() }
-        item.merchantId = item.merchant.id
-        item.sectionId = item.section.id
-
-        delete item.merchant
-        delete item.section
-
-        return item
+        return { id: doc.id, ...doc.data() }
       })
 
       setMenuItems(items)
@@ -68,8 +51,7 @@ export default function Menu() {
 
     const orderUnsub = fetchOrders(deviceId, merchantId, snapshot => {
       const orders = snapshot.docs.map(doc => {
-        const order = { id: doc.id, ...doc.data() }
-        return order
+        return { id: doc.id, ...doc.data() }
       })
 
       setOrders(orders)

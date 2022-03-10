@@ -7,7 +7,7 @@ import DietaryAttribute from './DietaryAttribute'
 import './MenuItem.css'
 
 export default function MenuItem({ item, basketCount = 0 }) {
-  const merchantId = item.merchantId
+  const merchantId = item.merchant_id
   const dietaryAttrs = item.dietary_attributes
   const dietaryBubbles = []
 
