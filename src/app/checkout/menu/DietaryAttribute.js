@@ -5,13 +5,7 @@ export default class DietaryAttribute {
   static GLUTEN_FREE = new DietaryAttribute("GLUTEN_FREE", "GF", "Gluten free", "#F15907", "#FEEFE7")
   static HALAL = new DietaryAttribute("HALAL", "Hl", "Halal", "#CD06FF", "#FBE7FF")
 
-  static allItems = [
-    this.VEGAN,
-    this.VEGETARIAN,
-    this.LACTOSE_FREE,
-    this.GLUTEN_FREE,
-    this.HALAL
-  ]
+  static allItems = Object.values(DietaryAttribute)
 
   constructor(name, displayName, displayNameLong, foregroundColor, backgroundColor) {
     this.name = name

@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import NavBar from "../../../components/NavBar";
 import Spacer from "../../../components/Spacer";
 import MainButton from "../../../components/MainButton";
@@ -16,7 +16,6 @@ export default function BasketPage({ merchant }) {
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { merchantId } = useParams()
-
   const navigate = useNavigate()
 
   const titleElement = <div style={{ textAlign: "center" }}>
@@ -32,9 +31,8 @@ export default function BasketPage({ merchant }) {
     setIsLoading(true)
 
     createOrder(merchantId, basketItems)
-      .then(res => {
+      .then(orderId => {
         setIsLoading(false)
-        const orderId = res.data.order_id
         navigate(`../checkout/${orderId}/payment`)
       })
       .catch(err => {
