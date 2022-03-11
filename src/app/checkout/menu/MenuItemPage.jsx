@@ -5,14 +5,14 @@ import CircleButton, { ButtonTheme } from "../../../components/CircleButton"
 import Spacer from "../../../components/Spacer"
 import "./MenuItemPage.css"
 import NavBar from "../../../components/NavBar"
-import { Helmet } from "react-helmet"
+import { Helmet } from "react-helmet-async"
 import Plus from "../../../assets/icons/Plus"
 import Minus from "../../../assets/icons/Minus"
 import useBasket from "../basket/useBasket"
 import MainButton from "../../../components/MainButton"
 import { formatCurrency } from "../../../utils/helpers/money"
 import DietaryAttribute from "./DietaryAttribute"
-import { abandonOrder, test } from "../../../utils/services/OrdersService"
+import { getMenuItemStorageRef } from "../../../utils/helpers/storage"
 
 export default function MenuItemPage({ merchant }) {
   const location = useLocation()
@@ -62,11 +62,21 @@ export default function MenuItemPage({ merchant }) {
   if (item.spice_level > 0) {
     const chilliCount = Math.min(3, item.spice_level)
 
+    const chilliImages = []
+
+    for (let i = 0; i < chilliCount; i++) {
+      chilliImages.push(
+        <img 
+          key={i}
+          src='/img/chilli.png' 
+          alt='Chilli icon' 
+          className='chilli' />
+      )
+    }
+
     dietaryBubbles.push(
       <div key="SPICE" className='MenuItem__spiceLevel bubble'>
-        { Array(chilliCount).fill(
-          <img src='/img/chilli.png' alt='Chilli icon' className='chilli'/>
-        ) }
+        {chilliImages}
       </div>
     )
   }
@@ -98,7 +108,7 @@ export default function MenuItemPage({ merchant }) {
       />
 
       <AsyncImage
-        storagePath={`merchants/${merchantId}/menu_items/${itemId}/${item.photo}`}
+        imageRef={getMenuItemStorageRef(merchantId, itemId, item.photo)}
         className="headerImage"
         alt={item.title}
       />

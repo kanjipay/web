@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { ButtonTheme, Colors } from "../../../components/CircleButton";
 import NavBar from '../../../components/NavBar'
 import Spacer from '../../../components/Spacer'

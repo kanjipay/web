@@ -4,9 +4,9 @@ import { usePlaidLink } from 'react-plaid-link';
 import { useNavigate, useParams } from "react-router-dom";
 import useBasket from "../basket/useBasket";
 import { setOrderStatus } from "../../../utils/services/OrdersService";
-import OrderStatus from "./OrderStatus";
+import OrderStatus from "../../../enums/OrderStatus";
 import { createPaymentAttempt, setPaymentAttemptStatus } from "../../../utils/services/PaymentsService";
-import PaymentAttemptStatus from "./PaymentAttemptStatus";
+import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus"
 
 export default function PaymentPage() {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null)
@@ -76,9 +76,9 @@ export default function PaymentPage() {
   useEffect(() => {
     createPaymentAttempt(orderId)
       .then(res => {
-        console.log(res)
-        setPaymentAttemptId(res.data.payment_attempt_id)
-        setLinkToken(res.data.link_id)
+        const { link_token, payment_attempt_id } = res
+        setPaymentAttemptId(payment_attempt_id)
+        setLinkToken(link_token)
       })
       .catch(err => {
         console.log(err)

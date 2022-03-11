@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import AsyncImage from "../../../components/AsyncImage";
 import CircleIcon from "../../../components/CircleIcon";
 import NavBar from "../../../components/NavBar";
@@ -7,6 +7,7 @@ import { formatMinutes, getWeekdays } from "../../../utils/helpers/time";
 import Clock from '../../../assets/icons/Clock'
 import Location from '../../../assets/icons/Location'
 import './MerchantAboutPage.css'
+import { getMerchantStorageRef } from "../../../utils/helpers/storage";
 
 export default function MerchantAboutPage({ merchant, openHourRanges }) {
   const weekdays = getWeekdays('en-GB');
@@ -15,15 +16,14 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
   openHourRanges
     .sort((range1, range2) => range1.day_of_week - range2.day_of_week)
     .forEach((range, index) => {
-      console.log("for each loop: ", index)
       const weekday = weekdays[range.day_of_week - 1]
 
       openingHourGridItems.push(
-        <div className="header-xs MerchantAboutPage__dayItem">{weekday}</div>
+        <div key={`title-${index}`} className="header-xs MerchantAboutPage__dayItem">{weekday}</div>
       )
 
       openingHourGridItems.push(
-        <div className="text-caption MerchantAboutPage__hoursItem">
+        <div key={`hours-${index}`} className="text-caption MerchantAboutPage__hoursItem">
           {`${formatMinutes(range.open_time)} - ${formatMinutes(range.close_time)}`}
         </div>
       )
@@ -43,7 +43,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         />
 
         <AsyncImage
-          storagePath={`merchants/${merchant.id}/${merchant.photo}`}
+          imageRef={getMerchantStorageRef(merchant.id, merchant.photo)}
           className='headerImage'
           alt={merchant.display_name}
         />

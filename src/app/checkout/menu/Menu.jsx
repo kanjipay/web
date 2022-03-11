@@ -11,7 +11,7 @@ import { fetchOrders } from "../../../utils/services/OrdersService";
 export default function Menu() {
   let { merchantId } = useParams()
 
-  const [merchant, setMerchant] = useState(null)
+  const [merchant, setMerchant] = useState(undefined)
   const [menuSections, setMenuSections] = useState([])
   const [menuItems, setMenuItems] = useState([])
   const [openHourRanges, setOpenHourRanges] = useState([])
@@ -25,35 +25,23 @@ export default function Menu() {
     })
 
     const menuSectionUnsub = fetchMenuSections(merchantId, snapshot => {
-      const sections = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
+      const sections = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setMenuSections(sections)
     })
 
     const hourRangeUnsub = fetchOpeningHours(merchantId, snapshot => {
-      const hourRanges = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
+      const hourRanges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setOpenHourRanges(hourRanges)
     })
 
     const menuItemUnsub = fetchMenuItems(merchantId, snapshot => {
-      const items = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
+      const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setMenuItems(items)
     })
 
 
     const orderUnsub = fetchOrders(deviceId, merchantId, snapshot => {
-      const orders = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
+      const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setOrders(orders)
     })
 
