@@ -71,7 +71,7 @@ async function verify(req) {
   }
 
   const issuedAt = new Date(issuedAtSeconds * 1000)
-  const fiveMinsAgo = new Date(Date.now() - 5 * 60 * 1000)
+  const fiveMinsAgo = new Date(Date.now() - (5 * 60 * 1000))
 
   if (issuedAt < fiveMinsAgo) { return false }
 
