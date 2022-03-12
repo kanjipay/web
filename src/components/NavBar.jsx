@@ -41,13 +41,13 @@ export default function NavBar({ showsBackButton = true, backPath, title, titleE
               </div>
             )
           }
-          { leftElements.map(e => <div className='NavBar__item'>{e}</div>) }
+          { leftElements.map((e, index) => <div key={index} className='NavBar__item'>{e}</div>) }
         </div>
         <div className='NavBar__title header-xs'  style={{ opacity }}>
           { title || titleElement }
         </div>
         <div className='NavBar__right'>
-          { rightElements.map(e => <div className='NavBar__item'>{e}</div>) }
+          { rightElements.map((e, index) => <div key={index} className='NavBar__item'>{e}</div>) }
         </div>
       </div>
     </div>

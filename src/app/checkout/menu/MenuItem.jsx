@@ -3,11 +3,12 @@ import AsyncImage from '../../../components/AsyncImage'
 import { Colors } from '../../../components/CircleButton'
 import Spacer from '../../../components/Spacer'
 import { formatCurrency } from '../../../utils/helpers/money'
+import { getMenuItemStorageRef } from '../../../utils/helpers/storage'
 import DietaryAttribute from './DietaryAttribute'
 import './MenuItem.css'
 
 export default function MenuItem({ item, basketCount = 0 }) {
-  const merchantId = item.merchantId
+  const merchantId = item.merchant_id
   const dietaryAttrs = item.dietary_attributes
   const dietaryBubbles = []
 
@@ -45,7 +46,7 @@ export default function MenuItem({ item, basketCount = 0 }) {
   const menuItemContents = <div>
     <div className='MenuItem__imageContainer'>
       <AsyncImage
-        storagePath={`merchants/${merchantId}/menu_items/${item.id}/${item.photo}`}
+        imageRef={getMenuItemStorageRef(merchantId, item.id, item.photo)}
         className={`MenuItem__image ${isAvailable ? "" : "MenuItem__imageBlur"}`}
         alt={item.title}
       />

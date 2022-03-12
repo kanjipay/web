@@ -11,9 +11,7 @@ import { fetchOrders } from "../../../utils/services/OrdersService";
 export default function Menu() {
   let { merchantId } = useParams()
 
-
-
-  const [merchant, setMerchant] = useState(null)
+  const [merchant, setMerchant] = useState(undefined)
   const [menuSections, setMenuSections] = useState([])
   const [menuItems, setMenuItems] = useState([])
   const [openHourRanges, setOpenHourRanges] = useState([])
@@ -27,51 +25,23 @@ export default function Menu() {
     })
 
     const menuSectionUnsub = fetchMenuSections(merchantId, snapshot => {
-      const sections = snapshot.docs.map(doc => {
-        const section = { id: doc.id, ...doc.data() }
-        section.merchantId = section.merchant.id
-        delete section.merchant
-
-        return section
-      })
-
+      const sections = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setMenuSections(sections)
     })
 
     const hourRangeUnsub = fetchOpeningHours(merchantId, snapshot => {
-      const hourRanges = snapshot.docs.map(doc => {
-        const range = { id: doc.id, ...doc.data() }
-        range.merchantId = range.merchant.id
-        delete range.merchant
-
-        return range
-      })
-
+      const hourRanges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setOpenHourRanges(hourRanges)
     })
 
     const menuItemUnsub = fetchMenuItems(merchantId, snapshot => {
-      const items = snapshot.docs.map(doc => {
-        const item = { id: doc.id, ...doc.data() }
-        item.merchantId = item.merchant.id
-        item.sectionId = item.section.id
-
-        delete item.merchant
-        delete item.section
-
-        return item
-      })
-
+      const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setMenuItems(items)
     })
 
 
     const orderUnsub = fetchOrders(deviceId, merchantId, snapshot => {
-      const orders = snapshot.docs.map(doc => {
-        const order = { id: doc.id, ...doc.data() }
-        return order
-      })
-
+      const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setOrders(orders)
     })
 

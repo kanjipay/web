@@ -3,10 +3,10 @@ import LoadingPage from "../../../components/LoadingPage"
 import { usePlaidLink } from 'react-plaid-link';
 import { useNavigate, useParams } from "react-router-dom";
 import useBasket from "../basket/useBasket";
-import { setOrderStatus } from "../../../utils/services/OrdersService";
-import OrderStatus from "./OrderStatus";
-import { createPaymentAttempt, setPaymentAttemptStatus } from "../../../utils/services/PaymentsService";
-import PaymentAttemptStatus from "./PaymentAttemptStatus";
+import { createPaymentAttempt } from "../../../utils/services/PaymentsService";
+import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus"
+import { onSnapshot } from "firebase/firestore";
+import Collection from "../../../enums/Collection";
 
 export default function PaymentPage() {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null)
@@ -15,43 +15,14 @@ export default function PaymentPage() {
   const navigate = useNavigate()
   const { clearBasket } = useBasket()
 
+  const deviceId = localStorage.getItem("deviceId")
+
   const onSuccess = (publicToken, metadata) => {
     console.log("onSuccess", publicToken, metadata)
-
-    try {
-      Promise.all([
-        setOrderStatus(orderId, OrderStatus.PAID),
-        setPaymentAttemptStatus(paymentAttemptId, PaymentAttemptStatus.SUCCESSFUL)
-      ]).then(res => {
-        console.log(res)
-        clearBasket()
-        navigate('../payment-success')
-      })
-    } catch (err) {
-      console.log(err)
-    }
   }
 
   const onExit = (err, metadata) => {
     console.log("onExit", err, metadata)
-
-    if (err) {
-      setPaymentAttemptStatus(paymentAttemptId, PaymentAttemptStatus.FAILED)
-        .then(doc => {
-          navigate('../payment-failure')
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    } else {
-      setPaymentAttemptStatus(paymentAttemptId, PaymentAttemptStatus.CANCELLED)
-        .then(doc => {
-          navigate('../payment-cancelled')
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    }
   }
 
   const onEvent = (eventName, metadata) => {
@@ -74,17 +45,45 @@ export default function PaymentPage() {
   }, [ready, paymentAttemptId, open])
 
   useEffect(() => {
-    createPaymentAttempt(orderId)
+    if (paymentAttemptId) {
+      const unsub = onSnapshot(Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId), doc => {
+        const { status } = doc.data()
+
+        switch (status) {
+          case PaymentAttemptStatus.SUCCESSFUL:
+            clearBasket()
+            navigate('../payment-success')
+            break;
+          case PaymentAttemptStatus.CANCELLED:
+            navigate('../payment-cancelled')
+            break;
+          case PaymentAttemptStatus.FAILED:
+            navigate('../payment-failure')
+            break;
+          default:
+            
+        }
+      })
+
+      return () => {
+        unsub()
+      }
+    }
+  }, [paymentAttemptId, clearBasket, navigate])
+
+  useEffect(() => {
+    createPaymentAttempt(orderId, deviceId)
       .then(res => {
         console.log(res)
-        setPaymentAttemptId(res.data.payment_attempt_id)
-        setLinkToken(res.data.link_id)
+        const { link_token, payment_attempt_id } = res.data
+        setPaymentAttemptId(payment_attempt_id)
+        setLinkToken(link_token)
       })
       .catch(err => {
         console.log(err)
         navigate('../payment-failure')
       })
-  }, [orderId, navigate])
+  }, [orderId, deviceId, navigate])
 
   return <LoadingPage message="Processing your order" />
 }
