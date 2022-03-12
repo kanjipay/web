@@ -1,15 +1,17 @@
-import { HttpError, HttpStatusCode } from '../utils/errors'
+import { ErrorHandler, HttpError, HttpStatusCode } from '../utils/errors'
 
 import PaymentAttemptStatus from '../enums/PaymentAttemptStatus'
 import { db } from '../admin'
 import Collection from '../enums/Collection'
 import OrderStatus from '../enums/OrderStatus'
+import { verify } from './verify'
 
 export const handlePaymentUpdate = async (req, res, next) => {
   const isValid = await verify(req)
+    .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
   if (!isValid) {
-    next(new HttpError(HttpStatusCode.UNAUTHORIZED))
+    next(new HttpError(HttpStatusCode.UNAUTHORIZED, "Unauthorized"))
     return
   }
 

@@ -13,8 +13,8 @@ app.options('*', corsInstance) // Think this is needed for preflight requests
 app.use(express.json())
 app.use(express.urlencoded())
 
-app.use(errorHandler)
-
 app.use('/', routes)
+
+app.use(errorHandler)
 
 export default app
