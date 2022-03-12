@@ -1,11 +1,7 @@
-import { functions } from "./firebase";
+import { functions } from "./utils/firebase";
 
 // Express API
-import { main, app } from "./api";
-
-// Handler functions
-import { createOrder } from "./order";
-import { paymentAttempt } from "./paymentAttempt";
+import { main } from "./api";
 
 //define google cloud function name
 export const webApi = functions.https.onRequest(main);
@@ -14,14 +10,4 @@ export const webApi = functions.https.onRequest(main);
 export const status = functions.https.onRequest((request, response) => {
   console.log("Healthcheck");
   response.send("ok");
-});
-
-// Create new order
-app.post("/orders", async (req, res) => {
-  createOrder(req, res);
-});
-
-// Create new Plaid link-token for a payment attempt
-app.post("/payment-attempts", async (req, res) => {
-  paymentAttempt(req, res);
 });
