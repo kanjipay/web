@@ -4,10 +4,17 @@ import PaymentAttemptStatus from "../enums/PaymentAttemptStatus"
 import { db } from "../app"
 import { ErrorHandler, HttpError, HttpStatusCode } from "../utils/errors"
 import { plaidClient } from "../utils/plaid"
+import OrderStatus from "../enums/OrderStatus"
 
 export default class PaymentAttemptsController extends BaseController {
   create = async (req, res, next) => {
     const order = req.order
+
+    if (order.status !== OrderStatus.PENDING) {
+      next(new HttpError(HttpStatusCode.BAD_REQUEST, `That order was ${order.status.toLowerCase()}`))
+      return
+    }
+    
     const merchantId = order.merchant_id
 
     // Search for merchant on order and load in sort code/acc number
