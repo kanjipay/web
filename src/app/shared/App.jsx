@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "../brand/HomePage";
 import NotFound from "./NotFoundPage";
-import MerchantDashboard from "../merchant/DummyDashboardPage";
+import  MerchantApp from "../merchant/MerchantApp";
 import { BrowserRouter } from "react-router-dom";
 import Menu from "../checkout/menu/Menu";
 import { v4 as uuid } from 'uuid';
@@ -24,8 +24,9 @@ export default function App() {
         <Route path="/menu/:merchantId/*" element={<Menu />} />
 
         <Route
-          path="/merchant/test/dashboard/385as2als921hsa"
-          element={<MerchantDashboard />}
+
+          path="/merchant/*"
+          element={<MerchantApp />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
