@@ -25,6 +25,7 @@ function MerchantLogin() {
 
   //TODO make this look not terrible
   return (
+    <div className='container'>
     <div className="login-form">
       <div>
         <div className="heading-container"></div>
@@ -45,6 +46,7 @@ function MerchantLogin() {
           Don't have an account yet? Sign up today!
         </a>{" "}
       </p>
+    </div>
     </div>
   );
 }
