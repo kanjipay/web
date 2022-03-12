@@ -1,33 +1,35 @@
-import { collection, doc, onSnapshot, query, where } from "firebase/firestore"
-import { db } from "../FirebaseUtils"
-
+import { onSnapshot, orderBy, query, where } from "firebase/firestore"
+import Collection from "../../enums/Collection"
 
 export function fetchMerchant(merchantId, onComplete) {
-  const merchantRef = doc(db, "Merchant", merchantId)
-
-  return onSnapshot(merchantRef, onComplete)
+  return onSnapshot(Collection.MERCHANT.docRef(merchantId), onComplete)
 }
 
 export function fetchOpeningHours(merchantId, onComplete) {
-  const merchantRef = doc(db, "Merchant", merchantId)
-  const collectionRef = collection(db, "OpeningHourRange")
-  const openHoursQuery = query(collectionRef, where("merchant", "==", merchantRef))
+  const openHoursQuery = query(
+    Collection.OPENING_HOUR_RANGE.ref,
+    where("merchant_id", "==", merchantId)
+  )
 
   return onSnapshot(openHoursQuery, onComplete)
 }
 
 export function fetchMenuSections(merchantId, onComplete) {
-  const merchantRef = doc(db, "Merchant", merchantId)
-  const collectionRef = collection(db, "MenuSection")
-  const sectionsQuery = query(collectionRef, where("merchant", "==", merchantRef))
+  const sectionsQuery = query(
+    Collection.MENU_SECTION.ref,
+    where("merchant_id", "==", merchantId),
+    orderBy("order", "asc")
+  )
 
   return onSnapshot(sectionsQuery, onComplete)
 }
 
 export function fetchMenuItems(merchantId, onComplete) {
-  const merchantRef = doc(db, "Merchant", merchantId)
-  const collectionRef = collection(db, "MenuItem")
-  const menuItemQuery = query(collectionRef, where("merchant", "==", merchantRef))
+  const menuItemQuery = query(
+    Collection.MENU_ITEM.ref,
+    where("merchant_id", "==", merchantId),
+    orderBy("order", "asc")
+  )
 
   return onSnapshot(menuItemQuery, onComplete)
 }

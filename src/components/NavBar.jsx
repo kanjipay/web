@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Back from '../assets/icons/Back'
 
-export default function NavBar({ showsBackButton = true, title, titleElement, leftElements = [], rightElements = [], transparentDepth, opaqueDepth }) {
+export default function NavBar({ showsBackButton = true, backPath, title, titleElement, leftElements = [], rightElements = [], transparentDepth, opaqueDepth }) {
   const navigate = useNavigate()
 
   const changesOpacity = transparentDepth && opaqueDepth
@@ -13,8 +13,6 @@ export default function NavBar({ showsBackButton = true, title, titleElement, le
   const [opacity, setOpacity] = useState(initialOpacity)
 
   useEffect(() => {
-
-
     const handleScroll = () => {
       const yOffset = window.scrollY
       const newOpacity = Math.max(Math.min((yOffset - transparentDepth) / (opaqueDepth - transparentDepth), 1), 0)
@@ -39,17 +37,17 @@ export default function NavBar({ showsBackButton = true, title, titleElement, le
           {
             showsBackButton && (
               <div className='NavBar__item'>
-                <CircleButton Icon={Back} buttonTheme={ButtonTheme.NAVBAR} onClick={() => navigate(-1)} />
+                <CircleButton Icon={Back} buttonTheme={ButtonTheme.NAVBAR} onClick={() => navigate(backPath ?? -1)} />
               </div>
             )
           }
-          { leftElements.map(e => <div className='NavBar__item'>{e}</div>) }
+          { leftElements.map((e, index) => <div key={index} className='NavBar__item'>{e}</div>) }
         </div>
         <div className='NavBar__title header-xs'  style={{ opacity }}>
           { title || titleElement }
         </div>
         <div className='NavBar__right'>
-          { rightElements.map(e => <div className='NavBar__item'>{e}</div>) }
+          { rightElements.map((e, index) => <div key={index} className='NavBar__item'>{e}</div>) }
         </div>
       </div>
     </div>

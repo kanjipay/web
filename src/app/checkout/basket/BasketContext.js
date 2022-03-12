@@ -7,12 +7,8 @@ export const BasketContext = createContext()
 const basketArray = localStorage.getItem('basket')
 const basketMerchant = localStorage.getItem('basketMerchant')
 
-console.log("stored merchant string", basketMerchant)
-
 const storedBasketItems = basketArray ? JSON.parse(basketArray) : []
 const storedBasketMerchant = basketMerchant ? JSON.parse(basketMerchant) : null
-
-console.log("stored merchant", storedBasketMerchant)
 
 const initialState = {
   basketItems: storedBasketItems,

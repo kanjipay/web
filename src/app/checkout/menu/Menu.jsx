@@ -5,14 +5,19 @@ import MenuItemPage from "./MenuItemPage";
 import MenuPage from "./MenuPage";
 import MerchantAboutPage from "./MerchantAboutPage";
 import BasketPage from "../basket/BasketPage"
+import Order from "../checkout/Order";
+import { fetchOrders } from "../../../utils/services/OrdersService";
 
 export default function Menu() {
   let { merchantId } = useParams()
 
-  const [merchant, setMerchant] = useState(null)
+  const [merchant, setMerchant] = useState(undefined)
   const [menuSections, setMenuSections] = useState([])
   const [menuItems, setMenuItems] = useState([])
   const [openHourRanges, setOpenHourRanges] = useState([])
+  const [orders, setOrders] = useState([])
+
+  const deviceId = localStorage.getItem("deviceId")
 
   useEffect(() => {
     const merchantUnsub = fetchMerchant(merchantId, doc => {
@@ -20,42 +25,24 @@ export default function Menu() {
     })
 
     const menuSectionUnsub = fetchMenuSections(merchantId, snapshot => {
-      const sections = snapshot.docs.map(doc => {
-        const section = { id: doc.id, ...doc.data() }
-        section.merchantId = section.merchant.id
-        delete section.merchant
-
-        return section
-      })
-
+      const sections = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setMenuSections(sections)
     })
 
     const hourRangeUnsub = fetchOpeningHours(merchantId, snapshot => {
-      const hourRanges = snapshot.docs.map(doc => {
-        const range = { id: doc.id, ...doc.data() }
-        range.merchantId = range.merchant.id
-        delete range.merchant
-
-        return range
-      })
-
+      const hourRanges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setOpenHourRanges(hourRanges)
     })
 
     const menuItemUnsub = fetchMenuItems(merchantId, snapshot => {
-      const items = snapshot.docs.map(doc => {
-        const item = { id: doc.id, ...doc.data() }
-        item.merchantId = item.merchant.id
-        item.sectionId = item.section.id
-
-        delete item.merchant
-        delete item.section
-
-        return item
-      })
-
+      const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       setMenuItems(items)
+    })
+
+
+    const orderUnsub = fetchOrders(deviceId, merchantId, snapshot => {
+      const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      setOrders(orders)
     })
 
     return (() => {
@@ -63,16 +50,26 @@ export default function Menu() {
       menuSectionUnsub()
       menuItemUnsub()
       hourRangeUnsub()
+      orderUnsub()
     })
-  }, [merchantId])
+  }, [merchantId, deviceId])
 
   return <div>
     <Routes>
       <Route path="items/:itemId" element={<MenuItemPage merchant={merchant} />}/>
       <Route path="about" element={<MerchantAboutPage merchant={merchant} openHourRanges={openHourRanges} menuItems={menuItems} menuSections={menuSections} />}/>
       <Route path="basket" element={<BasketPage merchant={merchant} />} />
-      <Route path="*" element={<MenuPage merchant={merchant} openHourRanges={openHourRanges} menuItems={menuItems} menuSections={menuSections} />} />
+      <Route path="checkout/:orderId/*" element={<Order />}/>
 
+      <Route path="*" element={
+        <MenuPage
+          merchant={merchant}
+          openHourRanges={openHourRanges}
+          menuItems={menuItems}
+          menuSections={menuSections}
+          orders={orders}
+        />
+      } />
     </Routes>
   </div>
 }

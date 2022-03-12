@@ -1,11 +1,10 @@
 import Spinner from "../assets/Spinner"
 import Spacer from "../components/Spacer"
-import './LoadingPage.css'
 
 export default function LoadingPage({ message }) {
-  return <div className="LoadingPage">
+  return <div className="container">
     <div className="centred">
-      <Spinner className="LoadingPage__spinner" />
+      <Spinner />
       <Spacer y={2} />
       { message && <div className="header-xs" style={{ textAlign: "center" }}>{message}</div> }
     </div>

@@ -3,22 +3,29 @@ import AsyncImage from '../../../components/AsyncImage'
 import { Colors } from '../../../components/CircleButton'
 import Spacer from '../../../components/Spacer'
 import { formatCurrency } from '../../../utils/helpers/money'
+import { getMenuItemStorageRef } from '../../../utils/helpers/storage'
 import DietaryAttribute from './DietaryAttribute'
 import './MenuItem.css'
 
-export default function MenuItem({ item }) {
-  const merchantId = item.merchantId
+export default function MenuItem({ item, basketCount = 0 }) {
+  const merchantId = item.merchant_id
   const dietaryAttrs = item.dietary_attributes
   const dietaryBubbles = []
 
   if (item.spice_level > 0) {
     const chilliCount = Math.min(3, item.spice_level)
 
+    const chilliImages = []
+
+    for (let i = 0; i < chilliCount; i++) {
+      chilliImages.push(
+        <img key={i} src='/img/chilli.png' alt='Chilli icon' className='chilli'/>
+      )
+    }
+
     dietaryBubbles.push(
       <div key="SPICE" className='MenuItem__spiceLevel bubble'>
-        { Array(chilliCount).fill(
-          <img src='/img/chilli.png' alt='Chilli icon' className='chilli'/>
-        ) }
+        {chilliImages}
       </div>
     )
   }
@@ -26,7 +33,7 @@ export default function MenuItem({ item }) {
   for (var attr of DietaryAttribute.allItems) {
     if (dietaryAttrs.includes(attr.name)) {
       dietaryBubbles.push(
-        <div key={attr.name} className={`MenuItem__${attr.className} bubble`}>
+        <div key={attr.name} className="bubble" style={{ color: attr.foregroundColor, backgroundColor: attr.backgroundColor }}>
           {attr.displayName}
         </div>
       )
@@ -36,11 +43,10 @@ export default function MenuItem({ item }) {
   const isAvailable = item.is_available
   const textColor = isAvailable ? Colors.BLACK : Colors.GRAY_LIGHT
 
-
   const menuItemContents = <div>
     <div className='MenuItem__imageContainer'>
       <AsyncImage
-        storagePath={`merchants/${merchantId}/menu_items/${item.id}/${item.photo}`}
+        imageRef={getMenuItemStorageRef(merchantId, item.id, item.photo)}
         className={`MenuItem__image ${isAvailable ? "" : "MenuItem__imageBlur"}`}
         alt={item.title}
       />
