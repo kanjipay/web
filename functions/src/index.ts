@@ -42,6 +42,10 @@ interface Order {
     requested_items: Array<Item>
 }
 
+interface PaymentAttempt {
+    order_id: String
+}
+
 export const status = functions.https.onRequest((request, response) => {
     functions.logger.info("Hello logs!", {structuredData: true});
     response.send("ok");
@@ -69,32 +73,18 @@ app.post('/orders', async (req, res) => {
         res.status(201).json(reponseBody);
     } catch (error) {
         console.log(error);
-        res.status(400).send(`User should cointain firstName, lastName!!!`)
+        res.status(400).send(`Server error`)
     }
 });
 
 // Create new payment-attempt
-app.post('/orders', async (req, res) => {
+app.post('/payment-attempt', async (req, res) => {
     try {
-        const order: Order = {
-            merchant_id: req.body['merchant_id'],
-            device_id: req.body['device_id'],
-            requested_items: req.body['requested_items']
-        }
-        functions.logger.info(order, {structuredData: true});
-        const orderId = uuid.v4();
-        await db.collection('Orders').doc(orderId).set(order);
-        const reponseBody = {
-            merchant_id: req.body['merchant_id'],
-            device_id: req.body['device_id'],
-            requested_items: req.body['requested_items'],
-            order_id: orderId
-        }
-        functions.logger.info('response', {structuredData: true});
-        functions.logger.info(reponseBody, {structuredData: true});
-        res.status(201).json(reponseBody);
+        const order_id = req.body['merchant_id'];
+        functions.logger.info('order_id', order_id);
+        res.status(201).json(order_id);
     } catch (error) {
         console.log(error);
-        res.status(400).send(`User should cointain firstName, lastName!!!`)
+        res.status(400).send(`Server error`)
     }
 });
