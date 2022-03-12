@@ -5,7 +5,7 @@ import jwkToPem from "jwk-to-pem"
 
 const keyCache = new Map()
 
-export async function verify(req) {
+export const verify = async (req) => {
   console.log(req.headers)
   const token = req.headers["plaid-verification"]
 
