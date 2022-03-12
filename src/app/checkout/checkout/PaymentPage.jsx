@@ -7,6 +7,8 @@ import { setOrderStatus } from "../../../utils/services/OrdersService";
 import OrderStatus from "../../../enums/OrderStatus";
 import { createPaymentAttempt, setPaymentAttemptStatus } from "../../../utils/services/PaymentsService";
 import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus"
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import Collection from "../../../enums/Collection";
 
 export default function PaymentPage() {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null)
@@ -17,41 +19,10 @@ export default function PaymentPage() {
 
   const onSuccess = (publicToken, metadata) => {
     console.log("onSuccess", publicToken, metadata)
-
-    try {
-      Promise.all([
-        setOrderStatus(orderId, OrderStatus.PAID),
-        setPaymentAttemptStatus(paymentAttemptId, PaymentAttemptStatus.SUCCESSFUL)
-      ]).then(res => {
-        console.log(res)
-        clearBasket()
-        navigate('../payment-success')
-      })
-    } catch (err) {
-      console.log(err)
-    }
   }
 
   const onExit = (err, metadata) => {
     console.log("onExit", err, metadata)
-
-    if (err) {
-      setPaymentAttemptStatus(paymentAttemptId, PaymentAttemptStatus.FAILED)
-        .then(doc => {
-          navigate('../payment-failure')
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    } else {
-      setPaymentAttemptStatus(paymentAttemptId, PaymentAttemptStatus.CANCELLED)
-        .then(doc => {
-          navigate('../payment-cancelled')
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    }
   }
 
   const onEvent = (eventName, metadata) => {
@@ -72,6 +43,33 @@ export default function PaymentPage() {
       open()
     }
   }, [ready, paymentAttemptId, open])
+
+  useEffect(() => {
+    if (paymentAttemptId) {
+      const unsub = onSnapshot(Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId), doc => {
+        const { status } = doc.data()
+
+        switch (status) {
+          case PaymentAttemptStatus.SUCCESSFUL:
+            clearBasket()
+            navigate('../payment-success')
+            break;
+          case PaymentAttemptStatus.CANCELLED:
+            navigate('../payment-cancelled')
+            break;
+          case PaymentAttemptStatus.FAILED:
+            navigate('../payment-failure')
+            break;
+          default:
+            
+        }
+      })
+
+      return () => {
+        unsub()
+      }
+    }
+  }, [paymentAttemptId, clearBasket, navigate])
 
   useEffect(() => {
     createPaymentAttempt(orderId)
