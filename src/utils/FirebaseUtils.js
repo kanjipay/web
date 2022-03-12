@@ -26,7 +26,7 @@ const storage = getStorage()
 const functions = getFunctions(firebaseApp)
 
 const environment = process.env.REACT_APP_ENV_NAME
-/*
+
 if (environment === Environment.PROD) {
   initializeAppCheck(firebaseApp, {
     provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID),
@@ -35,5 +35,5 @@ if (environment === Environment.PROD) {
 } else if (environment === Environment.DEV) {
   connectFunctionsEmulator(functions, "localhost", 5001)
 }
-*/
+
 export { firebaseApp, db, storage, functions }
