@@ -5,6 +5,7 @@ import { db } from "../app";
 import Collection from "../enums/Collection";
 import { documentId, FieldValue } from "firebase/firestore";
 import OrderStatus from "../enums/OrderStatus";
+import MerchantStatus from "../enums/MerchantStatus";
 
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
@@ -21,6 +22,21 @@ export default class OrdersController extends BaseController {
 
   create = async (req, res, next) => {
     const { requested_items, merchant_id, device_id } = req.body
+
+    // Check merchant_id exists and is open
+    const merchantDoc = await db.collection(Collection.MERCHANT.name).doc(merchant_id).get()
+
+    if (!merchantDoc.exists()) {
+      next(new HttpError(HttpStatusCode.NOT_FOUND, "That merchant doesn't exist"))
+      return
+    }
+
+    const merchant = { id: merchantDoc.id, ...merchantDoc.data() }
+
+    if (merchant.status !== MerchantStatus.OPEN) {
+      next(new HttpError(HttpStatusCode.BAD_REQUEST, "Sorry, the merchant isn't open at the moment"))
+      return
+    }
 
     const requestedMenuItemIds = requested_items.map(item => item.id)
     const menuItemsSnapshot = await db
