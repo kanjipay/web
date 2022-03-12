@@ -3,6 +3,7 @@ import { HttpError, HttpStatusCode } from './utils/errors'
 import jwt from 'jsonwebtoken'
 import { plaidClient } from './utils/plaid'
 import sha256 from 'sha256'
+import jwkToPem from "jwk-to-pem"
 import PaymentAttemptStatus from './enums/PaymentAttemptStatus'
 import { db } from './app'
 import Collection from './enums/Collection'
@@ -12,16 +13,20 @@ const app = express()
 const keyCache = new Map()
 
 async function verify(req) {
+  console.log(req.headers)
   const token = req.headers["plaid-verification"]
 
   if (!token) { return false }
 
   const decoded = jwt.decode(token, { complete: true })
-  const tokenHeader = decoded.header
+  console.log(decoded)
+  const { header, payload } = decoded
 
-  if (tokenHeader.alg !== "ES256") { return false }
+  if (header.alg !== "ES256") { return false }
 
-  const currKeyId = tokenHeader.kid
+  const currKeyId = header.kid
+
+  console.log(keyCache)
   
   if (!keyCache.has(currKeyId)) {
     let keyIdsToUpdate = []
@@ -32,7 +37,7 @@ async function verify(req) {
       }
     })
 
-    keyIdsToUpdate.push()
+    keyIdsToUpdate.push(currKeyId)
 
     for (keyId of keyIdsToUpdate) {
       const keyResponse = await plaidClient.webhookVerificationKeyGet({ key_id: currKeyId })
@@ -42,9 +47,14 @@ async function verify(req) {
         })
 
       const key = keyResponse.key
+
+      console.log(key)
+
       keyCache.set(keyId, key)
     }
   }
+
+  console.log(keyCache)
 
   if (!keyCache.has(currKeyId)) {
     return false
@@ -63,22 +73,29 @@ async function verify(req) {
     return false
   }
 
-  const { payload } = decodedAndVerified
   const issuedAtSeconds = payload.iat
-  const requestBodyHashFromPayload = payload.request_body_sha256
+  const claimedBodyHash = payload.request_body_sha256
 
-  if (!bodySha || !issuedAtSeconds || !(typeof issuedAtSeconds === "number")) {
+  console.log(issuedAtSeconds)
+  console.log(claimedBodyHash)
+
+  if (!claimedBodyHash || !issuedAtSeconds || !(typeof issuedAtSeconds === "number")) {
     return false
   }
 
   const issuedAt = new Date(issuedAtSeconds * 1000)
   const fiveMinsAgo = new Date(Date.now() - (5 * 60 * 1000))
 
+  console.log(issuedAt)
+  console.log(fiveMinsAgo)
+
   if (issuedAt < fiveMinsAgo) { return false }
 
-  const requestBodyHash = sha256(JSON.stringify(req.body))
+  const bodyHash = sha256(req.body)
 
-  if (requestBodyHash !== requestBodyHashFromPayload) { return false }
+  console.log(bodyHash)
+
+  if (claimedBodyHash !== bodyHash) { return false }
 
   return true
 }
@@ -141,9 +158,11 @@ app.post('/', async (req, res, next) => {
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
     if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
+      const orderId = paymentAttemptDoc.data().order_id
+
       await db
         .collection(Collection.ORDER.name)
-        .doc(paymentAttemptDoc.data().order_id)
+        .doc(orderId)
         .set({ status: OrderStatus.PAID }, { merge: true })
         .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
     }
