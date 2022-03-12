@@ -4,6 +4,7 @@ import Collection from "../../enums/Collection"
 
 export function createPaymentAttempt(orderId) {
   const requestBody = { order_id: orderId }
+  console.log(requestBody)
   return axios.post(`${process.env.REACT_APP_SERVER_URL}/payment-attempts`, requestBody)
 }
 

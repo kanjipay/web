@@ -1,27 +1,27 @@
-import Collection from "../enums/Collection"
+import Collection from "../../enums/Collection"
 import BaseController from "./BaseController"
-import PaymentAttemptStatus from "../enums/PaymentAttemptStatus"
-import { db } from "../app"
-import { ErrorHandler, HttpError, HttpStatusCode } from "../utils/errors"
-import { plaidClient } from "../utils/plaid"
-import OrderStatus from "../enums/OrderStatus"
+import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus"
+import { db } from "../../admin"
+import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors"
+import { plaidClient } from "../../utils/plaid"
+import OrderStatus from "../../enums/OrderStatus"
 
 export default class PaymentAttemptsController extends BaseController {
   create = async (req, res, next) => {
     const order = req.order
+    const { device_id, merchant_id, total } = order
+    const orderId = order.id
 
     if (order.status !== OrderStatus.PENDING) {
       next(new HttpError(HttpStatusCode.BAD_REQUEST, `That order was ${order.status.toLowerCase()}`))
       return
     }
 
-    const merchantId = order.merchant_id
-
     // Search for merchant on order and load in sort code/acc number
 
     const merchantDoc = await db
       .collection(Collection.MERCHANT.name)
-      .doc(merchantId)
+      .doc(merchant_id)
       .get()
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
@@ -42,11 +42,10 @@ export default class PaymentAttemptsController extends BaseController {
       }
     }).catch(err => {
       console.log(err)
+      return
     })
 
-    console.log(recipientResponse)
-
-    const { recipient_id } = recipientResponse
+    const { recipient_id } = recipientResponse.data
 
 
     // Create a payment
@@ -55,16 +54,15 @@ export default class PaymentAttemptsController extends BaseController {
       recipient_id,
       reference: "Mercado",
       amount: {
-        value: (order.total / 100).toFixed(2),
+        value: total / 100,
         currency: "GBP"
       }
     }).catch(err => {
       console.log(err)
+      return
     })
 
-    console.log(paymentResponse)
-
-    const { payment_id } = paymentResponse
+    const { payment_id } = paymentResponse.data
 
 
     // Create a link token for the customer to go through bank auth
@@ -76,7 +74,7 @@ export default class PaymentAttemptsController extends BaseController {
       products: ["payment_initiation"],
       country_codes: ["GB"],
       language: "en",
-      webhook: "insert link here",
+      webhook: process.env.WEBHOOK_URL,
       payment_initiation: {
         payment_id
       }
@@ -84,9 +82,7 @@ export default class PaymentAttemptsController extends BaseController {
       console.log(err)
     })
 
-    console.log(linkResponse)
-
-    const { link_token, expiration } = linkResponse
+    const { link_token, expiration } = linkResponse.data
 
 
     // Write payment attempt object to database
@@ -95,17 +91,17 @@ export default class PaymentAttemptsController extends BaseController {
       .collection(Collection.PAYMENT_ATTEMPT.name)
       .add({
         payment_id,
-        order_id: order.id,
-        merchant_id: merchantId,
+        order_id: orderId,
+        merchant_id,
         status: PaymentAttemptStatus.PENDING,
         created_at: new Date(),
-        device_id: order.device_id,
-        amount: order.total,
+        device_id,
+        amount: total,
       })
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
     await db
-      .doc(paymentAttemptRef)
+      .doc(paymentAttemptRef.path)
       .collection("Private")
       .add({
         recipient_id,

@@ -3,11 +3,9 @@ import LoadingPage from "../../../components/LoadingPage"
 import { usePlaidLink } from 'react-plaid-link';
 import { useNavigate, useParams } from "react-router-dom";
 import useBasket from "../basket/useBasket";
-import { setOrderStatus } from "../../../utils/services/OrdersService";
-import OrderStatus from "../../../enums/OrderStatus";
-import { createPaymentAttempt, setPaymentAttemptStatus } from "../../../utils/services/PaymentsService";
+import { createPaymentAttempt } from "../../../utils/services/PaymentsService";
 import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus"
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { onSnapshot } from "firebase/firestore";
 import Collection from "../../../enums/Collection";
 
 export default function PaymentPage() {
@@ -16,6 +14,8 @@ export default function PaymentPage() {
   const { orderId } = useParams()
   const navigate = useNavigate()
   const { clearBasket } = useBasket()
+
+  const deviceId = localStorage.getItem("deviceId")
 
   const onSuccess = (publicToken, metadata) => {
     console.log("onSuccess", publicToken, metadata)
@@ -72,9 +72,10 @@ export default function PaymentPage() {
   }, [paymentAttemptId, clearBasket, navigate])
 
   useEffect(() => {
-    createPaymentAttempt(orderId)
+    createPaymentAttempt(orderId, deviceId)
       .then(res => {
-        const { link_token, payment_attempt_id } = res
+        console.log(res)
+        const { link_token, payment_attempt_id } = res.data
         setPaymentAttemptId(payment_attempt_id)
         setLinkToken(link_token)
       })
@@ -82,7 +83,7 @@ export default function PaymentPage() {
         console.log(err)
         navigate('../payment-failure')
       })
-  }, [orderId, navigate])
+  }, [orderId, deviceId, navigate])
 
   return <LoadingPage message="Processing your order" />
 }

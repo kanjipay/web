@@ -2,10 +2,8 @@ import express from 'express'
 import ordersRoutes from './routes/ordersRoutes'
 import paymentAttemptsRoutes from './routes/paymentAttemptsRoutes'
 import cors from 'cors'
-import { checkFirebaseAuthToken } from './middleware/auth'
-import { HttpStatusCode } from './utils/errors'
-import * as admin from 'firebase-admin'
-import { errorHandler } from './middleware/errorHandler'
+import { checkFirebaseAuthToken } from '../middleware/auth'
+import { errorHandler } from '../middleware/errorHandler'
 
 const app = express()
 
@@ -25,14 +23,5 @@ app.use(errorHandler)
 
 // Do this to enable protected routes
 // app.use('/orders', checkFirebaseAuthToken, ordersRoutes)
-
-const env = process.env.ENVIRONMENT || "DEV"
-const serviceAccount = require(`./service-account-${env}.json`)
-const credential = admin.credential.cert(serviceAccount)
-
-admin.initializeApp({ credential })
-
-export const db = admin.firestore()
-export const auth = admin.auth()
 
 export default app
