@@ -36,10 +36,10 @@ export default class OrdersController extends BaseController {
 
     const merchant = { id: merchantDoc.id, ...merchantDoc.data() }
 
-    if (merchant.status !== MerchantStatus.OPEN) {
-      next(new HttpError(HttpStatusCode.BAD_REQUEST, "Sorry, the merchant isn't open at the moment"))
-      return
-    }
+    //if (merchant.status !== MerchantStatus.OPEN) {
+    //  next(new HttpError(HttpStatusCode.BAD_REQUEST, "Sorry, the merchant isn't open at the moment"))
+    //  return
+    //}
 
     const requestedMenuItemIds = requested_items.map(item => item.id)
     const menuItemsSnapshot = await db
