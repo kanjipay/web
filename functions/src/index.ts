@@ -15,7 +15,7 @@ const app = express();
 const main = express();
 
 //add the path to receive request and set json as bodyParser to process the body 
-main.use('/api/v1', app);
+main.use('/v1', app);
 main.use(bodyParser.json());
 main.use(bodyParser.urlencoded({ extended: false }));
 
@@ -37,23 +37,31 @@ interface Order {
     requested_items: Array<Item>
 }
 
+export const status = functions.https.onRequest((request, response) => {
+    functions.logger.info("Hello logs!", {structuredData: true});
+    response.send("ok");
+ });
+
 // Create new user
-app.post('/order', async (req, res) => {
+app.post('/orders', async (req, res) => {
     try {
         const order: Order = {
             merchant_id: req.body['merchant_id'],
             device_id: req.body['device_id'],
             requested_items: req.body['requested_items']
         }
+        functions.logger.info(order, {structuredData: true});
         const orderId = uuid.v4();
         await db.collection('Orders').doc(orderId).set(order);
-        const reponse = {
+        const reponseBody = {
             merchant_id: req.body['merchant_id'],
             device_id: req.body['device_id'],
             requested_items: req.body['requested_items'],
             order_id: orderId
         }
-        res.status(201).json(reponse);
+        functions.logger.info('response', {structuredData: true});
+        functions.logger.info(reponseBody, {structuredData: true});
+        res.status(201).json(reponseBody);
     } catch (error) {
         console.log(error);
         res.status(400).send(`User should cointain firstName, lastName!!!`)
