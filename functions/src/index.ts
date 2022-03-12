@@ -4,6 +4,9 @@ import * as admin from 'firebase-admin';
 import * as express from 'express';
 import * as bodyParser from "body-parser";
 
+var uuid = require('uuid');
+
+
 //initialize firebase inorder to access its services
 admin.initializeApp(functions.config().firebase);
 
@@ -22,9 +25,16 @@ const db = admin.firestore();
 //define google cloud function name
 export const webApi = functions.https.onRequest(main);
 
+interface Item {
+    id: String, 
+    quantity: Number,
+    title: String
+}
+
 interface Order {
     merchant_id: String,
     device_id: String,
+    requested_items: Array<Item>
 }
 
 // Create new user
@@ -33,9 +43,17 @@ app.post('/order', async (req, res) => {
         const order: Order = {
             merchant_id: req.body['merchant_id'],
             device_id: req.body['device_id'],
+            requested_items: req.body['requested_items']
         }
-        await db.collection('Orders').add(order);
-        res.status(201).json(order);
+        const orderId = uuid.v4();
+        await db.collection('Orders').doc(orderId).set(order);
+        const reponse = {
+            merchant_id: req.body['merchant_id'],
+            device_id: req.body['device_id'],
+            requested_items: req.body['requested_items'],
+            order_id: orderId
+        }
+        res.status(201).json(reponse);
     } catch (error) {
         console.log(error);
         res.status(400).send(`User should cointain firstName, lastName!!!`)
