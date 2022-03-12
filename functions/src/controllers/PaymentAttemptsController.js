@@ -84,16 +84,27 @@ export default class PaymentAttemptsController extends BaseController {
 
     // Write payment attempt object to database
 
-    const paymentAttemptRef = await db.collection(Collection.PAYMENT_ATTEMPT.name).add({
-      order_id: order.id,
-      amount: order.total,
-      status: PaymentAttemptStatus.PENDING,
-      created_at: new Date(),
-      device_id: order.device_id,
-      recipient_id,
-      link_token,
-      link_expiration: expiration
-    }).catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+    const paymentAttemptRef = await db
+      .collection(Collection.PAYMENT_ATTEMPT.name)
+      .add({
+        payment_id,
+        order_id: order.id,
+        status: PaymentAttemptStatus.PENDING,
+        created_at: new Date(),
+        device_id: order.device_id,
+        amount: order.total,
+      })
+      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+
+    await db
+      .doc(paymentAttemptRef)
+      .collection("Private")
+      .add({
+        recipient_id,
+        link_token,
+        link_expiration: expiration
+      })
+      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
 
     // Return the link token and payment attempt id for the frontend to use
