@@ -23,7 +23,7 @@ function MerchantApp() {
   const [orderList, setOrderList] = useState("");
   const [menuItems, setMenuItems] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false); 
-  const [menuSections, setMenuSections] = useState("")
+  const [MerchantMenuSections, setMerchantMenuSections] = useState("")
 
   //TODO: Check whether this handling of authentication is actually secure! We may need to have permissions for the various apps and/or build a backend auth system for security. 
 
@@ -123,28 +123,50 @@ useEffect(() => {
         setMenuItems(items)
       });
 
-    const menuSectionQuery = query(
-        collection(db, "MenuSection",
-        where("merchant_id", "==", merchantId))
-    );
+    // const menuSectionQuery = query(
+    //     collection(db, "MenuSection",
+    //     where("merchant_id", "==", merchantId))
+    // );
 
-    const menuSectionUnsub = onSnapshot(menuSectionQuery, (sectionSnapshot) => {
-        const sections = sectionSnapshot.docs.map((document) => {
-            const section = {id: document.id,...document.data()};
-            return section;
-        });
-        setMenuSections(sections)
-    });
+    // const menuSectionUnsub = onSnapshot(menuSectionQuery, (sectionSnapshot) => {
+    //     const sections = sectionSnapshot.docs.map((document) => {
+    //         const section = {id: document.id,...document.data()};
+    //         return section;
+    //     });
+    //     setMenuSections(sections)
+    // });
 
       return () => {
         menuItemUnsub();
         ordersUbsub();
+        // menuSectionUnsub();
+      };
+    }, [merchantId]);
+
+
+    useEffect(() => {
+        console.log("Use effect")
+        const menuSectionQuery = query(
+            collection(db, "MenuSection",
+            where("merchant_id", "==", merchantId))
+        );
+
+        const menuSectionUnsub = onSnapshot(menuSectionQuery, (sectionSnapshot) => {
+            const sections = sectionSnapshot.docs.map((document) => {
+                const section = {id: document.id,...document.data()};
+                return section;
+            });
+            setMerchantMenuSections(sections)
+        });
+
+    return () => {
         menuSectionUnsub();
       };
-    }, [merchantRef]);
+    }, [merchantId]);
 
 
-    const isLoadedAndAuthenticated = userId && (orderList.length > 0) && (menuItems.length > 0) && (menuSections.length > 0) && isAuthenticated
+
+    const isLoadedAndAuthenticated = userId && (orderList.length > 0) && (menuItems.length > 0) && isAuthenticated
 
   
   //  render a scene based on the current state
