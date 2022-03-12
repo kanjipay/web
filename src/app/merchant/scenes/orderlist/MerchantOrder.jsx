@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom';
-
+import AlertIcon from '../../../../components/AlertIcon';
 
 function OrderItem(props) {
     const { order , menuItems, index } = props;
@@ -67,7 +67,8 @@ function OrderItem(props) {
           </Grid>
 
            <Grid item xs={8}>
-          <h2> Order </h2>
+          <h2> Order</h2> 
+          <AlertIcon />
           <Div>{orderListString}</Div>
           </Grid>
 

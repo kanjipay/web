@@ -1,5 +1,7 @@
 import OrderItem from "./MerchantOrder"
 import Spacer from "../../../../components/Spacer";
+import BottomNavBar from "../../../../components/BottomNavBar";
+
 
 function MerchantOrderList(props) {
   const { orderList, menuItems } = props;
@@ -13,7 +15,7 @@ function MerchantOrderList(props) {
     console.log('MerchantOrderListPage: orderList', orderList)
 
   return (
-    <div>
+    <div className='container'>
     <h2 className='header-m'> Order List Page</h2>
     <Spacer y={3} /> 
       {orderList.map((order, index) => (
@@ -23,6 +25,8 @@ function MerchantOrderList(props) {
             </div>
       )) 
 }
+<div className="anchored-bottom"><BottomNavBar/></div>
+    
     </div>
 
   );

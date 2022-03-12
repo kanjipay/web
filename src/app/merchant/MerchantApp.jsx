@@ -8,19 +8,22 @@ import {
   setPersistence,
   inMemoryPersistence,
 } from "firebase/auth";
-import { collection, doc, onSnapshot, query, where, getDocs, getDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where, getDocs, getDoc, orderBy } from "firebase/firestore";
 import { db } from "../../utils/FirebaseUtils"
 import MerchantOrderList from "./scenes/orderlist/MerchantOrderListPage";
 import LoadingPage from "../../components/LoadingPage";
-
+import MerchantConfigurePage from "./scenes/configure/MerchantConfigurePage";
+import MerchantAccountPage from "./scenes/account/MerchantAccountPage";
 
 function MerchantApp() {
   const [merchantId, setMerchantId] = useState("");
   const [merchantRef, setMerchantRef] = useState("");
+  const [merchantData, setMerchantData] = useState("");
   const [userId, setUserId] = useState("");
   const [orderList, setOrderList] = useState("");
   const [menuItems, setMenuItems] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false); 
+  const [menuSections, setMenuSections] = useState("")
 
   //TODO: Check whether this handling of authentication is actually secure! We may need to have permissions for the various apps and/or build a backend auth system for security. 
 
@@ -57,10 +60,10 @@ function MerchantApp() {
   useEffect(() => {
 
       if (userId) {
-        const MerchantIdQuery = query(collection(db, "Merchant"), where("user_id", "==", userId))
+        const MerchantQuery = query(collection(db, "Merchant"), where("user_id", "==", userId))
 
 
-        onSnapshot(MerchantIdQuery, snapshot => {
+        onSnapshot(MerchantQuery, snapshot => {
       const data = snapshot.docs.map((doc) => {
         const range = { id: doc.id, ...doc.data() };
         delete range.merchant;
@@ -68,6 +71,7 @@ function MerchantApp() {
         return range;
       });
       setMerchantId(data[0].id)
+      setMerchantData(data)
       })
 
    }
@@ -89,7 +93,7 @@ useEffect(() => {
 
 useEffect(() => {
 
-    const orderQuery = query(collection(db, "Order"),where("status", "==", "PAID"),where("merchant_id", "==", merchantId));
+    const orderQuery = query(collection(db, "Order"),where("status", "==", "PAID"),where("merchant_id", "==", merchantId),orderBy("created_at"));
 
 
     const ordersUbsub = onSnapshot(orderQuery, (orderSnapshot) => {
@@ -105,7 +109,7 @@ useEffect(() => {
 
     const menuItemQuery = query(
         collection(db, "MenuItem"),
-        where("merchant", "==", merchantRef)
+        where("merchant_id", "==", merchantId)
       );
 
 
@@ -113,30 +117,34 @@ useEffect(() => {
         const items = itemSnapshot.docs.map((document) => {
           const menuItemRef = doc(db, "MenuItem", document.id);
           const item = { id: document.id, ref: menuItemRef,...document.data() };
-          item.merchantId = item.merchant.id;
-          item.sectionId = item.section.id;
-  
-          delete item.merchant;
-          delete item.section;
-  
           return item;
         });
   
-        console.log('menuItemUbsub: Merchants Items', items)
         setMenuItems(items)
       });
 
+    const menuSectionQuery = query(
+        collection(db, "MenuSection",
+        where("merchant_id", "==", merchantId))
+    );
 
+    const menuSectionUnsub = onSnapshot(menuSectionQuery, (sectionSnapshot) => {
+        const sections = sectionSnapshot.docs.map((document) => {
+            const section = {id: document.id,...document.data()};
+            return section;
+        });
+        setMenuSections(sections)
+    });
 
-      // TODO create component for each Order item 
       return () => {
         menuItemUnsub();
-        ordersUbsub()
+        ordersUbsub();
+        menuSectionUnsub();
       };
     }, [merchantRef]);
 
 
-    const isLoadedAndAuthenticated = userId && (orderList.length > 0) && (menuItems.length > 0) && isAuthenticated
+    const isLoadedAndAuthenticated = userId && (orderList.length > 0) && (menuItems.length > 0) && (menuSections.length > 0) && isAuthenticated
 
   
   //  render a scene based on the current state
@@ -145,11 +153,13 @@ useEffect(() => {
     // TODO improve the loading experience here
 
 
-    return (<Routes>
+    return (
+    <Routes>
         <Route path="order/:orderId" element={<MerchantOrderPage orderList = {orderList} menuItems = {menuItems}>  </MerchantOrderPage>} />
+        <Route path="configure" element ={<MerchantConfigurePage merchantData = {merchantData} menuItems ={menuItems} />} />
+        <Route path="account" element ={<MerchantAccountPage/>}/>
         <Route path="*" element={<MerchantOrderList {...{ orderList, menuItems }}></MerchantOrderList>} />
     </Routes>
-
     )
 
   }
