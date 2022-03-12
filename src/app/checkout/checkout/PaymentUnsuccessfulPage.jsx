@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import IconActionPage from "../../../components/IconActionPage"
 import { setOrderStatus } from "../../../utils/services/OrdersService"
-import OrderStatus from "./OrderStatus"
+import OrderStatus from "../../../enums/OrderStatus"
 
 export default function PaymentUnsuccessfulPage({ Icon, iconBackgroundColor, iconForegroundColor, title, body}) {
   const navigate = useNavigate()

@@ -1,73 +1,42 @@
-import { collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
-import { db } from "../FirebaseUtils"
+import { getDoc, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
 import axios from 'axios'
+import OrderStatus from "../../enums/OrderStatus"
+import Collection from "../../enums/Collection"
 
-export function createOrder(merchantId, basketItems) {
+export async function createOrder(merchantId, basketItems) {
   const deviceId = localStorage.getItem("deviceId")
 
-  const requestBody = {
+  const body = {
     merchant_id: merchantId,
     device_id: deviceId,
-    menu_items: basketItems
-      .filter(item => item.merchantId === merchantId)
-      .map(item => {
-        return { id: item.id, quantity: item.quantity }
-      })
+    requested_items: basketItems
+      .filter(item => item.merchant_id === merchantId)
+      .map(item => ({ id: item.id, quantity: item.quantity, title: item.title }))
   }
 
-  console.log(requestBody)
+  const res = await axios.post(`${process.env.REACT_APP_SERVER_URL}/orders`, body)
 
-  return axios.post(`${process.env.REACT_APP_SERVER_URL}/order`, requestBody)
+  return res.data.order_id
 }
 
-export function fetchOrder(orderId, onComplete) {
-  const orderRef = doc(db, "Order", orderId)
+export async function fetchOrder(orderId) {
+  const orderDoc = await getDoc(Collection.ORDER.docRef(orderId))
 
-  getDoc(orderRef)
-    .then(doc => {
-      if (doc.exists()) {
-        const order = { id: doc.id, ...doc.data() }
+  if (!orderDoc.exists()) {
+    throw new Error(`No order with id ${orderId}`)
+  }
 
-        const itemIds = order.menu_items.map(item => item.id)
-        const menuItemCollectionRef = collection(db, "MenuItem")
+  const order = { id: orderDoc.id, ...orderDoc.data() }
 
-        const menuItemsQuery = query(
-          menuItemCollectionRef,
-          where("__name__", "in", itemIds)
-        )
-
-        getDocs(menuItemsQuery)
-          .then(snapshot => {
-            const items = snapshot.docs.map(doc => {
-              return { id: doc.id, ...doc.data() }
-            })
-
-            order.menu_items = order.menu_items.map(menuItem => {
-              const item = items.find(e => e.id === menuItem.id)
-              item.quantity = menuItem.quantity
-              return item
-            })
-
-            onComplete(order)
-          })
-
-      } else {
-        console.log("document doesn't exist")
-      }
-    })
-    .catch(err => {
-      console.log(err)
-    })
+  return order
 }
 
 export function fetchOrders(deviceId, merchantId, onComplete) {
-  const ordersCollectionRef = collection(db, "Order")
-
   const ordersQuery = query(
-    ordersCollectionRef,
+    Collection.ORDER.ref,
     where("merchant_id", "==", merchantId),
     where("device_id", "==", deviceId),
-    where("status", "==", "PAID"),
+    where("status", "==", OrderStatus.PAID),
     orderBy("created_at", "desc")
   )
 
@@ -75,15 +44,17 @@ export function fetchOrders(deviceId, merchantId, onComplete) {
 }
 
 export function setOrderStatus(orderId, status) {
-  const orderRef = doc(db, "Order", orderId)
-  return updateDoc(orderRef, { status })
+  return updateDoc(
+    Collection.ORDER.docRef(orderId), 
+    { status }
+  )
 }
 
-export function sendOrderReceipt(order, email) {
+export function sendOrderReceipt(orderId, email) {
   const requestBody = {
-    order,
-    to_email: email
+    order_id: orderId,
+    email
   }
 
-  return axios.post(`${process.env.REACT_APP_SERVER_URL}/email-receipt`, requestBody)
+  return axios.post(`${process.env.REACT_APP_SERVER_URL}/orders/email-receipt`, requestBody)
 }

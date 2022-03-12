@@ -1,7 +1,6 @@
 import { formatCurrency } from "../../../utils/helpers/money";
 import "./BasketItem.css"
 import CircleButton, { ButtonTheme } from "../../../components/CircleButton"
-
 import Minus from "../../../assets/icons/Minus"
 import Plus from "../../../assets/icons/Plus"
 import Cross from "../../../assets/icons/Cross"

@@ -3,12 +3,10 @@ import { useEffect, useState } from "react";
 import { storage } from "../utils/FirebaseUtils";
 import { Colors } from "./CircleButton";
 
-export default function AsyncImage({ storagePath, alt = '', ...props }) {
+export default function AsyncImage({ imageRef, alt = '', ...props }) {
   const [url, setUrl] = useState(null)
 
   useEffect(() => {
-    const imageRef = ref(storage, storagePath)
-
     getDownloadURL(imageRef)
       .then(url => {
         setUrl(url)
@@ -16,7 +14,7 @@ export default function AsyncImage({ storagePath, alt = '', ...props }) {
       .catch((error) => {
         console.error(error)
       })
-  }, [storagePath])
+  }, [imageRef])
 
   return url ?
     <img src={url} alt={alt} {...props} /> :

@@ -1,13 +1,16 @@
-import { doc, updateDoc } from "firebase/firestore"
-import { db } from "../FirebaseUtils"
+import { updateDoc } from "firebase/firestore"
 import axios from "axios"
+import Collection from "../../enums/Collection"
 
 export function createPaymentAttempt(orderId) {
   const requestBody = { order_id: orderId }
-  return axios.post(`${process.env.REACT_APP_SERVER_URL}/payment-attempt`, requestBody)
+  console.log(requestBody)
+  return axios.post(`${process.env.REACT_APP_SERVER_URL}/payment-attempts`, requestBody)
 }
 
 export function setPaymentAttemptStatus(paymentAttemptId, status) {
-  const attemptRef = doc(db, "PaymentAttempt", paymentAttemptId)
-  return updateDoc(attemptRef, { status })
+  return updateDoc(
+    Collection.PAYMENT_ATTTEMPT.docRef(paymentAttemptId), 
+    { status }
+  )
 }

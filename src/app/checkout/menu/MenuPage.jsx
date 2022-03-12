@@ -5,10 +5,11 @@ import "./MenuPage.css"
 import Spacer from '../../../components/Spacer';
 import { formatMinutes } from '../../../utils/helpers/time';
 import NavBar from '../../../components/NavBar';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import useBasket from '../basket/useBasket';
 import LoadingPage from '../../../components/LoadingPage';
 import MainButton from '../../../components/MainButton';
+import { getMerchantStorageRef } from '../../../utils/helpers/storage';
 
 export default function MenuPage({
   merchant,
@@ -22,7 +23,7 @@ export default function MenuPage({
   const groupedMenuItems = {}
 
   menuItems.forEach(menuItem => {
-    const menuSectionId = menuItem.sectionId
+    const menuSectionId = menuItem.section_id
     const currValue = groupedMenuItems[menuSectionId]
 
     if (currValue) {
@@ -81,7 +82,7 @@ export default function MenuPage({
       />
 
       <AsyncImage
-        storagePath={`merchants/${merchant.id}/${merchant.photo}`}
+        imageRef={getMerchantStorageRef(merchant.id, merchant.photo)}
         className='headerImage'
         alt={merchant.display_name}
       />
