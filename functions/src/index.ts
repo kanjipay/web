@@ -22,21 +22,22 @@ const db = admin.firestore();
 //define google cloud function name
 export const webApi = functions.https.onRequest(main);
 
-interface User {
-    firstName: String,
-    lastName: String,
+interface Order {
+    merchant_id: String,
+    device_id: String,
 }
 
 // Create new user
-app.post('/users', async (req, res) => {
+app.post('/order', async (req, res) => {
     try {
-        const user: User = {
-            firstName: req.body['firstName'],
-            lastName: req.body['lastName'],
+        const order: Order = {
+            merchant_id: req.body['merchant_id'],
+            device_id: req.body['device_id'],
         }
-        const newDoc = await db.collection('users').add(user);
-        res.status(201).send(`Created a new user: ${newDoc.id}`);
+        await db.collection('Orders').add(order);
+        res.status(201).json(order);
     } catch (error) {
+        console.log(error);
         res.status(400).send(`User should cointain firstName, lastName!!!`)
     }
 });
