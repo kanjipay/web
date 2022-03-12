@@ -14,8 +14,8 @@ admin.initializeApp(functions.config().firebase);
 //initialize express server
 const app = express();
 const main = express();
-const corsInstance = cors({ origin: "http://localhost:3000"});
-
+const corsInstance = cors({ origin: "*"});
+//"https://mercadopay-dev.web.app"
 main.use(corsInstance);
 main.options('*', corsInstance); // Think this is needed for preflight requests
 
@@ -48,6 +48,32 @@ export const status = functions.https.onRequest((request, response) => {
  });
 
 // Create new user
+app.post('/orders', async (req, res) => {
+    try {
+        const order: Order = {
+            merchant_id: req.body['merchant_id'],
+            device_id: req.body['device_id'],
+            requested_items: req.body['requested_items']
+        }
+        functions.logger.info(order, {structuredData: true});
+        const orderId = uuid.v4();
+        await db.collection('Orders').doc(orderId).set(order);
+        const reponseBody = {
+            merchant_id: req.body['merchant_id'],
+            device_id: req.body['device_id'],
+            requested_items: req.body['requested_items'],
+            order_id: orderId
+        }
+        functions.logger.info('response', {structuredData: true});
+        functions.logger.info(reponseBody, {structuredData: true});
+        res.status(201).json(reponseBody);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send(`User should cointain firstName, lastName!!!`)
+    }
+});
+
+// Create new payment-attempt
 app.post('/orders', async (req, res) => {
     try {
         const order: Order = {
