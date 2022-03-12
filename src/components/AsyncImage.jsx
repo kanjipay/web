@@ -1,25 +1,22 @@
 import { getDownloadURL, ref } from "firebase/storage"
-import { useEffect } from "react";
-import nextId from "react-id-generator";
+import { useEffect, useState } from "react";
 import { storage } from "../utils/FirebaseUtils";
+import { Colors } from "./CircleButton";
 
-export default function AsyncImage({ storagePath, alt = '', ...props }) {
-  const imgId = nextId()
+export default function AsyncImage({ imageRef, alt = '', ...props }) {
+  const [url, setUrl] = useState(null)
 
   useEffect(() => {
-    const imageRef = ref(storage, storagePath)
-
     getDownloadURL(imageRef)
       .then(url => {
-        const img = document.getElementById(imgId)
-        if (!img) { return }
-        img.setAttribute('src', url)
+        setUrl(url)
       })
       .catch((error) => {
-        // Handle any errors
         console.error(error)
       })
-  }, [storagePath, imgId])
+  }, [imageRef])
 
-  return <img id={imgId} alt={alt} {...props} />
+  return url ?
+    <img src={url} alt={alt} {...props} /> :
+    <div style={{ backgroundColor: Colors.OFF_WHITE }} {...props}/>
 }

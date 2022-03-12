@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet"
+import { Helmet } from "react-helmet-async"
 import "./HomePage.css"
 import useWindowSize from "../../utils/helpers/useWindowSize"
 import Spacer from "../../components/Spacer";
