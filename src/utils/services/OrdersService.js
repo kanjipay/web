@@ -13,8 +13,10 @@ export async function createOrder(merchantId, basketItems) {
       .filter(item => item.merchant_id === merchantId)
       .map(item => ({ id: item.id, quantity: item.quantity, title: item.title }))
   }
-
-  const res = await axios.post(`${process.env.REACT_APP_SERVER_URL}/orders`, body)
+  const url = `${process.env.REACT_APP_SERVER_URL}/orders`;
+  console.log(url);
+  console.log(body);
+  const res = await axios.post(url, body)
 
   return res.data.order_id
 }

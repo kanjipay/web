@@ -3,6 +3,7 @@ import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as express from 'express';
 import * as bodyParser from "body-parser";
+import * as cors from 'cors';
 
 var uuid = require('uuid');
 
@@ -13,6 +14,10 @@ admin.initializeApp(functions.config().firebase);
 //initialize express server
 const app = express();
 const main = express();
+const corsInstance = cors({ origin: "http://localhost:3000"});
+
+main.use(corsInstance);
+main.options('*', corsInstance); // Think this is needed for preflight requests
 
 //add the path to receive request and set json as bodyParser to process the body 
 main.use('/v1', app);
