@@ -121,8 +121,7 @@ app.post('/', async (req, res, next) => {
   ]
 
   const paymentStatusMap = {
-    "PAYMENT_STATUS_INPUT_NEEDED": PaymentAttemptStatus.PENDING,
-    "PAYMENT_STATUS_INITIATED": PaymentAttemptStatus.SUCCESSFUL,
+    "PAYMENT_STATUS_EXECUTED": PaymentAttemptStatus.SUCCESSFUL,
     "PAYMENT_STATUS_CANCELLED": PaymentAttemptStatus.CANCELLED,
     "PAYMENT_STATUS_FAILED": PaymentAttemptStatus.FAILED,
     "PAYMENT_STATUS_BLOCKED": PaymentAttemptStatus.FAILED,
