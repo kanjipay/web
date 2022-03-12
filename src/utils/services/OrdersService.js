@@ -1,9 +1,9 @@
-import { documentId, getDoc, getDocs, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
+import { getDoc, onSnapshot, orderBy, query, updateDoc, where } from "firebase/firestore"
 import axios from 'axios'
 import OrderStatus from "../../enums/OrderStatus"
 import Collection from "../../enums/Collection"
 
-export function createOrder(merchantId, basketItems) {
+export async function createOrder(merchantId, basketItems) {
   const deviceId = localStorage.getItem("deviceId")
 
   const body = {
@@ -14,7 +14,9 @@ export function createOrder(merchantId, basketItems) {
       .map(item => ({ id: item.id, quantity: item.quantity, title: item.title }))
   }
 
-  return axios.post(`${process.env.REACT_APP_SERVER_URL}/orders`, body)
+  const res = await axios.post(`${process.env.REACT_APP_SERVER_URL}/orders`, body)
+
+  return res.data.order_id
 }
 
 export async function fetchOrder(orderId) {

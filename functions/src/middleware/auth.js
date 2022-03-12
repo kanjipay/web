@@ -1,4 +1,4 @@
-import { auth, db } from ".."
+import { auth, db } from "../admin"
 
 export const checkFirebaseAuthToken = async (req, res, next) => {
   let idToken

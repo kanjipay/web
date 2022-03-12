@@ -1,11 +1,10 @@
 import BaseController from "./BaseController";
-import { ErrorHandler, HttpError, HttpStatusCode } from "../utils/errors";
+import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 import { sendEmail } from "../emails";
-import { db } from "../app";
-import Collection from "../enums/Collection";
-import { documentId, FieldValue } from "firebase/firestore";
-import OrderStatus from "../enums/OrderStatus";
-import MerchantStatus from "../enums/MerchantStatus";
+import { db } from "../../admin";
+import Collection from "../../enums/Collection";
+import OrderStatus from "../../enums/OrderStatus";
+import MerchantStatus from "../../enums/MerchantStatus";
 
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
@@ -30,7 +29,7 @@ export default class OrdersController extends BaseController {
       .get()
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
-    if (!merchantDoc.exists()) {
+    if (!merchantDoc) {
       next(new HttpError(HttpStatusCode.NOT_FOUND, "That merchant doesn't exist"))
       return
     }
@@ -134,6 +133,8 @@ export default class OrdersController extends BaseController {
 
     const orderId = orderRef.id
 
+    console.log(orderId)
+
     // Having created the order, need to create a subcollection containing the order items
     const batch = db.batch()
 
@@ -154,6 +155,6 @@ export default class OrdersController extends BaseController {
 
     await batch.commit()
 
-    return res.status(200).json({ orderId })
+    return res.status(200).json({ order_id: orderId })
   }
 }

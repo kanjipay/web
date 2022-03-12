@@ -1,4 +1,4 @@
-import { db } from "../app"
+import { db } from "../admin"
 import Collection from "../enums/Collection"
 import { ErrorHandler, HttpError, HttpStatusCode } from "../utils/errors"
 
@@ -7,7 +7,7 @@ export const readOrder = async (req, res, next) => {
   const { order_id } = req.body
 
   const orderDoc = await db
-    .doc(`${Collection.ORDER.name}/${orderId}`)
+    .doc(`${Collection.ORDER.name}/${order_id}`)
     .get()
     .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
