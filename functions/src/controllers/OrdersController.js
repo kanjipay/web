@@ -24,7 +24,11 @@ export default class OrdersController extends BaseController {
     const { requested_items, merchant_id, device_id } = req.body
 
     // Check merchant_id exists and is open
-    const merchantDoc = await db.collection(Collection.MERCHANT.name).doc(merchant_id).get()
+    const merchantDoc = await db
+      .collection(Collection.MERCHANT.name)
+      .doc(merchant_id)
+      .get()
+      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
     if (!merchantDoc.exists()) {
       next(new HttpError(HttpStatusCode.NOT_FOUND, "That merchant doesn't exist"))

@@ -14,7 +14,7 @@ export default class PaymentAttemptsController extends BaseController {
       next(new HttpError(HttpStatusCode.BAD_REQUEST, `That order was ${order.status.toLowerCase()}`))
       return
     }
-    
+
     const merchantId = order.merchant_id
 
     // Search for merchant on order and load in sort code/acc number
@@ -96,6 +96,7 @@ export default class PaymentAttemptsController extends BaseController {
       .add({
         payment_id,
         order_id: order.id,
+        merchant_id: merchantId,
         status: PaymentAttemptStatus.PENDING,
         created_at: new Date(),
         device_id: order.device_id,
