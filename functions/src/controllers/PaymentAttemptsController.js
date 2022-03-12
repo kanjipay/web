@@ -39,7 +39,7 @@ export default class PaymentAttemptsController extends BaseController {
 
     console.log(recipientResponse)
 
-    const { recipient_id } = recipientResponse.data
+    const { recipient_id } = recipientResponse
 
 
     // Create a payment
@@ -57,7 +57,7 @@ export default class PaymentAttemptsController extends BaseController {
 
     console.log(paymentResponse)
 
-    const { payment_id } = paymentResponse.data
+    const { payment_id } = paymentResponse
 
 
     // Create a link token for the customer to go through bank auth
@@ -79,7 +79,7 @@ export default class PaymentAttemptsController extends BaseController {
 
     console.log(linkResponse)
 
-    const { link_token, expiration } = linkResponse.data
+    const { link_token, expiration } = linkResponse
 
 
     // Write payment attempt object to database
