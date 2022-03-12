@@ -6,6 +6,7 @@ import sha256 from 'sha256'
 import PaymentAttemptStatus from './enums/PaymentAttemptStatus'
 import { db } from './app'
 import Collection from './enums/Collection'
+import OrderStatus from './enums/OrderStatus'
 
 const app = express()
 const keyCache = new Map()
@@ -125,7 +126,7 @@ app.post('/', async (req, res, next) => {
       return
     }
 
-    const paymentAttemptRef = paymentAttemptSnapshot.docs[0].ref
+    const paymentAttemptDoc = paymentAttemptSnapshot.docs[0]
     const paymentAttemptStatus = paymentStatusMap[new_payment_status]
 
     const update = { status: paymentAttemptStatus }
@@ -135,9 +136,17 @@ app.post('/', async (req, res, next) => {
     }
 
     await db
-      .doc(paymentAttemptRef)
+      .doc(paymentAttemptDoc.ref)
       .set(update, { merge: true })
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+
+    if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
+      await db
+        .collection(Collection.ORDER.name)
+        .doc(paymentAttemptDoc.data().order_id)
+        .set({ status: OrderStatus.PAID }, { merge: true })
+        .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+    }
   }
 
   return res.sendStatus(200)
