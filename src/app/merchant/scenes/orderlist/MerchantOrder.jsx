@@ -7,6 +7,7 @@ import Paper from "@mui/material/Paper";
 import { getTimeFromUnixTimestamp } from "../../../../utils/helpers/time";
 import "./MerchantOrder.css";
 import { Colors } from "../../../../components/CircleButton";
+import { Col } from "react-bootstrap";
 
 function OrderItem(props) {
   const { order, menuItems, index } = props;
@@ -19,7 +20,6 @@ function OrderItem(props) {
     const enrichedOrderItemElement = { orderItem, menuItem };
     return enrichedOrderItemElement;
   });
-  
 
   //Here we build up a string that will contain what is in the order
   for (var enrichedOrderItem of enrichedOrderItemElements) {
@@ -33,19 +33,22 @@ function OrderItem(props) {
     }
   }
 
-//   const backgroundColor = index % 2 === 1 ? "#D3D3D3" : "";
+  //   const backgroundColor = index % 2 === 1 ? "#D3D3D3" : "";
 
   //Leaving this ugly for now - all of the core functionality is here
   return (
     <Link to={`order/${order.id}`}>
       <Box
         sx={{
-          width: 500
-                }}
+          width: 500,
+        }}
       >
         <Grid container spacing={2}>
           <Grid item xs={2}>
-            <div className="MerchantOrder__numberCircle"> {order.order_number} </div>
+            <div className="MerchantOrder__numberCircle">
+              {" "}
+              {order.order_number}{" "}
+            </div>
           </Grid>
 
           <Grid item xs={9}>
@@ -56,8 +59,21 @@ function OrderItem(props) {
                 </Box>
                 <Box gridColumn="span 10">
                   {/* <AlertIcon /> */}
-                  <div className="MerchantOrder__orderStatusContainer">
+                  {/* <div className="MerchantOrder__orderStatusContainer">
                     <p className="MerchantOrder__orderStatusText">Active</p>
+                  </div> */}
+                  <div className="flex-container">
+                    <div
+                      className="bubble"
+                      style={{
+                        color: Colors.LIGHT_GREEN,
+                        backgroundColor: Colors.GREEN,
+                      }}
+                    >
+                      Active
+                    </div>
+
+                    <div className="flex-spacer"></div>
                   </div>
                 </Box>
                 <Box gridColumn="span 12">
@@ -75,7 +91,8 @@ function OrderItem(props) {
       <div
         className="flex-spacer"
         style={{ height: 1, backgroundColor: Colors.OFF_WHITE }}
-      />    </Link>
+      />{" "}
+    </Link>
   );
 }
 

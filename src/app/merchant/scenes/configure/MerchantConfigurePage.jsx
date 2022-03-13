@@ -81,17 +81,17 @@ function MerchantConfigurePage(props) {
               ))}
           </div>
         ))}
-                </div>
-        <div className="anchored-bottom" >
-        <div style={{margin:"16px"}}>
+      </div>
+      <div className="anchored-bottom">
+        <div style={{ margin: "16px" }}>
           <MainButton
             title={`Request Menu Change`}
             style={{ boxSizing: "borderBox" }}
           />
-         </div>
-          <Spacer y={3} />
+        </div>
+        <Spacer y={3} />
 
-          <BottomNavBar />
+        <BottomNavBar />
       </div>
     </div>
   );

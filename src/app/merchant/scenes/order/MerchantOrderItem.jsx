@@ -1,7 +1,7 @@
 import Grid from "@mui/material/Grid";
 import { formatCurrency } from "../../../../utils/helpers/money";
 import Spacer from "../../../../components/Spacer";
-import "./MerchantOrderItem.css"
+import "./MerchantOrderItem.css";
 
 function MerchantOrderItem(props) {
   const { quantity, name, price } = props;

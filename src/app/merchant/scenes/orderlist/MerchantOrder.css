@@ -1,5 +1,5 @@
 .MerchantOrder__orderStatusContainer {
-  background-color:lightcoral;
+  background-color: lightcoral;
   border-radius: 40%;
   width: 100px;
   height: 18px;
@@ -8,7 +8,7 @@
 }
 
 .MerchantOrder__orderStatusText {
-  color:darkred;
+  color: darkred;
   justify-content: center;
 }
 

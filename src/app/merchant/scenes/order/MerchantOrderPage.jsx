@@ -119,19 +119,18 @@ function MerchantOrderPage(props) {
         </Grid>
 
         <Spacer y={2} />
-        </div>
+      </div>
 
-        <div className="anchored-bottom">
-        <div style={{margin:"16px"}}>
+      <div className="anchored-bottom">
+        <div style={{ margin: "16px" }}>
           <MainButton
             title="Fulfil Order"
             onClick={() => handeFulfilment(orderId)}
           ></MainButton>
-          </div>
         </div>
-
+      </div>
     </div>
-  )
+  );
 }
 
 export default MerchantOrderPage;
