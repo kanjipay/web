@@ -1,25 +1,20 @@
-import jwt from 'jsonwebtoken'
+import * as jwt from 'jsonwebtoken'
 import { plaidClient } from '../utils/plaid'
-import sha256 from 'sha256'
-// import * as jwkToPem from "jwk-to-pem"
+import * as sha256 from 'sha256'
+import * as jwkToPem from "jwk-to-pem"
 
 const keyCache = new Map()
 
 export const verify = async (req) => {
-  console.log(req.headers)
   const token = req.headers["plaid-verification"]
 
   if (!token) { return false }
 
-  const decoded = jwt.decode(token, { complete: true })
-  console.log(decoded)
-  const { header, payload } = decoded
+  const { header } = jwt.decode(token, { complete: true })
 
   if (header.alg !== "ES256") { return false }
 
   const currKeyId = header.kid
-
-  console.log(keyCache)
 
   if (!keyCache.has(currKeyId)) {
     let keyIdsToUpdate = []
@@ -47,20 +42,24 @@ export const verify = async (req) => {
     }
   }
 
-  console.log(keyCache)
-
-  if (!keyCache.has(currKeyId)) {
-    return false
-  }
+  if (!keyCache.has(currKeyId)) { return false }
 
   const key = keyCache.get(currKeyId)
 
-  if (key.expired_at != null) {
-    return false
-  }
+  if (key.expired_at != null) { return false }
+
+  const pem = jwkToPem(key)
+
+  let payload: jwt.JwtPayload
 
   try {
-    jwt.verify(token, key)
+    const payloadRes = jwt.verify(token, pem)
+
+    if (typeof payloadRes === "string") {
+      payload = JSON.parse(payloadRes)
+    } else {
+      payload = payloadRes
+    }
   } catch (err) {
     console.log(err)
     return false
@@ -69,9 +68,6 @@ export const verify = async (req) => {
   const issuedAtSeconds = payload.iat
   const claimedBodyHash = payload.request_body_sha256
 
-  console.log(issuedAtSeconds)
-  console.log(claimedBodyHash)
-
   if (!claimedBodyHash || !issuedAtSeconds || !(typeof issuedAtSeconds === "number")) {
     return false
   }
@@ -79,16 +75,10 @@ export const verify = async (req) => {
   const issuedAt = new Date(issuedAtSeconds * 1000)
   const fiveMinsAgo = new Date(Date.now() - (5 * 60 * 1000))
 
-  console.log(issuedAt)
-  console.log(fiveMinsAgo)
-
   if (issuedAt < fiveMinsAgo) { return false }
 
-  const bodyHash = sha256(req.body)
+  const bodyString = JSON.stringify(req.body, null, 2)
+  const bodyHash = sha256(bodyString)
 
-  console.log(bodyHash)
-
-  if (claimedBodyHash !== bodyHash) { return false }
-
-  return true
+  return claimedBodyHash === bodyHash
 }
