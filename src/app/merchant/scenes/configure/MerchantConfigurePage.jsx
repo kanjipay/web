@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import TextLine from "../../../../components/TextLine";
 import MenuItemConfig from "./MenuItemConfig";
 import MainButton from "../../../../components/MainButton";
-
+import NavBar from "../../../../components/NavBar";
 
 function MerchantConfigurePage(props) {
   const { merchantData, menuItems, menuSections } = props;
@@ -47,8 +47,14 @@ function MerchantConfigurePage(props) {
 
   return (
     <div className='container'>
+              <NavBar
+        title={`Menu`}
+        transparentDepth={0}
+        opaqueDepth={0}
+        showsBackButton={false}
+      />
+      <Spacer y={7}/>
              <div className="content">
-    <h2 className='header-m'> Menu Config Page</h2>
     <Spacer y={5} /> 
     <TextLine leftComponent={shopOpenStatusString} rightComponent = {<Switch
         checked = {isConfiguredOpen}

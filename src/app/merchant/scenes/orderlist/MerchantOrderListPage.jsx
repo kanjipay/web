@@ -1,6 +1,7 @@
 import OrderItem from "./MerchantOrder"
 import Spacer from "../../../../components/Spacer";
 import BottomNavBar from "../../../../components/BottomNavBar";
+import NavBar from '../../../../components/NavBar';
 
 
 function MerchantOrderList(props) {
@@ -16,9 +17,14 @@ function MerchantOrderList(props) {
 
   return (
     <div className='container'>
+      <NavBar
+        title={`Orders`}
+        transparentDepth={0}
+        opaqueDepth={0}
+        showsBackButton={false}
+      />
+      <Spacer y={10}/>
            <div className="content">
-    <h2 className='header-m'> Order List Page</h2>
-    <Spacer y={3} /> 
       {orderList.map((order, index) => (
             <div key={index}>
               <OrderItem {...{ order, menuItems, index }}> </OrderItem>
