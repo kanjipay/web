@@ -147,7 +147,7 @@ export default function MenuItemPage({ merchant }) {
       </div>
 
       <div className="anchored-bottom">
-        <div style={{ margin: "8px" }}>
+        <div style={{ margin: 16 }}>
           <MainButton
               title={ isInCart ? quantity === 0 ? "Remove from basket" : "Edit amount" : "Add to basket" }
               sideMessage={quantity > 0 ? formatCurrency(item.price * quantity) : null}

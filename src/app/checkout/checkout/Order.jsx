@@ -10,11 +10,10 @@ import PaymentSuccessPage from "./PaymentSuccessPage";
 
 export default function Order() {
   const { orderId } = useParams()
-
   const [order, setOrder] = useState(null)
 
   useEffect(() => {
-    fetchOrder(orderId, order => {
+    fetchOrder(orderId).then(order => {
       setOrder(order)
     })
   }, [orderId])
