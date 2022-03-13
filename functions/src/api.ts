@@ -6,19 +6,23 @@ import * as bodyParser from "body-parser";
 import { createOrder } from "./handlers/order";
 import { paymentAttempt } from "./handlers/paymentAttempt";
 
-//initialize express server
+//// Setup
+
+// Initialize express server
 const app = express();
 const main = express();
 
-//tighten later
+// CORS - tighten later
 const corsInstance = cors({ origin: "*" });
 main.use(corsInstance);
 main.options("*", corsInstance); // Think this is needed for preflight requests
 
-//add the path to receive request and set json as bodyParser to process the body
+// API config
 main.use("/v1", app);
 main.use(bodyParser.json());
 main.use(bodyParser.urlencoded({ extended: false }));
+
+//// Endpoints
 
 // Create new order
 app.post("/orders", async (req, res) => {

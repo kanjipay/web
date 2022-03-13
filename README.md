@@ -54,10 +54,8 @@ Make sure that the backend-url and the frontend credentials in .env.development 
 
 ## Deploy both backend and frontend
 
-### Deploy backend to firebase
-
     firebase use mercadopay
-    firebase deploy --only functions
+    firebase deploy
 
 Make sure that the backend-url and the frontend credentials in .env.development are the same app!
 
@@ -71,6 +69,10 @@ Make sure that the backend-url and the frontend credentials in .env.development 
 ## Lint
 
     npm run lint
+
+Running 
+
+    npm run build from root, and /functions will let you know any errors or warnings.
 
 ### Todo
 
