@@ -45,6 +45,7 @@ function MerchantAccountPage (props) {
             <Helmet>
           <title>{merchantData.display_name}</title>
         </Helmet>
+        <div className="content">
 
            
         <h1 className="header-l">{merchantData.display_name}</h1>
@@ -101,7 +102,7 @@ function MerchantAccountPage (props) {
                   <Spacer y={3}/>
                     <BottomNavBar/>
 
-
+                </div>
                 </div>
         </div>
     )
