@@ -1,0 +1,10 @@
+.MerchantOrderItem__numberCircle {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+
+    background:lightgrey;
+    color: black;
+    text-align: center;
+}
