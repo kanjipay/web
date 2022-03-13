@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin'
 
 const env = process.env.ENVIRONMENT || "DEV"
+console.log("environment: ", env)
 const serviceAccount = require(`./service-account-${env}.json`)
 const credential = admin.credential.cert(serviceAccount)
 
