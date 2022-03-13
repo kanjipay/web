@@ -46,11 +46,9 @@ export function fetchOrders(deviceId, merchantId, onComplete) {
 }
 
 export function setOrderStatus(orderId, status) {
-  /*return updateDoc(
+  return updateDoc(
     Collection.ORDER.docRef(orderId), 
-    { status }
-  )*/
-  return "PENDING"
+    { status })
 }
 
 export function sendOrderReceipt(orderId, email) {

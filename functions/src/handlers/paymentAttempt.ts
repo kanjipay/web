@@ -4,11 +4,11 @@ import { createLinkToken } from "../utils/linkToken";
 
 async function paymentAttempt(req, res) {
   try {
-    const orderId = req.body["order_id"];
-    console.log(orderId);
+    const {order_id} = req.body;
+    console.log(order_id);
     const orderDoc = await db
       .collection(FireStoreCollection.ORDER)
-      .doc(orderId)
+      .doc(order_id)
       .get();
     const orderData = await orderDoc.data();
     console.log(orderData);

@@ -3,17 +3,6 @@ var uuid = require("uuid");
 import { db } from "../utils/firebase";
 import { FireStoreCollection } from "../utils/enums";
 
-interface Item {
-  id: String;
-  quantity: Number;
-  title: String;
-}
-
-interface Order {
-  merchant_id: String;
-  device_id: String;
-  requested_items: Array<Item>;
-}
 
 async function getAmount(requestedItems, merchantId) {
   let totalPriceGBP = 0;
@@ -30,22 +19,17 @@ async function getAmount(requestedItems, merchantId) {
 
 async function createOrder(req, res) {
   try {
-    const order: Order = {
-      merchant_id: req.body["merchant_id"],
-      device_id: req.body["device_id"],
-      requested_items: req.body["requested_items"],
-    };
-    console.log(order);
+    const { merchant_id, device_id, requested_items } = req.body
     const orderId = uuid.v4();
     // todo add back in all Matt's validation
     const orderAmount = await getAmount(
-      order.requested_items,
-      order.merchant_id
+      requested_items,
+      merchant_id
     );
     let orderData = {
-      merchant_id: req.body["merchant_id"],
-      device_id: req.body["device_id"],
-      requested_items: req.body["requested_items"],
+      merchant_id: merchant_id,
+      device_id: device_id,
+      requested_items: requested_items,
       order_amount: orderAmount,
       status: "PENDING",
       order_id: orderId,
@@ -54,6 +38,8 @@ async function createOrder(req, res) {
     console.log("response");
     console.log(orderData);
     res.status(201).json(orderData);
+    // todo add back in orderNumber and orderReference
+
   } catch (error) {
     console.log(error);
     res.status(300).send(`Invalid Order object`);

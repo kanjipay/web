@@ -3,6 +3,7 @@ enum FireStoreCollection {
   MENU_ITEM = "MenuItem",
   MENU_SECTION = "MenuSection",
   ORDER = "Order",
+  PRIVATE = "Private",
   PAYMENT_ATTEMPT = "PaymentAttempt",
   OPENING_HOUR_RANGE = "OpeningHourRange",
 }

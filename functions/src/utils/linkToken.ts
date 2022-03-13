@@ -1,5 +1,8 @@
 import * as plaid from "plaid";
 
+import { PaymentAttemptStatus, FireStoreCollection } from "./enums";
+import { db } from "./firebase";
+
 //initalise the Plaid client
 const plaidConfiguration = new plaid.Configuration({
   basePath: plaid.PlaidEnvironments.sandbox,
@@ -11,14 +14,39 @@ const plaidConfiguration = new plaid.Configuration({
   },
 });
 
+const CLIENT_NAME = 'Mercado';
+const REFERENCE = 'Mercado';
+
 const plaidClient = new plaid.PlaidApi(plaidConfiguration);
+
+async function savePaymentData(paymentId, deviceId, amountGBP, recipientId, linkToken, expiration) {
+  const paymentData = {
+    payment_id: paymentId,
+    status: PaymentAttemptStatus.PENDING,
+    created_at: new Date(),
+    device_id: deviceId,
+    amount: amountGBP,
+  }
+  const paymentAttemptRef = await db
+      .collection(FireStoreCollection.PAYMENT_ATTEMPT)
+      .add(paymentData)
+  await db
+      .collection(FireStoreCollection.PRIVATE)
+      .doc(paymentAttemptRef.path)
+      .set({
+        recipient_id: recipientId,
+        link_token: linkToken,
+        link_expiration: expiration
+      });
+}
+
 
 async function createLinkToken(
   paymentName,
   accountNumber,
   sortCode,
-  total,
-  deviceId
+  amountGBP,
+  deviceId,
 ) {
   const recipientBody = {
     name: paymentName,
@@ -34,9 +62,9 @@ async function createLinkToken(
   const recipientResponseData = await recipientResponse.data;
   const paymentCreateBody = {
     recipient_id: recipientResponseData.recipient_id,
-    reference: "Mercado",
+    reference:  REFERENCE,
     amount: {
-      value: total,
+      value: amountGBP,
       currency: plaid.PaymentAmountCurrency.Gbp,
     },
   };
@@ -49,7 +77,7 @@ async function createLinkToken(
     user: {
       client_user_id: deviceId,
     },
-    client_name: "Mercado",
+    client_name: CLIENT_NAME,
     products: [plaid.Products.PaymentInitiation],
     country_codes: [plaid.CountryCode.Gb],
     language: "en",
@@ -62,6 +90,7 @@ async function createLinkToken(
   const linkResponse = await plaidClient.linkTokenCreate(linkTokenBody);
   const linkTokenData = await linkResponse.data;
   console.log(linkTokenData);
+  savePaymentData(paymentResponseData.payment_id, deviceId, amountGBP, recipientResponseData.recipient_id, linkTokenData.link_token, linkTokenData.link_token) 
   const response = await {
     link_token: linkTokenData.link_token,
     payment_attempt_id: paymentResponseData.payment_id,
@@ -69,4 +98,4 @@ async function createLinkToken(
   return response;
 }
 
-export { createLinkToken };
+export { createLinkToken }
