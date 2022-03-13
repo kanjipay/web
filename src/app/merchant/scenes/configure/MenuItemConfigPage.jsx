@@ -57,24 +57,22 @@ function MenuItemConfigPage(props) {
         opaqueDepth={100}
         showsBackButton={true}
       />
-                <AsyncImage
-            imageRef={getMenuItemStorageRef(
-              menuItem.merchant_id,
-              menuItemId,
-              menuItem.photo
-            )}
-            className="headerImage"
-            //   className={`MenuConfigPage__image ${isAvailable ? "" : "MenuConfigPage__imageBlur"}`}
-            alt={menuItem.title}
-          />
+      <AsyncImage
+        imageRef={getMenuItemStorageRef(
+          menuItem.merchant_id,
+          menuItemId,
+          menuItem.photo
+        )}
+        className="headerImage"
+        //   className={`MenuConfigPage__image ${isAvailable ? "" : "MenuConfigPage__imageBlur"}`}
+        alt={menuItem.title}
+      />
       <div className="content">
-      <Spacer y={3}/>
-      <h1 className="header-l">{menuItem.title}</h1>
-      <Spacer y={3}/>
+        <Spacer y={3} />
+        <h1 className="header-l">{menuItem.title}</h1>
+        <Spacer y={3} />
 
-
-          {/* {isAvailable? <div></div>:<div className='centred header-l'>Not available</div>} */}
-
+        {/* {isAvailable? <div></div>:<div className='centred header-l'>Not available</div>} */}
 
         <div style={{ display: "flex", alignItems: "center" }}>
           <CircleIcon Icon={Details} style={{ marginRight: 8 }} />
@@ -104,15 +102,18 @@ function MenuItemConfigPage(props) {
         <Spacer y={2} />
         <div className="grid">{dietaryBubbles}</div>
         <Spacer y={4} />
-        </div>
-        <Spacer y={10}/>
+      </div>
+      <Spacer y={10} />
 
-        <div className="anchored-bottom" style={{backgroundColor:Colors.WHITE}}>
-        <div style={{margin:"16px"}}>
+      <div
+        className="anchored-bottom"
+        style={{ backgroundColor: Colors.WHITE }}
+      >
+        <div style={{ margin: "16px" }}>
           <MainButton title={`Request Menu Change`} />
-          </div>
-          <Spacer y={2}/>
         </div>
+        <Spacer y={2} />
+      </div>
     </div>
   );
 }

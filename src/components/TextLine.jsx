@@ -1,29 +1,22 @@
-import './TextLine.css'
-import Spacer from './Spacer';
+import "./TextLine.css";
+import Spacer from "./Spacer";
 
-function TextLine(props){
-    const {leftComponent, rightComponent, spacer} = props
-    
-    const spacerWanted = spacer ? spacer > 0: false;
+function TextLine(props) {
+  const { leftComponent, rightComponent, spacer } = props;
 
-    return(
-        <div className="grid-container">
+  const spacerWanted = spacer ? spacer > 0 : false;
 
-            <div className="header-xs">
-                {leftComponent}
-            </div>
+  return (
+    <div className="grid-container">
+      <div className="header-xs">{leftComponent}</div>
 
-            <div className="__detailsTextLineRightText text-caption">
-                {rightComponent} 
-            </div>
+      <div className="__detailsTextLineRightText text-caption">
+        {rightComponent}
+      </div>
 
-
-            { spacerWanted ? 
-                <Spacer y={spacer}/>:
-                 <div></div>}     
-        </div>
-)
-};
+      {spacerWanted ? <Spacer y={spacer} /> : <div></div>}
+    </div>
+  );
+}
 
 export default TextLine;
-
