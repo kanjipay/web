@@ -5,6 +5,7 @@ import { db } from "../../admin"
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors"
 import { plaidClient } from "../../utils/plaid"
 import OrderStatus from "../../enums/OrderStatus"
+import { Products, CountryCode, PaymentAmountCurrency } from "plaid"
 
 export default class PaymentAttemptsController extends BaseController {
   create = async (req, res, next) => {
@@ -20,7 +21,7 @@ export default class PaymentAttemptsController extends BaseController {
     // Search for merchant on order and load in sort code/acc number
 
     const merchantDoc = await db
-      .collection(Collection.MERCHANT.name)
+      .collection(Collection.MERCHANT)
       .doc(merchant_id)
       .get()
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
@@ -40,9 +41,6 @@ export default class PaymentAttemptsController extends BaseController {
         account: account_number,
         sort_code
       }
-    }).catch(err => {
-      console.log(err)
-      return
     })
 
     const { recipient_id } = recipientResponse.data
@@ -55,11 +53,8 @@ export default class PaymentAttemptsController extends BaseController {
       reference: "Mercado",
       amount: {
         value: total / 100,
-        currency: "GBP"
+        currency: PaymentAmountCurrency.Gbp
       }
-    }).catch(err => {
-      console.log(err)
-      return
     })
 
     const { payment_id } = paymentResponse.data
@@ -71,15 +66,13 @@ export default class PaymentAttemptsController extends BaseController {
         client_user_id: device_id
       },
       client_name: "Mercado",
-      products: ["payment_initiation"],
-      country_codes: ["GB"],
+      products: [Products.PaymentInitiation],
+      country_codes: [CountryCode.Gb],
       language: "en",
       webhook: process.env.WEBHOOK_URL,
       payment_initiation: {
         payment_id
       }
-    }).catch(err => {
-      console.log(err)
     })
 
     const { link_token, expiration } = linkResponse.data
@@ -88,7 +81,7 @@ export default class PaymentAttemptsController extends BaseController {
     // Write payment attempt object to database
 
     const paymentAttemptRef = await db
-      .collection(Collection.PAYMENT_ATTEMPT.name)
+      .collection(Collection.PAYMENT_ATTEMPT)
       .add({
         payment_id,
         order_id: orderId,
@@ -98,7 +91,7 @@ export default class PaymentAttemptsController extends BaseController {
         device_id,
         amount: total,
       })
-      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+      // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
     await db
       .doc(paymentAttemptRef.path)

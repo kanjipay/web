@@ -1,10 +1,10 @@
-import sgMail from '@sendgrid/mail'
-import Handlebars from 'handlebars'
-import fs from 'fs'
+import * as sgMail from '@sendgrid/mail'
+import * as Handlebars from 'handlebars'
+import * as fs from 'fs'
 
-const fromEmail = 'oliver@mercadopay.co'
+// const fromEmail = 'oliver@mercadopay.co'
 
-export function sendEmail(toEmail, subject, templateName, context) {
+export async function sendEmail(toEmail, subject, templateName, context) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
   const test = fs.readFileSync("./test.txt").toString('utf-8')

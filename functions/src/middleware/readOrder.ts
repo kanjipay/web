@@ -6,7 +6,8 @@ export const readOrder = async (req, res, next) => {
   const { order_id } = req.body
 
   const orderDoc = await db
-    .doc(`${Collection.ORDER.name}/${order_id}`)
+    .collection(Collection.ORDER)
+    .doc(order_id)
     .get()
     .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 

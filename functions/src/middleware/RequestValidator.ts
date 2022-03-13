@@ -1,6 +1,9 @@
 import { HttpError, HttpStatusCode } from "../utils/errors"
 
 export class RequestValidator {
+  requiredFields: string[]
+  location: string
+
   constructor(requiredFields, location) {
     this.requiredFields = requiredFields
     this.location = location
@@ -24,7 +27,7 @@ export class RequestValidator {
     }
 
     if (!obj) {
-      const clientMessage = `${location} was expected on the request but not found`
+      const clientMessage = `${this.location} was expected on the request but not found`
       throw new HttpError(HttpStatusCode.BAD_REQUEST, clientMessage)
     }
 
@@ -36,7 +39,9 @@ export class RequestValidator {
         throw new HttpError(HttpStatusCode.BAD_REQUEST, clientMessage)
       }
 
-      if (typeof obj[fieldName] != expectedType) {
+      const value = obj[fieldName]
+
+      if (typeof value != expectedType) {
         const clientMessage = `Field "${fieldName}" in ${this.location} was expected to be of type "${expectedType}" but was ${typeof value}. Value was ${value}`
         throw new HttpError(HttpStatusCode.BAD_REQUEST, clientMessage)
       }

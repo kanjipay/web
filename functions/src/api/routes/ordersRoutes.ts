@@ -10,7 +10,6 @@ routes.post('/', controller.create)
 
 routes.post(
   '/email-receipt', 
-  (req, res) => {console.log(req.body)},
   new RequestValidator({ email: "string", order_id: "string"}, "body").validate, 
   readOrder,
   controller.sendEmailReceipt
