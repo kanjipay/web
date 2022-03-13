@@ -3,17 +3,22 @@ const sendGridMail = require('@sendgrid/mail');
 //import * as fs from 'fs'
 
 const FROM_EMAIL = 'oliver@mercadopay.co';
+console.log('here');
+console.log(process.env.SENDGRID_API_KEY);
 
 sendGridMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-function createEmailHTML(body){
-  return `<strong>${body}</strong>`
+function createEmailDetails(orderId: string){
+  const subject = `Order ${orderId}`
+  const text = `Thank you for ordering order #${orderId}`
+  const html = `<strong>${text}</strong>`
+  return {subject, text, html}
 }
-async function sendEmail(to, subject, text) {
-  const html = createEmailHTML(text);
+async function sendEmail(toEmail: string, orderId: string) {
+  const {subject, text, html} = createEmailDetails(orderId);
   let emailData = {
-    to,
-    FROM_EMAIL,
+    to:toEmail,
+    from:FROM_EMAIL,
     subject,
     text,
     html,
