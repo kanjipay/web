@@ -1,7 +1,7 @@
-import express from 'express'
+import * as express from 'express'
 import { errorHandler } from '../middleware/errorHandler'
 import routes from './routes'
-import cors from 'cors'
+import * as cors from 'cors'
 
 const app = express()
 
@@ -13,8 +13,8 @@ app.options('*', corsInstance) // Think this is needed for preflight requests
 app.use(express.json())
 app.use(express.urlencoded())
 
-app.use(errorHandler)
-
 app.use('/', routes)
+
+app.use(errorHandler)
 
 export default app
