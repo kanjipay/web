@@ -68,9 +68,3 @@ function MenuItemConfig(props) {
 }
 
 export default MenuItemConfig;
-
-{
-  /* <AsyncImage imageRef={getMenuItemStorageRef(menuItem.merchant_id, menuItem.id, menuItem.photo)}
-          className='smallImage'
-          alt={menuItem.title}/> */
-}

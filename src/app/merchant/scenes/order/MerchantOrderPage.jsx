@@ -41,8 +41,8 @@ function MerchantOrderPage(props) {
   const orderNumber = "003";
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
-  const enrichedOrderItemElements = order.menu_items.map((orderItem) => {
-    const menuItem = menuItems.find((x) => x.id === orderItem.id);
+  const enrichedOrderItemElements = order.order_items.map((orderItem) => {
+    const menuItem = menuItems.find((x) => x.id === orderItem.menu_item_id);
     const enrichedOrderItemElement = { orderItem, menuItem };
     return enrichedOrderItemElement;
   });
@@ -63,14 +63,10 @@ function MerchantOrderPage(props) {
     navigate(-1);
   };
 
-  console.log(enrichedOrderItemElements);
-
-  return orderIdIsNotValid ? (
-    <div> Naughty naughty, you shouldn't be here </div> //TODO make this professional
-  ) : (
+  return (
     <div className="container">
       <NavBar
-        title={`Order # ${orderNumber}`}
+        title={`Order # ${order.order_number}`}
         transparentDepth={0}
         opaqueDepth={0}
         showsBackButton={true}
@@ -85,7 +81,7 @@ function MerchantOrderPage(props) {
         <div style={{ display: "flex", alignItems: "center" }}>
           <CircleIcon Icon={Clock} style={{ marginRight: 8 }} />
           <div className="text-body-faded">{`Ordered at ${getTimeFromUnixTimestamp(
-            order.created_at
+            order.created_at.seconds
           )}`}</div>
         </div>
         <Spacer y={2} />
@@ -123,16 +119,19 @@ function MerchantOrderPage(props) {
         </Grid>
 
         <Spacer y={2} />
+        </div>
 
         <div className="anchored-bottom">
+        <div style={{margin:"16px"}}>
           <MainButton
             title="Fulfil Order"
-            handleClick={() => handeFulfilment(orderId)}
+            onClick={() => handeFulfilment(orderId)}
           ></MainButton>
+          </div>
         </div>
-      </div>
+
     </div>
-  );
+  )
 }
 
 export default MerchantOrderPage;

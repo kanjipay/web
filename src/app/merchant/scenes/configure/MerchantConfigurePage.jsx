@@ -24,7 +24,7 @@ import NavBar from "../../../../components/NavBar";
 function MerchantConfigurePage(props) {
   const { merchantData, menuItems, menuSections } = props;
   const shopOpenStatusString = "Your shop is " + merchantData[0].status;
-  var isConfiguredOpen = merchantData[0].status === "open";
+  var isConfiguredOpen = merchantData[0].status === "OPEN";
   const groupedMenuItems = {};
 
   menuItems.forEach((menuItem) => {
@@ -39,7 +39,7 @@ function MerchantConfigurePage(props) {
   });
 
   const handleOpenToggle = () => {
-    const new_status = isConfiguredOpen ? "closed" : "open";
+    const new_status = isConfiguredOpen ? "CLOSED" : "OPEN";
 
     updateDoc(doc(db, "Merchant", merchantData[0].id), {
       status: new_status,
@@ -81,15 +81,17 @@ function MerchantConfigurePage(props) {
               ))}
           </div>
         ))}
-        <div className="anchored-bottom">
+                </div>
+        <div className="anchored-bottom" >
+        <div style={{margin:"16px"}}>
           <MainButton
             title={`Request Menu Change`}
             style={{ boxSizing: "borderBox" }}
           />
+         </div>
           <Spacer y={3} />
 
           <BottomNavBar />
-        </div>
       </div>
     </div>
   );

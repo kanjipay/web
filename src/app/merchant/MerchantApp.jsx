@@ -170,7 +170,6 @@ function MerchantApp() {
 
   const isLoadedAndAuthenticated =
     userId &&
-    orderList.length > 0 &&
     menuItems.length > 0 &&
     merchantMenuSections.length > 0 &&
     isAuthenticated;

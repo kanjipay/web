@@ -13,6 +13,7 @@ import CircleIcon from "../../../../components/CircleIcon";
 import "./MenuItemConfigPage.css";
 import DietaryAttribute from "../../../checkout/menu/DietaryAttribute";
 import { formatCurrency } from "../../../../utils/helpers/money";
+import { Colors } from "../../../../components/CircleButton";
 
 // TODO DietaryAttribute should be a common component
 // TODO Better way of filtering local data
@@ -52,28 +53,28 @@ function MenuItemConfigPage(props) {
       </Helmet>
       <NavBar
         title={menuItem.title}
-        transparentDepth={0}
-        opaqueDepth={0}
+        transparentDepth={50}
+        opaqueDepth={100}
         showsBackButton={true}
       />
-      <Spacer y={7} />
-      <div className="content">
-        <div className="MenuConfigPage__imageContainer">
-          <AsyncImage
+                <AsyncImage
             imageRef={getMenuItemStorageRef(
               menuItem.merchant_id,
               menuItemId,
               menuItem.photo
             )}
-            className={`MenuConfigPage__image`}
+            className="headerImage"
             //   className={`MenuConfigPage__image ${isAvailable ? "" : "MenuConfigPage__imageBlur"}`}
             alt={menuItem.title}
           />
+      <div className="content">
+      <Spacer y={3}/>
+      <h1 className="header-l">{menuItem.title}</h1>
+      <Spacer y={3}/>
+
 
           {/* {isAvailable? <div></div>:<div className='centred header-l'>Not available</div>} */}
-        </div>
 
-        <Spacer y={4} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
           <CircleIcon Icon={Details} style={{ marginRight: 8 }} />
@@ -103,11 +104,15 @@ function MenuItemConfigPage(props) {
         <Spacer y={2} />
         <div className="grid">{dietaryBubbles}</div>
         <Spacer y={4} />
-
-        <div className="anchored-bottom">
-          <MainButton title={`Request Menu Change`} />
         </div>
-      </div>
+        <Spacer y={10}/>
+
+        <div className="anchored-bottom" style={{backgroundColor:Colors.WHITE}}>
+        <div style={{margin:"16px"}}>
+          <MainButton title={`Request Menu Change`} />
+          </div>
+          <Spacer y={2}/>
+        </div>
     </div>
   );
 }
