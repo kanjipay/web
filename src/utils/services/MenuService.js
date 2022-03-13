@@ -1,17 +1,17 @@
-import { onSnapshot, orderBy, query, where } from "firebase/firestore"
-import Collection from "../../enums/Collection"
+import { onSnapshot, orderBy, query, where } from "firebase/firestore";
+import Collection from "../../enums/Collection";
 
 export function fetchMerchant(merchantId, onComplete) {
-  return onSnapshot(Collection.MERCHANT.docRef(merchantId), onComplete)
+  return onSnapshot(Collection.MERCHANT.docRef(merchantId), onComplete);
 }
 
 export function fetchOpeningHours(merchantId, onComplete) {
   const openHoursQuery = query(
     Collection.OPENING_HOUR_RANGE.ref,
     where("merchant_id", "==", merchantId)
-  )
+  );
 
-  return onSnapshot(openHoursQuery, onComplete)
+  return onSnapshot(openHoursQuery, onComplete);
 }
 
 export function fetchMenuSections(merchantId, onComplete) {
@@ -19,9 +19,9 @@ export function fetchMenuSections(merchantId, onComplete) {
     Collection.MENU_SECTION.ref,
     where("merchant_id", "==", merchantId),
     orderBy("order", "asc")
-  )
+  );
 
-  return onSnapshot(sectionsQuery, onComplete)
+  return onSnapshot(sectionsQuery, onComplete);
 }
 
 export function fetchMenuItems(merchantId, onComplete) {
@@ -29,8 +29,7 @@ export function fetchMenuItems(merchantId, onComplete) {
     Collection.MENU_ITEM.ref,
     where("merchant_id", "==", merchantId),
     orderBy("order", "asc")
-  )
+  );
 
-  return onSnapshot(menuItemQuery, onComplete)
+  return onSnapshot(menuItemQuery, onComplete);
 }
-

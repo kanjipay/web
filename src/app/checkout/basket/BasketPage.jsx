@@ -5,40 +5,42 @@ import MainButton from "../../../components/MainButton";
 import { formatCurrency } from "../../../utils/helpers/money";
 import BasketItem from "./BasketItem";
 import useBasket from "./useBasket";
-import Divider from '@mui/material/Divider';
+import Divider from "@mui/material/Divider";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import NavBarButton from "../../../components/NavBarButton";
 import { createOrder } from "../../../utils/services/OrdersService";
 
 export default function BasketPage({ merchant }) {
-  const { total, basketItems } = useBasket()
-  const [isEditing, setIsEditing] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const { merchantId } = useParams()
-  const navigate = useNavigate()
+  const { total, basketItems } = useBasket();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { merchantId } = useParams();
+  const navigate = useNavigate();
 
-  const titleElement = <div style={{ textAlign: "center" }}>
-    <div className="header-xs">Basket</div>
-    { merchant && <div className="text-caption">{merchant.display_name}</div> }
-  </div>
+  const titleElement = (
+    <div style={{ textAlign: "center" }}>
+      <div className="header-xs">Basket</div>
+      {merchant && <div className="text-caption">{merchant.display_name}</div>}
+    </div>
+  );
 
   function toggleEdit() {
-    setIsEditing(!isEditing)
+    setIsEditing(!isEditing);
   }
 
   function checkoutItems() {
-    setIsLoading(true)
+    setIsLoading(true);
 
     createOrder(merchantId, basketItems)
-      .then(orderId => {
-        setIsLoading(false)
-        navigate(`../checkout/${orderId}/payment`)
+      .then((orderId) => {
+        setIsLoading(false);
+        navigate(`../checkout/${orderId}/payment`);
       })
-      .catch(err => {
-        setIsLoading(false)
-        console.log(err)
-      })
+      .catch((err) => {
+        setIsLoading(false);
+        console.log(err);
+      });
   }
 
   return (
@@ -51,7 +53,10 @@ export default function BasketPage({ merchant }) {
         backPath=".."
         titleElement={titleElement}
         rightElements={[
-          <NavBarButton title={isEditing ? "Done" : "Edit"} onClick={() => toggleEdit()} />
+          <NavBarButton
+            title={isEditing ? "Done" : "Edit"}
+            onClick={() => toggleEdit()}
+          />,
         ]}
       />
 
@@ -59,14 +64,14 @@ export default function BasketPage({ merchant }) {
       <div className="content">
         <h3 className="header-s">Your order</h3>
         <Spacer y={2} />
-        {
-          basketItems.map(item => {
-            return <div key={item.id}>
+        {basketItems.map((item) => {
+          return (
+            <div key={item.id}>
               <BasketItem item={item} isEditing={isEditing} />
               <Spacer y={2} />
             </div>
-          })
-        }
+          );
+        })}
         <Divider />
         <Spacer y={2} />
         <div className="flex-container">
@@ -88,5 +93,5 @@ export default function BasketPage({ merchant }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

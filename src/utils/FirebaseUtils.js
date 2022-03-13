@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check"
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import Environment from "../enums/Environment";
 // import { getPerformance } from "firebase/performance";
 // import { getAnalytics } from "firebase/analytics";
@@ -16,24 +16,26 @@ const firebaseApp = initializeApp({
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_FIREBASE_APP_ID,
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
-})
+});
 
 // getPerformance(firebaseApp)
 // const analytics = getAnalytics()
 
-const db = getFirestore()
-const storage = getStorage()
-const functions = getFunctions(firebaseApp)
+const db = getFirestore();
+const storage = getStorage();
+const functions = getFunctions(firebaseApp);
 
-const environment = process.env.REACT_APP_ENV_NAME
+const environment = process.env.REACT_APP_ENV_NAME;
 
 if (environment === Environment.PROD) {
   initializeAppCheck(firebaseApp, {
-    provider: new ReCaptchaV3Provider(process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID),
-    isTokenAutoRefreshEnabled: true
+    provider: new ReCaptchaV3Provider(
+      process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID
+    ),
+    isTokenAutoRefreshEnabled: true,
   });
 } else if (environment === Environment.DEV) {
-  connectFunctionsEmulator(functions, "localhost", 5001)
+  connectFunctionsEmulator(functions, "localhost", 5001);
 }
 
-export { firebaseApp, db, storage, functions }
+export { firebaseApp, db, storage, functions };

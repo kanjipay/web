@@ -1,4 +1,4 @@
 export default class MerchantStatus {
-  static OPEN = "OPEN"
-  static CLOSED = "CLOSED"
+  static OPEN = "OPEN";
+  static CLOSED = "CLOSED";
 }
