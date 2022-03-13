@@ -47,6 +47,7 @@ function MerchantConfigurePage(props) {
 
   return (
     <div className='container'>
+             <div className="content">
     <h2 className='header-m'> Menu Config Page</h2>
     <Spacer y={5} /> 
     <TextLine leftComponent={shopOpenStatusString} rightComponent = {<Switch
@@ -80,6 +81,7 @@ function MerchantConfigurePage(props) {
 
     <BottomNavBar/></div>
     
+    </div>
     </div>
 
   );

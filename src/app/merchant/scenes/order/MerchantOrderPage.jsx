@@ -14,13 +14,13 @@ import Divider from '@mui/material/Divider';
 import TextLine from '../../../../components/TextLine';
 import { Grid } from '@mui/material';
 import MainButton from '../../../../components/MainButton';
+import { formatCurrency } from '../../../../utils/helpers/money'
 
 function MerchantOrderPage (props) {
     const navigate = useNavigate()
     const {orderList, menuItems} = props
     const { orderId } = useParams()
     var orderListString = ""
-    var totalCost = "£4.80"
 
     const filteredOrderList = orderList.filter(order => order.id === orderId)
     const order = filteredOrderList[0]
@@ -36,6 +36,10 @@ function MerchantOrderPage (props) {
         const enrichedOrderItemElement = { orderItem, menuItem };
         return enrichedOrderItemElement
     });
+
+    //Calculate total cost of purchase
+    const totalCost = enrichedOrderItemElements.reduce((total, enrichedOrderItemElement) => total + enrichedOrderItemElement.menuItem.price * enrichedOrderItemElement.orderItem.quantity, 0)
+
 
     const handeFulfilment = (orderId) => {
 
@@ -62,6 +66,7 @@ function MerchantOrderPage (props) {
       />
       <Spacer y={8} />
 
+     <div className="content">
 
       <div className="header-s">Details</div>
       <Spacer y={1}/>
@@ -80,6 +85,7 @@ function MerchantOrderPage (props) {
 
       <Spacer y={5} />
       <h3 className="header-s">Items</h3>
+      <Spacer y={2}/>
             {enrichedOrderItemElements.map((enrichedOrderItem, index) => (
                 <MerchantOrderItem quantity={enrichedOrderItem.orderItem.quantity} name={enrichedOrderItem.menuItem.title} price={enrichedOrderItem.menuItem.price}></MerchantOrderItem>
             ))
@@ -95,7 +101,7 @@ function MerchantOrderPage (props) {
             </Grid>
             <Grid item xs = {6.0}></Grid>
             <Grid item xs = {2.0}>
-            <h3 className="header-s">{totalCost}</h3>
+            <h3 className="header-s">{formatCurrency(totalCost)}</h3>
             </Grid>
 
 
@@ -107,6 +113,7 @@ function MerchantOrderPage (props) {
             <MainButton title = 'Fulfil Order' handleClick={() => handeFulfilment(orderId)}></MainButton>
           </div>
 
+          </div>
       </div>
     )
 

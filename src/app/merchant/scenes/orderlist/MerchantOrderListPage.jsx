@@ -16,6 +16,7 @@ function MerchantOrderList(props) {
 
   return (
     <div className='container'>
+           <div className="content">
     <h2 className='header-m'> Order List Page</h2>
     <Spacer y={3} /> 
       {orderList.map((order, index) => (
@@ -26,15 +27,10 @@ function MerchantOrderList(props) {
       )) 
 }
 <div className="anchored-bottom"><BottomNavBar/></div>
-    
+    </div>   
     </div>
 
   );
 }
 
 export default MerchantOrderList;
-
-
-
-
-

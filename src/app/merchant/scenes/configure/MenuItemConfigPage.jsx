@@ -55,6 +55,7 @@ function MenuItemConfigPage(props) {
         showsBackButton={true}
       />
     <Spacer y={7}/>
+    <div className="content">
 
     <h1 className="header-l">{menuItem.title}</h1>
 
@@ -100,6 +101,7 @@ function MenuItemConfigPage(props) {
                       title={`Request Menu Change`} />
           </div>
 
+</div>
 </div>
     )
 };
