@@ -1,44 +1,78 @@
-# Kanjipay
+# Mercadopay
 
-## setup
+This app's frontend and backend code are deployed using Google Firebase.
+
+Frontend - react
+Backent - firebase functions (typescript)
+
+## setup app
+
+Get access to the firebase project first, and then run the following
 
     brew install node
     npm install
     npm install firebase-tools -g
     firebase login
 
-Get access to Firebase and add the relevent firebase credentials to .env.production and .env.development
+There are also some credentials to be added to .env.production and .env.development
 
-## Available Scripts
+## setup functions
 
-In the project directory, you can run:
+    cd functions
+    npm install
 
-### `npm start`
+## Scripts - frontent
+
+### run locally `npm start`
 
 Runs the app in the development mode. 
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-This uses development API credentials. 
+Make sure that the backend-url and the frontend credentials in .env.development are the same app! 
 
-### `npm run build:stage`
+### Deploy frontend to firebase
 
-Builds the app in the `build` folder.\
+    firebase use mercadopay
+    firebase deploy --only hosting
 
-This artefact will need to be generated in order to test the app on firebase staging url
+## Scripts - backend
 
-## Deploy to firebase
+### run locally `cd frontend && npm serve`
 
-    npm run build:stage
+Runs emulated firebase functions on http://localhost:5001
+
+
+### Deploy backend to firebase
+
+    firebase use mercadopay
+    firebase deploy --only functions
+
+Make sure that the backend-url and the frontend credentials in .env.development are the same app!
+
+## Deploy both backend and frontend
+
+### Deploy backend to firebase
+
+    firebase use mercadopay
+    firebase deploy --only functions
+
+Make sure that the backend-url and the frontend credentials in .env.development are the same app!
+
+### Deploy backend to firebase
+
+    firebase use mercadopay
     firebase deploy
 
-make sure that the app is correct `mercado-dev`
+Make sure that the backend-url and the frontend credentials in .env.development are the same app!
 
 ## Lint
 
     npm run lint
 
-## Deploy to production
+### Todo
 
-Create a PR. Once it is merged into master, this will be deployed to production.
+- Add backend tests
+- Add single frontend ingegration test
+- Staging prod apps. 
+- Automated CI/CD for prod-deploys
+- security hardening
