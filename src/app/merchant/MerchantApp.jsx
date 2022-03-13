@@ -14,6 +14,8 @@ import MerchantOrderList from "./scenes/orderlist/MerchantOrderListPage";
 import LoadingPage from "../../components/LoadingPage";
 import MerchantConfigurePage from "./scenes/configure/MerchantConfigurePage";
 import MerchantAccountPage from "./scenes/account/MerchantAccountPage";
+import { getWeekdays } from "../../utils/helpers/time";
+import MenuItemConfigPage from "./scenes/configure/MenuItemConfigPage";
 
 function MerchantApp() {
   const [merchantId, setMerchantId] = useState("");
@@ -23,7 +25,8 @@ function MerchantApp() {
   const [orderList, setOrderList] = useState("");
   const [menuItems, setMenuItems] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false); 
-  const [MerchantMenuSections, setMerchantMenuSections] = useState("")
+  const [merchantMenuSections, setMerchantMenuSections] = useState("")
+  const [openingHours, setOpeningHours] = useState("")
 
   //TODO: Check whether this handling of authentication is actually secure! We may need to have permissions for the various apps and/or build a backend auth system for security. 
 
@@ -32,7 +35,7 @@ function MerchantApp() {
 
   // This is only present for local testing as it makes it easy to retrigger the authentication flow. 
   //In reality we should use device persistance as merchants will not want to always log back on (perhaps make this customizable?)
-  setPersistence(auth, inMemoryPersistence);
+//   setPersistence(auth, inMemoryPersistence);
 
   // TODO  this will cause a memory leak as we need to unsubscribe from listening when component is unmounted
 
@@ -123,33 +126,20 @@ useEffect(() => {
         setMenuItems(items)
       });
 
-    // const menuSectionQuery = query(
-    //     collection(db, "MenuSection",
-    //     where("merchant_id", "==", merchantId))
-    // );
-
-    // const menuSectionUnsub = onSnapshot(menuSectionQuery, (sectionSnapshot) => {
-    //     const sections = sectionSnapshot.docs.map((document) => {
-    //         const section = {id: document.id,...document.data()};
-    //         return section;
-    //     });
-    //     setMenuSections(sections)
-    // });
 
       return () => {
         menuItemUnsub();
         ordersUbsub();
-        // menuSectionUnsub();
       };
     }, [merchantId]);
 
 
+    // TODO understand why this query works here in a seperate useEffect but not in the previous useEffect
     useEffect(() => {
-        console.log("Use effect")
         const menuSectionQuery = query(
-            collection(db, "MenuSection",
+            collection(db, "MenuSection"),
             where("merchant_id", "==", merchantId))
-        );
+        ;
 
         const menuSectionUnsub = onSnapshot(menuSectionQuery, (sectionSnapshot) => {
             const sections = sectionSnapshot.docs.map((document) => {
@@ -159,14 +149,29 @@ useEffect(() => {
             setMerchantMenuSections(sections)
         });
 
+        const openingHoursQuery = query(
+            collection(db, "OpeningHourRange"),
+            where("merchant_id", "==", merchantId))
+        ;
+
+        const openingHoursUnsub = onSnapshot(openingHoursQuery, (openHoursSnapshot) => {
+            const hours = openHoursSnapshot.docs.map((document) => {
+                const hours = {id: document.id,...document.data()};
+                return hours;
+            });
+            setOpeningHours(hours)
+        });
+
+
     return () => {
         menuSectionUnsub();
+        openingHoursUnsub();
       };
     }, [merchantId]);
 
 
 
-    const isLoadedAndAuthenticated = userId && (orderList.length > 0) && (menuItems.length > 0) && isAuthenticated
+    const isLoadedAndAuthenticated = userId && (orderList.length > 0) && (menuItems.length > 0)&& (merchantMenuSections.length > 0) && isAuthenticated
 
   
   //  render a scene based on the current state
@@ -178,8 +183,9 @@ useEffect(() => {
     return (
     <Routes>
         <Route path="order/:orderId" element={<MerchantOrderPage orderList = {orderList} menuItems = {menuItems}>  </MerchantOrderPage>} />
-        <Route path="configure" element ={<MerchantConfigurePage merchantData = {merchantData} menuItems ={menuItems} />} />
-        <Route path="account" element ={<MerchantAccountPage/>}/>
+        <Route path="configure/item/:menuItemId" element={<MenuItemConfigPage menuItems ={menuItems} menuSections={merchantMenuSections}> </MenuItemConfigPage>} />
+        <Route path="configure" element ={<MerchantConfigurePage merchantData = {merchantData} menuItems ={menuItems} menuSections={merchantMenuSections} />} />
+        <Route path="account" element ={<MerchantAccountPage merchantData={merchantData[0]} openingHours={openingHours}/>}/>
         <Route path="*" element={<MerchantOrderList {...{ orderList, menuItems }}></MerchantOrderList>} />
     </Routes>
     )
