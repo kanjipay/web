@@ -1,4 +1,11 @@
-# Kanjipay
+# Mercadopay
+
+This is a firebse project:
+    backend - firebase functions (typescript + express)
+    frontend - firebase hosting (react application)
+
+There are two projects mercadopay (production)
+and mercadopay-dev (development and staging)
 
 ## setup
 
@@ -7,15 +14,24 @@
     npm install firebase-tools -g
     firebase login
 
-Get access to Firebase and add the relevent firebase credentials to .env.production and .env.development
+Get access to Firebase and add the relevent firebase credentials to .env.production and .env.development, as well as functions/.env files
 
-## Available Scripts
+## Frontend
+
+### Start
 
 In the project directory, you can run:
 
-### `npm start`
+`npm start`
 
-Runs the app in the development mode. 
+to run the app with fast reloading, it will use '.env.development' environment variables
+
+### Build staging
+
+run `npm build:stage`
+
+to build the app, poin
+
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
