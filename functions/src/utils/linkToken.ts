@@ -3,6 +3,11 @@ import * as plaid from "plaid";
 import { PaymentAttemptStatus, FireStoreCollection } from "./enums";
 import { db } from "./firebase";
 
+// some global details for payment
+const CLIENT_NAME = 'Mercado';
+const REFERENCE = 'Mercado';
+
+
 //initalise the Plaid client
 const plaidConfiguration = new plaid.Configuration({
   basePath: plaid.PlaidEnvironments.sandbox,
@@ -14,8 +19,6 @@ const plaidConfiguration = new plaid.Configuration({
   },
 });
 
-const CLIENT_NAME = 'Mercado';
-const REFERENCE = 'Mercado';
 
 const plaidClient = new plaid.PlaidApi(plaidConfiguration);
 
@@ -81,7 +84,7 @@ async function createLinkToken(
     products: [plaid.Products.PaymentInitiation],
     country_codes: [plaid.CountryCode.Gb],
     language: "en",
-    webhook: "http://localhost:3000",
+    webhook: process.env.PLAID_WEBOOK,
     payment_initiation: {
       payment_id: paymentResponseData.payment_id,
     },
