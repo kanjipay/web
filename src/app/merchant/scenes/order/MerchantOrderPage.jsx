@@ -30,8 +30,8 @@ function MerchantOrderPage(props) {
   const navigate = useNavigate();
   const { orderList, menuItems } = props;
   const { orderId } = useParams();
-  var orderListString = "";
 
+  //TODO a better (simpler) way of filtering this
   const filteredOrderList = orderList.filter((order) => order.id === orderId);
   const order = filteredOrderList[0];
   const orderIdIsNotValid = filteredOrderList.length != 1;

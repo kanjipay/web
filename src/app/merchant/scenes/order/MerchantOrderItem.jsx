@@ -7,8 +7,6 @@ function MerchantOrderItem(props) {
 
   const totalPrice = price * quantity;
 
-  console.log(quantity, name, price);
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={2}>

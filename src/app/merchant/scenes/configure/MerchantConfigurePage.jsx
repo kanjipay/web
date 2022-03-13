@@ -39,19 +39,12 @@ function MerchantConfigurePage(props) {
   });
 
   const handleOpenToggle = () => {
-    console.log("debugHandleToggle");
     const new_status = isConfiguredOpen ? "closed" : "open";
 
     updateDoc(doc(db, "Merchant", merchantData[0].id), {
       status: new_status,
     });
   };
-
-  console.log("MerchantConfigurePage: menuItems", menuItems);
-
-  console.log("MerchantConfigurePage: merchantData", merchantData);
-
-  console.log(isConfiguredOpen);
 
   return (
     <div className="container">

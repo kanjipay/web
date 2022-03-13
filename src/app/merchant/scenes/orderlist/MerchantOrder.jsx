@@ -31,28 +31,8 @@ function OrderItem(props) {
     }
   }
 
-  console.log(
-    "MerchantOrderInput: enrichedOrderItemElements",
-    enrichedOrderItemElements
-  );
-  console.log("MerchantOrderInput: orderListString", orderListString);
-  console.log("");
-
-  const Div = styled("div")(({ theme }) => ({
-    ...theme.typography.caption,
-    padding: theme.spacing(1),
-  }));
-
   const backgroundColor = index % 2 === 1 ? "#D3D3D3" : "";
   const hoverColour = index % 2 === 1 ? "primary.main" : "primary.main";
-
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  }));
 
   //Leaving this ugly for now - all of the core functionality is here
   return (
@@ -95,17 +75,6 @@ function OrderItem(props) {
             <h2> {orderTime}</h2>
           </Grid>
         </Grid>
-
-        {/* <h2> Order</h2> 
-          <AlertIcon />
-          <Div>{orderListString}</Div>
-          </Grid>
-
-          <Grid item xs={2}>
-              <h2> {order.created_at}</h2>
-          </Grid>
-          
-          </Grid> */}
       </Box>
     </Link>
   );
