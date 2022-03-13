@@ -77,7 +77,7 @@ export default function BasketPage({ merchant }) {
       </div>
 
       <div className="anchored-bottom">
-        <div style={{ margin: "16px" }}>
+        <div style={{ margin: 16 }}>
           <MainButton
             title="Proceed to checkout"
             isLoading={isLoading}
