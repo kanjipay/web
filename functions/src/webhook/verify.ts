@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken'
 import { plaidClient } from '../utils/plaid'
 import sha256 from 'sha256'
-import jwkToPem from "jwk-to-pem"
+// import * as jwkToPem from "jwk-to-pem"
 
 const keyCache = new Map()
 
-export async function verify(req) {
+export const verify = async (req) => {
   console.log(req.headers)
   const token = req.headers["plaid-verification"]
 
@@ -32,14 +32,14 @@ export async function verify(req) {
 
     keyIdsToUpdate.push(currKeyId)
 
-    for (keyId of keyIdsToUpdate) {
+    for (const keyId of keyIdsToUpdate) {
       const keyResponse = await plaidClient.webhookVerificationKeyGet({ key_id: currKeyId })
-        .catch(err => {
-          console.log(err)
-          return false
-        })
+        // .catch(err => {
+        //   console.log(err)
+        //   return false
+        // })
 
-      const key = keyResponse.key
+      const key = keyResponse.data.key
 
       console.log(key)
 
@@ -60,7 +60,7 @@ export async function verify(req) {
   }
 
   try {
-    const decodedAndVerified = jwt.verify(token, key)
+    jwt.verify(token, key)
   } catch (err) {
     console.log(err)
     return false

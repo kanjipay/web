@@ -1,29 +1,31 @@
-import { HttpError, HttpStatusCode } from '../utils/errors'
+import { ErrorHandler, HttpError, HttpStatusCode } from '../utils/errors'
 
 import PaymentAttemptStatus from '../enums/PaymentAttemptStatus'
 import { db } from '../admin'
 import Collection from '../enums/Collection'
 import OrderStatus from '../enums/OrderStatus'
+import { verify } from './verify'
 
 export const handlePaymentUpdate = async (req, res, next) => {
   const isValid = await verify(req)
+    .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
   if (!isValid) {
-    next(new HttpError(HttpStatusCode.UNAUTHORIZED))
+    next(new HttpError(HttpStatusCode.UNAUTHORIZED, "Unauthorized"))
     return
   }
 
   const { payment_id, new_payment_status } = req.body
 
-  const retryableErrors = [
-    "PAYMENT_STATUS_FAILED",
-    "PAYMENT_STATUS_BLOCKED"
-  ]
+  // const retryableErrors = [
+  //   "PAYMENT_STATUS_FAILED",
+  //   "PAYMENT_STATUS_BLOCKED"
+  // ]
 
-  const nonRetryableErrors = [
-    "PAYMENT_STATUS_INSUFFICIENT_FUNDS",
-    "PAYMENT_STATUS_REJECTED"
-  ]
+  // const nonRetryableErrors = [
+  //   "PAYMENT_STATUS_INSUFFICIENT_FUNDS",
+  //   "PAYMENT_STATUS_REJECTED"
+  // ]
 
   const paymentStatusMap = {
     "PAYMENT_STATUS_EXECUTED": PaymentAttemptStatus.SUCCESSFUL,
@@ -36,11 +38,11 @@ export const handlePaymentUpdate = async (req, res, next) => {
 
   if (new_payment_status in paymentStatusMap) {
     const paymentAttemptSnapshot = await db
-      .collection(Collection.PAYMENT_ATTEMPT.name)
+      .collection(Collection.PAYMENT_ATTEMPT)
       .where("payment_id", "==", payment_id)
       .limit(1)
       .get()
-      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+      // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
     if (paymentAttemptSnapshot.docs.length === 0) {
       next(new HttpError(HttpStatusCode.NOT_FOUND))
@@ -57,7 +59,8 @@ export const handlePaymentUpdate = async (req, res, next) => {
     }
 
     await db
-      .doc(paymentAttemptDoc.ref)
+      .collection(Collection.PAYMENT_ATTEMPT)
+      .doc(paymentAttemptDoc.id)
       .set(update, { merge: true })
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
@@ -65,7 +68,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
       const orderId = paymentAttemptDoc.data().order_id
 
       await db
-        .collection(Collection.ORDER.name)
+        .collection(Collection.ORDER)
         .doc(orderId)
         .set({ status: OrderStatus.PAID }, { merge: true })
         .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)

@@ -9,7 +9,7 @@ import MerchantStatus from "../../enums/MerchantStatus";
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
     const { email } = req.body
-    const order = req.order
+    // const order = req.order
 
     await sendEmail(email, "Your receipt", "receipt", {
       name: "Adebola",
@@ -24,7 +24,7 @@ export default class OrdersController extends BaseController {
 
     // Check merchant_id exists and is open
     const merchantDoc = await db
-      .collection(Collection.MERCHANT.name)
+      .collection(Collection.MERCHANT)
       .doc(merchant_id)
       .get()
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
@@ -34,22 +34,31 @@ export default class OrdersController extends BaseController {
       return
     }
 
-    const merchant = { id: merchantDoc.id, ...merchantDoc.data() }
+    const merchant = { id: merchantDoc.id, status: merchantDoc.data().status }
 
-    //if (merchant.status !== MerchantStatus.OPEN) {
-    //  next(new HttpError(HttpStatusCode.BAD_REQUEST, "Sorry, the merchant isn't open at the moment"))
-    //  return
-    //}
+    if (merchant.status !== MerchantStatus.OPEN) {
+      next(new HttpError(HttpStatusCode.BAD_REQUEST, "Sorry, the merchant isn't open at the moment"))
+      return
+    }
 
     const requestedMenuItemIds = requested_items.map(item => item.id)
     const menuItemsSnapshot = await db
-      .collection(Collection.MENU_ITEM.name)
+      .collection(Collection.MENU_ITEM)
       .where("__name__", "in", requestedMenuItemIds)
       .where("merchant_id", "==", merchant_id)
       .get()
-      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+      // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
     
-    const menuItems = menuItemsSnapshot.docs.map(item => ({ id: item.id, ...item.data() }))
+    const menuItems = menuItemsSnapshot.docs.map(item => {
+      const { is_available, price, title, photo } = item.data()
+      return {
+        id: item.id,
+        is_available,
+        price,
+        title,
+        photo
+      } 
+    })
 
     const menuItemIds = menuItems.map(item => item.id)
     const unavailableItemIds = menuItems.filter(item => !item.is_available).map(item => item.id)
@@ -90,17 +99,17 @@ export default class OrdersController extends BaseController {
     startOfToday.setUTCHours(0, 0, 0, 0)
 
     const latestOrdersSnap = await db
-      .collection(Collection.ORDER.name)
+      .collection(Collection.ORDER)
       .where("merchant_id", "==", merchant_id)
       .where("created_at", ">=", startOfToday)
       .orderBy("created_at", "desc")
       .limit(1)
       .get()
-      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+      // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
     let orderNumber
 
-    const latestOrders = latestOrdersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    const latestOrders = latestOrdersSnap.docs.map(doc => ({ id: doc.id, order_number: doc.data().order_number }))
 
     if (latestOrders.length > 0) {
       const latestOrderNumber = latestOrders[0].order_number || 1
@@ -110,7 +119,7 @@ export default class OrdersController extends BaseController {
     }
 
     const orderRef = await db
-      .collection(Collection.ORDER.name)
+      .collection(Collection.ORDER)
       .add({
         created_at: new Date(),
         status: OrderStatus.PENDING,
