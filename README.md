@@ -1,4 +1,9 @@
-# Kanjipay
+# Mercadopay
+
+This is a firebse project:
+
+- backend - firebase functions (typescript express)
+- frontend - firebase hosting (javascript react)
 
 ## setup
 
@@ -7,38 +12,44 @@
     npm install firebase-tools -g
     firebase login
 
-Get access to Firebase and add the relevent firebase credentials to .env.production and .env.development
+Get access to Firebase and add the relevent firebase credentials.
 
-## Available Scripts
+There are two projects 
+- mercadopay (production)
+- mercadopay-dev (development and staging)
 
-In the project directory, you can run:
+We can deploy emulated versions of both the frontend and backend locally, and to staging, to both 
 
-### `npm start`
+## Frontend
 
-Runs the app in the development mode. 
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Start
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-This uses development API credentials. 
+In the project directory, you can run `npm start` to run the app with fast reloading, it will use '.env.development' environment variables
 
-### `npm run build:stage`
+### Build and Serve 
 
-Builds the app in the `build` folder.\
+Run `npm build:stage` to build the app using mercadopay-dev and `npm build` to build the app using credentials for mercadopay. The assets will be in /src.
 
-This artefact will need to be generated in order to test the app on firebase staging url
+You can deploy built assets locally using `firebase serve --only hosting`
 
-## Deploy to firebase
+### Deploy
 
-    npm run build:stage
-    firebase deploy
+Deploy `firebase use [mercadopay/mercadopay-dev]`
 
-make sure that the app is correct `mercado-dev`
+Make sure you have run the build step before, and that the credentials match the service you are using. Please deploy to dev, submit a PR, and merge to master before deploying to production.
+
+## backents
+
+### Serve
+
+In the /functions directory, you can run `npm run serve` to build the app and run locally. Run `firebase use [mercadopay/mercadopay-dev]` to switch firebase projects.
+
+### Deploy
+
+Run `firebase deploy --only functions`
+
+You can deploy frontend and backend at the same time using `firebase deploy. Please deploy to dev, submit a PR, and merge to master before deploying to production.
 
 ## Lint
 
     npm run lint
-
-## Deploy to production
-
-Create a PR. Once it is merged into master, this will be deployed to production.
