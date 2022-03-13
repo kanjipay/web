@@ -27,11 +27,6 @@ function MenuItemConfigPage(props) {
   );
   const section = filteredSections[0];
   const dietaryBubbles = [];
-  const isAvailable = menuItem.is_available;
-
-  console.log(
-    `MenuConfigPage__image ${isAvailable ? "" : "MenuConfigPage__imageBlur"}`
-  );
 
   for (var attr of DietaryAttribute.allItems) {
     if (menuItem.dietary_attributes.includes(attr.name)) {

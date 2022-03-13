@@ -22,15 +22,12 @@ function MenuItemConfig(props) {
   const { menuItem } = props;
 
   const handleItemToggle = () => {
-    console.log("New debugHandleToggle");
     const new_availability = !menuItem.is_available;
 
     updateDoc(doc(db, "MenuItem", menuItem.id), {
       is_available: new_availability,
     });
   };
-
-  console.log(menuItem);
 
   return (
     <Grid container spacing={2}>
