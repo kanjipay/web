@@ -1,0 +1,8 @@
+.MerchantOrder__orderStatusContainer {
+  background-color: darkred;
+  border-radius: 20%;
+}
+
+.MerchantOrder__orderStatusText {
+  color: lightcoral;
+}

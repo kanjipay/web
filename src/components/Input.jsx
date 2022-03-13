@@ -1,4 +1,4 @@
-import { Colors } from './CircleButton'
+import { Colors } from "./CircleButton";
 
 export default function Input({ placeholder, style, ...props }) {
   const inputStyle = {
@@ -9,14 +9,12 @@ export default function Input({ placeholder, style, ...props }) {
     textAlign: "center",
     display: "flex",
     width: "100%",
-    ...style
-  }
+    ...style,
+  };
 
-  return <div className='Input relative'>
-    <input
-      placeholder={placeholder}
-      style={inputStyle}
-      {...props}
-    />
-  </div>
+  return (
+    <div className="Input relative">
+      <input placeholder={placeholder} style={inputStyle} {...props} />
+    </div>
+  );
 }

@@ -1,10 +1,10 @@
 .grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
 }
 
 .__detailsTextLineRightText {
-    text-align: right;
-    display:block;
-  }
+  text-align: right;
+  display: block;
+}

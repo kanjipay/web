@@ -1,9 +1,9 @@
 import React from "react";
-import Box from '@mui/material/Box';
-import { createTheme } from '@mui/material/styles';
+import Box from "@mui/material/Box";
+import { createTheme } from "@mui/material/styles";
 
 export default function Spacer({ x, y, basis, ...restProps }) {
-  const theme = createTheme()
+  const theme = createTheme();
   return (
     <Box
       data-testid="Spacer"
@@ -15,5 +15,4 @@ export default function Spacer({ x, y, basis, ...restProps }) {
       {...restProps}
     />
   );
-};
-
+}

@@ -16,12 +16,16 @@ export default function CircleIcon({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    ...style
-  }
+    ...style,
+  };
 
   return (
     <div style={backgroundStyle} {...props}>
-      <Icon color={foregroundColor} length={length} style={{ height: length, width: length, objectFit: "contain" }} />
+      <Icon
+        color={foregroundColor}
+        length={length}
+        style={{ height: length, width: length, objectFit: "contain" }}
+      />
     </div>
-  )
+  );
 }
