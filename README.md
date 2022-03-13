@@ -37,7 +37,10 @@ Make sure that the backend-url and the frontend credentials in .env.development 
 
 ## Scripts - backend
 
-### run locally `cd frontend && npm serve`
+### run locally 
+
+    cd functions
+    npm serve
 
 Runs emulated firebase functions on http://localhost:5001
 
