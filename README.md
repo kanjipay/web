@@ -3,7 +3,7 @@
 This app's frontend and backend code are deployed using Google Firebase.
 
 Frontend - react
-Backent - firebase functions (typescript)
+Backend - firebase functions (typescript - express)
 
 ## setup app
 
@@ -72,7 +72,7 @@ Make sure that the backend-url and the frontend credentials in .env.development 
 ### Todo
 
 - Add backend tests
-- Add single frontend ingegration test
-- Staging prod apps. 
+- Add single frontend integration test
+- Staging prod apps
 - Automated CI/CD for prod-deploys
 - security hardening
