@@ -50,14 +50,12 @@ function MenuItemConfigPage(props) {
         </Helmet>
         <NavBar
         title={menuItem.title}
-        transparentDepth={50}
-        opaqueDepth={100}
+        transparentDepth={0}
+        opaqueDepth={0}
         showsBackButton={true}
       />
     <Spacer y={7}/>
     <div className="content">
-
-    <h1 className="header-l">{menuItem.title}</h1>
 
 
       <div className="MenuConfigPage__imageContainer">
