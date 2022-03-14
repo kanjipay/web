@@ -26,9 +26,7 @@ export async function fetchOrder(orderId) {
     throw new Error(`No order with id ${orderId}`)
   }
 
-  const order = { id: orderDoc.id, ...orderDoc.data() }
-
-  return order
+  return { id: orderDoc.id, ...orderDoc.data() }
 }
 
 export function fetchOrders(deviceId, merchantId, onComplete) {

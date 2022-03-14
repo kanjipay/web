@@ -4,13 +4,13 @@ import paymentAttemptsRoutes from './routes/paymentAttemptsRoutes'
 import * as cors from 'cors'
 // import { checkFirebaseAuthToken } from '../middleware/auth'
 import { errorHandler } from '../middleware/errorHandler'
+import { verifyDomain } from '../middleware/verifyDomain'
 
 const main = express()
 const app = express()
 
-// const corsInstance = cors({ origin: process.env.CLIENT_URL })
-console.log("Client url: ", process.env.CLIENT_URL)
-const corsInstance = cors({ origin: "*" })
+const corsInstance = cors({ origin: process.env.CLIENT_URL })
+// const corsInstance = cors({ origin: "*" })
 main.use(corsInstance)
 main.options('*', corsInstance) // Think this is needed for preflight requests
 
@@ -18,7 +18,7 @@ main.options('*', corsInstance) // Think this is needed for preflight requests
 main.use(express.json())
 main.use(express.urlencoded())
 
-main.use("/v1", app)
+main.use("/v1", verifyDomain, app)
 
 app.use('/orders', ordersRoutes)
 app.use('/payment-attempts', paymentAttemptsRoutes)

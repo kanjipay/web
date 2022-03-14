@@ -129,14 +129,13 @@ export default class OrdersController extends BaseController {
             menu_item_id: item.id,
             quantity: item.quantity,
             title: menuItem.title,
-            photo: menuItem.photo
+            photo: menuItem.photo,
+            price: menuItem.price
           }
         })
       })
 
     const orderId = orderRef.id
-
-    console.log(orderId)
 
     // Having created the order, need to create a subcollection containing the order items
     const batch = db.batch()
@@ -151,7 +150,8 @@ export default class OrdersController extends BaseController {
           menu_item_id: item.id,
           quantity: item.quantity,
           title: menuItem.title,
-          photo: menuItem.photo
+          photo: menuItem.photo,
+          price: menuItem.price
         }
       )
     }
