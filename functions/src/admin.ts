@@ -1,8 +1,7 @@
 import * as admin from 'firebase-admin'
+import * as base64 from 'base-64'
 
-const env = process.env.ENVIRONMENT || "DEV"
-console.log("environment: ", env)
-const serviceAccount = require(`./service-account-${env}.json`)
+const serviceAccount = JSON.parse(base64.decode(process.env.SERVICE_ACCOUNT))
 const credential = admin.credential.cert(serviceAccount)
 
 admin.initializeApp({ credential })
