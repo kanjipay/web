@@ -8,7 +8,7 @@ import MerchantStatus from "../../enums/MerchantStatus";
 
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
-    const { email, order_id } = req.body
+    const { email, order_id } = req.body;
     await sendEmail(email, order_id).catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
     return res.sendStatus(200)
   }
