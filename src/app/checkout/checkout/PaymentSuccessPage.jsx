@@ -35,9 +35,7 @@ export default function PaymentSuccessPage({ order }) {
     setEmail(event.target.value)
   }
 
-  const total = order?.menu_items.reduce((currTotal, item) => {
-    return currTotal + item.quantity * item.price
-  }, 0) ?? 0
+  console.log(order)
 
   return order ?
   <div className="container">
@@ -51,9 +49,14 @@ export default function PaymentSuccessPage({ order }) {
       <h3 className="header-s">Your order</h3>
         <Spacer y={2} />
         {
-          order.menu_items.map(item => {
-            return <div key={item.id}>
-              <BasketItem item={item} isEditing={false} />
+          order.order_items.map(item => {
+            return <div key={item.menu_item_id}>
+              <div className="BasketItem flex-container">
+                <div className="BasketItem__count" style={{ marginLeft: 16 }}>{item.quantity}</div>
+                <div className="text-body" style={{ marginLeft: 4 }}>{item.title}</div>
+                <div className="BasketItem__spacer" />
+                <div className="text-body-faded">{formatCurrency(item.price * item.quantity)}</div>
+              </div>
               <Spacer y={2} />
             </div>
           })
@@ -63,7 +66,7 @@ export default function PaymentSuccessPage({ order }) {
         <div className="flex-container">
           <div className="header-xs">Total</div>
           <div className="flex-spacer" />
-          <div className="header-xs">{formatCurrency(total)}</div>
+          <div className="header-xs">{formatCurrency(order.total)}</div>
         </div>
 
       {

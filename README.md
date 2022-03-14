@@ -5,6 +5,7 @@ This is a firebse project:
 - backend - firebase functions (typescript express)
 - frontend - firebase hosting (javascript react)
 
+
 ## setup
 
     brew install node
@@ -17,14 +18,17 @@ Get access to Firebase and add the relevent firebase credentials.
 There are two projects 
 - mercadopay (production)
 - mercadopay-dev (development and staging)
-
-We can deploy emulated versions of both the frontend and backend locally, and to staging, to both 
+Get access to Firebase and add the relevent firebase credentials to .env.production and .env.development, as well as functions/.env files
 
 ## Frontend
 
+We can deploy emulated versions of both the frontend and backend locally, and to staging, to both 
+
 ### Start
 
-In the project directory, you can run `npm start` to run the app with fast reloading, it will use '.env.development' environment variables
+`npm start`
+
+to run the app with fast reloading, it will use '.env.development' environment variables
 
 ### Build and Serve 
 

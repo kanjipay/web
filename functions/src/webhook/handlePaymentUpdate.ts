@@ -70,7 +70,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
       await db
         .collection(Collection.ORDER)
         .doc(orderId)
-        .set({ status: OrderStatus.PAID }, { merge: true })
+        .set({ status: OrderStatus.PAID, paidAt: new Date() }, { merge: true })
         .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
     }
   }
