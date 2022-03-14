@@ -25,3 +25,5 @@ yarn-error.log*
 .firebase/
 ui-debug.log
 firebase-debug.log
+
+/functions/scripts
