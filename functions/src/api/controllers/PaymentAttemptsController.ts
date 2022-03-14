@@ -3,9 +3,8 @@ import BaseController from "./BaseController"
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus"
 import { db } from "../../admin"
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors"
-import { plaidClient } from "../../utils/plaid"
+import { createLinkToken, createPayment, createRecipient } from "../../utils/plaidClient"
 import OrderStatus from "../../enums/OrderStatus"
-import { Products, CountryCode, PaymentAmountCurrency } from "plaid"
 
 export default class PaymentAttemptsController extends BaseController {
   create = async (req, res, next) => {
@@ -33,50 +32,9 @@ export default class PaymentAttemptsController extends BaseController {
     
     const { account_number, sort_code, payment_name } = merchantDoc.data()
 
-    // Create a recipient for payment initiation
-
-    const recipientResponse = await plaidClient.paymentInitiationRecipientCreate({
-      name: payment_name,
-      bacs: {
-        account: account_number,
-        sort_code
-      }
-    })
-
-    const { recipient_id } = recipientResponse.data
-
-
-    // Create a payment
-
-    const paymentResponse = await plaidClient.paymentInitiationPaymentCreate({
-      recipient_id,
-      reference: "Mercado",
-      amount: {
-        value: total / 100,
-        currency: PaymentAmountCurrency.Gbp
-      }
-    })
-
-    const { payment_id } = paymentResponse.data
-
-
-    // Create a link token for the customer to go through bank auth
-    const linkResponse = await plaidClient.linkTokenCreate({
-      user: {
-        client_user_id: device_id
-      },
-      client_name: "Mercado",
-      products: [Products.PaymentInitiation],
-      country_codes: [CountryCode.Gb],
-      language: "en",
-      webhook: process.env.WEBHOOK_URL,
-      payment_initiation: {
-        payment_id
-      }
-    })
-
-    const { link_token, expiration } = linkResponse.data
-
+    const { recipient_id } = await createRecipient(account_number, sort_code, payment_name)
+    const { payment_id } = await createPayment(recipient_id, total)
+    const { link_token, expiration } = await createLinkToken(payment_id, device_id)
 
     // Write payment attempt object to database
 

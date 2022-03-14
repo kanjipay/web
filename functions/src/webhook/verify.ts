@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken'
-import { plaidClient } from '../utils/plaid'
+import { plaidClient } from '../utils/plaidClient'
 import * as sha256 from 'sha256'
 import * as jwkToPem from "jwk-to-pem"
 
