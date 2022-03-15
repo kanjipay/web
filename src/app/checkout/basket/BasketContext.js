@@ -1,48 +1,48 @@
-import { createContext, useReducer } from "react"
-import BasketAction from "./BasketAction"
-import BasketReducer, { sumItems } from "./BasketReducer"
+import { createContext, useReducer } from "react";
+import BasketAction from "./BasketAction";
+import BasketReducer, { sumItems } from "./BasketReducer";
 
-export const BasketContext = createContext()
+export const BasketContext = createContext();
 
-const basketArray = localStorage.getItem('basket')
-const basketMerchant = localStorage.getItem('basketMerchant')
+const basketArray = localStorage.getItem("basket");
+const basketMerchant = localStorage.getItem("basketMerchant");
 
-const storedBasketItems = basketArray ? JSON.parse(basketArray) : []
-const storedBasketMerchant = basketMerchant ? JSON.parse(basketMerchant) : null
+const storedBasketItems = basketArray ? JSON.parse(basketArray) : [];
+const storedBasketMerchant = basketMerchant ? JSON.parse(basketMerchant) : null;
 
 const initialState = {
   basketItems: storedBasketItems,
   ...sumItems(storedBasketItems),
   checkout: false,
-  basketMerchant: storedBasketMerchant
-}
+  basketMerchant: storedBasketMerchant,
+};
 
 export default function BasketContextProvider({ children }) {
-  const [state, dispatch] = useReducer(BasketReducer, initialState)
+  const [state, dispatch] = useReducer(BasketReducer, initialState);
 
-  const changeMerchant = payload => {
-    dispatch({type: BasketAction.CHANGE_MERCHANT, payload})
-  }
+  const changeMerchant = (payload) => {
+    dispatch({ type: BasketAction.CHANGE_MERCHANT, payload });
+  };
 
-  const changeQuantity = payload => {
-    dispatch({type: BasketAction.CHANGE_QUANTITY, payload})
-  }
+  const changeQuantity = (payload) => {
+    dispatch({ type: BasketAction.CHANGE_QUANTITY, payload });
+  };
 
-  const addItem = payload => {
-    dispatch({type: BasketAction.ADD_ITEM, payload})
-  }
+  const addItem = (payload) => {
+    dispatch({ type: BasketAction.ADD_ITEM, payload });
+  };
 
-  const removeItem = payload => {
-    dispatch({type: BasketAction.REMOVE_ITEM, payload})
-  }
+  const removeItem = (payload) => {
+    dispatch({ type: BasketAction.REMOVE_ITEM, payload });
+  };
 
   const clearBasket = () => {
-    dispatch({type: BasketAction.CLEAR})
-  }
+    dispatch({ type: BasketAction.CLEAR });
+  };
 
   const handleCheckout = () => {
-    dispatch({type: BasketAction.CHECKOUT})
-  }
+    dispatch({ type: BasketAction.CHECKOUT });
+  };
 
   const contextValues = {
     changeQuantity,
@@ -51,12 +51,12 @@ export default function BasketContextProvider({ children }) {
     removeItem,
     clearBasket,
     handleCheckout,
-    ...state
-  }
+    ...state,
+  };
 
   return (
     <BasketContext.Provider value={contextValues}>
       {children}
     </BasketContext.Provider>
-  )
+  );
 }

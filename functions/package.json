@@ -8,6 +8,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
+    "lint": "npx prettier --write .",
     "postbuild": "copyfiles -u 1 src/**/*.handlebars src/**/*.json lib/"
   },
   "engines": {

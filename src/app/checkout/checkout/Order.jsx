@@ -9,21 +9,26 @@ import PaymentPage from "./PaymentPage";
 import PaymentSuccessPage from "./PaymentSuccessPage";
 
 export default function Order() {
-  const { orderId } = useParams()
-  const [order, setOrder] = useState(null)
+  const { orderId } = useParams();
+  const [order, setOrder] = useState(null);
 
   useEffect(() => {
-    fetchOrder(orderId).then(order => {
-      setOrder(order)
-    })
-  }, [orderId])
+    fetchOrder(orderId).then((order) => {
+      setOrder(order);
+    });
+  }, [orderId]);
 
-  return <Routes>
-    <Route path="payment" element={<PaymentPage />} />
-    <Route path="payment-method" element={<CheckoutMethodPage />} />
-    <Route path="payment-success" element={<PaymentSuccessPage order={order} />} />
-    <Route path="payment-failure" element={<PaymentFailurePage />} />
-    <Route path="payment-cancelled" element={<PaymentCancelledPage />} />
-    <Route path="email-submitted" element={<EmailSubmittedPage />} />
-  </Routes>
+  return (
+    <Routes>
+      <Route path="payment" element={<PaymentPage />} />
+      <Route path="payment-method" element={<CheckoutMethodPage />} />
+      <Route
+        path="payment-success"
+        element={<PaymentSuccessPage order={order} />}
+      />
+      <Route path="payment-failure" element={<PaymentFailurePage />} />
+      <Route path="payment-cancelled" element={<PaymentCancelledPage />} />
+      <Route path="email-submitted" element={<EmailSubmittedPage />} />
+    </Routes>
+  );
 }
