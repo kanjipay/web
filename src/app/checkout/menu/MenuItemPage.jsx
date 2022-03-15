@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import AsyncImage from "../../../components/AsyncImage"
 import CircleButton, { ButtonTheme } from "../../../components/CircleButton"
@@ -13,6 +13,7 @@ import MainButton from "../../../components/MainButton"
 import { formatCurrency } from "../../../utils/helpers/money"
 import DietaryAttribute from "./DietaryAttribute"
 import { getMenuItemStorageRef } from "../../../utils/helpers/storage"
+import { AnalyticsEvent, AnalyticsManager, PageName, viewPage } from "../../../utils/AnalyticsManager"
 
 export default function MenuItemPage({ merchant }) {
   const location = useLocation()
@@ -30,28 +31,39 @@ export default function MenuItemPage({ merchant }) {
   const initialQuantity = isInCart ? itemCountInBasket : 1
   const [quantity, setQuantity] = useState(initialQuantity)
 
-  function handleAddToBasket() {
+  useEffect(() => {
+    viewPage(PageName.MENU_ITEM, { merchantId, itemId })
+  }, [merchantId, itemId])
+
+  const handleAddToBasket = () => {
     if (basketItems.filter(basketItem => basketItem.merchant_id === item.merchant_id).length === 0) {
       changeMerchant(merchant)
     }
 
     if (isInCart) {
-      quantity === 0 ? removeItem(item) : changeQuantity({ itemId: item.id, quantity })
+      if (quantity === 0) {
+        removeItem(item)
+        AnalyticsManager.main.logEvent(AnalyticsEvent.REMOVE_FROM_BASKET, { itemId, location: PageName.MENU_ITEM })
+      } else {
+        changeQuantity({ itemId: item.id, quantity })
+        AnalyticsManager.main.logEvent(AnalyticsEvent.CHANGE_BASKET_AMOUNT, { itemId, quantity, location: PageName.MENU_ITEM })
+      }
     } else {
       addItem(item)
       changeQuantity({ itemId: item.id, quantity })
+      AnalyticsManager.main.logEvent(AnalyticsEvent.ADD_TO_BASKET, { itemId, quantity, location: PageName.MENU_ITEM })
     }
 
     navigate(-1)
   }
 
-  function incrementQuantity() {
+  const incrementQuantity = () => {
     if (quantity < maxQuantity) {
       setQuantity(quantity + 1)
     }
   }
 
-  function decrementQuantity() {
+  const decrementQuantity = () => {
     if (quantity > minQuantity) {
       setQuantity(quantity - 1)
     }
@@ -130,7 +142,7 @@ export default function MenuItemPage({ merchant }) {
             Icon={Minus}
             length={32}
             buttonTheme={ButtonTheme.PRIMARY}
-            onClick={() => decrementQuantity()}
+            onClick={decrementQuantity}
             disabled={quantity <= minQuantity}
           />
           <div className="MenuItemPage__counterValue">
@@ -140,7 +152,7 @@ export default function MenuItemPage({ merchant }) {
             Icon={Plus}
             length={32}
             buttonTheme={ButtonTheme.PRIMARY}
-            onClick={() => incrementQuantity()}
+            onClick={incrementQuantity}
             disabled={quantity >= maxQuantity}
           />
         </div>
@@ -151,7 +163,7 @@ export default function MenuItemPage({ merchant }) {
           <MainButton
               title={ isInCart ? quantity === 0 ? "Remove from basket" : "Edit amount" : "Add to basket" }
               sideMessage={quantity > 0 ? formatCurrency(item.price * quantity) : null}
-              onClick={() => handleAddToBasket()}
+              onClick={handleAddToBasket}
               style={{ boxSizing: "borderBox" }}
           />
         </div>

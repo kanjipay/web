@@ -8,10 +8,18 @@ import Clock from '../../../assets/icons/Clock'
 import Location from '../../../assets/icons/Location'
 import './MerchantAboutPage.css'
 import { getMerchantStorageRef } from "../../../utils/helpers/storage";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { PageName, viewPage } from "../../../utils/AnalyticsManager";
 
 export default function MerchantAboutPage({ merchant, openHourRanges }) {
   const weekdays = getWeekdays('en-GB');
+  const { merchantId } = useParams()
   const openingHourGridItems = []
+
+  useEffect(() => {
+    viewPage(PageName.ABOUT_MERCHANT, { merchantId })
+  }, [merchantId])
 
   openHourRanges
     .sort((range1, range2) => range1.day_of_week - range2.day_of_week)

@@ -2,11 +2,28 @@ import amplitude from 'amplitude-js';
 import { v4 as uuid } from 'uuid';
 
 export class AnalyticsEvent {
-  static VIEW_PAGE = "VIEW_PAGE"
-  static PRESS_BUTTON = "PRESS_BUTTON"
-  static ADD_TO_BASKET = "ADD_TO_BASKET"
-  static REMOVE_FROM_BASKET = "REMOVE_FROM_BASKET"
+  static VIEW_PAGE = "ViewPage"
+  static PRESS_BUTTON = "PressButton"
+  static ADD_TO_BASKET = "AddToBasket"
+  static REMOVE_FROM_BASKET = "RemoveFromBasket"
+  static CHANGE_BASKET_AMOUNT = "ChangeBasketAmount"
+  static CREATE_ORDER = "CreateOrder"
+  static ABANDON_ORDER = "AbandonOrder"
+  static RECEIVE_PLAID_EVENT = "ReceivePlaidEvent"
+  static CREATE_PAYMENT_ATTEMPT = "CreatePaymentAttempt"
 }
+
+export class PageName {
+  static MENU = "menu"
+  static MENU_ITEM = "menuItem"
+  static ABOUT_MERCHANT = "aboutMerchant"
+  static BASKET = "basket"
+  static PAYMENT_SUCCESS = "paymentSuccess"
+  static PAYMENT_CANCELLED = "paymentCancelled"
+  static PAYMENT_FAILURE = "paymentFailure"
+  static EMAIL_RECEIPT_SENT = "emailReceiptSent"
+}
+
 
 export class AnalyticsManager {
   static main = new AnalyticsManager()
@@ -52,4 +69,8 @@ export class AnalyticsManager {
   logEvent(name, properties) {
     this.analytics.logEvent(name, properties)
   }
+}
+
+export function viewPage(page, properties) {
+  AnalyticsManager.main.logEvent(AnalyticsEvent.VIEW_PAGE, { page, ...properties })
 }
