@@ -6,7 +6,6 @@ import { BrowserRouter } from "react-router-dom";
 import Menu from "../checkout/menu/Menu";
 import MerchantApp from "../merchant/MerchantApp";
 
-
 export default function App() {
   return (
     <BrowserRouter>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Route, Routes, useParams } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import MerchantLogin from "./scenes/login/MerchantLoginPage";
 import MerchantOrderPage from "./scenes/order/MerchantOrderPage";
 import {
   getAuth,
   onAuthStateChanged,
-  setPersistence,
-  inMemoryPersistence,
+  // setPersistence,
+  // inMemoryPersistence,
 } from "firebase/auth";
 import {
   collection,
@@ -14,8 +14,8 @@ import {
   onSnapshot,
   query,
   where,
-  getDocs,
-  getDoc,
+  // getDocs,
+  // getDoc,
   orderBy,
 } from "firebase/firestore";
 import { db } from "../../utils/FirebaseUtils";
@@ -23,11 +23,12 @@ import MerchantOrderList from "./scenes/orderlist/MerchantOrderListPage";
 import LoadingPage from "../../components/LoadingPage";
 import MerchantConfigurePage from "./scenes/configure/MerchantConfigurePage";
 import MerchantAccountPage from "./scenes/account/MerchantAccountPage";
-import { getWeekdays } from "../../utils/helpers/time";
+// import { getWeekdays } from "../../utils/helpers/time";
 import MenuItemConfigPage from "./scenes/configure/MenuItemConfigPage";
 
 function MerchantApp() {
   const [merchantId, setMerchantId] = useState("");
+  // eslint-disable-next-line no-unused-vars
   const [merchantRef, setMerchantRef] = useState("");
   const [merchantData, setMerchantData] = useState("");
   const [userId, setUserId] = useState("");

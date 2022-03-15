@@ -1,16 +1,16 @@
 import Box from "@mui/material/Box";
-import { styled } from "@mui/material/styles";
+// import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import { Link } from "react-router-dom";
-import AlertIcon from "../../../../components/AlertIcon";
-import Paper from "@mui/material/Paper";
+// import AlertIcon from "../../../../components/AlertIcon";
+// import Paper from "@mui/material/Paper";
 import { getTimeFromUnixTimestamp } from "../../../../utils/helpers/time";
 import "./MerchantOrder.css";
 import { Colors } from "../../../../components/CircleButton";
-import { Col } from "react-bootstrap";
+// import { Col } from "react-bootstrap";
 
 function OrderItem(props) {
-  const { order, menuItems, index } = props;
+  const { order, menuItems } = props;
   var orderListString = "";
   const orderTime = getTimeFromUnixTimestamp(order.created_at.seconds);
 
