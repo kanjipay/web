@@ -7,6 +7,7 @@ import { createPaymentAttempt } from "../../../utils/services/PaymentsService";
 import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus"
 import { onSnapshot } from "firebase/firestore";
 import Collection from "../../../enums/Collection";
+import { AnalyticsManager } from "../../../utils/AnalyticsManager";
 
 export default function PaymentPage() {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null)
@@ -15,7 +16,7 @@ export default function PaymentPage() {
   const navigate = useNavigate()
   const { clearBasket } = useBasket()
 
-  const deviceId = localStorage.getItem("deviceId")
+  const deviceId = AnalyticsManager.main.getDeviceId()
 
   const onSuccess = (publicToken, metadata) => {
     console.log("onSuccess", publicToken, metadata)

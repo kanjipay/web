@@ -7,6 +7,7 @@ import MerchantAboutPage from "./MerchantAboutPage";
 import BasketPage from "../basket/BasketPage"
 import Order from "../checkout/Order";
 import { fetchOrders } from "../../../utils/services/OrdersService";
+import { AnalyticsManager } from "../../../utils/AnalyticsManager";
 
 export default function Menu() {
   let { merchantId } = useParams()
@@ -17,7 +18,7 @@ export default function Menu() {
   const [openHourRanges, setOpenHourRanges] = useState([])
   const [orders, setOrders] = useState([])
 
-  const deviceId = localStorage.getItem("deviceId")
+  const deviceId = AnalyticsManager.main.getDeviceId()
 
   useEffect(() => {
     const merchantUnsub = fetchMerchant(merchantId, doc => {
