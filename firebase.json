@@ -1,23 +1,15 @@
 {
   "hosting": {
     "public": "build",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",
         "destination": "/index.html"
       }
-<<<<<<< HEAD
-    ]
-  },
-  "functions": {
-    "predeploy": "npm --prefix \"$RESOURCE_DIR\" run build"
-=======
     ],
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   },
   "functions": {
     "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run lint"]
->>>>>>> 02f9e02d86ff5c2415ac56e92bcc5d839dc0884f
   }
 }
