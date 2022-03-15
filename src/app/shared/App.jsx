@@ -7,10 +7,6 @@ import Menu from "../checkout/menu/Menu";
 import { AnalyticsManager } from "../../utils/AnalyticsManager";
 
 export default function App() {
-  useEffect(() => {
-    AnalyticsManager.main.setUserGroup("userType", "customer");
-  }, []);
-
   return (
     <BrowserRouter>
       <Routes>
