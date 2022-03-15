@@ -32,7 +32,7 @@ export const verify = async (req) => {
     keyIdsToUpdate.push(currKeyId);
 
     for (const keyId of keyIdsToUpdate) {
-      const keyResponse = await plaidClient.webhookVerificationKeyGet({
+      const keyResponse = await plaidClient().webhookVerificationKeyGet({
         key_id: currKeyId,
       });
       // .catch(err => {

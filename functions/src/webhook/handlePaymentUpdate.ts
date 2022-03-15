@@ -1,7 +1,7 @@
 import { ErrorHandler, HttpError, HttpStatusCode } from "../utils/errors";
 
 import PaymentAttemptStatus from "../enums/PaymentAttemptStatus";
-import { db } from "../admin";
+import { db } from "../utils/admin";
 import Collection from "../enums/Collection";
 import OrderStatus from "../enums/OrderStatus";
 import { verify } from "./verify";
@@ -38,7 +38,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
   };
 
   if (new_payment_status in paymentStatusMap) {
-    const paymentAttemptSnapshot = await db
+    const paymentAttemptSnapshot = await db()
       .collection(Collection.PAYMENT_ATTEMPT)
       .where("payment_id", "==", payment_id)
       .limit(1)
@@ -59,7 +59,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
       update["failure_reason"] = new_payment_status;
     }
 
-    await db
+    await db()
       .collection(Collection.PAYMENT_ATTEMPT)
       .doc(paymentAttemptDoc.id)
       .set(update, { merge: true })
@@ -70,7 +70,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
     if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
       const orderId = paymentAttemptDoc.data().order_id;
 
-      await db
+      await db()
         .collection(Collection.ORDER)
         .doc(orderId)
         .set({ status: OrderStatus.PAID, paidAt: new Date() }, { merge: true })

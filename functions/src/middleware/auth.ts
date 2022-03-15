@@ -1,4 +1,4 @@
-import { auth } from "../admin";
+import { auth } from "../utils/admin";
 
 export const checkFirebaseAuthToken = async (req, res, next) => {
   let idToken;
@@ -13,7 +13,7 @@ export const checkFirebaseAuthToken = async (req, res, next) => {
   }
 
   try {
-    const decodedIdToken = await auth.verifyIdToken(idToken);
+    const decodedIdToken = await auth().verifyIdToken(idToken);
     req.user = decodedIdToken;
     next();
     return;

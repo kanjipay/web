@@ -1,7 +1,7 @@
 import Collection from "../../enums/Collection";
 import BaseController from "./BaseController";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
-import { db } from "../../admin";
+import { db } from "../../utils/admin";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 import {
   createLinkToken,
@@ -28,7 +28,7 @@ export default class PaymentAttemptsController extends BaseController {
 
     // Search for merchant on order and load in sort code/acc number
 
-    const merchantDoc = await db
+    const merchantDoc = await db()
       .collection(Collection.MERCHANT)
       .doc(merchant_id)
       .get()
@@ -58,7 +58,7 @@ export default class PaymentAttemptsController extends BaseController {
 
     // Write payment attempt object to database
 
-    const paymentAttemptRef = await db
+    const paymentAttemptRef = await db()
       .collection(Collection.PAYMENT_ATTEMPT)
       .add({
         payment_id,
@@ -71,7 +71,7 @@ export default class PaymentAttemptsController extends BaseController {
       });
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
-    await db
+    await db()
       .doc(paymentAttemptRef.path)
       .collection("Private")
       .add({
