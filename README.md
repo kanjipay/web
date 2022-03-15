@@ -24,6 +24,21 @@ There are two projects
 
 We can deploy emulated versions of both the frontend and backend locally, and to staging, to both
 
+To get past App Check, you need to add a debug token to the development firebase project
+
+1) Add this line to firebase utils:
+
+    window.FIREBASE_APPCHECK_DEBUG_TOKEN = true
+
+2) Run
+    npm start
+
+3) There should be a debug app check token logged to your browser console. Copy it.
+
+4) Go to project settings > App Check, click the three dots to the right of mercadopay-dev in overview sections, and click Manage Debug Tokens
+
+5) Paste the token in and name it something like "Matt's localhost"
+
 Runs the app in the development mode.
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
