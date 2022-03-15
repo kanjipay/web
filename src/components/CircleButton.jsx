@@ -14,11 +14,8 @@ export class Colors {
   static BLACK = "#000000";
   static RED = "#ff0000";
   static RED_LIGHT = "#FFE6E6";
-<<<<<<< HEAD
-=======
   static GREEN = "#008000";
   static LIGHT_GREEN = "#E6F3E6";
->>>>>>> 02f9e02d86ff5c2415ac56e92bcc5d839dc0884f
 }
 
 export class ButtonTheme {
