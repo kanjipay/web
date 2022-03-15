@@ -39,6 +39,8 @@ To get past App Check, you need to add a debug token to the development firebase
 
 5) Paste the token in and name it something like "Matt's localhost"
 
+6) Remove line added in step 1
+
 Runs the app in the development mode.
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
