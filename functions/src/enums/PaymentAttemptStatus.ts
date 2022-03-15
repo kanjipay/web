@@ -2,7 +2,7 @@ enum PaymentAttemptStatus {
   PENDING = "PENDING",
   CANCELLED = "CANCELLED",
   FAILED = "FAILED",
-  SUCCESSFUL = "SUCCESSFUL"
+  SUCCESSFUL = "SUCCESSFUL",
 }
 
-export default PaymentAttemptStatus
+export default PaymentAttemptStatus;

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { handlePaymentUpdate } from "./handlePaymentUpdate";
 
-const routes = Router()
+const routes = Router();
 
-routes.post('/', handlePaymentUpdate)
+routes.post("/", handlePaymentUpdate);
 
-export default routes
+export default routes;

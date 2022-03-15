@@ -1,15 +1,15 @@
 export function formatMinutes(mins) {
-  const minsRemainder = (mins % 60).toLocaleString('en-GB', {
+  const minsRemainder = (mins % 60).toLocaleString("en-GB", {
     minimumIntegerDigits: 2,
-    useGrouping: false
-  })
+    useGrouping: false,
+  });
 
-  const hours = ((mins - minsRemainder) / 60).toLocaleString('en-GB', {
+  const hours = ((mins - minsRemainder) / 60).toLocaleString("en-GB", {
     minimumIntegerDigits: 2,
-    useGrouping: false
-  })
+    useGrouping: false,
+  });
 
-  return `${hours}:${minsRemainder}`
+  return `${hours}:${minsRemainder}`;
 }
 
 export function getWeekdays(locale) {
@@ -17,9 +17,19 @@ export function getWeekdays(locale) {
   var weekDays = [];
 
   for (var i = 0; i < 7; i++) {
-      weekDays.push(baseDate.toLocaleDateString(locale, { weekday: 'long' }));
-      baseDate.setDate(baseDate.getDate() + 1);
+    weekDays.push(baseDate.toLocaleDateString(locale, { weekday: "long" }));
+    baseDate.setDate(baseDate.getDate() + 1);
   }
 
   return weekDays;
+}
+
+export function getTimeFromUnixTimestamp(UNIX_timestamp) {
+  var a = new Date(UNIX_timestamp);
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var paddedHour = hour < 10 ? "0" + hour : hour;
+  var paddedMin = min < 10 ? "0" + min : min;
+  var time = paddedHour + ":" + paddedMin;
+  return time;
 }

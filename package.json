@@ -5,7 +5,10 @@
   "dependencies": {
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
+    "@material-ui/icons": "^4.11.2",
+    "@mui/icons-material": "^5.5.0",
     "@mui/material": "^5.4.3",
+    "amplitude-js": "^8.17.0",
     "axios": "^0.26.0",
     "dotenv": "^16.0.0",
     "env-cmd": "^10.1.0",
