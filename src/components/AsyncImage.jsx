@@ -1,6 +1,5 @@
-import { getDownloadURL, ref } from "firebase/storage";
+import { getDownloadURL } from "firebase/storage";
 import { useEffect, useState } from "react";
-import { storage } from "../utils/FirebaseUtils";
 import { Colors } from "./CircleButton";
 
 export default function AsyncImage({ imageRef, alt = "", ...props }) {

@@ -1,18 +1,18 @@
 import { useParams } from "react-router-dom";
 import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
-import Button from "../../../../components/Button";
+// import Button from "../../../../components/Button";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../../utils/FirebaseUtils";
 import {
-  collection,
+  // collection,
   doc,
-  onSnapshot,
-  query,
-  where,
-  getDocs,
-  getDoc,
-  orderBy,
+  // onSnapshot,
+  // query,
+  // where,
+  // getDocs,
+  // getDoc,
+  // orderBy,
   updateDoc,
 } from "firebase/firestore";
 import CircleIcon from "../../../../components/CircleIcon";
@@ -21,7 +21,7 @@ import Cutlery from "../../../../assets/icons/Cutlery";
 import { getTimeFromUnixTimestamp } from "../../../../utils/helpers/time";
 import MerchantOrderItem from "./MerchantOrderItem";
 import Divider from "@mui/material/Divider";
-import TextLine from "../../../../components/TextLine";
+// import TextLine from "../../../../components/TextLine";
 import { Grid } from "@mui/material";
 import MainButton from "../../../../components/MainButton";
 import { formatCurrency } from "../../../../utils/helpers/money";
@@ -34,11 +34,11 @@ function MerchantOrderPage(props) {
   //TODO a better (simpler) way of filtering this
   const filteredOrderList = orderList.filter((order) => order.id === orderId);
   const order = filteredOrderList[0];
-  const orderIdIsNotValid = filteredOrderList.length !== 1;
+  // const orderIdIsNotValid = filteredOrderList.length !== 1;
 
   //TODO Implement This in Database Design + Customer Facing App
   const requestedCutlery = true;
-  const orderNumber = "003";
+  // const orderNumber = "003";
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
   const enrichedOrderItemElements = order.order_items.map((orderItem) => {
