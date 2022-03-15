@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import AsyncImage from '../../../components/AsyncImage';
 import MenuItem from './MenuItem';
 import "./MenuPage.css"
@@ -10,6 +10,8 @@ import useBasket from '../basket/useBasket';
 import LoadingPage from '../../../components/LoadingPage';
 import MainButton from '../../../components/MainButton';
 import { getMerchantStorageRef } from '../../../utils/helpers/storage';
+import { useEffect } from 'react';
+import { PageName, viewPage } from '../../../utils/AnalyticsManager';
 
 export default function MenuPage({
   merchant,
@@ -19,6 +21,11 @@ export default function MenuPage({
   orders = []
 }) {
   const { itemCount } = useBasket()
+  const { merchantId } = useParams()
+
+  useEffect(() => {
+    viewPage(PageName.MENU, { merchantId })
+  }, [merchantId])
 
   const groupedMenuItems = {}
 

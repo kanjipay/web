@@ -7,9 +7,10 @@ import BasketItem from "./BasketItem";
 import useBasket from "./useBasket";
 import Divider from '@mui/material/Divider';
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavBarButton from "../../../components/NavBarButton";
 import { createOrder } from "../../../utils/services/OrdersService";
+import { AnalyticsEvent, AnalyticsManager, PageName, viewPage } from "../../../utils/AnalyticsManager";
 
 export default function BasketPage({ merchant }) {
   const { total, basketItems } = useBasket()
@@ -17,6 +18,10 @@ export default function BasketPage({ merchant }) {
   const [isLoading, setIsLoading] = useState(false)
   const { merchantId } = useParams()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    viewPage(PageName.BASKET, { merchantId })
+  }, [merchantId])
 
   const titleElement = <div style={{ textAlign: "center" }}>
     <div className="header-xs">Basket</div>
@@ -30,9 +35,14 @@ export default function BasketPage({ merchant }) {
   function checkoutItems() {
     setIsLoading(true)
 
+    const analyticsManager = AnalyticsManager.main
+
+    analyticsManager.logEvent(AnalyticsEvent.PRESS_BUTTON, { button: "checkout" })
+
     createOrder(merchantId, basketItems)
       .then(orderId => {
         setIsLoading(false)
+        analyticsManager.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId })
         navigate(`../checkout/${orderId}/payment`)
       })
       .catch(err => {
