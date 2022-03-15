@@ -4,15 +4,11 @@ import Home from "../brand/HomePage";
 import NotFound from "./NotFoundPage";
 import { BrowserRouter } from "react-router-dom";
 import Menu from "../checkout/menu/Menu";
-import { v4 as uuid } from 'uuid';
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 
 export default function App() {
   useEffect(() => {
-    const deviceId = localStorage.getItem("deviceId")
-
-    if (!deviceId) {
-      localStorage.setItem("deviceId", uuid())
-    }
+    AnalyticsManager.main.setUserGroup("userType", "customer")
   }, [])
 
   return (

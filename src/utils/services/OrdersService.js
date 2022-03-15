@@ -2,9 +2,10 @@ import { getDoc, onSnapshot, orderBy, query, updateDoc, where } from "firebase/f
 import axios from 'axios'
 import OrderStatus from "../../enums/OrderStatus"
 import Collection from "../../enums/Collection"
+import { AnalyticsManager } from "../AnalyticsManager"
 
 export async function createOrder(merchantId, basketItems) {
-  const deviceId = localStorage.getItem("deviceId")
+  const deviceId = AnalyticsManager.main.getDeviceId()
 
   const body = {
     merchant_id: merchantId,
