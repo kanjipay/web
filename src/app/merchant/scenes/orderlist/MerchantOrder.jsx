@@ -26,7 +26,7 @@ function OrderItem(props) {
     const name = enrichedOrderItem.menuItem.title;
     const quantity = enrichedOrderItem.orderItem.quantity;
 
-    if (orderListString.length == 0) {
+    if (orderListString.length === 0) {
       orderListString = orderListString.concat(quantity, "x ", name);
     } else {
       orderListString = orderListString.concat(", ", quantity, "x ", name);
