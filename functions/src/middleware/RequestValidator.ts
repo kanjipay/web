@@ -41,7 +41,7 @@ export class RequestValidator {
 
       const value = obj[fieldName];
 
-      if (typeof value != expectedType) {
+      if (typeof value !== expectedType) {
         const clientMessage = `Field "${fieldName}" in ${
           this.location
         } was expected to be of type "${expectedType}" but was ${typeof value}. Value was ${value}`;

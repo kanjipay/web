@@ -34,7 +34,7 @@ function MerchantOrderPage(props) {
   //TODO a better (simpler) way of filtering this
   const filteredOrderList = orderList.filter((order) => order.id === orderId);
   const order = filteredOrderList[0];
-  const orderIdIsNotValid = filteredOrderList.length != 1;
+  const orderIdIsNotValid = filteredOrderList.length !== 1;
 
   //TODO Implement This in Database Design + Customer Facing App
   const requestedCutlery = true;
