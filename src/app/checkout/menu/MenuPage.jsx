@@ -99,7 +99,6 @@ export default function MenuPage({
         className="headerImage"
         alt={merchant.display_name}
       />
-
       <Spacer y={3} />
       <div className="content">
         <h1 className="header-l">{merchant.display_name}</h1>

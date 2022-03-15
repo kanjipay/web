@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "../brand/HomePage";
 import NotFound from "./NotFoundPage";
 import { BrowserRouter } from "react-router-dom";
 import Menu from "../checkout/menu/Menu";
-import { AnalyticsManager } from "../../utils/AnalyticsManager";
+import MerchantApp from "../merchant/MerchantApp";
+
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
 
         <Route path="/menu/:merchantId/*" element={<Menu />} />
 
+        <Route path="/merchant/*" element={<MerchantApp />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
