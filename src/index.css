@@ -10,11 +10,14 @@ body {
   background-color: var(--color-off-white-light);
 }
 
-input:focus, textarea:focus, select:focus{
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
 }
 
-img, button {
+img,
+button {
   border: 0;
 }
 
@@ -33,13 +36,13 @@ img, button {
   --color-clear: #ffffff00;
 
   --font-brand-title: bold 8rem "Rubik", sans-serif;
-  --font-header-l: 800 2em 'Nunito', sans-serif;
-  --font-header-m: 800 1.5em 'Nunito', sans-serif;
-  --font-header-s: 500 1.25em 'Roboto', sans-serif;
-  --font-header-xs: 500 1em 'Roboto', sans-serif;
-  --font-body: 400 1em 'Roboto', sans-serif;
-  --font-caption: 0.88em 'Roboto', sans-serif;
-  --font-disclaimer: 0.625em 'Roboto', sans-serif;
+  --font-header-l: 800 2em "Nunito", sans-serif;
+  --font-header-m: 800 1.5em "Nunito", sans-serif;
+  --font-header-s: 500 1.25em "Roboto", sans-serif;
+  --font-header-xs: 500 1em "Roboto", sans-serif;
+  --font-body: 400 1em "Roboto", sans-serif;
+  --font-caption: 0.88em "Roboto", sans-serif;
+  --font-disclaimer: 0.625em "Roboto", sans-serif;
 }
 
 .container {

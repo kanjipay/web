@@ -1,8 +1,8 @@
 # Mercadopay
 
 This is a firebse project:
-    backend - firebase functions (typescript + express)
-    frontend - firebase hosting (react application)
+backend - firebase functions (typescript + express)
+frontend - firebase hosting (react application)
 
 There are two projects mercadopay (production)
 and mercadopay-dev (development and staging)
@@ -36,7 +36,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
-This uses development API credentials. 
+This uses development API credentials.
 
 ### `npm run build:stage`
 

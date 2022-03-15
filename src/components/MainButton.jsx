@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import Spinner from '../assets/Spinner'
-import { ButtonTheme, Colors } from './CircleButton'
-import './MainButton.css'
+import { useState } from "react";
+import Spinner from "../assets/Spinner";
+import { ButtonTheme, Colors } from "./CircleButton";
+import "./MainButton.css";
 
 export default function MainButton({
   buttonTheme = ButtonTheme.PRIMARY,
@@ -12,19 +12,21 @@ export default function MainButton({
   onClick,
   ...props
 }) {
-  const [isPressed, setIsPressed] = useState(false)
+  const [isPressed, setIsPressed] = useState(false);
 
-  let backgroundColor
+  let backgroundColor;
 
   if (props.disabled) {
-    backgroundColor = buttonTheme.disabledBackgroundColor
+    backgroundColor = buttonTheme.disabledBackgroundColor;
   } else if (isPressed) {
-    backgroundColor = buttonTheme.pressedBackgroundColor
+    backgroundColor = buttonTheme.pressedBackgroundColor;
   } else {
-    backgroundColor = buttonTheme.backgroundColor
+    backgroundColor = buttonTheme.backgroundColor;
   }
 
-  const foregroundColor = props.disabled ? buttonTheme.disabledForegroundColor : buttonTheme.foregroundColor
+  const foregroundColor = props.disabled
+    ? buttonTheme.disabledForegroundColor
+    : buttonTheme.foregroundColor;
 
   const buttonStyle = {
     backgroundColor,
@@ -37,28 +39,31 @@ export default function MainButton({
     alignItems: "center",
     justifyContent: "center",
     color: foregroundColor,
-    ...style
-  }
+    ...style,
+  };
 
-  return <div className="MainButton relative">
-    <button
-      style={buttonStyle}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onTouchStart={() => setIsPressed(true)}
-      onTouchEnd={() => setIsPressed(false)}
-      onClick={isLoading ? undefined : onClick}
-      {...props}
-    >
-      {isLoading ? "" : title}
-    </button>
-    {
-      isLoading && <div className='centred'>
-        <Spinner length={32} color={Colors.WHITE} />
-      </div>
-    }
+  return (
+    <div className="MainButton relative">
+      <button
+        style={buttonStyle}
+        onMouseDown={() => setIsPressed(true)}
+        onMouseUp={() => setIsPressed(false)}
+        onTouchStart={() => setIsPressed(true)}
+        onTouchEnd={() => setIsPressed(false)}
+        onClick={isLoading ? undefined : onClick}
+        {...props}
+      >
+        {isLoading ? "" : title}
+      </button>
+      {isLoading && (
+        <div className="centred">
+          <Spinner length={32} color={Colors.WHITE} />
+        </div>
+      )}
 
-    { sideMessage && <div className="MainButton__sideMessage header-xs">{sideMessage}</div> }
-  </div>
-
+      {sideMessage && (
+        <div className="MainButton__sideMessage header-xs">{sideMessage}</div>
+      )}
+    </div>
+  );
 }

@@ -2,7 +2,7 @@ enum OrderStatus {
   PENDING = "PENDING",
   ABANDONED = "ABANDONED",
   CANCELLED = "CANCELLED",
-  PAID = "PAID"
+  PAID = "PAID",
 }
 
-export default OrderStatus
+export default OrderStatus;

@@ -36,7 +36,8 @@
 }
 
 @media (max-width: 900px) {
-  .Home__title, .Home__titleHighlight {
+  .Home__title,
+  .Home__titleHighlight {
     font-size: 14vw;
   }
 }
