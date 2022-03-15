@@ -1,7 +1,7 @@
 import BaseController from "./BaseController";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 import { sendEmail } from "../emails";
-import { db } from "../../admin";
+import { db } from "../../utils/admin";
 import Collection from "../../enums/Collection";
 import OrderStatus from "../../enums/OrderStatus";
 import MerchantStatus from "../../enums/MerchantStatus";
@@ -19,7 +19,7 @@ export default class OrdersController extends BaseController {
     const { requested_items, merchant_id, device_id } = req.body;
 
     // Check merchant_id exists and is open
-    const merchantDoc = await db
+    const merchantDoc = await db()
       .collection(Collection.MERCHANT)
       .doc(merchant_id)
       .get()
@@ -47,7 +47,7 @@ export default class OrdersController extends BaseController {
     }
 
     const requestedMenuItemIds = requested_items.map((item) => item.id);
-    const menuItemsSnapshot = await db
+    const menuItemsSnapshot = await db()
       .collection(Collection.MENU_ITEM)
       .where("__name__", "in", requestedMenuItemIds)
       .where("merchant_id", "==", merchant_id)
@@ -113,7 +113,7 @@ export default class OrdersController extends BaseController {
     const startOfToday = new Date();
     startOfToday.setUTCHours(0, 0, 0, 0);
 
-    const latestOrdersSnap = await db
+    const latestOrdersSnap = await db()
       .collection(Collection.ORDER)
       .where("merchant_id", "==", merchant_id)
       .where("created_at", ">=", startOfToday)
@@ -136,36 +136,40 @@ export default class OrdersController extends BaseController {
       orderNumber = 1;
     }
 
-    const orderRef = await db.collection(Collection.ORDER).add({
-      created_at: new Date(),
-      status: OrderStatus.PENDING,
-      total,
-      device_id,
-      merchant_id,
-      receipt_sent: false,
-      order_number: orderNumber,
-      order_items: requested_items.map((item) => {
-        const menuItem = menuItems.find((menuItem) => menuItem.id === item.id);
+    const orderRef = await db()
+      .collection(Collection.ORDER)
+      .add({
+        created_at: new Date(),
+        status: OrderStatus.PENDING,
+        total,
+        device_id,
+        merchant_id,
+        receipt_sent: false,
+        order_number: orderNumber,
+        order_items: requested_items.map((item) => {
+          const menuItem = menuItems.find(
+            (menuItem) => menuItem.id === item.id
+          );
 
-        return {
-          menu_item_id: item.id,
-          quantity: item.quantity,
-          title: menuItem.title,
-          photo: menuItem.photo,
-          price: menuItem.price,
-        };
-      }),
-    });
+          return {
+            menu_item_id: item.id,
+            quantity: item.quantity,
+            title: menuItem.title,
+            photo: menuItem.photo,
+            price: menuItem.price,
+          };
+        }),
+      });
 
     const orderId = orderRef.id;
 
     // Having created the order, need to create a subcollection containing the order items
-    const batch = db.batch();
+    const batch = db().batch();
 
     for (const item of requested_items) {
       const menuItem = menuItems.find((menuItem) => menuItem.id === item.id);
 
-      batch.set(db.doc(orderRef.path).collection("OrderItem").doc(), {
+      batch.set(db().doc(orderRef.path).collection("OrderItem").doc(), {
         order_id: orderId,
         menu_item_id: item.id,
         quantity: item.quantity,

@@ -1,11 +1,11 @@
-import { db } from "../admin";
+import { db } from "../utils/admin";
 import Collection from "../enums/Collection";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../utils/errors";
 
 export const readOrder = async (req, res, next) => {
   const { order_id } = req.body;
 
-  const orderDoc = await db
+  const orderDoc = await db()
     .collection(Collection.ORDER)
     .doc(order_id)
     .get()

@@ -7,7 +7,7 @@ const REGION = "europe-west2";
 const secrets = [
   "SERVICE_ACCOUNT",
   "PLAID_CLIENT_ID",
-  "PLAID_CLIENT_SECRET",
+  "PLAID_SECRET",
   "SENDGRID_API_KEY",
 ];
 
