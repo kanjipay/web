@@ -7,7 +7,7 @@ export default function Cutlery({ length = 32, color = "black" }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clip-path="url(#clip0_156_3037)">
+      <g clipPath="url(#clip0_156_3037)">
         <path
           d="M41.8575 13.9949C41.9378 12.8709 42.8731 12 44 12V12C45.1269 12 46.0622 12.8709 46.1425 13.9949L48 40H40L41.8575 13.9949Z"
           fill={color}
@@ -21,8 +21,8 @@ export default function Cutlery({ length = 32, color = "black" }) {
           fill={color}
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M26 42C27.1046 42 28 41.1046 28 40C28 40 28 40 28 40L32 40L36 40C36 41.1046 36.8955 41.9999 38 41.9999C39.1046 41.9999 40 41.1046 40 40L48 40C48 43.1826 46.3143 46.2348 43.3138 48.4853C40.3132 50.7357 36.2435 52 32 52C27.7566 52 23.6869 50.7357 20.6863 48.4853C17.6858 46.2348 16 43.1826 16 40L24 40C24 41.1046 24.8955 42 26 42Z"
           fill={color}
         />

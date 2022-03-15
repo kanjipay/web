@@ -24,9 +24,18 @@ Get access to Firebase and add the relevent firebase credentials to .env.product
 
 We can deploy emulated versions of both the frontend and backend locally, and to staging, to both 
 
+<<<<<<< HEAD
 ### Start
 
 `npm start`
+=======
+Runs the app in the development mode.
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
+This uses development API credentials.
+>>>>>>> 02f9e02d86ff5c2415ac56e92bcc5d839dc0884f
 
 to run the app with fast reloading, it will use '.env.development' environment variables
 
@@ -48,6 +57,7 @@ Make sure you have run the build step before, and that the credentials match the
 
 In the /functions directory, you can run `npm run serve` to build the app and run locally. Run `firebase use [mercadopay/mercadopay-dev]` to switch firebase projects.
 
+<<<<<<< HEAD
 ### Deploy
 
 Run `firebase deploy --only functions`
@@ -57,3 +67,6 @@ You can deploy frontend and backend at the same time using `firebase deploy. Ple
 ## Lint
 
     npm run lint
+=======
+Create a PR. Once it is merged into master, this will be deployed to production.
+>>>>>>> 02f9e02d86ff5c2415ac56e92bcc5d839dc0884f

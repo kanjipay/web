@@ -23,3 +23,13 @@ export function getWeekdays(locale) {
 
   return weekDays;
 }
+
+export function getTimeFromUnixTimestamp(UNIX_timestamp) {
+  var a = new Date(UNIX_timestamp);
+  var hour = a.getHours();
+  var min = a.getMinutes();
+  var paddedHour = hour < 10 ? "0" + hour : hour;
+  var paddedMin = min < 10 ? "0" + min : min;
+  var time = paddedHour + ":" + paddedMin;
+  return time;
+}
