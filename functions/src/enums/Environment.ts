@@ -1,6 +1,6 @@
 enum Environment {
   DEV = "DEV",
-  PROD = "PROD"
+  PROD = "PROD",
 }
 
-export default Environment
+export default Environment;

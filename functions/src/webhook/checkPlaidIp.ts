@@ -4,11 +4,11 @@ export const checkPlaidIp = (req, res, next) => {
     "52.21.47.157",
     "52.41.247.19",
     "52.88.82.239",
-  ]
+  ];
 
   if (!plaidIps.includes(req.ip)) {
-    console.log(`IP address ${req.ip} calling webhook but not a Plaid IP`)
+    console.log(`IP address ${req.ip} calling webhook but not a Plaid IP`);
   }
 
-  next()
-}
+  next();
+};
