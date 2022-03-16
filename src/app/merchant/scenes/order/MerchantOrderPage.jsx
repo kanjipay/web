@@ -1,27 +1,19 @@
 import { useParams } from "react-router-dom";
 import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
-// import Button from "../../../../components/Button";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../../utils/FirebaseUtils";
 import {
-  // collection,
   doc,
-  // onSnapshot,
-  // query,
-  // where,
-  // getDocs,
-  // getDoc,
-  // orderBy,
   updateDoc,
 } from "firebase/firestore";
+import { setOrderFulfilled } from "../../../../utils/services/MerchantService";
 import CircleIcon from "../../../../components/CircleIcon";
 import Clock from "../../../../assets/icons/Clock";
 import Cutlery from "../../../../assets/icons/Cutlery";
 import { getTimeFromUnixTimestamp } from "../../../../utils/helpers/time";
 import MerchantOrderItem from "./MerchantOrderItem";
 import Divider from "@mui/material/Divider";
-// import TextLine from "../../../../components/TextLine";
 import { Grid } from "@mui/material";
 import MainButton from "../../../../components/MainButton";
 import { formatCurrency } from "../../../../utils/helpers/money";
@@ -31,14 +23,12 @@ function MerchantOrderPage(props) {
   const { orderList, menuItems } = props;
   const { orderId } = useParams();
 
-  //TODO a better (simpler) way of filtering this
+  //TODO error handling if this returns more than 1 order
   const filteredOrderList = orderList.filter((order) => order.id === orderId);
   const order = filteredOrderList[0];
-  // const orderIdIsNotValid = filteredOrderList.length !== 1;
 
   //TODO Implement This in Database Design + Customer Facing App
   const requestedCutlery = true;
-  // const orderNumber = "003";
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
   const enrichedOrderItemElements = order.order_items.map((orderItem) => {
@@ -57,9 +47,7 @@ function MerchantOrderPage(props) {
   );
 
   const handeFulfilment = (orderId) => {
-    updateDoc(doc(db, "Order", orderId), {
-      status: "FULFILLED",
-    });
+    setOrderFulfilled(orderId);
     navigate(-1);
   };
 
@@ -99,6 +87,7 @@ function MerchantOrderPage(props) {
         <Spacer y={2} />
         {enrichedOrderItemElements.map((enrichedOrderItem, index) => (
           <MerchantOrderItem
+            key={index}
             quantity={enrichedOrderItem.orderItem.quantity}
             name={enrichedOrderItem.menuItem.title}
             price={enrichedOrderItem.menuItem.price}

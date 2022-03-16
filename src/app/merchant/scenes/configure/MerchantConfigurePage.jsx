@@ -1,30 +1,18 @@
 import Spacer from "../../../../components/Spacer";
 import BottomNavBar from "../../../../components/BottomNavBar";
 import Switch from "@mui/material/Switch";
-// import Grid from "@mui/material/Grid";
-import { db } from "../../../../utils/FirebaseUtils";
-import {
-  // collection,
-  doc,
-  // onSnapshot,
-  // query,
-  // where,
-  // getDocs,
-  // getDoc,
-  // orderBy,
-  updateDoc,
-} from "firebase/firestore";
-// import Box from "@mui/material/Box";
-// import Button from "@mui/material/Button";
 import TextLine from "../../../../components/TextLine";
 import MenuItemConfig from "./MenuItemConfig";
 import MainButton from "../../../../components/MainButton";
 import NavBar from "../../../../components/NavBar";
+import { setMerchantStatus } from "../../../../utils/services/MerchantService";
 
 function MerchantConfigurePage(props) {
   const { merchantData, menuItems, menuSections } = props;
-  const shopOpenStatusString = "Your shop is " + merchantData[0].status;
-  var isConfiguredOpen = merchantData[0].status === "OPEN";
+  const shopOpenStatusString = "Your shop is " + merchantData.status;
+  var isConfiguredOpen = merchantData.status === "OPEN";
+
+  //Create grouped menu items array to display correctly
   const groupedMenuItems = {};
 
   menuItems.forEach((menuItem) => {
@@ -38,12 +26,11 @@ function MerchantConfigurePage(props) {
     }
   });
 
-  const handleOpenToggle = () => {
-    const new_status = isConfiguredOpen ? "CLOSED" : "OPEN";
 
-    updateDoc(doc(db, "Merchant", merchantData[0].id), {
-      status: new_status,
-    });
+  const handleOpenToggle = () => {
+    const newStatus = isConfiguredOpen ? "CLOSED" : "OPEN";
+
+    setMerchantStatus(merchantData.id, newStatus);
   };
 
   return (
