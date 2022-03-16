@@ -31,4 +31,11 @@ export const setOrderFulfilled = (orderId) => {
       status: newStatus,
     });
   };
+
+  export const setMenuItemAvailability = (merchantId, newAvailability) => {
+    updateDoc(Collection.MENU_ITEM.docRef(merchantId), {
+        is_available: newAvailability,
+    });
+  };
+
   

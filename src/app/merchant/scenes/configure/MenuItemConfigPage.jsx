@@ -1,8 +1,6 @@
 import { useParams } from "react-router-dom";
 import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
-// import Button from "../../../../components/Button";
-// import { useNavigate } from "react-router-dom";
 import AsyncImage from "../../../../components/AsyncImage";
 import { Helmet } from "react-helmet-async";
 import { getMenuItemStorageRef } from "../../../../utils/helpers/storage";
