@@ -3,11 +3,11 @@ import Collection from "../enums/Collection";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../utils/errors";
 
 export const readOrder = async (req, res, next) => {
-  const { order_id } = req.body;
+  const { orderId } = req.body;
 
   const orderDoc = await db()
     .collection(Collection.ORDER)
-    .doc(order_id)
+    .doc(orderId)
     .get()
     .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
 
