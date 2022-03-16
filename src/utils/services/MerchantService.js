@@ -1,4 +1,10 @@
-import { onSnapshot, orderBy, query, where, updateDoc } from "firebase/firestore";
+import {
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+  updateDoc,
+} from "firebase/firestore";
 import Collection from "../../enums/Collection";
 
 export function fetchMerchantByUserId(userId, onComplete) {
@@ -21,21 +27,19 @@ export function fetchMerchantOrders(merchantId, onComplete) {
 }
 
 export const setOrderFulfilled = (orderId) => {
-    updateDoc(Collection.ORDER.docRef(orderId), {
-      status: "FULFILLED",
-    });
-  };
+  updateDoc(Collection.ORDER.docRef(orderId), {
+    status: "FULFILLED",
+  });
+};
 
-  export const setMerchantStatus = (merchantId, newStatus) => {
-    updateDoc(Collection.MERCHANT.docRef(merchantId), {
-      status: newStatus,
-    });
-  };
+export const setMerchantStatus = (merchantId, newStatus) => {
+  updateDoc(Collection.MERCHANT.docRef(merchantId), {
+    status: newStatus,
+  });
+};
 
-  export const setMenuItemAvailability = (merchantId, newAvailability) => {
-    updateDoc(Collection.MENU_ITEM.docRef(merchantId), {
-        is_available: newAvailability,
-    });
-  };
-
-  
+export const setMenuItemAvailability = (merchantId, newAvailability) => {
+  updateDoc(Collection.MENU_ITEM.docRef(merchantId), {
+    is_available: newAvailability,
+  });
+};

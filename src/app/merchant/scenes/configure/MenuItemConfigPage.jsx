@@ -62,15 +62,12 @@ function MenuItemConfigPage(props) {
           menuItem.photo
         )}
         className="headerImage"
-        //   className={`MenuConfigPage__image ${isAvailable ? "" : "MenuConfigPage__imageBlur"}`}
         alt={menuItem.title}
       />
       <div className="content">
         <Spacer y={3} />
         <h1 className="header-l">{menuItem.title}</h1>
         <Spacer y={3} />
-
-        {/* {isAvailable? <div></div>:<div className='centred header-l'>Not available</div>} */}
 
         <div style={{ display: "flex", alignItems: "center" }}>
           <CircleIcon Icon={Details} style={{ marginRight: 8 }} />

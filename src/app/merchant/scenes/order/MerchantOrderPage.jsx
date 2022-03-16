@@ -3,10 +3,7 @@ import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../../../utils/FirebaseUtils";
-import {
-  doc,
-  updateDoc,
-} from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { setOrderFulfilled } from "../../../../utils/services/MerchantService";
 import CircleIcon from "../../../../components/CircleIcon";
 import Clock from "../../../../assets/icons/Clock";
