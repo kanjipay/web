@@ -40,7 +40,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
   if (new_payment_status in paymentStatusMap) {
     const paymentAttemptSnapshot = await db()
       .collection(Collection.PAYMENT_ATTEMPT)
-      .where("payment_id", "==", payment_id)
+      .where("paymentId", "==", payment_id)
       .limit(1)
       .get();
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
@@ -56,7 +56,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
     const update = { status: paymentAttemptStatus };
 
     if (paymentAttemptStatus === PaymentAttemptStatus.FAILED) {
-      update["failure_reason"] = new_payment_status;
+      update["failureReason"] = new_payment_status;
     }
 
     await db()
@@ -68,7 +68,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
       );
 
     if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
-      const orderId = paymentAttemptDoc.data().order_id;
+      const orderId = paymentAttemptDoc.data().orderId;
 
       await db()
         .collection(Collection.ORDER)

@@ -8,7 +8,7 @@ const routes = Router();
 
 routes.post(
   "/",
-  new RequestValidator({ order_id: "string" }, "body").validate,
+  new RequestValidator({ orderId: "string" }, "body").validate,
   readOrder,
   controller.create
 );
