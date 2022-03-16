@@ -6,6 +6,7 @@ import MenuItemConfig from "./MenuItemConfig";
 import MainButton from "../../../../components/MainButton";
 import NavBar from "../../../../components/NavBar";
 import { setMerchantStatus } from "../../../../utils/services/MerchantService";
+import "./MerchantConfigurePage.css";
 
 function MerchantConfigurePage(props) {
   const { merchantData, menuItems, menuSections } = props;
@@ -75,8 +76,6 @@ function MerchantConfigurePage(props) {
             style={{ boxSizing: "borderBox" }}
           />
         </div>
-        <Spacer y={3} />
-
         <BottomNavBar />
       </div>
     </div>

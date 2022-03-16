@@ -1,0 +1,8 @@
+.NavBar__innerContainer {
+  display: table;
+  margin: 0 auto;
+}
+
+.NavBar__outerContainer {
+  width: 100%;
+}
