@@ -26,7 +26,6 @@ function MerchantConfigurePage(props) {
     }
   });
 
-
   const handleOpenToggle = () => {
     const newStatus = isConfiguredOpen ? "CLOSED" : "OPEN";
 

@@ -104,17 +104,17 @@ function MerchantApp() {
     };
   }, [auth, userId, merchantId]);
 
+  // TODO make this loading screen work at a scene level rather than for the global app - should be faster :)
   const isLoadedAndAuthenticated =
     userId &&
     menuItems.length > 0 &&
     merchantMenuSections.length > 0 &&
+    openingHours.length > 0 &&
     isAuthenticated;
 
   //  render a scene based on the current state
   if (isLoadedAndAuthenticated) {
     // Load the routes for the merchant component
-    // TODO improve the loading experience here
-
     return (
       <Routes>
         <Route
@@ -150,7 +150,7 @@ function MerchantApp() {
           path="account"
           element={
             <MerchantAccountPage
-              merchantData={merchantData[0]}
+              merchantData={merchantData}
               openingHours={openingHours}
             />
           }
