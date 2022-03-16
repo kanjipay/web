@@ -73,7 +73,7 @@ export default function MenuItem({ item, basketCount = 0 }) {
 
       <Spacer y={1} />
       <div className="grid">
-        <div className="MenuItem__title header-xs" style={{ color: textColor }}>
+        <div className="MenuItem__title header-s" style={{ color: textColor }}>
           {item.title}
         </div>
         {dietaryBubbles}
@@ -85,8 +85,8 @@ export default function MenuItem({ item, basketCount = 0 }) {
           {formatCurrency(item.price)}
         </div>
       </div>
-      <Spacer y={0.5} />
-      <p className="MenuItem__description text-caption">{item.description}</p>
+      <Spacer y={1} />
+      <p className="MenuItem__description text-body-faded">{item.description}</p>
     </div>
   );
 
