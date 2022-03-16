@@ -124,7 +124,7 @@ function MerchantAccountPage(props) {
             style={{ boxSizing: "borderBox" }}
           />
         </div>
-        <Spacer y={3} />
+
         <BottomNavBar />
       </div>
     </div>

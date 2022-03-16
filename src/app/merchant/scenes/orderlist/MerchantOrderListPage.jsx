@@ -22,9 +22,9 @@ function MerchantOrderList(props) {
             <Spacer y={2} />
           </div>
         ))}
-        <div className="anchored-bottom">
-          <BottomNavBar />
-        </div>
+      </div>
+      <div className="anchored-bottom">
+        <BottomNavBar />
       </div>
     </div>
   );
