@@ -1,4 +1,4 @@
-import { onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { onSnapshot, orderBy, query, where, updateDoc } from "firebase/firestore";
 import Collection from "../../enums/Collection";
 
 export function fetchMerchantByUserId(userId, onComplete) {
@@ -19,3 +19,16 @@ export function fetchMerchantOrders(merchantId, onComplete) {
   );
   return onSnapshot(fetchMerchantOrdersQuery, onComplete);
 }
+
+export const setOrderFulfilled = (orderId) => {
+    updateDoc(Collection.ORDER.docRef(orderId), {
+      status: "FULFILLED",
+    });
+  };
+
+  export const setMerchantStatus = (merchantId, newStatus) => {
+    updateDoc(Collection.MERCHANT.docRef(merchantId), {
+      status: newStatus,
+    });
+  };
+  
