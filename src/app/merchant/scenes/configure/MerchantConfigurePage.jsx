@@ -28,7 +28,7 @@ function MerchantConfigurePage(props) {
   const groupedMenuItems = {};
 
   menuItems.forEach((menuItem) => {
-    const menuSectionId = menuItem.section_id;
+    const menuSectionId = menuItem.sectionId;
     const currValue = groupedMenuItems[menuSectionId];
 
     if (currValue) {
@@ -39,10 +39,10 @@ function MerchantConfigurePage(props) {
   });
 
   const handleOpenToggle = () => {
-    const new_status = isConfiguredOpen ? "CLOSED" : "OPEN";
+    const newStatus = isConfiguredOpen ? "CLOSED" : "OPEN";
 
     updateDoc(doc(db, "Merchant", merchantData[0].id), {
-      status: new_status,
+      status: newStatus,
     });
   };
 

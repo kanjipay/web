@@ -15,10 +15,10 @@ export async function createOrder(merchantId, basketItems) {
   const deviceId = AnalyticsManager.main.getDeviceId();
 
   const body = {
-    merchant_id: merchantId,
-    device_id: deviceId,
-    requested_items: basketItems
-      .filter((item) => item.merchant_id === merchantId)
+    merchantId,
+    deviceId,
+    requestedItems: basketItems
+      .filter((item) => item.merchantId === merchantId)
       .map((item) => ({
         id: item.id,
         quantity: item.quantity,
@@ -31,7 +31,7 @@ export async function createOrder(merchantId, basketItems) {
     body
   );
 
-  return res.data.order_id;
+  return res.data.orderId;
 }
 
 export async function fetchOrder(orderId) {
@@ -47,10 +47,10 @@ export async function fetchOrder(orderId) {
 export function fetchOrders(deviceId, merchantId, onComplete) {
   const ordersQuery = query(
     Collection.ORDER.ref,
-    where("merchant_id", "==", merchantId),
-    where("device_id", "==", deviceId),
+    where("merchantId", "==", merchantId),
+    where("deviceId", "==", deviceId),
     where("status", "==", OrderStatus.PAID),
-    orderBy("created_at", "desc")
+    orderBy("createdAt", "desc")
   );
 
   return onSnapshot(ordersQuery, onComplete);
@@ -62,7 +62,7 @@ export function setOrderStatus(orderId, status) {
 
 export function sendOrderReceipt(orderId, email) {
   const requestBody = {
-    order_id: orderId,
+    orderId,
     email,
   };
 

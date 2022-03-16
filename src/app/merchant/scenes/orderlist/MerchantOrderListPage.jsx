@@ -3,8 +3,7 @@ import Spacer from "../../../../components/Spacer";
 import BottomNavBar from "../../../../components/BottomNavBar";
 import NavBar from "../../../../components/NavBar";
 
-function MerchantOrderList(props) {
-  const { orderList, menuItems } = props;
+function MerchantOrderList({ orderList, menuItems }) {
 
   return (
     <div className="container">

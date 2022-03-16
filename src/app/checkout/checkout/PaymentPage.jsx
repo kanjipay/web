@@ -139,14 +139,13 @@ export default function PaymentPage() {
   useEffect(() => {
     createPaymentAttempt(orderId, deviceId)
       .then((res) => {
-        console.log(res);
-        const { link_token, payment_attempt_id } = res.data;
+        const { linkToken, paymentAttemptId } = res.data;
 
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_PAYMENT_ATTEMPT, {
-          paymentAttemptId: payment_attempt_id,
+          paymentAttemptId,
         });
-        setPaymentAttemptId(payment_attempt_id);
-        setLinkToken(link_token);
+        setPaymentAttemptId(paymentAttemptId);
+        setLinkToken(linkToken);
       })
       .catch((err) => {
         console.log(err);

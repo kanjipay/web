@@ -8,7 +8,7 @@ export function fetchMerchant(merchantId, onComplete) {
 export function fetchOpeningHours(merchantId, onComplete) {
   const openHoursQuery = query(
     Collection.OPENING_HOUR_RANGE.ref,
-    where("merchant_id", "==", merchantId)
+    where("merchantId", "==", merchantId)
   );
 
   return onSnapshot(openHoursQuery, onComplete);
@@ -17,8 +17,8 @@ export function fetchOpeningHours(merchantId, onComplete) {
 export function fetchMenuSections(merchantId, onComplete) {
   const sectionsQuery = query(
     Collection.MENU_SECTION.ref,
-    where("merchant_id", "==", merchantId),
-    orderBy("order", "asc")
+    where("merchantId", "==", merchantId),
+    orderBy("sortOrder", "asc")
   );
 
   return onSnapshot(sectionsQuery, onComplete);
@@ -27,8 +27,8 @@ export function fetchMenuSections(merchantId, onComplete) {
 export function fetchMenuItems(merchantId, onComplete) {
   const menuItemQuery = query(
     Collection.MENU_ITEM.ref,
-    where("merchant_id", "==", merchantId),
-    orderBy("order", "asc")
+    where("merchantId", "==", merchantId),
+    orderBy("sortOrder", "asc")
   );
 
   return onSnapshot(menuItemQuery, onComplete);

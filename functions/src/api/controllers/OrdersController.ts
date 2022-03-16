@@ -28,7 +28,7 @@ export default class OrdersController extends BaseController {
   create = async (req, res, next) => {
     const { requestedItems, merchantId, deviceId } = req.body;
 
-    // Check merchant_id exists and is open
+    // Check merchantId exists and is open
     const merchantDoc = await db()
       .collection(Collection.MERCHANT)
       .doc(merchantId)

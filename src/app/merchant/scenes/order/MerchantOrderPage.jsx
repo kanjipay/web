@@ -26,9 +26,8 @@ import { Grid } from "@mui/material";
 import MainButton from "../../../../components/MainButton";
 import { formatCurrency } from "../../../../utils/helpers/money";
 
-function MerchantOrderPage(props) {
+function MerchantOrderPage({ orderList, menuItems }) {
   const navigate = useNavigate();
-  const { orderList, menuItems } = props;
   const { orderId } = useParams();
 
   //TODO a better (simpler) way of filtering this
@@ -41,8 +40,8 @@ function MerchantOrderPage(props) {
   // const orderNumber = "003";
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
-  const enrichedOrderItemElements = order.order_items.map((orderItem) => {
-    const menuItem = menuItems.find((x) => x.id === orderItem.menu_item_id);
+  const enrichedOrderItemElements = order.orderItems.map((orderItem) => {
+    const menuItem = menuItems.find((x) => x.id === orderItem.menuItemId);
     const enrichedOrderItemElement = { orderItem, menuItem };
     return enrichedOrderItemElement;
   });
@@ -66,7 +65,7 @@ function MerchantOrderPage(props) {
   return (
     <div className="container">
       <NavBar
-        title={`Order # ${order.order_number}`}
+        title={`Order # ${order.orderNumber}`}
         transparentDepth={0}
         opaqueDepth={0}
         showsBackButton={true}
@@ -81,7 +80,7 @@ function MerchantOrderPage(props) {
         <div style={{ display: "flex", alignItems: "center" }}>
           <CircleIcon Icon={Clock} style={{ marginRight: 8 }} />
           <div className="text-body-faded">{`Ordered at ${getTimeFromUnixTimestamp(
-            order.created_at.seconds
+            order.createdAt.seconds
           )}`}</div>
         </div>
         <Spacer y={2} />

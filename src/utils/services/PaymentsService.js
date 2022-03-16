@@ -3,8 +3,8 @@ import axios from "axios";
 import Collection from "../../enums/Collection";
 
 export function createPaymentAttempt(orderId) {
-  const requestBody = { order_id: orderId };
-  console.log(requestBody);
+  const requestBody = { orderId };
+  
   return axios.post(
     `${process.env.REACT_APP_SERVER_URL}/payment-attempts`,
     requestBody
