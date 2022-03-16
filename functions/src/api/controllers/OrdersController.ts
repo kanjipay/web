@@ -161,12 +161,14 @@ export default class OrdersController extends BaseController {
             (menuItem) => menuItem.id === item.id
           );
 
+          const { title, photo, price } = menuItem
+
           return {
             menu_item_id: item.id,
             quantity: item.quantity,
-            title: menuItem.title,
-            photo: menuItem.photo,
-            price: menuItem.price,
+            title,
+            photo,
+            price,
           };
         }),
       });
@@ -178,14 +180,15 @@ export default class OrdersController extends BaseController {
 
     for (const item of requested_items) {
       const menuItem = menuItems.find((menuItem) => menuItem.id === item.id);
+      const { title, photo, price } = menuItem
 
       batch.set(db().doc(orderRef.path).collection("OrderItem").doc(), {
         order_id: orderId,
         menu_item_id: item.id,
         quantity: item.quantity,
-        title: menuItem.title,
-        photo: menuItem.photo,
-        price: menuItem.price,
+        title,
+        photo,
+        price,
       });
     }
 

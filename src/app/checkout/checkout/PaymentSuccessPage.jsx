@@ -61,7 +61,7 @@ export default function PaymentSuccessPage({ order }) {
         </p>
 
         <Spacer y={3} />
-        <h3 className="header-s">Your order</h3>
+        <h3 className="header-s">Order summary</h3>
         <Spacer y={2} />
         {order.order_items.map((item) => {
           return (
@@ -89,6 +89,10 @@ export default function PaymentSuccessPage({ order }) {
           <div className="flex-spacer" />
           <div className="header-xs">{formatCurrency(order.total)}</div>
         </div>
+
+        <Spacer y={3} />
+        <p className="header-xs" style={{ textAlign: "center" }}>Order number</p>
+        <p style={{ textAlign: "center", color: Colors.PRIMARY, fontSize: 80, fontWeight: 500 }}>{order.order_number}</p>
 
         {!order.receipt_sent && (
           <div>
