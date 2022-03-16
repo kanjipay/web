@@ -11,6 +11,10 @@ import { PageName, viewPage } from "../../../utils/AnalyticsManager";
 import { formatCurrency } from "../../../utils/helpers/money";
 import { validateEmail } from "../../../utils/helpers/validation";
 import { sendOrderReceipt } from "../../../utils/services/OrdersService";
+import { Colors } from "../../../components/CircleButton"
+import CircleIcon from "../../../components/CircleIcon"
+import Tick from "../../../assets/icons/Tick"
+import ResultBanner, { ResultType } from "../../../components/ResultBanner";
 
 export default function PaymentSuccessPage({ order }) {
   const navigate = useNavigate();
@@ -45,7 +49,11 @@ export default function PaymentSuccessPage({ order }) {
   return order ? (
     <div className="container">
       <div className="content">
-        <Spacer y={6} />
+        
+        <Spacer y={3} />
+
+        <ResultBanner resultType={ResultType.SUCCESS} message="Your payment was successful" />
+        <Spacer y={3} />
         <h1 className="header-l">We're preparing your order</h1>
         <Spacer y={2} />
         <p className="text-body-faded">
