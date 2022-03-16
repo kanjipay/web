@@ -9,14 +9,13 @@ import "./MerchantOrder.css";
 import { Colors } from "../../../../components/CircleButton";
 // import { Col } from "react-bootstrap";
 
-function OrderItem(props) {
-  const { order, menuItems } = props;
+function OrderItem({ order, menuItems }) {
   var orderListString = "";
   const orderTime = getTimeFromUnixTimestamp(order.created_at.seconds);
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
   const enrichedOrderItemElements = order.order_items.map((orderItem) => {
-    const menuItem = menuItems.find((x) => x.id === orderItem.menu_item_id);
+    const menuItem = menuItems.find((x) => x.id === orderItem.menuItemId);
     const enrichedOrderItemElement = { orderItem, menuItem };
     return enrichedOrderItemElement;
   });
@@ -47,7 +46,7 @@ function OrderItem(props) {
           <Grid item xs={2}>
             <div className="MerchantOrder__numberCircle">
               {" "}
-              {order.order_number}{" "}
+              {order.orderNumber}{" "}
             </div>
           </Grid>
 

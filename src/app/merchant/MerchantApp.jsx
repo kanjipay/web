@@ -72,7 +72,7 @@ function MerchantApp() {
     if (userId) {
       const MerchantQuery = query(
         collection(db, "Merchant"),
-        where("user_id", "==", userId)
+        where("userId", "==", userId)
       );
 
       onSnapshot(MerchantQuery, (snapshot) => {
@@ -101,8 +101,8 @@ function MerchantApp() {
     const orderQuery = query(
       collection(db, "Order"),
       where("status", "==", "PAID"),
-      where("merchant_id", "==", merchantId),
-      orderBy("created_at")
+      where("merchantId", "==", merchantId),
+      orderBy("createdAt")
     );
 
     const ordersUbsub = onSnapshot(orderQuery, (orderSnapshot) => {
@@ -115,7 +115,7 @@ function MerchantApp() {
 
     const menuItemQuery = query(
       collection(db, "MenuItem"),
-      where("merchant_id", "==", merchantId)
+      where("merchantId", "==", merchantId)
     );
 
     const menuItemUnsub = onSnapshot(menuItemQuery, (itemSnapshot) => {
@@ -138,7 +138,7 @@ function MerchantApp() {
   useEffect(() => {
     const menuSectionQuery = query(
       collection(db, "MenuSection"),
-      where("merchant_id", "==", merchantId)
+      where("merchantId", "==", merchantId)
     );
     const menuSectionUnsub = onSnapshot(menuSectionQuery, (sectionSnapshot) => {
       const sections = sectionSnapshot.docs.map((document) => {
@@ -150,7 +150,7 @@ function MerchantApp() {
 
     const openingHoursQuery = query(
       collection(db, "OpeningHourRange"),
-      where("merchant_id", "==", merchantId)
+      where("merchantId", "==", merchantId)
     );
     const openingHoursUnsub = onSnapshot(
       openingHoursQuery,

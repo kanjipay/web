@@ -22,10 +22,10 @@ function MenuItemConfig(props) {
   const { menuItem } = props;
 
   const handleItemToggle = () => {
-    const new_availability = !menuItem.is_available;
+    const newAvailability = !menuItem.isAvailable;
 
     updateDoc(doc(db, "MenuItem", menuItem.id), {
-      is_available: new_availability,
+      isAvailable: newAvailability,
     });
   };
 
@@ -37,7 +37,7 @@ function MenuItemConfig(props) {
             <Grid item xs={2.5}>
               <AsyncImage
                 imageRef={getMenuItemStorageRef(
-                  menuItem.merchant_id,
+                  menuItem.merchantId,
                   menuItem.id,
                   menuItem.photo
                 )}
@@ -49,7 +49,7 @@ function MenuItemConfig(props) {
               <div className="header-xs">{menuItem.title}</div>
               <Spacer y={1} />
               <div className="text-body-faded">
-                {menuItem.is_available ? "Available" : "Not Available"}
+                {menuItem.isAvailable ? "Available" : "Not Available"}
               </div>
             </Grid>
           </Grid>
@@ -58,7 +58,7 @@ function MenuItemConfig(props) {
       <Grid item xs={2}>
         <div className="MenuItemConfig__menuItemToggle">
           <Switch
-            checked={menuItem.is_available}
+            checked={menuItem.isAvailable}
             onClick={(e, c) => handleItemToggle()}
           />
         </div>

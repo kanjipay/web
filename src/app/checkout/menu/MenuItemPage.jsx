@@ -46,7 +46,7 @@ export default function MenuItemPage({ merchant }) {
   const handleAddToBasket = () => {
     if (
       basketItems.filter(
-        (basketItem) => basketItem.merchant_id === item.merchant_id
+        (basketItem) => basketItem.merchantId === item.merchantId
       ).length === 0
     ) {
       changeMerchant(merchant);
@@ -94,8 +94,8 @@ export default function MenuItemPage({ merchant }) {
 
   const dietaryBubbles = [];
 
-  if (item.spice_level > 0) {
-    const chilliCount = Math.min(3, item.spice_level);
+  if (item.spiceLevel > 0) {
+    const chilliCount = Math.min(3, item.spiceLevel);
 
     const chilliImages = [];
 
@@ -118,7 +118,7 @@ export default function MenuItemPage({ merchant }) {
   }
 
   DietaryAttribute.allItems.forEach((attr) => {
-    if (item.dietary_attributes.includes(attr.name)) {
+    if (item.dietaryAttributes.includes(attr.name)) {
       dietaryBubbles.push(
         <div
           className="header-xs"

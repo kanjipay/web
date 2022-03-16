@@ -12,8 +12,6 @@ import { formatCurrency } from "../../../utils/helpers/money";
 import { validateEmail } from "../../../utils/helpers/validation";
 import { sendOrderReceipt } from "../../../utils/services/OrdersService";
 import { Colors } from "../../../components/CircleButton"
-import CircleIcon from "../../../components/CircleIcon"
-import Tick from "../../../assets/icons/Tick"
 import ResultBanner, { ResultType } from "../../../components/ResultBanner";
 
 export default function PaymentSuccessPage({ order }) {
@@ -44,8 +42,6 @@ export default function PaymentSuccessPage({ order }) {
     setEmail(event.target.value);
   }
 
-  console.log(order);
-
   return order ? (
     <div className="container">
       <div className="content">
@@ -63,9 +59,9 @@ export default function PaymentSuccessPage({ order }) {
         <Spacer y={3} />
         <h3 className="header-s">Order summary</h3>
         <Spacer y={2} />
-        {order.order_items.map((item) => {
+        {order.orderItems.map((item) => {
           return (
-            <div key={item.menu_item_id}>
+            <div key={item.menuItemId}>
               <div className="BasketItem flex-container">
                 <div className="BasketItem__count" style={{ marginLeft: 16 }}>
                   {item.quantity}
@@ -92,9 +88,9 @@ export default function PaymentSuccessPage({ order }) {
 
         <Spacer y={3} />
         <p className="header-xs" style={{ textAlign: "center" }}>Order number</p>
-        <p style={{ textAlign: "center", color: Colors.PRIMARY, fontSize: 80, fontWeight: 500 }}>{order.order_number}</p>
+        <p style={{ textAlign: "center", color: Colors.PRIMARY, fontSize: 80, fontWeight: 500 }}>{order.orderNumber}</p>
 
-        {!order.receipt_sent && (
+        {!order.receiptSent && (
           <div>
             <Spacer y={5} />
             <h3 className="header-s">Get a receipt</h3>
@@ -128,7 +124,7 @@ export default function PaymentSuccessPage({ order }) {
         )}
       </div>
 
-      {order.receipt_sent && (
+      {order.receiptSent && (
         <div className="anchored-bottom">
           <div style={{ margin: "16px" }}>
             <MainButton
