@@ -4,29 +4,15 @@ import "./MenuItemConfig.css";
 import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
 import Spacer from "../../../../components/Spacer";
-import { db } from "../../../../utils/FirebaseUtils";
-import {
-  // collection,
-  doc,
-  // onSnapshot,
-  // query,
-  // where,
-  // getDocs,
-  // getDoc,
-  // orderBy,
-  updateDoc,
-} from "firebase/firestore";
 import { Link } from "react-router-dom";
+import { setMenuItemAvailability } from "../../../../utils/services/MerchantService";
 
 function MenuItemConfig(props) {
   const { menuItem } = props;
 
   const handleItemToggle = () => {
-    const new_availability = !menuItem.is_available;
-
-    updateDoc(doc(db, "MenuItem", menuItem.id), {
-      is_available: new_availability,
-    });
+    const newAvailability = !menuItem.is_available;
+    setMenuItemAvailability(menuItem.id, newAvailability);
   };
 
   return (

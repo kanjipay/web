@@ -27,7 +27,7 @@ const functions = getFunctions(firebaseApp);
 
 const environment = process.env.REACT_APP_ENV_NAME;
 
-console.log("environment: ", environment)
+console.log("environment: ", environment);
 
 if (environment === Environment.DEV) {
   // window.FIREBASE_APPCHECK_DEBUG_TOKEN = true
@@ -40,7 +40,5 @@ initializeAppCheck(firebaseApp, {
   ),
   isTokenAutoRefreshEnabled: true,
 });
-
-
 
 export { firebaseApp, db, storage, functions };
