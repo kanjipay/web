@@ -2,8 +2,17 @@ import { onSnapshot, updateDoc } from "firebase/firestore";
 import axios from "axios";
 import Collection from "../../enums/Collection";
 
-export function createPaymentAttempt(orderId) {
-  const requestBody = { orderId };
+export class OpenBankingProvider {
+  static PLAID = "PLAID"
+  static TRUELAYER = "TRUELAYER"
+  static MONEYHUB = "MONEYHUB"
+}
+
+export function createPaymentAttempt(orderId, provider) {
+  const requestBody = { 
+    orderId,
+    openBankingProvider: provider
+  };
   
   return axios.post(
     `${process.env.REACT_APP_SERVER_URL}/payment-attempts`,

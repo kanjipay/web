@@ -62,7 +62,7 @@ export async function createLinkToken(payment_id: string, client_user_id: string
     products: [Products.PaymentInitiation],
     country_codes: [CountryCode.Gb],
     language: "en",
-    webhook: process.env.WEBHOOK_URL,
+    webhook: `${process.env.WEBHOOK_URL}/plaid`,
     payment_initiation: {
       payment_id,
     },

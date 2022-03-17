@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { handlePaymentUpdate } from "./handlePaymentUpdate";
+import { handlePaymentUpdate } from "./plaid/handlePaymentUpdate";
 
 const routes = Router();
 
-routes.post("/", handlePaymentUpdate);
+routes.post("/plaid", handlePaymentUpdate);
 
 export default routes;
