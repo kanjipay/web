@@ -32,11 +32,11 @@ if (environment === Environment.DEV) {
   connectFunctionsEmulator(functions, "localhost", 5000);
 }
 
-initializeAppCheck(firebaseApp, {
-  provider: new ReCaptchaV3Provider(
-    process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID
-  ),
-  isTokenAutoRefreshEnabled: true,
-});
+// initializeAppCheck(firebaseApp, {
+//   provider: new ReCaptchaV3Provider(
+//     process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID
+//   ),
+//   isTokenAutoRefreshEnabled: true,
+// });
 
 export { firebaseApp, db, storage, functions };

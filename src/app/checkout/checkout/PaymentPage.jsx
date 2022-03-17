@@ -3,7 +3,7 @@ import LoadingPage from "../../../components/LoadingPage";
 import { usePlaidLink } from "react-plaid-link";
 import { useNavigate, useParams } from "react-router-dom";
 import useBasket from "../basket/useBasket";
-import { createPaymentAttempt } from "../../../utils/services/PaymentsService";
+import { createPaymentAttempt, fetchPaymentAttempt } from "../../../utils/services/PaymentsService";
 import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus";
 import { onSnapshot } from "firebase/firestore";
 import Collection from "../../../enums/Collection";
@@ -109,26 +109,23 @@ export default function PaymentPage() {
 
   useEffect(() => {
     if (paymentAttemptId) {
-      const unsub = onSnapshot(
-        Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId),
-        (doc) => {
-          const { status } = doc.data();
+      const unsub = fetchPaymentAttempt(paymentAttemptId, (doc) => {
+        const { status } = doc.data();
 
-          switch (status) {
-            case PaymentAttemptStatus.SUCCESSFUL:
-              clearBasket();
-              navigate("../payment-success");
-              break;
-            case PaymentAttemptStatus.CANCELLED:
-              navigate("../payment-cancelled");
-              break;
-            case PaymentAttemptStatus.FAILED:
-              navigate("../payment-failure");
-              break;
-            default:
-          }
+        switch (status) {
+          case PaymentAttemptStatus.SUCCESSFUL:
+            clearBasket();
+            navigate("../payment-success");
+            break;
+          case PaymentAttemptStatus.CANCELLED:
+            navigate("../payment-cancelled");
+            break;
+          case PaymentAttemptStatus.FAILED:
+            navigate("../payment-failure");
+            break;
+          default:
         }
-      );
+      });
 
       return () => {
         unsub();
