@@ -9,12 +9,8 @@ import {
   createRecipient,
 } from "../../utils/plaidClient";
 import OrderStatus from "../../enums/OrderStatus";
-
-enum OpenBankingProvider {
-  PLAID = "PLAID",
-  TRUELAYER = "TRUELAYER",
-  MONEYHUB = "MONEYHUB"
-}
+import { createAccessToken, createPaymentWithAccessToken } from "../../utils/truelayerClient";
+import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
 
 async function makePlaidPayment(accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string) {
   const recipientId = await createRecipient(
@@ -35,7 +31,7 @@ async function makePlaidPayment(accountNumber: string, sortCode: string, payment
 
   return {
     paymentAttemptData: {
-      linkToken
+      paymentId
     },
     paymentAttemptPrivateData: {
       recipientId,
@@ -49,14 +45,29 @@ async function makePlaidPayment(accountNumber: string, sortCode: string, payment
 }
 
 async function makeTruelayerPayment(accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string) {
+  const accessToken = await createAccessToken()
 
-  
+  const { 
+    paymentId, 
+    resourceToken 
+  } = await createPaymentWithAccessToken(
+    accessToken, 
+    amount, 
+    paymentName, 
+    sortCode, 
+    accountNumber, 
+    userId
+  )
+
   return {
     paymentAttemptData: {
+      paymentId
     },
     paymentAttemptPrivateData: {
+      resourceToken
     },
     returnData: {
+      resourceToken
     }
   }
 }
@@ -91,8 +102,6 @@ async function makePayment(provider: OpenBankingProvider, accountNumber: string,
 }
 
 export default class PaymentAttemptsController extends BaseController {
-
-
   create = async (req, res, next) => {
     const order = req.order;
     const { deviceId, merchantId, total } = order;
