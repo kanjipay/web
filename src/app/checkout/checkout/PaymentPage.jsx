@@ -5,8 +5,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import useBasket from "../basket/useBasket";
 import { createPaymentAttempt, fetchPaymentAttempt, OpenBankingProvider } from "../../../utils/services/PaymentsService";
 import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus";
-import { onSnapshot } from "firebase/firestore";
-import Collection from "../../../enums/Collection";
 import {
   AnalyticsEvent,
   AnalyticsManager,

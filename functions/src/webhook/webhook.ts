@@ -2,7 +2,6 @@ import * as express from "express";
 import { errorHandler } from "../middleware/errorHandler";
 import routes from "./routes";
 import * as cors from "cors";
-import { checkPlaidIp } from "./checkPlaidIp";
 
 const app = express();
 
@@ -14,7 +13,7 @@ app.options("*", corsInstance); // Think this is needed for preflight requests
 app.use(express.json());
 app.use(express.urlencoded());
 
-app.use("/", checkPlaidIp, routes);
+app.use("/", routes);
 
 app.use(errorHandler);
 
