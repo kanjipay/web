@@ -1,13 +1,9 @@
 import Box from "@mui/material/Box";
-// import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import { Link } from "react-router-dom";
-// import AlertIcon from "../../../../components/AlertIcon";
-// import Paper from "@mui/material/Paper";
 import { getTimeFromUnixTimestamp } from "../../../../utils/helpers/time";
 import "./MerchantOrder.css";
 import { Colors } from "../../../../components/CircleButton";
-// import { Col } from "react-bootstrap";
 
 function OrderItem({ order, menuItems }) {
   var orderListString = "";
@@ -32,9 +28,6 @@ function OrderItem({ order, menuItems }) {
     }
   }
 
-  //   const backgroundColor = index % 2 === 1 ? "#D3D3D3" : "";
-
-  //Leaving this ugly for now - all of the core functionality is here
   return (
     <Link to={`order/${order.id}`}>
       <Box
@@ -57,10 +50,6 @@ function OrderItem({ order, menuItems }) {
                   <h2 className="header-s">Order</h2>
                 </Box>
                 <Box gridColumn="span 10">
-                  {/* <AlertIcon /> */}
-                  {/* <div className="MerchantOrder__orderStatusContainer">
-                    <p className="MerchantOrder__orderStatusText">Active</p>
-                  </div> */}
                   <div className="flex-container">
                     <div
                       className="bubble"

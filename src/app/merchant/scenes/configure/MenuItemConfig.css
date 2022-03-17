@@ -5,5 +5,5 @@
 
 .MenuItemConfig__menuItemPicture {
   object-fit: cover;
-  height: 50px;
+  width: 85px;
 }

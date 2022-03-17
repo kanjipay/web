@@ -50,10 +50,6 @@ function MerchantAccountPage(props) {
       );
     });
 
-  console.log("Merchant Account Page");
-  console.log("Merchant Account Page merchantData:", merchantData);
-  console.log("Merchant Account Page Opening Hours:", openingHours);
-
   return (
     <div className="container">
       <Helmet>
@@ -128,7 +124,7 @@ function MerchantAccountPage(props) {
             style={{ boxSizing: "borderBox" }}
           />
         </div>
-        <Spacer y={3} />
+
         <BottomNavBar />
       </div>
     </div>
