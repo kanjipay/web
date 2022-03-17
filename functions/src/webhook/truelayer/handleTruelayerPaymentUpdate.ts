@@ -1,7 +1,5 @@
-import Collection from "../../enums/Collection";
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
-import { db } from "../../utils/admin";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 import { receivePaymentUpdate } from "../shared/receivePaymentUpdate";
 import { verify } from "./verify"

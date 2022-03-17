@@ -67,7 +67,8 @@ async function makeTruelayerPayment(accountNumber: string, sortCode: string, pay
       resourceToken
     },
     returnData: {
-      resourceToken
+      resourceToken,
+      paymentId
     }
   }
 }
