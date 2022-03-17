@@ -1,4 +1,4 @@
-import { updateDoc } from "firebase/firestore";
+import { onSnapshot, updateDoc } from "firebase/firestore";
 import axios from "axios";
 import Collection from "../../enums/Collection";
 
@@ -9,6 +9,10 @@ export function createPaymentAttempt(orderId) {
     `${process.env.REACT_APP_SERVER_URL}/payment-attempts`,
     requestBody
   );
+}
+
+export function fetchPaymentAttempt(paymentAttemptId, onComplete) {
+  return onSnapshot(Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId), onComplete);
 }
 
 export function setPaymentAttemptStatus(paymentAttemptId, status) {
