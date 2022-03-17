@@ -1,8 +1,5 @@
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
-import { db } from "../../utils/admin";
-import Collection from "../../enums/Collection";
-import OrderStatus from "../../enums/OrderStatus";
 import { verify } from "./verify";
 import { receivePaymentUpdate } from "../shared/receivePaymentUpdate";
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";

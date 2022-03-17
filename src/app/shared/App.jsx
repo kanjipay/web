@@ -5,6 +5,7 @@ import NotFound from "./NotFoundPage";
 import { BrowserRouter } from "react-router-dom";
 import Menu from "../checkout/menu/Menu";
 import MerchantApp from "../merchant/MerchantApp";
+import RedirectPageTruelayer from "../checkout/checkout/RedirectPageTruelayer";
 
 export default function App() {
   return (
@@ -13,6 +14,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
 
         <Route path="/menu/:merchantId/*" element={<Menu />} />
+
+        <Route path="/tl-redirect" element={ <RedirectPageTruelayer />} />
 
         <Route path="/merchant/*" element={<MerchantApp />} />
         <Route path="*" element={<NotFound />} />

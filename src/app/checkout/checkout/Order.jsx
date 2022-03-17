@@ -5,7 +5,7 @@ import CheckoutMethodPage from "./CheckoutMethodPage";
 import EmailSubmittedPage from "./EmailSubmittedPage";
 import PaymentCancelledPage from "./PaymentCancelledPage";
 import PaymentFailurePage from "./PaymentFailurePage";
-import PaymentPage from "./PaymentPage";
+import PaymentPagePlaid from "./PaymentPagePlaid";
 import PaymentSuccessPage from "./PaymentSuccessPage";
 
 export default function Order() {
@@ -20,7 +20,7 @@ export default function Order() {
 
   return (
     <Routes>
-      <Route path="payment" element={<PaymentPage />} />
+      <Route path="payment" element={<PaymentPagePlaid />} />
       <Route path="payment-method" element={<CheckoutMethodPage />} />
       <Route
         path="payment-success"

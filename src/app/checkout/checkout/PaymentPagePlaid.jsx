@@ -21,14 +21,12 @@ class PlaidEventName {
   static HANDOFF = "HANDOFF"; // Called after successfully going through Link
 }
 
-export default function PaymentPage() {
+export default function PaymentPagePlaid() {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null);
   const [linkToken, setLinkToken] = useState(null);
   const { orderId } = useParams();
   const navigate = useNavigate();
   const { clearBasket } = useBasket();
-
-  const deviceId = AnalyticsManager.main.getDeviceId();
 
   const onSuccess = (_publicToken, _metadata) => {};
 
@@ -148,7 +146,7 @@ export default function PaymentPage() {
         console.log(err);
         navigate("../payment-failure");
       });
-  }, [orderId, deviceId, navigate]);
+  }, [orderId, navigate]);
 
   return <LoadingPage message="Processing your order" />;
 }
