@@ -3,4 +3,5 @@ export default class OrderStatus {
   static ABANDONED = "ABANDONED";
   static CANCELLED = "CANCELLED";
   static PAID = "PAID";
+  static FULFILLED = "FULFILLED"
 }
