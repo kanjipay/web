@@ -1,9 +1,9 @@
-import { ErrorHandler, HttpError, HttpStatusCode } from "../utils/errors";
+import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 
-import PaymentAttemptStatus from "../enums/PaymentAttemptStatus";
-import { db } from "../utils/admin";
-import Collection from "../enums/Collection";
-import OrderStatus from "../enums/OrderStatus";
+import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
+import { db } from "../../utils/admin";
+import Collection from "../../enums/Collection";
+import OrderStatus from "../../enums/OrderStatus";
 import { verify } from "./verify";
 
 export const handlePaymentUpdate = async (req, res, next) => {
@@ -40,7 +40,7 @@ export const handlePaymentUpdate = async (req, res, next) => {
   if (new_payment_status in paymentStatusMap) {
     const paymentAttemptSnapshot = await db()
       .collection(Collection.PAYMENT_ATTEMPT)
-      .where("paymentId", "==", payment_id)
+      .where("plaid.paymentId", "==", payment_id)
       .limit(1)
       .get();
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
