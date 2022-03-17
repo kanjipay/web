@@ -1,8 +1,6 @@
 import { useParams } from "react-router-dom";
 import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
-// import Button from "../../../../components/Button";
-// import { useNavigate } from "react-router-dom";
 import AsyncImage from "../../../../components/AsyncImage";
 import { Helmet } from "react-helmet-async";
 import { getMenuItemStorageRef } from "../../../../utils/helpers/storage";
@@ -64,15 +62,12 @@ function MenuItemConfigPage(props) {
           menuItem.photo
         )}
         className="headerImage"
-        //   className={`MenuConfigPage__image ${isAvailable ? "" : "MenuConfigPage__imageBlur"}`}
         alt={menuItem.title}
       />
       <div className="content">
         <Spacer y={3} />
         <h1 className="header-l">{menuItem.title}</h1>
         <Spacer y={3} />
-
-        {/* {isAvailable? <div></div>:<div className='centred header-l'>Not available</div>} */}
 
         <div style={{ display: "flex", alignItems: "center" }}>
           <CircleIcon Icon={Details} style={{ marginRight: 8 }} />

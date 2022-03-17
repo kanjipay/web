@@ -6,6 +6,7 @@ import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlin
 import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import { Link } from "react-router-dom";
+import "./BottomNavBar.css";
 
 // TODO Make the Orders Icon have a badge based on number of outstanding order (see https://mui.com/components/badges/)
 // TODO Make this function configurable for downstream users
@@ -17,27 +18,31 @@ export default function BottomNavBar() {
   };
 
   return (
-    <Box sx={{ width: 500 }}>
-      <BottomNavigation showLabels value={value} onChange={handleChange}>
-        <BottomNavigationAction
-          component={Link}
-          to="/merchant/dashboard"
-          label="Orders"
-          icon={<ChatBubbleOutlineOutlinedIcon />}
-        />
-        <BottomNavigationAction
-          component={Link}
-          to="/merchant/configure"
-          label="Configure Menu"
-          icon={<ListAltOutlinedIcon />}
-        />
-        <BottomNavigationAction
-          component={Link}
-          to="/merchant/account"
-          label="Account"
-          icon={<ManageAccountsOutlinedIcon />}
-        />
-      </BottomNavigation>
-    </Box>
+    <div className="NavBar__outerContainer">
+      <div className="NavBar__innerContainer">
+        <Box sx={{ width: 500 }}>
+          <BottomNavigation showLabels value={value} onChange={handleChange}>
+            <BottomNavigationAction
+              component={Link}
+              to="/merchant/dashboard"
+              label="Orders"
+              icon={<ChatBubbleOutlineOutlinedIcon />}
+            />
+            <BottomNavigationAction
+              component={Link}
+              to="/merchant/configure"
+              label="Configure Menu"
+              icon={<ListAltOutlinedIcon />}
+            />
+            <BottomNavigationAction
+              component={Link}
+              to="/merchant/account"
+              label="Account"
+              icon={<ManageAccountsOutlinedIcon />}
+            />
+          </BottomNavigation>
+        </Box>
+      </div>
+    </div>
   );
 }

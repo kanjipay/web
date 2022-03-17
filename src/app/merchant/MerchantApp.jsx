@@ -2,34 +2,24 @@ import React, { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import MerchantLogin from "./scenes/login/MerchantLoginPage";
 import MerchantOrderPage from "./scenes/order/MerchantOrderPage";
-import {
-  getAuth,
-  onAuthStateChanged,
-  // setPersistence,
-  // inMemoryPersistence,
-} from "firebase/auth";
-import {
-  collection,
-  doc,
-  onSnapshot,
-  query,
-  where,
-  // getDocs,
-  // getDoc,
-  orderBy,
-} from "firebase/firestore";
-import { db } from "../../utils/FirebaseUtils";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import MerchantOrderList from "./scenes/orderlist/MerchantOrderListPage";
 import LoadingPage from "../../components/LoadingPage";
 import MerchantConfigurePage from "./scenes/configure/MerchantConfigurePage";
 import MerchantAccountPage from "./scenes/account/MerchantAccountPage";
-// import { getWeekdays } from "../../utils/helpers/time";
 import MenuItemConfigPage from "./scenes/configure/MenuItemConfigPage";
+import {
+  fetchMerchantByUserId,
+  fetchMerchantOrders,
+} from "../../utils/services/MerchantService";
+import {
+  fetchMenuItems,
+  fetchMenuSections,
+  fetchOpeningHours,
+} from "../../utils/services/MenuService";
 
 function MerchantApp() {
   const [merchantId, setMerchantId] = useState("");
-  // eslint-disable-next-line no-unused-vars
-  const [merchantRef, setMerchantRef] = useState("");
   const [merchantData, setMerchantData] = useState("");
   const [userId, setUserId] = useState("");
   const [orderList, setOrderList] = useState("");
@@ -38,148 +28,93 @@ function MerchantApp() {
   const [merchantMenuSections, setMerchantMenuSections] = useState("");
   const [openingHours, setOpeningHours] = useState("");
 
-  //TODO: Check whether this handling of authentication is actually secure! We may need to have permissions for the various apps and/or build a backend auth system for security.
-
+  // TODO - move auth functions to Auth Service? Don't know if we need this
   const auth = getAuth();
 
-  // This is only present for local testing as it makes it easy to retrigger the authentication flow.
-  //In reality we should use device persistance as merchants will not want to always log back on (perhaps make this customizable?)
-  //   setPersistence(auth, inMemoryPersistence);
-
-  // TODO  this will cause a memory leak as we need to unsubscribe from listening when component is unmounted
-
-  // When user authenticates
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    // When user becomes logged in/out, update local variables
+    const authUnsub = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
         setIsAuthenticated(true);
         console.log("User authenticated");
-        console.log("Account", user.email, "currently authenticated");
-        console.log("Account", userId, "currently authenticated");
-        //TODO query firestore to retreive merchant ID associated with this user account
       } else {
         console.log("No user currently authenticated");
         setMerchantId(null);
-        setMerchantRef(null);
         setIsAuthenticated(false);
       }
     });
-  }, [userId, auth]);
 
-  // Link user account to merchant account
-  useEffect(() => {
-    if (userId) {
-      const MerchantQuery = query(
-        collection(db, "Merchant"),
-        where("user_id", "==", userId)
-      );
-
-      onSnapshot(MerchantQuery, (snapshot) => {
-        const data = snapshot.docs.map((doc) => {
-          const range = { id: doc.id, ...doc.data() };
-          delete range.merchant;
-
-          return range;
-        });
-        setMerchantId(data[0].id);
-        setMerchantData(data);
-      });
-    }
-  }, [userId, merchantId]);
-
-  //Retreives merchantID
-  useEffect(() => {
-    if (merchantId) {
-      const merchantRef = doc(db, "Merchant", merchantId);
-
-      setMerchantRef(merchantRef);
-    }
-  }, [merchantId]);
-
-  useEffect(() => {
-    const orderQuery = query(
-      collection(db, "Order"),
-      where("status", "==", "PAID"),
-      where("merchant_id", "==", merchantId),
-      orderBy("created_at")
-    );
-
-    const ordersUbsub = onSnapshot(orderQuery, (orderSnapshot) => {
-      const items = orderSnapshot.docs.map((doc) => {
-        const item = { id: doc.id, ...doc.data() };
-        return item;
-      });
-      setOrderList(items);
-    });
-
-    const menuItemQuery = query(
-      collection(db, "MenuItem"),
-      where("merchant_id", "==", merchantId)
-    );
-
-    const menuItemUnsub = onSnapshot(menuItemQuery, (itemSnapshot) => {
-      const items = itemSnapshot.docs.map((document) => {
-        const menuItemRef = doc(db, "MenuItem", document.id);
-        const item = { id: document.id, ref: menuItemRef, ...document.data() };
-        return item;
-      });
-
-      setMenuItems(items);
-    });
-
-    return () => {
-      menuItemUnsub();
-      ordersUbsub();
-    };
-  }, [merchantId]);
-
-  // TODO understand why this query works here in a seperate useEffect but not in the previous useEffect
-  useEffect(() => {
-    const menuSectionQuery = query(
-      collection(db, "MenuSection"),
-      where("merchant_id", "==", merchantId)
-    );
-    const menuSectionUnsub = onSnapshot(menuSectionQuery, (sectionSnapshot) => {
-      const sections = sectionSnapshot.docs.map((document) => {
-        const section = { id: document.id, ...document.data() };
-        return section;
-      });
-      setMerchantMenuSections(sections);
-    });
-
-    const openingHoursQuery = query(
-      collection(db, "OpeningHourRange"),
-      where("merchant_id", "==", merchantId)
-    );
-    const openingHoursUnsub = onSnapshot(
-      openingHoursQuery,
-      (openHoursSnapshot) => {
-        const hours = openHoursSnapshot.docs.map((document) => {
-          const hours = { id: document.id, ...document.data() };
-          return hours;
-        });
-        setOpeningHours(hours);
+    // Link user account to merchant account
+    const merchantUnsub = fetchMerchantByUserId(userId, (snapshot) => {
+      if (snapshot.docs.length > 0) {
+        const doc = snapshot.docs[0];
+        setMerchantData({ id: doc.id, ...doc.data() });
+        setMerchantId(doc.id);
       }
-    );
+    });
+
+    //Fetch Orders
+    const orderUnsub = fetchMerchantOrders(merchantId, (snapshot) => {
+      if (snapshot) {
+        const items = snapshot.docs.map((doc) => {
+          return { id: doc.id, ...doc.data() };
+        });
+        setOrderList(items);
+      }
+    });
+
+    //Fetch Menu Items
+    const menuItemUnsub = fetchMenuItems(merchantId, (snapshot) => {
+      if (snapshot) {
+        const items = snapshot.docs.map((doc) => {
+          return { id: doc.id, ...doc.data() };
+        });
+        setMenuItems(items);
+      }
+    });
+
+    //Fetch Menu Sections
+    const menuSectionUnsub = fetchMenuSections(merchantId, (snapshot) => {
+      if (snapshot) {
+        const items = snapshot.docs.map((doc) => {
+          return { id: doc.id, ...doc.data() };
+        });
+        setMerchantMenuSections(items);
+      }
+    });
+
+    //Fetch Opening Hours
+    const openingHoursUnsub = fetchOpeningHours(merchantId, (snapshot) => {
+      if (snapshot) {
+        const items = snapshot.docs.map((doc) => {
+          return { id: doc.id, ...doc.data() };
+        });
+        setOpeningHours(items);
+      }
+    });
 
     return () => {
+      authUnsub();
+      merchantUnsub();
+      orderUnsub();
+      menuItemUnsub();
       menuSectionUnsub();
       openingHoursUnsub();
     };
-  }, [merchantId]);
+  }, [auth, userId, merchantId]);
 
+  // TODO make this loading screen work at a scene level rather than for the global app - should be faster :)
   const isLoadedAndAuthenticated =
     userId &&
     menuItems.length > 0 &&
     merchantMenuSections.length > 0 &&
+    openingHours.length > 0 &&
     isAuthenticated;
 
   //  render a scene based on the current state
   if (isLoadedAndAuthenticated) {
     // Load the routes for the merchant component
-    // TODO improve the loading experience here
-
     return (
       <Routes>
         <Route
@@ -215,7 +150,7 @@ function MerchantApp() {
           path="account"
           element={
             <MerchantAccountPage
-              merchantData={merchantData[0]}
+              merchantData={merchantData}
               openingHours={openingHours}
             />
           }
