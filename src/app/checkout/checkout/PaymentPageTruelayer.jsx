@@ -1,17 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingPage from "../../../components/LoadingPage";
-import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus";
 import { AnalyticsEvent, AnalyticsManager } from "../../../utils/AnalyticsManager";
-import { createPaymentAttempt, fetchPaymentAttempt, OpenBankingProvider } from "../../../utils/services/PaymentsService";
-import useBasket from "../basket/useBasket";
+import { createPaymentAttempt, OpenBankingProvider } from "../../../utils/services/PaymentsService";
 
 export default function PaymentPageTruelayer() {
   const { orderId } = useParams();
-  const [paymentAttemptId, setPaymentAttemptId] = useState(null);
-  const [resourceToken, setResourceToken] = useState(null);
   const navigate = useNavigate();
-  const { clearBasket } = useBasket();
 
   useEffect(() => {
     createPaymentAttempt(orderId, OpenBankingProvider.TRUELAYER)
