@@ -28,20 +28,19 @@ function getPlaid() {
 export const plaidClient = () => plaidInstance || getPlaid();
 
 export async function createRecipient(accountNumber: string, sort_code: string, paymentName: string) {
-  const recipientResponse =
-    await plaidClient().paymentInitiationRecipientCreate({
-      name: paymentName,
-      bacs: {
-        account: accountNumber,
-        sort_code,
-      },
-    });
+  const res = await plaidClient().paymentInitiationRecipientCreate({
+    name: paymentName,
+    bacs: {
+      account: accountNumber,
+      sort_code,
+    },
+  });
 
-  return recipientResponse.data.recipient_id;
+  return res.data.recipient_id;
 }
 
 export async function createPayment(recipient_id: string, amountInPence: number) {
-  const paymentResponse = await plaidClient().paymentInitiationPaymentCreate({
+  const res = await plaidClient().paymentInitiationPaymentCreate({
     recipient_id,
     reference: "Mercado",
     amount: {
@@ -50,11 +49,11 @@ export async function createPayment(recipient_id: string, amountInPence: number)
     },
   });
 
-  return paymentResponse.data.payment_id;
+  return res.data.payment_id;
 }
 
 export async function createLinkToken(payment_id: string, client_user_id: string) {
-  const linkResponse = await plaidClient().linkTokenCreate({
+  const res = await plaidClient().linkTokenCreate({
     user: {
       client_user_id,
     },
@@ -68,5 +67,5 @@ export async function createLinkToken(payment_id: string, client_user_id: string
     },
   });
 
-  return linkResponse.data;
+  return res.data;
 }

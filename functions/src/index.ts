@@ -26,5 +26,7 @@ export const webhook = functions
 
 export const status = functions.region(REGION).https.onRequest((req, res) => {
   console.log("Healthcheck");
+  console.log(process.env.ENVIRONMENT)
+  console.log(process.env.TEST)
   res.sendStatus(200);
 });

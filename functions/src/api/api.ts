@@ -9,6 +9,9 @@ import { verifyDomain } from "../middleware/verifyDomain";
 const main = express();
 const app = express();
 
+console.log("environment: ", process.env.ENVIRONMENT)
+console.log("test: ", process.env.TEST)
+
 const origin = process.env.ENVIRONMENT === "DEV" ? "*" : process.env.CLIENT_URL;
 
 const corsInstance = cors({ origin });
