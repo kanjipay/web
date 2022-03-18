@@ -5,10 +5,11 @@ import { Colors } from "../../../components/CircleButton";
 import IconActionPage from "../../../components/IconActionPage";
 import { PageName, viewPage } from "../../../utils/AnalyticsManager";
 
-export default function EmailSubmittedPage() {
+export default function EmailSubmittedPage({ order }) {
   const navigate = useNavigate();
-
   const { orderId } = useParams();
+
+  const merchantId = order.merchantId
 
   useEffect(() => {
     viewPage(PageName.EMAIL_RECEIPT_SENT, { orderId });
@@ -22,7 +23,7 @@ export default function EmailSubmittedPage() {
       title="Emailed submitted"
       body="We'll email your receipt shortly"
       primaryActionTitle="Done"
-      primaryAction={() => navigate("../..")}
+      primaryAction={() => navigate(`/menu/${merchantId}`)}
     />
   );
 }

@@ -53,7 +53,7 @@ export default function BasketPage({ merchant }) {
       .then((orderId) => {
         setIsLoading(false);
         analyticsManager.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId });
-        navigate(`../checkout/${orderId}/payment`);
+        navigate(`/checkout/${orderId}/payment`);
       })
       .catch((err) => {
         setIsLoading(false);
