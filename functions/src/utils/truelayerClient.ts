@@ -1,11 +1,11 @@
 import axios from "axios"
 import * as tlSigning from "truelayer-signing"
-import * as jwt from "jsonwebtoken";
+// import * as jwt from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 import * as base64 from "base-64";
 
 const defaultHeaders = {
-  "Content- Type": "application/json",
+  "Content-Type": "application/json",
   "Accept": "application/json"
 }
 
@@ -39,8 +39,8 @@ export async function createPaymentWithAccessToken(
   account_number: string, 
   userId: string
 ) {
-  const { header } = jwt.decode(accessToken, { complete: true });
-  const { kid } = header
+  // const { header } = jwt.decode(accessToken, { complete: true });
+  // const { kid } = header
 
   const body = {
     amount_in_minor: amountInPence,
@@ -71,7 +71,7 @@ export async function createPaymentWithAccessToken(
   const privateKeyPem = base64.decode(process.env.TRUELAYER_PRIVATE_KEY_PEM)
 
   const signature = tlSigning.sign({
-    kid,
+    kid: "INSERT UUID FROM TRUELAYER CONSOLE",
     privateKeyPem,
     method: tlSigning.HttpMethod.Post,
     path: "/payments",
@@ -82,10 +82,20 @@ export async function createPaymentWithAccessToken(
   const headers = {
     "Tl-Signature": signature,
     "Idempotency-Key": uuid(),
+    "Authorization": `Bearer ${accessToken}`,
+    "Host": `api.${truelayerUrlName()}.com`,
     ...defaultHeaders
   }
 
-  const res = await axios.post(`https://api.${truelayerUrlName()}.com/payments`, body, { headers })
+  let res
+  
+  try {
+    res = await axios.post(`https://api.${truelayerUrlName()}.com/payments`, body, { headers })
+  } catch (error) {
+    console.log(error.message)
+    return
+  }
+
   const { id, resource_token } = res.data
 
   const paymentId = id

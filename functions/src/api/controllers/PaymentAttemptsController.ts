@@ -30,15 +30,15 @@ async function makePlaidPayment(accountNumber: string, sortCode: string, payment
   const linkExpiration = linkResponse.expiration
 
   return {
-    paymentAttemptData: {
+    providerData: {
       paymentId
     },
-    paymentAttemptPrivateData: {
+    providerPrivateData: {
       recipientId,
       linkToken,
       linkExpiration
     },
-    returnData: {
+    providerReturnData: {
       linkToken
     }
   }
@@ -60,13 +60,13 @@ async function makeTruelayerPayment(accountNumber: string, sortCode: string, pay
   )
 
   return {
-    paymentAttemptData: {
+    providerData: {
       paymentId
     },
-    paymentAttemptPrivateData: {
+    providerPrivateData: {
       resourceToken
     },
-    returnData: {
+    providerReturnData: {
       resourceToken,
       paymentId
     }
@@ -75,11 +75,11 @@ async function makeTruelayerPayment(accountNumber: string, sortCode: string, pay
 
 async function makeMoneyhubPayment(accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string) {
   return {
-    paymentAttemptData: {
+    providerData: {
     },
-    paymentAttemptPrivateData: {
+    providerPrivateData: {
     },
-    returnData: {
+    providerReturnData: {
     }
   }
 }

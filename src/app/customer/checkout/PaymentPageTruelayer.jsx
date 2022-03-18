@@ -11,10 +11,10 @@ export default function PaymentPageTruelayer() {
   useEffect(() => {
     createPaymentAttempt(orderId, OpenBankingProvider.TRUELAYER)
       .then((res) => {
-        console.log(res.data)
         const { paymentAttemptId } = res.data;
         const { resourceToken, paymentId } = res.data.truelayer
 
+        // This should likely be in the backend?
         const appName = process.env.REACT_APP_ENV_NAME === 'PROD' ? "truelayer" : "truelayer-sandbox"
         const redirectUrl = new URL(window.location.href)
         redirectUrl.pathname = "/tl-redirect"

@@ -3,9 +3,9 @@ import { Route, Routes } from "react-router-dom";
 import Home from "../brand/HomePage";
 import NotFound from "./NotFoundPage";
 import { BrowserRouter } from "react-router-dom";
-import Menu from "../checkout/menu/Menu";
+import Menu from "../customer/menu/Menu";
 import MerchantApp from "../merchant/MerchantApp";
-import RedirectPageTruelayer from "../checkout/checkout/RedirectPageTruelayer";
+import RedirectPageTruelayer from "../customer/checkout/RedirectPageTruelayer";
 
 export default function App() {
   return (

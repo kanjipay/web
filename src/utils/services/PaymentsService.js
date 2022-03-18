@@ -13,6 +13,8 @@ export function createPaymentAttempt(orderId, provider) {
     orderId,
     openBankingProvider: provider
   };
+
+  console.log("createPaymentAttempt: ", requestBody)
   
   return axios.post(
     `${process.env.REACT_APP_SERVER_URL}/payment-attempts`,

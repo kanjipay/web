@@ -9,7 +9,7 @@ import TextLine from "../../../../components/TextLine";
 import MainButton from "../../../../components/MainButton";
 import CircleIcon from "../../../../components/CircleIcon";
 import "./MenuItemConfigPage.css";
-import DietaryAttribute from "../../../checkout/menu/DietaryAttribute";
+import DietaryAttribute from "../../../customer/menu/DietaryAttribute";
 import { formatCurrency } from "../../../../utils/helpers/money";
 import { Colors } from "../../../../components/CircleButton";
 
