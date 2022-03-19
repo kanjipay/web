@@ -8,12 +8,12 @@ import DietaryAttribute from "./DietaryAttribute";
 import "./MenuItem.css";
 
 export default function MenuItem({ item, basketCount = 0 }) {
-  const merchantId = item.merchant_id;
-  const dietaryAttrs = item.dietary_attributes;
+  const merchantId = item.merchantId;
+  const dietaryAttrs = item.dietaryAttributes;
   const dietaryBubbles = [];
 
-  if (item.spice_level > 0) {
-    const chilliCount = Math.min(3, item.spice_level);
+  if (item.spiceLevel > 0) {
+    const chilliCount = Math.min(3, item.spiceLevel);
 
     const chilliImages = [];
 
@@ -52,7 +52,7 @@ export default function MenuItem({ item, basketCount = 0 }) {
     }
   }
 
-  const isAvailable = item.is_available;
+  const isAvailable = item.isAvailable;
   const textColor = isAvailable ? Colors.BLACK : Colors.GRAY_LIGHT;
 
   const menuItemContents = (
@@ -73,7 +73,7 @@ export default function MenuItem({ item, basketCount = 0 }) {
 
       <Spacer y={1} />
       <div className="grid">
-        <div className="MenuItem__title header-xs" style={{ color: textColor }}>
+        <div className="MenuItem__title header-s" style={{ color: textColor }}>
           {item.title}
         </div>
         {dietaryBubbles}
@@ -85,8 +85,8 @@ export default function MenuItem({ item, basketCount = 0 }) {
           {formatCurrency(item.price)}
         </div>
       </div>
-      <Spacer y={0.5} />
-      <p className="MenuItem__description text-caption">{item.description}</p>
+      <Spacer y={1} />
+      <p className="MenuItem__description text-body-faded">{item.description}</p>
     </div>
   );
 

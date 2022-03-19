@@ -6,11 +6,12 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import Collection from "../../enums/Collection";
+import OrderStatus from "../../enums/OrderStatus";
 
 export function fetchMerchantByUserId(userId, onComplete) {
   const fetchMerchantByUserIdQuery = query(
     Collection.MERCHANT.ref,
-    where("user_id", "==", userId)
+    where("userId", "==", userId)
   );
 
   return onSnapshot(fetchMerchantByUserIdQuery, onComplete);
@@ -20,15 +21,15 @@ export function fetchMerchantOrders(merchantId, onComplete) {
   const fetchMerchantOrdersQuery = query(
     Collection.ORDER.ref,
     where("status", "==", "PAID"),
-    where("merchant_id", "==", merchantId),
-    orderBy("created_at")
+    where("merchantId", "==", merchantId),
+    orderBy("createdAt")
   );
   return onSnapshot(fetchMerchantOrdersQuery, onComplete);
 }
 
 export const setOrderFulfilled = (orderId) => {
   updateDoc(Collection.ORDER.docRef(orderId), {
-    status: "FULFILLED",
+    status: OrderStatus.FULFILLED,
   });
 };
 

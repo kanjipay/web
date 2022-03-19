@@ -13,7 +13,7 @@ import OrderStatus from "../../enums/OrderStatus";
 export default class PaymentAttemptsController extends BaseController {
   create = async (req, res, next) => {
     const order = req.order;
-    const { device_id, merchant_id, total } = order;
+    const { deviceId, merchantId, total } = order;
     const orderId = order.id;
 
     if (order.status !== OrderStatus.PENDING) {
@@ -30,7 +30,7 @@ export default class PaymentAttemptsController extends BaseController {
 
     const merchantDoc = await db()
       .collection(Collection.MERCHANT)
-      .doc(merchant_id)
+      .doc(merchantId)
       .get()
       .catch(
         new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
@@ -43,30 +43,35 @@ export default class PaymentAttemptsController extends BaseController {
       return;
     }
 
-    const { account_number, sort_code, payment_name } = merchantDoc.data();
+    const { accountNumber, sortCode, paymentName } = merchantDoc.data();
 
-    const { recipient_id } = await createRecipient(
-      account_number,
-      sort_code,
-      payment_name
+    const recipientId = await createRecipient(
+      accountNumber,
+      sortCode,
+      paymentName
     );
-    const { payment_id } = await createPayment(recipient_id, total);
-    const { link_token, expiration } = await createLinkToken(
-      payment_id,
-      device_id
+
+    const paymentId = await createPayment(recipientId, total);
+
+    const linkResponse = await createLinkToken(
+      paymentId,
+      deviceId
     );
+
+    const linkToken = linkResponse.link_token
+    const linkExpiration = linkResponse.expiration
 
     // Write payment attempt object to database
 
     const paymentAttemptRef = await db()
       .collection(Collection.PAYMENT_ATTEMPT)
       .add({
-        payment_id,
-        order_id: orderId,
-        merchant_id,
+        paymentId,
+        orderId,
+        merchantId,
         status: PaymentAttemptStatus.PENDING,
-        created_at: new Date(),
-        device_id,
+        createdAt: new Date(),
+        deviceId,
         amount: total,
       });
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
@@ -75,9 +80,9 @@ export default class PaymentAttemptsController extends BaseController {
       .doc(paymentAttemptRef.path)
       .collection("Private")
       .add({
-        recipient_id,
-        link_token,
-        link_expiration: expiration,
+        recipientId,
+        linkToken,
+        linkExpiration
       })
       .catch(
         new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
@@ -85,8 +90,8 @@ export default class PaymentAttemptsController extends BaseController {
 
     // Return the link token and payment attempt id for the frontend to use
 
-    const payment_attempt_id = paymentAttemptRef.id;
+    const paymentAttemptId = paymentAttemptRef.id;
 
-    return res.status(200).json({ link_token, payment_attempt_id });
+    return res.status(200).json({ linkToken, paymentAttemptId });
   };
 }

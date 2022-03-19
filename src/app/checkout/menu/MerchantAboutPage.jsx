@@ -22,9 +22,9 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
   }, [merchantId]);
 
   openHourRanges
-    .sort((range1, range2) => range1.day_of_week - range2.day_of_week)
+    .sort((range1, range2) => range1.dayOfWeek - range2.dayOfWeek)
     .forEach((range, index) => {
-      const weekday = weekdays[range.day_of_week - 1];
+      const weekday = weekdays[range.dayOfWeek - 1];
 
       openingHourGridItems.push(
         <div
@@ -40,8 +40,8 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
           key={`hours-${index}`}
           className="text-caption MerchantAboutPage__hoursItem"
         >
-          {`${formatMinutes(range.open_time)} - ${formatMinutes(
-            range.close_time
+          {`${formatMinutes(range.openTime)} - ${formatMinutes(
+            range.closeTime
           )}`}
         </div>
       );
@@ -50,7 +50,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
   return merchant ? (
     <div className="container">
       <Helmet>
-        <title>{merchant.display_name}</title>
+        <title>{merchant.displayName}</title>
       </Helmet>
 
       <NavBar backPath=".." transparentDepth={50} opaqueDepth={100} />
@@ -58,12 +58,12 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
       <AsyncImage
         imageRef={getMerchantStorageRef(merchant.id, merchant.photo)}
         className="headerImage"
-        alt={merchant.display_name}
+        alt={merchant.displayName}
       />
       <div className="content">
         <Spacer y={3} />
 
-        <h1 className="header-l">{merchant.display_name}</h1>
+        <h1 className="header-l">{merchant.displayName}</h1>
         <Spacer y={1} />
         <p className="text-body">{merchant.tags.join(" · ")}</p>
         <Spacer y={3} />

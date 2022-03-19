@@ -8,20 +8,30 @@ import MerchantStatus from "../../enums/MerchantStatus";
 
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
-    const { email, order_id } = req.body;
-    await sendEmail(email, order_id).catch(
+    const { email, orderId } = req.body;
+    
+    await sendEmail(email, orderId).catch(
       new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
     );
+
+    await db()
+      .collection(Collection.ORDER)
+      .doc(orderId)
+      .set({ receiptSent: true }, { merge: true })
+      .catch(
+        new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
+      );
+
     return res.sendStatus(200);
   };
 
   create = async (req, res, next) => {
-    const { requested_items, merchant_id, device_id } = req.body;
+    const { requestedItems, merchantId, deviceId } = req.body;
 
-    // Check merchant_id exists and is open
+    // Check merchantId exists and is open
     const merchantDoc = await db()
       .collection(Collection.MERCHANT)
-      .doc(merchant_id)
+      .doc(merchantId)
       .get()
       .catch(
         new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
@@ -46,19 +56,19 @@ export default class OrdersController extends BaseController {
       return;
     }
 
-    const requestedMenuItemIds = requested_items.map((item) => item.id);
+    const requestedMenuItemIds = requestedItems.map((item) => item.id);
     const menuItemsSnapshot = await db()
       .collection(Collection.MENU_ITEM)
       .where("__name__", "in", requestedMenuItemIds)
-      .where("merchant_id", "==", merchant_id)
+      .where("merchantId", "==", merchantId)
       .get();
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
     const menuItems = menuItemsSnapshot.docs.map((item) => {
-      const { is_available, price, title, photo } = item.data();
+      const { isAvailable, price, title, photo } = item.data();
       return {
         id: item.id,
-        is_available,
+        isAvailable,
         price,
         title,
         photo,
@@ -67,14 +77,14 @@ export default class OrdersController extends BaseController {
 
     const menuItemIds = menuItems.map((item) => item.id);
     const unavailableItemIds = menuItems
-      .filter((item) => !item.is_available)
+      .filter((item) => !item.isAvailable)
       .map((item) => item.id);
 
-    const nonexistantMenuItemTitles = requested_items
+    const nonexistantMenuItemTitles = requestedItems
       .filter((item) => !menuItemIds.includes(item.id))
       .map((item) => item.title);
 
-    const unavailableMenuItemTitles = requested_items
+    const unavailableMenuItemTitles = requestedItems
       .filter((item) => unavailableItemIds.includes(item.id))
       .map((item) => item.title);
 
@@ -105,7 +115,7 @@ export default class OrdersController extends BaseController {
       return obj;
     }, {});
 
-    const total = requested_items.reduce((currTotal, item) => {
+    const total = requestedItems.reduce((currTotal, item) => {
       const price = prices[item.id] || 0;
       return currTotal + item.quantity * price;
     }, 0);
@@ -115,9 +125,9 @@ export default class OrdersController extends BaseController {
 
     const latestOrdersSnap = await db()
       .collection(Collection.ORDER)
-      .where("merchant_id", "==", merchant_id)
-      .where("created_at", ">=", startOfToday)
-      .orderBy("created_at", "desc")
+      .where("merchantId", "==", merchantId)
+      .where("createdAt", ">=", startOfToday)
+      .orderBy("createdAt", "desc")
       .limit(1)
       .get();
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
@@ -126,11 +136,11 @@ export default class OrdersController extends BaseController {
 
     const latestOrders = latestOrdersSnap.docs.map((doc) => ({
       id: doc.id,
-      order_number: doc.data().order_number,
+      orderNumber: doc.data().orderNumber,
     }));
 
     if (latestOrders.length > 0) {
-      const latestOrderNumber = latestOrders[0].order_number || 1;
+      const latestOrderNumber = latestOrders[0].orderNumber || 1;
       orderNumber = latestOrderNumber + 1;
     } else {
       orderNumber = 1;
@@ -139,24 +149,26 @@ export default class OrdersController extends BaseController {
     const orderRef = await db()
       .collection(Collection.ORDER)
       .add({
-        created_at: new Date(),
+        createdAt: new Date(),
         status: OrderStatus.PENDING,
         total,
-        device_id,
-        merchant_id,
-        receipt_sent: false,
-        order_number: orderNumber,
-        order_items: requested_items.map((item) => {
+        deviceId,
+        merchantId,
+        receiptSent: false,
+        orderNumber,
+        orderItems: requestedItems.map((item) => {
           const menuItem = menuItems.find(
             (menuItem) => menuItem.id === item.id
           );
 
+          const { title, photo, price } = menuItem
+
           return {
-            menu_item_id: item.id,
+            menuItemId: item.id,
             quantity: item.quantity,
-            title: menuItem.title,
-            photo: menuItem.photo,
-            price: menuItem.price,
+            title,
+            photo,
+            price,
           };
         }),
       });
@@ -166,21 +178,22 @@ export default class OrdersController extends BaseController {
     // Having created the order, need to create a subcollection containing the order items
     const batch = db().batch();
 
-    for (const item of requested_items) {
+    for (const item of requestedItems) {
       const menuItem = menuItems.find((menuItem) => menuItem.id === item.id);
+      const { title, photo, price } = menuItem
 
       batch.set(db().doc(orderRef.path).collection("OrderItem").doc(), {
-        order_id: orderId,
-        menu_item_id: item.id,
+        orderId,
+        menuItemId: item.id,
         quantity: item.quantity,
-        title: menuItem.title,
-        photo: menuItem.photo,
-        price: menuItem.price,
+        title,
+        photo,
+        price,
       });
     }
 
     await batch.commit();
 
-    return res.status(200).json({ order_id: orderId });
+    return res.status(200).json({ orderId });
   };
 }

@@ -18,16 +18,16 @@ function MerchantAccountPage(props) {
   const weekdays = getWeekdays("en-GB");
   const openingHourGridItems = [];
   const formattedSortCode =
-    merchantData.sort_code.slice(0, 2) +
+    merchantData.sortCode.slice(0, 2) +
     "-" +
-    merchantData.sort_code.slice(2, 4) +
+    merchantData.sortCode.slice(2, 4) +
     "-" +
-    merchantData.sort_code.slice(4, 6);
+    merchantData.sortCode.slice(4, 6);
 
   openingHours
-    .sort((range1, range2) => range1.day_of_week - range2.day_of_week)
+    .sort((range1, range2) => range1.dayOfWeek - range2.dayOfWeek)
     .forEach((range, index) => {
-      const weekday = weekdays[range.day_of_week - 1];
+      const weekday = weekdays[range.dayOfWeek - 1];
 
       openingHourGridItems.push(
         <div
@@ -53,15 +53,15 @@ function MerchantAccountPage(props) {
   return (
     <div className="container">
       <Helmet>
-        <title>{merchantData.display_name}</title>
+        <title>{merchantData.displayName}</title>
       </Helmet>
       <AsyncImage
         imageRef={getMerchantStorageRef(merchantData.id, merchantData.photo)}
         className="headerImage"
-        alt={merchantData.display_name}
+        alt={merchantData.displayName}
       />
       <div className="content">
-        <h1 className="header-l">{merchantData.display_name}</h1>
+        <h1 className="header-l">{merchantData.displayName}</h1>
         <p className="text-body">{merchantData.tags.join(" · ")}</p>
 
         <Spacer y={2} />
@@ -73,7 +73,7 @@ function MerchantAccountPage(props) {
         <Spacer y={2} />
         <TextLine
           leftComponent="Display Name"
-          rightComponent={merchantData.display_name}
+          rightComponent={merchantData.displayName}
         />
         <TextLine
           leftComponent="Tags"
@@ -85,11 +85,11 @@ function MerchantAccountPage(props) {
         />
         <TextLine
           leftComponent="Account Number"
-          rightComponent={merchantData.account_number}
+          rightComponent={merchantData.accountNumber}
         />
         <TextLine
           leftComponent="Business Name"
-          rightComponent={merchantData.company_name}
+          rightComponent={merchantData.companyName}
         />
 
         <Spacer y={1} />

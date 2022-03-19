@@ -3,8 +3,7 @@ import { formatCurrency } from "../../../../utils/helpers/money";
 import Spacer from "../../../../components/Spacer";
 import "./MerchantOrderItem.css";
 
-function MerchantOrderItem(props) {
-  const { quantity, name, price } = props;
+function MerchantOrderItem({ quantity, name, price }) {
 
   const totalPrice = price * quantity;
 

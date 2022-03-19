@@ -31,7 +31,7 @@ export default function BasketPage({ merchant }) {
   const titleElement = (
     <div style={{ textAlign: "center" }}>
       <div className="header-xs">Basket</div>
-      {merchant && <div className="text-caption">{merchant.display_name}</div>}
+      {merchant && <div className="text-caption">{merchant.displayName}</div>}
     </div>
   );
 

@@ -7,11 +7,10 @@ const TEMPLATE_ID = "d-a888fe1bc7ac4154a40f8a299cfb30fb";
 // look up order details from firebase
 async function getOrderDetails(orderId) {
   const orderDoc = await db().collection("Order").doc(orderId).get();
-  const { merchant_id, order_number, order_items, total } =
-    await orderDoc.data();
-  const merchantDoc = await db().collection("Merchant").doc(merchant_id).get();
-  const merchantName = merchantDoc.data()["display_name"];
-  const results = { merchantName, order_items, order_number, total };
+  const { merchantId, orderNumber, orderItems, total } = orderDoc.data();
+  const merchantDoc = await db().collection("Merchant").doc(merchantId).get();
+  const merchantName = merchantDoc.data()["displayName"];
+  const results = { merchantName, orderItems, orderNumber, total };
   console.log("results");
   console.log(results);
   return results;
@@ -64,13 +63,13 @@ function createMessage(
 }
 
 async function sendEmail(toEmail: string, orderId: string) {
-  const { merchantName, order_items, order_number, total } =
+  const { merchantName, orderItems, orderNumber, total } =
     await getOrderDetails(orderId);
-  const emailMessage = await createMessage(
+  const emailMessage = createMessage(
     toEmail,
     merchantName,
-    order_number,
-    order_items,
+    orderNumber,
+    orderItems,
     total
   );
   console.log(emailMessage);

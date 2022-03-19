@@ -30,7 +30,7 @@ export default function MenuPage({
   const groupedMenuItems = {};
 
   menuItems.forEach((menuItem) => {
-    const menuSectionId = menuItem.section_id;
+    const menuSectionId = menuItem.sectionId;
     const currValue = groupedMenuItems[menuSectionId];
 
     if (currValue) {
@@ -53,22 +53,22 @@ export default function MenuPage({
     const minutes = now.getHours() * 60 + now.getMinutes();
 
     const todayRanges = openHourRanges
-      .filter((range) => range.day_of_week === dayOfWeek)
-      .sort((range1, range2) => range1.close_time - range2.close_time);
+      .filter((range) => range.dayOfWeek === dayOfWeek)
+      .sort((range1, range2) => range1.closeTime - range2.closeTime);
 
     const openRanges = todayRanges.filter(
-      (range) => range.close_time > minutes
+      (range) => range.closeTime > minutes
     );
 
     if (openRanges.length === 0) {
       if (todayRanges.length === 0) {
         return "Closed today";
       } else {
-        const mins = todayRanges[todayRanges.length - 1].close_time;
+        const mins = todayRanges[todayRanges.length - 1].closeTime;
         return `Closed at ${formatMinutes(mins)}`;
       }
     } else {
-      const mins = openRanges[openRanges.length - 1].close_time;
+      const mins = openRanges[openRanges.length - 1].closeTime;
       return `Open until ${formatMinutes(mins)}`;
     }
   }
@@ -84,11 +84,11 @@ export default function MenuPage({
   ) : (
     <div className="container">
       <Helmet>
-        <title>{merchant.display_name}</title>
+        <title>{merchant.displayName}</title>
       </Helmet>
 
       <NavBar
-        title={merchant.display_name}
+        title={merchant.displayName}
         transparentDepth={50}
         opaqueDepth={100}
         showsBackButton={false}
@@ -101,7 +101,7 @@ export default function MenuPage({
       />
       <Spacer y={3} />
       <div className="content">
-        <h1 className="header-l">{merchant.display_name}</h1>
+        <h1 className="header-l">{merchant.displayName}</h1>
         <Spacer y={1} />
         <Link to="about" state={{ merchant, openHourRanges }}>
           <p className="text-body">{merchant.tags.join(" · ")}</p>

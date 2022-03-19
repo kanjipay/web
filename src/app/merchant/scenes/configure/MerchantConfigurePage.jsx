@@ -17,7 +17,7 @@ function MerchantConfigurePage(props) {
   const groupedMenuItems = {};
 
   menuItems.forEach((menuItem) => {
-    const menuSectionId = menuItem.section_id;
+    const menuSectionId = menuItem.sectionId;
     const currValue = groupedMenuItems[menuSectionId];
 
     if (currValue) {
