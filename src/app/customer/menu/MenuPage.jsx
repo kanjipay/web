@@ -56,9 +56,7 @@ export default function MenuPage({
       .filter((range) => range.dayOfWeek === dayOfWeek)
       .sort((range1, range2) => range1.closeTime - range2.closeTime);
 
-    const openRanges = todayRanges.filter(
-      (range) => range.closeTime > minutes
-    );
+    const openRanges = todayRanges.filter((range) => range.closeTime > minutes);
 
     if (openRanges.length === 0) {
       if (todayRanges.length === 0) {

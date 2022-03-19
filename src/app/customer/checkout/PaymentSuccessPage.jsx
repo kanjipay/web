@@ -11,7 +11,7 @@ import { PageName, viewPage } from "../../../utils/AnalyticsManager";
 import { formatCurrency } from "../../../utils/helpers/money";
 import { validateEmail } from "../../../utils/helpers/validation";
 import { sendOrderReceipt } from "../../../utils/services/OrdersService";
-import { Colors } from "../../../components/CircleButton"
+import { Colors } from "../../../components/CircleButton";
 import ResultBanner, { ResultType } from "../../../components/ResultBanner";
 
 export default function PaymentSuccessPage({ order }) {
@@ -47,10 +47,12 @@ export default function PaymentSuccessPage({ order }) {
   return (
     <div className="container">
       <div className="content">
-        
         <Spacer y={3} />
 
-        <ResultBanner resultType={ResultType.SUCCESS} message="Your payment was successful" />
+        <ResultBanner
+          resultType={ResultType.SUCCESS}
+          message="Your payment was successful"
+        />
         <Spacer y={3} />
         <h1 className="header-l">We're preparing your order</h1>
         <Spacer y={2} />
@@ -89,8 +91,19 @@ export default function PaymentSuccessPage({ order }) {
         </div>
 
         <Spacer y={3} />
-        <p className="header-xs" style={{ textAlign: "center" }}>Order number</p>
-        <p style={{ textAlign: "center", color: Colors.PRIMARY, fontSize: 80, fontWeight: 500 }}>{order.orderNumber}</p>
+        <p className="header-xs" style={{ textAlign: "center" }}>
+          Order number
+        </p>
+        <p
+          style={{
+            textAlign: "center",
+            color: Colors.PRIMARY,
+            fontSize: 80,
+            fontWeight: 500,
+          }}
+        >
+          {order.orderNumber}
+        </p>
 
         {!order.receiptSent && (
           <div>
