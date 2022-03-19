@@ -53,13 +53,10 @@ export default class PaymentAttemptsController extends BaseController {
 
     const paymentId = await createPayment(recipientId, total);
 
-    const linkResponse = await createLinkToken(
-      paymentId,
-      deviceId
-    );
+    const linkResponse = await createLinkToken(paymentId, deviceId);
 
-    const linkToken = linkResponse.link_token
-    const linkExpiration = linkResponse.expiration
+    const linkToken = linkResponse.link_token;
+    const linkExpiration = linkResponse.expiration;
 
     // Write payment attempt object to database
 
@@ -82,7 +79,7 @@ export default class PaymentAttemptsController extends BaseController {
       .add({
         recipientId,
         linkToken,
-        linkExpiration
+        linkExpiration,
       })
       .catch(
         new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
