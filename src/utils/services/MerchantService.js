@@ -39,8 +39,8 @@ export const setMerchantStatus = (merchantId, newStatus) => {
   });
 };
 
-export const setMenuItemAvailability = (merchantId, newAvailability) => {
-  updateDoc(Collection.MENU_ITEM.docRef(merchantId), {
-    is_available: newAvailability,
+export const setMenuItemAvailability = (menuItemId, newAvailability) => {
+  updateDoc(Collection.MENU_ITEM.docRef(menuItemId), {
+    isAvailable: newAvailability,
   });
 };
