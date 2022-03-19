@@ -6,7 +6,6 @@ import { setOrderFulfilled } from "../../../../utils/services/MerchantService";
 import CircleIcon from "../../../../components/CircleIcon";
 import Clock from "../../../../assets/icons/Clock";
 import Cutlery from "../../../../assets/icons/Cutlery";
-import { getTimeFromUnixTimestamp } from "../../../../utils/helpers/time";
 import MerchantOrderItem from "./MerchantOrderItem";
 import Divider from "@mui/material/Divider";
 import { Grid } from "@mui/material";
@@ -20,6 +19,10 @@ function MerchantOrderPage({ orderList, menuItems }) {
   //TODO error handling if this returns more than 1 order
   const filteredOrderList = orderList.filter((order) => order.id === orderId);
   const order = filteredOrderList[0];
+  const orderTime =
+    String(order.paidAt.toDate().getHours()) +
+    ":" +
+    String(order.paidAt.toDate().getMinutes());
 
   //TODO Implement This in Database Design + Customer Facing App
   const requestedCutlery = true;
@@ -62,9 +65,7 @@ function MerchantOrderPage({ orderList, menuItems }) {
         <Spacer y={1} />
         <div style={{ display: "flex", alignItems: "center" }}>
           <CircleIcon Icon={Clock} style={{ marginRight: 8 }} />
-          <div className="text-body-faded">{`Ordered at ${getTimeFromUnixTimestamp(
-            order.createdAt.seconds
-          )}`}</div>
+          <div className="text-body-faded">{`Ordered at ${orderTime}`}</div>
         </div>
         <Spacer y={2} />
         {requestedCutlery ? (

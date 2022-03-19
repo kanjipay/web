@@ -4,7 +4,6 @@ import BottomNavBar from "../../../../components/BottomNavBar";
 import NavBar from "../../../../components/NavBar";
 
 function MerchantOrderList({ orderList, menuItems }) {
-
   return (
     <div className="container">
       <NavBar

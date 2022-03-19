@@ -23,7 +23,10 @@ export function createPaymentAttempt(orderId, provider) {
 }
 
 export function fetchPaymentAttempt(paymentAttemptId, onComplete) {
-  return onSnapshot(Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId), onComplete);
+  return onSnapshot(
+    Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId),
+    onComplete
+  );
 }
 
 export async function fetchTruelayerPaymentAttempt(paymentId) {

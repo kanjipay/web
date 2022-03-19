@@ -4,7 +4,6 @@ import Spacer from "../../../../components/Spacer";
 import "./MerchantOrderItem.css";
 
 function MerchantOrderItem({ quantity, name, price }) {
-
   const totalPrice = price * quantity;
 
   return (
