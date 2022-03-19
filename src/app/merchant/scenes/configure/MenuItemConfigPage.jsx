@@ -22,13 +22,13 @@ function MenuItemConfigPage(props) {
   const filteredMenuItems = menuItems.filter((item) => item.id === menuItemId);
   const menuItem = filteredMenuItems[0];
   const filteredSections = menuSections.filter(
-    (secion) => secion.id === menuItem.section_id
+    (secion) => secion.id === menuItem.sectionId
   );
   const section = filteredSections[0];
   const dietaryBubbles = [];
 
   for (var attr of DietaryAttribute.allItems) {
-    if (menuItem.dietary_attributes.includes(attr.name)) {
+    if (menuItem.dietaryAttributes.includes(attr.name)) {
       dietaryBubbles.push(
         <div
           key={attr.name}
@@ -57,7 +57,7 @@ function MenuItemConfigPage(props) {
       />
       <AsyncImage
         imageRef={getMenuItemStorageRef(
-          menuItem.merchant_id,
+          menuItem.merchantId,
           menuItemId,
           menuItem.photo
         )}
@@ -85,7 +85,7 @@ function MenuItemConfigPage(props) {
         />
         <TextLine
           leftComponent="Spice Level"
-          rightComponent={menuItem.spice_level}
+          rightComponent={menuItem.spiceLevel}
         />
         <TextLine leftComponent="Section" rightComponent={section.name} />
 

@@ -48,7 +48,6 @@ button {
 .container {
   max-width: 600px;
   min-height: 100vh;
-  border-radius: 16px;
   margin: auto;
   background-color: white;
   position: relative;
