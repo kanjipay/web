@@ -86,7 +86,9 @@ export default function MenuItem({ item, basketCount = 0 }) {
         </div>
       </div>
       <Spacer y={1} />
-      <p className="MenuItem__description text-body-faded">{item.description}</p>
+      <p className="MenuItem__description text-body-faded">
+        {item.description}
+      </p>
     </div>
   );
 

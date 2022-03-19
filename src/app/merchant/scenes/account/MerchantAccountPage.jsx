@@ -43,8 +43,8 @@ function MerchantAccountPage(props) {
           key={`hours-${index}`}
           className="text-caption MerchantAboutPage__hoursItem"
         >
-          {`${formatMinutes(range.open_time)} - ${formatMinutes(
-            range.close_time
+          {`${formatMinutes(range.openTime)} - ${formatMinutes(
+            range.closeTime
           )}`}
         </div>
       );

@@ -1,16 +1,19 @@
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { Link } from "react-router-dom";
-import { getTimeFromUnixTimestamp } from "../../../../utils/helpers/time";
 import "./MerchantOrder.css";
 import { Colors } from "../../../../components/CircleButton";
 
 function OrderItem({ order, menuItems }) {
   var orderListString = "";
-  const orderTime = getTimeFromUnixTimestamp(order.created_at.seconds);
+
+  const orderTime =
+    String(order.paidAt.toDate().getHours()) +
+    ":" +
+    String(order.paidAt.toDate().getMinutes());
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
-  const enrichedOrderItemElements = order.order_items.map((orderItem) => {
+  const enrichedOrderItemElements = order.orderItems.map((orderItem) => {
     const menuItem = menuItems.find((x) => x.id === orderItem.menuItemId);
     const enrichedOrderItemElement = { orderItem, menuItem };
     return enrichedOrderItemElement;
