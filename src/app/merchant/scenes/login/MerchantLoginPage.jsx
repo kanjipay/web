@@ -140,7 +140,9 @@ function MerchantLogin() {
             color: Colors.PRIMARY,
             backgroundColor: Colors.WHITE,
           }}
-          onClick={() => navigate("/merchant/forgot-password", {state : email } ) }
+          onClick={() =>
+            navigate("/merchant/forgot-password", { state: email })
+          }
         ></MainButton>
       </div>
     </div>
