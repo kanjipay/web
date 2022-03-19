@@ -44,7 +44,7 @@ async function makePlaidPayment(accountNumber: string, sortCode: string, payment
   }
 }
 
-async function makeTruelayerPayment(accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string) {
+async function makeTruelayerPayment(accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string, paymentAttemptId: string) {
   const accessToken = await createAccessToken()
 
   const { 
@@ -84,7 +84,15 @@ async function makeMoneyhubPayment(accountNumber: string, sortCode: string, paym
   }
 }
 
-async function makePayment(provider: OpenBankingProvider, accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string) {
+async function makePayment(
+  provider: OpenBankingProvider, 
+  accountNumber: string, 
+  sortCode: string, 
+  paymentName: string, 
+  amount: number, 
+  userId: string,
+  paymentAttemptId: string
+) {
   let functionPromise
 
   switch (provider) {
@@ -92,7 +100,7 @@ async function makePayment(provider: OpenBankingProvider, accountNumber: string,
       functionPromise = makePlaidPayment(accountNumber, sortCode, paymentName, amount, userId)
       break;
     case OpenBankingProvider.TRUELAYER:
-      functionPromise = makeTruelayerPayment(accountNumber, sortCode, paymentName, amount, userId)
+      functionPromise = makeTruelayerPayment(accountNumber, sortCode, paymentName, amount, userId, paymentAttemptId)
       break;
     case OpenBankingProvider.MONEYHUB:
       functionPromise = makeMoneyhubPayment(accountNumber, sortCode, paymentName, amount, userId)
@@ -154,7 +162,7 @@ export default class PaymentAttemptsController extends BaseController {
       providerData,
       providerPrivateData,
       providerReturnData
-    } = await makePayment(openBankingProvider, accountNumber, sortCode, paymentName, total, deviceId)
+    } = await makePayment(openBankingProvider, accountNumber, sortCode, paymentName, total, deviceId, orderId)
 
     // Write payment attempt object to database
     const providerKey = openBankingProvider.toLowerCase()

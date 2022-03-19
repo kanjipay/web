@@ -5,8 +5,8 @@ import { v4 as uuid } from "uuid";
 import * as base64 from "base-64";
 
 const defaultHeaders = {
-  "Content-Type": "application/json",
-  "Accept": "application/json"
+  "Content-Type": "application/json; charset=UTF-8",
+  "Accept": "application/json; charset=UTF-8"
 }
 
 export function truelayerUrlName() {
@@ -39,9 +39,6 @@ export async function createPaymentWithAccessToken(
   account_number: string, 
   userId: string
 ) {
-  // const { header } = jwt.decode(accessToken, { complete: true });
-  // const { kid } = header
-
   const body = {
     amount_in_minor: amountInPence,
     currency: "GBP",
@@ -60,31 +57,42 @@ export async function createPaymentWithAccessToken(
       provider_selection: {
         type: "user_selected"
       },
-      user: {
-        id: userId,
-        name: "Customer" // Documentation said unregulated clients have to provide this value
-      }
+    },
+    user: {
+      id: userId,
+      name: "Customer", // Documentation said unregulated clients have to provide this value,
+      email: "matt@mercadopay.co"
     }
   }
 
   const bodyString = JSON.stringify(body)
+  console.log(bodyString)
+  console.log(tlSigning.HttpMethod.Post)
   const privateKeyPem = base64.decode(process.env.TRUELAYER_PRIVATE_KEY_PEM)
 
-  const signature = tlSigning.sign({
-    kid: "INSERT UUID FROM TRUELAYER CONSOLE",
-    privateKeyPem,
-    method: tlSigning.HttpMethod.Post,
-    path: "/payments",
-    headers: { "Idempotency-Key": uuid() },
-    body: bodyString
-  })
+  const idempotencyKey = uuid()
 
-  const headers = {
-    "Tl-Signature": signature,
-    "Idempotency-Key": uuid(),
+  const headersInSignature = {
+    "Idempotency-Key": idempotencyKey,
     "Authorization": `Bearer ${accessToken}`,
     "Host": `api.${truelayerUrlName()}.com`,
     ...defaultHeaders
+  }
+
+  const signature = tlSigning.sign({
+    kid: "909c84c0-fddc-4f4b-a826-03430f37e880",
+    privateKeyPem,
+    method: tlSigning.HttpMethod.Post,
+    path: "/payments",
+    headers: headersInSignature,
+    body: bodyString
+  })
+
+  console.log(signature)
+
+  const headers = {
+    "Tl-Signature": signature,
+    ...headersInSignature
   }
 
   let res
@@ -92,8 +100,7 @@ export async function createPaymentWithAccessToken(
   try {
     res = await axios.post(`https://api.${truelayerUrlName()}.com/payments`, body, { headers })
   } catch (error) {
-    console.log(error.message)
-    return
+    console.log(error.response?.data)
   }
 
   const { id, resource_token } = res.data

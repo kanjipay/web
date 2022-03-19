@@ -18,14 +18,13 @@ export default function PaymentPageTruelayer() {
         const appName = process.env.REACT_APP_ENV_NAME === 'PROD' ? "truelayer" : "truelayer-sandbox"
         const redirectUrl = new URL(window.location.href)
         redirectUrl.pathname = "/tl-redirect"
-        redirectUrl.search = `?pa=${paymentAttemptId}`
         const truelayerUrl = `https://payment.${appName}.com/payments#payment_id=${paymentId}&resource_token=${resourceToken}&return_uri=${redirectUrl.href}`
 
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_PAYMENT_ATTEMPT, {
           paymentAttemptId,
         });
 
-        navigate(truelayerUrl);
+        window.location.href = truelayerUrl
       })
       .catch((err) => {
         console.log(err);

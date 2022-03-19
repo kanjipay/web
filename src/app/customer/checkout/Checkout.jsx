@@ -24,8 +24,8 @@ export default function Checkout() {
   return (
     order ?
       <Routes>
-        {/* <Route path="payment" element={<PaymentPagePlaid />} /> */}
         <Route path="payment" element={<PaymentPagePlaid />} />
+        {/* <Route path="payment" element={<PaymentPageTruelayer />} /> */}
         <Route path="payment-method" element={<CheckoutMethodPage />} />
         <Route
           path="payment-success"

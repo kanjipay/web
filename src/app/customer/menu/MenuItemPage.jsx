@@ -78,6 +78,7 @@ export default function MenuItemPage({ merchant }) {
     }
 
     navigate(-1);
+    
   };
 
   const incrementQuantity = () => {
