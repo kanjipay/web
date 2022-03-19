@@ -57,7 +57,7 @@ export default function MainButton({
       </button>
       {isLoading && (
         <div className="centred">
-          <Spinner length={32} color={Colors.WHITE} />
+          <Spinner length={32} color={foregroundColor} />
         </div>
       )}
 

@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { handlePaymentUpdate } from "./handlePaymentUpdate";
+import { checkPlaidIp } from "./plaid/checkPlaidIp";
+import { handlePlaidPaymentUpdate } from "./plaid/handlePlaidPaymentUpdate";
+import { handleTruelayerPaymentUpdate } from "./truelayer/handleTruelayerPaymentUpdate";
 
 const routes = Router();
 
-routes.post("/", handlePaymentUpdate);
+routes.post("/plaid", checkPlaidIp, handlePlaidPaymentUpdate);
+routes.post("/truelayer", handleTruelayerPaymentUpdate);
 
 export default routes;

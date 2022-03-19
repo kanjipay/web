@@ -16,10 +16,13 @@ export default function PaymentUnsuccessfulPage({
   title,
   body,
   pageName,
+  order
 }) {
   const navigate = useNavigate();
   const { orderId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
+
+  const merchantId = order.merchantId
 
   useEffect(() => {
     viewPage(pageName, { orderId });
@@ -45,7 +48,7 @@ export default function PaymentUnsuccessfulPage({
         AnalyticsManager.main.logEvent(AnalyticsEvent.ABANDON_ORDER, {
           orderId,
         });
-        navigate("../..");
+        navigate(`/menu/${merchantId}`);
       })
       .catch((err) => {
         setIsLoading(false);

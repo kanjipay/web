@@ -10,7 +10,6 @@ import MenuItemPage from "./MenuItemPage";
 import MenuPage from "./MenuPage";
 import MerchantAboutPage from "./MerchantAboutPage";
 import BasketPage from "../basket/BasketPage";
-import Order from "../checkout/Order";
 import { fetchOrders } from "../../../utils/services/OrdersService";
 import { AnalyticsManager } from "../../../utils/AnalyticsManager";
 
@@ -87,7 +86,6 @@ export default function Menu() {
           }
         />
         <Route path="basket" element={<BasketPage merchant={merchant} />} />
-        <Route path="checkout/:orderId/*" element={<Order />} />
 
         <Route
           path="*"

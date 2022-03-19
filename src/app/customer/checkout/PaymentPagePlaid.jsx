@@ -3,13 +3,8 @@ import LoadingPage from "../../../components/LoadingPage";
 import { usePlaidLink } from "react-plaid-link";
 import { useNavigate, useParams } from "react-router-dom";
 import useBasket from "../basket/useBasket";
-import {
-  createPaymentAttempt,
-  fetchPaymentAttempt,
-} from "../../../utils/services/PaymentsService";
+import { createPaymentAttempt, fetchPaymentAttempt, OpenBankingProvider } from "../../../utils/services/PaymentsService";
 import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus";
-import { onSnapshot } from "firebase/firestore";
-import Collection from "../../../enums/Collection";
 import {
   AnalyticsEvent,
   AnalyticsManager,
@@ -26,14 +21,12 @@ class PlaidEventName {
   static HANDOFF = "HANDOFF"; // Called after successfully going through Link
 }
 
-export default function PaymentPage() {
+export default function PaymentPagePlaid() {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null);
   const [linkToken, setLinkToken] = useState(null);
   const { orderId } = useParams();
   const navigate = useNavigate();
   const { clearBasket } = useBasket();
-
-  const deviceId = AnalyticsManager.main.getDeviceId();
 
   const onSuccess = (_publicToken, _metadata) => {};
 
@@ -137,9 +130,11 @@ export default function PaymentPage() {
   }, [paymentAttemptId, clearBasket, navigate]);
 
   useEffect(() => {
-    createPaymentAttempt(orderId, deviceId)
+    createPaymentAttempt(orderId, OpenBankingProvider.PLAID)
       .then((res) => {
-        const { linkToken, paymentAttemptId } = res.data;
+        console.log(res.data)
+        const { paymentAttemptId } = res.data;
+        const linkToken = res.data.plaid.linkToken
 
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_PAYMENT_ATTEMPT, {
           paymentAttemptId,
@@ -151,7 +146,7 @@ export default function PaymentPage() {
         console.log(err);
         navigate("../payment-failure");
       });
-  }, [orderId, deviceId, navigate]);
+  }, [orderId, navigate]);
 
   return <LoadingPage message="Processing your order" />;
 }
