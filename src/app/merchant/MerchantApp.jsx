@@ -8,6 +8,8 @@ import LoadingPage from "../../components/LoadingPage";
 import MerchantConfigurePage from "./scenes/configure/MerchantConfigurePage";
 import MerchantAccountPage from "./scenes/account/MerchantAccountPage";
 import MenuItemConfigPage from "./scenes/configure/MenuItemConfigPage";
+import MerchantForgotPasswordPage from "./scenes/login/MerchantForgotPasswordPage";
+import { setPersistence, inMemoryPersistence } from "firebase/auth";
 import {
   fetchMerchantByUserId,
   fetchMerchantOrders,
@@ -30,6 +32,7 @@ function MerchantApp() {
 
   // TODO - move auth functions to Auth Service? Don't know if we need this
   const auth = getAuth();
+  setPersistence(auth, inMemoryPersistence);
 
   useEffect(() => {
     // When user becomes logged in/out, update local variables
@@ -175,7 +178,14 @@ function MerchantApp() {
   return (
     // Display the logon screen
     <div>
-      <MerchantLogin></MerchantLogin>
+      <Routes>
+        <Route
+          path="forgot-password"
+          element={<MerchantForgotPasswordPage />}
+        />
+
+        <Route path="*" element={<MerchantLogin />} />
+      </Routes>
     </div>
   );
 }

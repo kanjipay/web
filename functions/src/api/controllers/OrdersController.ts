@@ -9,7 +9,7 @@ import MerchantStatus from "../../enums/MerchantStatus";
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
     const { email, orderId } = req.body;
-    
+
     await sendEmail(email, orderId).catch(
       new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
     );
@@ -161,7 +161,7 @@ export default class OrdersController extends BaseController {
             (menuItem) => menuItem.id === item.id
           );
 
-          const { title, photo, price } = menuItem
+          const { title, photo, price } = menuItem;
 
           return {
             menuItemId: item.id,
@@ -180,7 +180,7 @@ export default class OrdersController extends BaseController {
 
     for (const item of requestedItems) {
       const menuItem = menuItems.find((menuItem) => menuItem.id === item.id);
-      const { title, photo, price } = menuItem
+      const { title, photo, price } = menuItem;
 
       batch.set(db().doc(orderRef.path).collection("OrderItem").doc(), {
         orderId,
