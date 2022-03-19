@@ -20,6 +20,8 @@ export default function PaymentSuccessPage({ order }) {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
 
+  const merchantId = order.merchantId
+
   useEffect(() => {
     viewPage(PageName.PAYMENT_SUCCESS, { orderId });
   }, [orderId]);
@@ -42,7 +44,7 @@ export default function PaymentSuccessPage({ order }) {
     setEmail(event.target.value);
   }
 
-  return order ? (
+  return (
     <div className="container">
       <div className="content">
         <Spacer y={3} />
@@ -114,6 +116,9 @@ export default function PaymentSuccessPage({ order }) {
             <Spacer y={2} />
             <Input
               placeholder="Email"
+              type="email"
+              name="email"
+              autocomplete="on"
               value={email}
               onChange={handleEmailFieldChange}
             />
@@ -130,7 +135,7 @@ export default function PaymentSuccessPage({ order }) {
             <MainButton
               title="Skip"
               buttonTheme={ButtonTheme.SECONDARY}
-              onClick={() => navigate("../..")}
+              onClick={() => navigate(`/menu/${merchantId}`)}
             />
             <Spacer y={8} />
           </div>
@@ -143,13 +148,11 @@ export default function PaymentSuccessPage({ order }) {
             <MainButton
               title="Done"
               style={{ boxSizing: "borderBox" }}
-              onClick={() => navigate("../..")}
+              onClick={() => navigate(`/menu/${merchantId}`)}
             />
           </div>
         </div>
       )}
     </div>
-  ) : (
-    <LoadingPage />
-  );
+  )
 }

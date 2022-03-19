@@ -1,8 +1,8 @@
 {
   "projects": {
     "default": "mercadopay",
-    "development": "mercadopay-dev",
-    "production": "mercadopay"
+    "prod": "mercadopay",
+    "dev": "mercadopay-dev"
   },
   "targets": {}
 }
