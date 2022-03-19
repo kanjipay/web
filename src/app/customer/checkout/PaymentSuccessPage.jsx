@@ -103,6 +103,9 @@ export default function PaymentSuccessPage({ order }) {
             <Spacer y={2} />
             <Input
               placeholder="Email"
+              type="email"
+              name="email"
+              autocomplete="on"
               value={email}
               onChange={handleEmailFieldChange}
             />

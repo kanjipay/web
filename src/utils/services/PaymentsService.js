@@ -1,4 +1,4 @@
-import { onSnapshot, updateDoc } from "firebase/firestore";
+import { getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import axios from "axios";
 import Collection from "../../enums/Collection";
 
@@ -24,6 +24,21 @@ export function createPaymentAttempt(orderId, provider) {
 
 export function fetchPaymentAttempt(paymentAttemptId, onComplete) {
   return onSnapshot(Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId), onComplete);
+}
+
+export async function fetchTruelayerPaymentAttempt(paymentId) {
+  const q = query(
+    Collection.PAYMENT_ATTEMPT.ref,
+    where("truelayer.paymentId", "==", paymentId)
+  )
+  const snapshot = await getDocs(q)
+
+  if (snapshot.docs.length > 0) {
+    const doc = snapshot.docs[0]
+    return { id: doc.id, ...doc.data() }
+  }
+
+  return null
 }
 
 export function setPaymentAttemptStatus(paymentAttemptId, status) {

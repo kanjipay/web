@@ -4,7 +4,6 @@ import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 import { receivePaymentUpdate } from "../shared/receivePaymentUpdate";
 import { verify } from "./verify"
 
-
 export const handleTruelayerPaymentUpdate = async (req, res, next) => {
   const isVerified = await verify(req).catch(
     new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
