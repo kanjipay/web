@@ -66,8 +66,6 @@ export async function createPaymentWithAccessToken(
   }
 
   const bodyString = JSON.stringify(body)
-  console.log(bodyString)
-  console.log(tlSigning.HttpMethod.Post)
   const privateKeyPem = base64.decode(process.env.TRUELAYER_PRIVATE_KEY_PEM)
 
   const idempotencyKey = uuid()
@@ -87,8 +85,6 @@ export async function createPaymentWithAccessToken(
     headers: headersInSignature,
     body: bodyString
   })
-
-  console.log(signature)
 
   const headers = {
     "Tl-Signature": signature,
