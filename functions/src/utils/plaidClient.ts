@@ -11,7 +11,7 @@ let plaidInstance: PlaidApi | null = null;
 
 function getPlaid() {
   const configuration = new Configuration({
-    basePath: PlaidEnvironments.sandbox,
+    basePath: process.env.ENVIRONMENT === 'PROD' ? PlaidEnvironments.development : PlaidEnvironments.sandbox,
     baseOptions: {
       headers: {
         "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
