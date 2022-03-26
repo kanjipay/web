@@ -26,11 +26,11 @@ export default function RedirectPageTruelayer() {
         .then(paymentAttempt => {
           console.log(paymentAttempt)
           unsub = fetchPaymentAttempt(paymentAttempt.id, (doc) => {
-            const { status, orderId, merchantId } = doc.data();
+            const { status, orderId } = doc.data();
 
             console.log(status)
 
-            const basePath = `/menu/${merchantId}/checkout/${orderId}`
+            const basePath = `/checkout/${orderId}`
 
             switch (status) {
               case PaymentAttemptStatus.SUCCESSFUL:
