@@ -12,6 +12,7 @@ export const receivePaymentUpdate = async (
   failureReason: string | null,
   next
 ) => {
+  console.log("receivePaymentUpdate")
   const paymentAttemptSnapshot = await db()
     .collection(Collection.PAYMENT_ATTEMPT)
     .where(`${provider.toLowerCase()}.paymentId`, "==", paymentId)
@@ -19,6 +20,7 @@ export const receivePaymentUpdate = async (
     .get();
 
   if (paymentAttemptSnapshot.docs.length === 0) {
+    console.log("couldn't find the payment attempt with paymentId ", paymentId)
     next(new HttpError(
       HttpStatusCode.NOT_FOUND, 
       "Something went wrong", 
