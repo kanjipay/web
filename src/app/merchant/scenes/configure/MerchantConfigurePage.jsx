@@ -10,7 +10,7 @@ import "./MerchantConfigurePage.css";
 
 function MerchantConfigurePage(props) {
   const { merchantData, menuItems, menuSections } = props;
-  const shopOpenStatusString = "Your shop is " + merchantData.status;
+  const shopOpenStatusString = "Your shop is " + merchantData.status.toLowerCase();
   var isConfiguredOpen = merchantData.status === "OPEN";
 
   //Create grouped menu items array to display correctly
