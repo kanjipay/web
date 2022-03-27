@@ -33,3 +33,26 @@ export function getTimeFromUnixTimestamp(UNIX_timestamp) {
   var time = paddedHour + ":" + paddedMin;
   return time;
 }
+
+export function formatTimeForDisplayFromTimestamp(timestamp) {
+  const hours = timestamp.toDate().getHours();
+  const minutes = timestamp.toDate().getMinutes();
+
+  var hoursString = ''
+  var minutesString = ''
+
+  if (hours < 10) {
+    hoursString = '0' + String(hours);
+  }
+  else {
+    hoursString = String(hours);
+  };
+  if (minutes < 10) {
+    minutesString = '0' + String(minutes);
+  }
+  else {
+    minutesString = String(minutes);
+  };
+
+  return hoursString + ':' + minutesString;
+}
