@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
-// import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import Environment from "../enums/Environment";
 // import { getPerformance } from "firebase/performance";
 // import { getAnalytics } from "firebase/analytics";
@@ -32,11 +32,11 @@ if (environment === Environment.DEV) {
   connectFunctionsEmulator(functions, "localhost", 5000);
 }
 
-// initializeAppCheck(firebaseApp, {
-//   provider: new ReCaptchaV3Provider(
-//     process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID
-//   ),
-//   isTokenAutoRefreshEnabled: true,
-// });
+initializeAppCheck(firebaseApp, {
+  provider: new ReCaptchaV3Provider(
+    process.env.REACT_APP_FIREBASE_RECAPTCHA_PUBLIC_ID
+  ),
+  isTokenAutoRefreshEnabled: true,
+});
 
 export { firebaseApp, db, storage, functions };
