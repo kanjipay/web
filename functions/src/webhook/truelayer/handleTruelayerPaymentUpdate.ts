@@ -9,7 +9,7 @@ import { v4 as uuid } from "uuid";
 export const handleTruelayerPaymentUpdate = async (req, res, next) => {
   const correlationId = uuid();
 
-  functions.logger.log('Truelayer Webhook Called', {
+  functions.logger.log("Truelayer Webhook Called", {
     correlationId: correlationId,
     body: req.body,
     rawHeaders: req.rawHeaders,
@@ -20,9 +20,12 @@ export const handleTruelayerPaymentUpdate = async (req, res, next) => {
   );
 
   if (!isVerified) {
-    functions.logger.warn('Truelayer verification failed, returning unauthorized', {
-      correlationId: correlationId,
-    });
+    functions.logger.warn(
+      "Truelayer verification failed, returning unauthorized",
+      {
+        correlationId: correlationId,
+      }
+    );
     next(new HttpError(HttpStatusCode.UNAUTHORIZED, "Unauthorized"));
     return;
   }
@@ -37,7 +40,7 @@ export const handleTruelayerPaymentUpdate = async (req, res, next) => {
   const paymentAttemptStatus = paymentStatusMap[type];
 
   if (paymentAttemptStatus) {
-    functions.logger.log('Attempting to update status of a payment attempt',{
+    functions.logger.log("Attempting to update status of a payment attempt", {
       correlationId: correlationId,
       paymentId: payment_id,
       type: type,
@@ -51,7 +54,7 @@ export const handleTruelayerPaymentUpdate = async (req, res, next) => {
       failure_reason,
       next
     );
-    functions.logger.log('Completed update of status of payment attempt',{
+    functions.logger.log("Completed update of status of payment attempt", {
       correlationId: correlationId,
       paymentId: payment_id,
       type: type,
