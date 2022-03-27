@@ -1,33 +1,20 @@
-import Grid from "@mui/material/Grid";
 import { formatCurrency } from "../../../../utils/helpers/money";
-import Spacer from "../../../../components/Spacer";
 import "./MerchantOrderItem.css";
+import Spacer from "../../../../components/Spacer";
 
 function MerchantOrderItem({ quantity, name, price }) {
   const totalPrice = price * quantity;
 
   return (
-    <div className="MerchantOrderItem__flexContainer">
-      <div className="MerchantOrderItem__numberCircle">{quantity}</div>
-      <div>{name}</div>
-      <div className="flex-spacer"/>
-      <div>{formatCurrency(totalPrice)}</div>
+    <div>
+      <div className="MerchantOrderItem__flexContainer">
+        <div className="MerchantOrderItem__numberCircle">{quantity}</div>
+        <div>{name}</div>
+        <div className="flex-spacer"/>
+        <div>{formatCurrency(totalPrice)}</div>
+      </div>
+      <Spacer y={1}/>
     </div>
-
-
-
-    // <Grid container spacing={2}>
-    //   <Grid item xs={2}>
-    //     <div className="MerchantOrderItem__numberCircle">{quantity}</div>
-    //   </Grid>
-    //   <Grid item xs={8}>
-    //     <div>{name}</div>
-    //   </Grid>
-    //   <Grid item xs={2}>
-    //     <div>{formatCurrency(totalPrice)}</div>
-    //   </Grid>
-    //   <Spacer y={2} />
-    // </Grid>
   );
 }
 
