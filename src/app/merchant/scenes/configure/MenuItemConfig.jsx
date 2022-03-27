@@ -1,7 +1,6 @@
 import AsyncImage from "../../../../components/AsyncImage";
 import { getMenuItemStorageRef } from "../../../../utils/helpers/storage";
 import "./MenuItemConfig.css";
-import Grid from "@mui/material/Grid";
 import Switch from "@mui/material/Switch";
 import Spacer from "../../../../components/Spacer";
 import { Link } from "react-router-dom";

@@ -8,10 +8,11 @@ import Clock from "../../../../assets/icons/Clock";
 import Cutlery from "../../../../assets/icons/Cutlery";
 import MerchantOrderItem from "./MerchantOrderItem";
 import Divider from "@mui/material/Divider";
-import { Grid } from "@mui/material";
 import MainButton from "../../../../components/MainButton";
 import { formatCurrency } from "../../../../utils/helpers/money";
 import { Colors } from "../../../../components/CircleButton";
+import { formatTimeForDisplayFromTimestamp } from "../../../../utils/helpers/time";
+import "./MerchantOrderPage.css";
 
 function MerchantOrderPage({ orderList, menuItems }) {
   const navigate = useNavigate();
@@ -20,10 +21,7 @@ function MerchantOrderPage({ orderList, menuItems }) {
   //TODO error handling if this returns more than 1 order
   const filteredOrderList = orderList.filter((order) => order.id === orderId);
   const order = filteredOrderList[0];
-  const orderTime =
-    String(order.paidAt.toDate().getHours()) +
-    ":" +
-    String(order.paidAt.toDate().getMinutes());
+  const orderTime = formatTimeForDisplayFromTimestamp(order.paidAt);
 
   //TODO Implement This in Database Design + Customer Facing App
   const requestedCutlery = true;
@@ -93,15 +91,11 @@ function MerchantOrderPage({ orderList, menuItems }) {
         <Divider />
         <Spacer y={1} />
 
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <h3 className="header-s">Total</h3>
-          </Grid>
-          <Grid item xs={6.0}></Grid>
-          <Grid item xs={2.0}>
-            <h3 className="header-s">{formatCurrency(totalCost)}</h3>
-          </Grid>
-        </Grid>
+        <div className="MerchantOrderPage__totalFlexContainer">
+          <h3 className="header-s">Total</h3>
+          <div className="flex-spacer"/>
+          <h3 className="header-s">{formatCurrency(totalCost)}</h3>
+        </div>
 
         <Spacer y={2} />
       </div>
