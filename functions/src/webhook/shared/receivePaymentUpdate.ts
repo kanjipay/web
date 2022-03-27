@@ -6,13 +6,13 @@ import { db } from "../../utils/admin";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 
 export const receivePaymentUpdate = async (
-  provider: OpenBankingProvider, 
-  paymentId: string, 
-  paymentAttemptStatus: PaymentAttemptStatus, 
+  provider: OpenBankingProvider,
+  paymentId: string,
+  paymentAttemptStatus: PaymentAttemptStatus,
   failureReason: string | null,
   next
 ) => {
-  console.log("receivePaymentUpdate")
+  console.log("receivePaymentUpdate");
   const paymentAttemptSnapshot = await db()
     .collection(Collection.PAYMENT_ATTEMPT)
     .where(`${provider.toLowerCase()}.paymentId`, "==", paymentId)
@@ -20,12 +20,14 @@ export const receivePaymentUpdate = async (
     .get();
 
   if (paymentAttemptSnapshot.docs.length === 0) {
-    console.log("couldn't find the payment attempt with paymentId ", paymentId)
-    next(new HttpError(
-      HttpStatusCode.NOT_FOUND, 
-      "Something went wrong", 
-      `PaymentAttempt with paymentId ${paymentId} with provider ${provider.toLowerCase()} not found`
-    ));
+    console.log("couldn't find the payment attempt with paymentId ", paymentId);
+    next(
+      new HttpError(
+        HttpStatusCode.NOT_FOUND,
+        "Something went wrong",
+        `PaymentAttempt with paymentId ${paymentId} with provider ${provider.toLowerCase()} not found`
+      )
+    );
     return;
   }
 
@@ -33,16 +35,14 @@ export const receivePaymentUpdate = async (
   const update = { status: paymentAttemptStatus };
 
   if (failureReason) {
-    update["failureReason"] = failureReason
+    update["failureReason"] = failureReason;
   }
 
   await db()
     .collection(Collection.PAYMENT_ATTEMPT)
     .doc(paymentAttemptDoc.id)
     .set(update, { merge: true })
-    .catch(
-      new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
-    );
+    .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
 
   if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
     const orderId = paymentAttemptDoc.data().orderId;
@@ -56,5 +56,5 @@ export const receivePaymentUpdate = async (
       );
   }
 
-  return
-}
+  return;
+};

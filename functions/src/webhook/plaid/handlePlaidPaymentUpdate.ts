@@ -28,8 +28,17 @@ export const handlePlaidPaymentUpdate = async (req, res, next) => {
   const paymentAttemptStatus = paymentStatusMap[new_payment_status];
 
   if (paymentAttemptStatus) {
-    const failureReason = paymentAttemptStatus === PaymentAttemptStatus.FAILED ? new_payment_status : null
-    await receivePaymentUpdate(OpenBankingProvider.PLAID, payment_id, paymentAttemptStatus, failureReason, next)
+    const failureReason =
+      paymentAttemptStatus === PaymentAttemptStatus.FAILED
+        ? new_payment_status
+        : null;
+    await receivePaymentUpdate(
+      OpenBankingProvider.PLAID,
+      payment_id,
+      paymentAttemptStatus,
+      failureReason,
+      next
+    );
   }
 
   return res.sendStatus(200);

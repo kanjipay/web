@@ -10,13 +10,12 @@ function MerchantOrderItem({ quantity, name, price }) {
       <div className="MerchantOrderItem__flexContainer">
         <div className="MerchantOrderItem__numberCircle">{quantity}</div>
         <div>{name}</div>
-        <div className="flex-spacer"/>
+        <div className="flex-spacer" />
         <div>{formatCurrency(totalPrice)}</div>
       </div>
-      <Spacer y={1}/>
+      <Spacer y={1} />
     </div>
   );
 }
 
 export default MerchantOrderItem;
-

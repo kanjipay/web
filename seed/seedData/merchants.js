@@ -8,15 +8,11 @@ const merchants = [
       sortCode: "040075",
       accountNumber: "72698578",
       address: "Borough High Street",
-      tags: [
-        "Chicken",
-        "Rice",
-        "Wraps"
-      ],
+      tags: ["Chicken", "Rice", "Wraps"],
       photo: "silvas.jpg",
       status: "OPEN",
-      userId: "DEYuX60lDUQAQ9OkBWXzYKZu0dF3"
-    }
+      userId: "DEYuX60lDUQAQ9OkBWXzYKZu0dF3",
+    },
   },
   {
     id: "sapling",
@@ -27,15 +23,12 @@ const merchants = [
       sortCode: "040075",
       accountNumber: "72698578",
       address: "Borough High Street",
-      tags: [
-        "Vodka",
-        "Cocktails",
-      ],
+      tags: ["Vodka", "Cocktails"],
       photo: "sapling.jpg",
       status: "OPEN",
-      userId: "DEYuX60lDUQAQ9OkBWXzYKZu0dF3"
-    }
-  }
-]
+      userId: "DEYuX60lDUQAQ9OkBWXzYKZu0dF3",
+    },
+  },
+];
 
-module.exports = merchants
+module.exports = merchants;

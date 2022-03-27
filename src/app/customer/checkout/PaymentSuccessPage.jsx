@@ -20,7 +20,7 @@ export default function PaymentSuccessPage({ order }) {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
 
-  const merchantId = order.merchantId
+  const merchantId = order.merchantId;
 
   useEffect(() => {
     viewPage(PageName.PAYMENT_SUCCESS, { orderId });
@@ -154,5 +154,5 @@ export default function PaymentSuccessPage({ order }) {
         </div>
       )}
     </div>
-  )
+  );
 }

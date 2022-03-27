@@ -15,37 +15,37 @@ function MenuItemConfig(props) {
   };
 
   return (
-  <div className="MenuItemConfig__flexContainer">
-    <div className="MenuItemConfig__menuItemPictureContainer">
-      <Link to={`item/${menuItem.id}`}>
-        <AsyncImage
-          imageRef={getMenuItemStorageRef(
-            menuItem.merchantId,
-            menuItem.id,
-            menuItem.photo
-          )}
-          className="MenuItemConfig__menuItemPicture"
-          alt={menuItem.title}
-        />
-      </Link>
+    <div className="MenuItemConfig__flexContainer">
+      <div className="MenuItemConfig__menuItemPictureContainer">
+        <Link to={`item/${menuItem.id}`}>
+          <AsyncImage
+            imageRef={getMenuItemStorageRef(
+              menuItem.merchantId,
+              menuItem.id,
+              menuItem.photo
+            )}
+            className="MenuItemConfig__menuItemPicture"
+            alt={menuItem.title}
+          />
+        </Link>
       </div>
-    <div className="menuItemConfig__textContainer">
-      <Link to={`item/${menuItem.id}`}>
-        <div className="header-xs">{menuItem.title}</div>
-        <Spacer y={1} />
-        <div className="text-body-faded">
-          {menuItem.isAvailable ? "Available" : "Not Available"}
-        </div>
-      </Link>
-    </div> 
-    <div className="flex-spacer"/>
-    <div className="menuItemConfig__switchContainer">
-      <Switch
-        checked={menuItem.isAvailable}
-        onClick={(e, c) => handleItemToggle()}
-      />
+      <div className="menuItemConfig__textContainer">
+        <Link to={`item/${menuItem.id}`}>
+          <div className="header-xs">{menuItem.title}</div>
+          <Spacer y={1} />
+          <div className="text-body-faded">
+            {menuItem.isAvailable ? "Available" : "Not Available"}
+          </div>
+        </Link>
+      </div>
+      <div className="flex-spacer" />
+      <div className="menuItemConfig__switchContainer">
+        <Switch
+          checked={menuItem.isAvailable}
+          onClick={(e, c) => handleItemToggle()}
+        />
+      </div>
     </div>
-  </div>
   );
 }
 

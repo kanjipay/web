@@ -16,13 +16,13 @@ export default function PaymentUnsuccessfulPage({
   title,
   body,
   pageName,
-  order
+  order,
 }) {
   const navigate = useNavigate();
   const { orderId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
 
-  const merchantId = order.merchantId
+  const merchantId = order.merchantId;
 
   useEffect(() => {
     viewPage(pageName, { orderId });
