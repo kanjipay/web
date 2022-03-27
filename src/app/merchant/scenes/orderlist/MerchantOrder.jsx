@@ -30,26 +30,25 @@ function OrderItem({ order, menuItems }) {
   return (
     <Link to={`order/${order.id}`}>
       <div className="MerchantOrder__flexContainer">
-        <div className="MerchantOrder__numberCircle">
-          {" "}
-          {order.orderNumber}{" "}
-        </div>
+        <div className="MerchantOrder__numberCircle"> {order.orderNumber} </div>
         <div className="MerchantOrder__textContainer">
           <div className="MerchantOrder__flexSubContainer">
-            <h2 className="header-s" style={{marginRight:"10px"}}>Order</h2>
+            <h2 className="header-s" style={{ marginRight: "10px" }}>
+              Order
+            </h2>
             <div
-                className="bubble"
-                style={{
-                  color: Colors.LIGHT_GREEN,
-                  backgroundColor: Colors.GREEN,
-                }}
-              >     
-              Active     
+              className="bubble"
+              style={{
+                color: Colors.LIGHT_GREEN,
+                backgroundColor: Colors.GREEN,
+              }}
+            >
+              Active
             </div>
           </div>
           <div className="text-body-faded">{orderListString}</div>
         </div>
-        <div className="flex-spacer"/>
+        <div className="flex-spacer" />
         <div className="merchantOrder__orderTimeContainer">
           <h2> {orderTime}</h2>
         </div>

@@ -9,10 +9,19 @@ import {
   createRecipient,
 } from "../../utils/plaidClient";
 import OrderStatus from "../../enums/OrderStatus";
-import { createAccessToken, createPaymentWithAccessToken } from "../../utils/truelayerClient";
+import {
+  createAccessToken,
+  createPaymentWithAccessToken,
+} from "../../utils/truelayerClient";
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
 
-async function makePlaidPayment(accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string) {
+async function makePlaidPayment(
+  accountNumber: string,
+  sortCode: string,
+  paymentName: string,
+  amount: number,
+  userId: string
+) {
   const recipientId = await createRecipient(
     accountNumber,
     sortCode,
@@ -21,93 +30,116 @@ async function makePlaidPayment(accountNumber: string, sortCode: string, payment
 
   const paymentId = await createPayment(recipientId, amount);
 
-  const linkResponse = await createLinkToken(
-    paymentId,
-    userId
-  );
+  const linkResponse = await createLinkToken(paymentId, userId);
 
-  const linkToken = linkResponse.link_token
-  const linkExpiration = linkResponse.expiration
+  const linkToken = linkResponse.link_token;
+  const linkExpiration = linkResponse.expiration;
 
   return {
     providerData: {
-      paymentId
+      paymentId,
     },
     providerPrivateData: {
       recipientId,
       linkToken,
-      linkExpiration
+      linkExpiration,
     },
     providerReturnData: {
-      linkToken
-    }
-  }
+      linkToken,
+    },
+  };
 }
 
-async function makeTruelayerPayment(accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string, paymentAttemptId: string) {
-  const accessToken = await createAccessToken()
-
-  const { 
-    paymentId, 
-    resourceToken 
-  } = await createPaymentWithAccessToken(
-    accessToken, 
-    amount, 
-    paymentName, 
-    sortCode, 
-    accountNumber, 
-    userId
-  )
-
-  return {
-    providerData: {
-      paymentId
-    },
-    providerPrivateData: {
-      resourceToken
-    },
-    providerReturnData: {
-      resourceToken,
-      paymentId
-    }
-  }
-}
-
-async function makeMoneyhubPayment(accountNumber: string, sortCode: string, paymentName: string, amount: number, userId: string) {
-  return {
-    providerData: {
-    },
-    providerPrivateData: {
-    },
-    providerReturnData: {
-    }
-  }
-}
-
-async function makePayment(
-  provider: OpenBankingProvider, 
-  accountNumber: string, 
-  sortCode: string, 
-  paymentName: string, 
-  amount: number, 
+async function makeTruelayerPayment(
+  accountNumber: string,
+  sortCode: string,
+  paymentName: string,
+  amount: number,
   userId: string,
   paymentAttemptId: string
 ) {
-  let functionPromise
+  const accessToken = await createAccessToken();
+
+  const { paymentId, resourceToken } = await createPaymentWithAccessToken(
+    accessToken,
+    amount,
+    paymentName,
+    sortCode,
+    accountNumber,
+    userId
+  );
+
+  return {
+    providerData: {
+      paymentId,
+    },
+    providerPrivateData: {
+      resourceToken,
+    },
+    providerReturnData: {
+      resourceToken,
+      paymentId,
+    },
+  };
+}
+
+async function makeMoneyhubPayment(
+  accountNumber: string,
+  sortCode: string,
+  paymentName: string,
+  amount: number,
+  userId: string
+) {
+  return {
+    providerData: {},
+    providerPrivateData: {},
+    providerReturnData: {},
+  };
+}
+
+async function makePayment(
+  provider: OpenBankingProvider,
+  accountNumber: string,
+  sortCode: string,
+  paymentName: string,
+  amount: number,
+  userId: string,
+  paymentAttemptId: string
+) {
+  let functionPromise;
 
   switch (provider) {
     case OpenBankingProvider.PLAID:
-      functionPromise = makePlaidPayment(accountNumber, sortCode, paymentName, amount, userId)
+      functionPromise = makePlaidPayment(
+        accountNumber,
+        sortCode,
+        paymentName,
+        amount,
+        userId
+      );
       break;
     case OpenBankingProvider.TRUELAYER:
-      functionPromise = makeTruelayerPayment(accountNumber, sortCode, paymentName, amount, userId, paymentAttemptId)
+      functionPromise = makeTruelayerPayment(
+        accountNumber,
+        sortCode,
+        paymentName,
+        amount,
+        userId,
+        paymentAttemptId
+      );
       break;
     case OpenBankingProvider.MONEYHUB:
-      functionPromise = makeMoneyhubPayment(accountNumber, sortCode, paymentName, amount, userId)
+      functionPromise = makeMoneyhubPayment(
+        accountNumber,
+        sortCode,
+        paymentName,
+        amount,
+        userId
+      );
       break;
   }
 
-  return await functionPromise
+  return await functionPromise;
 }
 
 export default class PaymentAttemptsController extends BaseController {
@@ -116,16 +148,18 @@ export default class PaymentAttemptsController extends BaseController {
     const { deviceId, merchantId, total } = order;
     const orderId = order.id;
 
-    const { openBankingProvider } = req.body
+    const { openBankingProvider } = req.body;
 
-    const providers = Object.keys(OpenBankingProvider)
-    
+    const providers = Object.keys(OpenBankingProvider);
+
     if (!openBankingProvider || !providers.includes(openBankingProvider)) {
-      next(new HttpError(
-        HttpStatusCode.BAD_REQUEST, 
-        "Something went wrong",
-        `Invalid open banking provider ${openBankingProvider} in request body. Should be in: ${providers}`
-      ))
+      next(
+        new HttpError(
+          HttpStatusCode.BAD_REQUEST,
+          "Something went wrong",
+          `Invalid open banking provider ${openBankingProvider} in request body. Should be in: ${providers}`
+        )
+      );
       return;
     }
 
@@ -158,14 +192,19 @@ export default class PaymentAttemptsController extends BaseController {
 
     const { accountNumber, sortCode, paymentName } = merchantDoc.data();
 
-    const {
-      providerData,
-      providerPrivateData,
-      providerReturnData
-    } = await makePayment(openBankingProvider, accountNumber, sortCode, paymentName, total, deviceId, orderId)
+    const { providerData, providerPrivateData, providerReturnData } =
+      await makePayment(
+        openBankingProvider,
+        accountNumber,
+        sortCode,
+        paymentName,
+        total,
+        deviceId,
+        orderId
+      );
 
     // Write payment attempt object to database
-    const providerKey = openBankingProvider.toLowerCase()
+    const providerKey = openBankingProvider.toLowerCase();
 
     const paymentAttemptRef = await db()
       .collection(Collection.PAYMENT_ATTEMPT)
@@ -184,7 +223,7 @@ export default class PaymentAttemptsController extends BaseController {
       .doc(paymentAttemptRef.path)
       .collection("Private")
       .add({
-        [providerKey]: providerPrivateData
+        [providerKey]: providerPrivateData,
       })
       .catch(
         new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
@@ -194,9 +233,9 @@ export default class PaymentAttemptsController extends BaseController {
 
     const paymentAttemptId = paymentAttemptRef.id;
 
-    return res.status(200).json({ 
-      [providerKey]: providerReturnData, 
-      paymentAttemptId
+    return res.status(200).json({
+      [providerKey]: providerReturnData,
+      paymentAttemptId,
     });
   };
 }

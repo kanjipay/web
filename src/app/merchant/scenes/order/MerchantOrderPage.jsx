@@ -93,16 +93,17 @@ function MerchantOrderPage({ orderList, menuItems }) {
 
         <div className="MerchantOrderPage__totalFlexContainer">
           <h3 className="header-s">Total</h3>
-          <div className="flex-spacer"/>
+          <div className="flex-spacer" />
           <h3 className="header-s">{formatCurrency(totalCost)}</h3>
         </div>
 
         <Spacer y={2} />
       </div>
 
-      <div className="anchored-bottom"
-              style={{ backgroundColor: Colors.WHITE }}
-              >
+      <div
+        className="anchored-bottom"
+        style={{ backgroundColor: Colors.WHITE }}
+      >
         <div style={{ margin: "16px" }}>
           <MainButton
             title="Fulfil Order"

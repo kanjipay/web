@@ -6,18 +6,18 @@ import { formatCurrency } from "../../../utils/helpers/money";
 import { getMenuItemStorageRef } from "../../../utils/helpers/storage";
 import DietaryAttribute from "./DietaryAttribute";
 import "./MenuItem.css";
-import Bowl from "../../../assets/icons/Bowl"
-import Bottle from "../../../assets/icons/Bottle"
-import Pint from "../../../assets/icons/Pint"
-import Cocktail from "../../../assets/icons/Cocktail"
-import CircleIcon from "../../../components/CircleIcon"
+import Bowl from "../../../assets/icons/Bowl";
+import Bottle from "../../../assets/icons/Bottle";
+import Pint from "../../../assets/icons/Pint";
+import Cocktail from "../../../assets/icons/Cocktail";
+import CircleIcon from "../../../components/CircleIcon";
 
 const iconMap = {
-  "bowl": Bowl,
-  "pint": Pint,
-  "bottle": Bottle,
-  "cocktail": Cocktail
-}
+  bowl: Bowl,
+  pint: Pint,
+  bottle: Bottle,
+  cocktail: Cocktail,
+};
 
 export default function MenuItem({ item, basketCount = 0 }) {
   const merchantId = item.merchantId;
@@ -69,12 +69,13 @@ export default function MenuItem({ item, basketCount = 0 }) {
 
   const menuItemContents = (
     <div>
-      {
-        item.photo && <div className="MenuItem__imageContainer">
+      {item.photo && (
+        <div className="MenuItem__imageContainer">
           <AsyncImage
             imageRef={getMenuItemStorageRef(merchantId, item.id, item.photo)}
-            className={`MenuItem__image ${isAvailable ? "" : "MenuItem__imageBlur"
-              }`}
+            className={`MenuItem__image ${
+              isAvailable ? "" : "MenuItem__imageBlur"
+            }`}
             alt={item.title}
           />
           {!isAvailable && <div className="MenuItem__shadow" />}
@@ -82,22 +83,24 @@ export default function MenuItem({ item, basketCount = 0 }) {
             <div className="MenuItem__notAvailable header-s">Not available</div>
           )}
         </div>
-      }
-      
+      )}
 
       <Spacer y={1.5} />
       <div style={{ display: "flex", columnGap: 12 }}>
-        {
-          item.icon && <CircleIcon
+        {item.icon && (
+          <CircleIcon
             Icon={iconMap[item.icon] ?? Bowl}
             length={48}
             backgroundColor={Colors.PRIMARY_LIGHT}
             foregroundColor={Colors.PRIMARY}
           />
-        }
+        )}
         <div style={{ flexGrow: 10, maxWidth: "100%" }}>
           <div className="grid">
-            <div className="MenuItem__title header-s" style={{ color: textColor }}>
+            <div
+              className="MenuItem__title header-s"
+              style={{ color: textColor }}
+            >
               {item.title}
             </div>
             {dietaryBubbles}
@@ -106,19 +109,21 @@ export default function MenuItem({ item, basketCount = 0 }) {
               className="MenuItem__price bubble header-s"
               style={{
                 color: textColor,
-                fontSize: 18
+                fontSize: 18,
               }}
             >
               {isAvailable ? formatCurrency(item.price) : "Not available"}
             </div>
           </div>
           <Spacer y={1} />
-          <p className="MenuItem__description text-body-faded" style={{ width: "100%" }}>
+          <p
+            className="MenuItem__description text-body-faded"
+            style={{ width: "100%" }}
+          >
             {item.description}
           </p>
         </div>
       </div>
-      
     </div>
   );
 

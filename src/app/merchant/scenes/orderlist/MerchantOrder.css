@@ -21,7 +21,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right:25px;
+  margin-right: 25px;
 }
 
 .MerchantOrder__flexContainer {
@@ -34,5 +34,5 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  width:50%;
+  width: 50%;
 }

@@ -9,7 +9,7 @@ export default function EmailSubmittedPage({ order }) {
   const navigate = useNavigate();
   const { orderId } = useParams();
 
-  const merchantId = order.merchantId
+  const merchantId = order.merchantId;
 
   useEffect(() => {
     viewPage(PageName.EMAIL_RECEIPT_SENT, { orderId });
