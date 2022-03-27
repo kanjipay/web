@@ -16,25 +16,34 @@ export default function Checkout() {
 
   useEffect(() => {
     fetchOrder(orderId).then((order) => {
-      console.log(order)
+      console.log(order);
       setOrder(order);
     });
   }, [orderId]);
 
-  return (
-    order ?
-      <Routes>
-        {/* <Route path="payment" element={<PaymentPagePlaid />} /> */}
-        <Route path="payment" element={<PaymentPageTruelayer />} />
-        <Route path="payment-method" element={<CheckoutMethodPage />} />
-        <Route
-          path="payment-success"
-          element={<PaymentSuccessPage order={order} />}
-        />
-        <Route path="payment-failure" element={<PaymentFailurePage order={order} />} />
-        <Route path="payment-cancelled" element={<PaymentCancelledPage order={order} />} />
-        <Route path="email-submitted" element={<EmailSubmittedPage order={order} />} />
-      </Routes> :
-      <LoadingPage />
+  return order ? (
+    <Routes>
+      {/* <Route path="payment" element={<PaymentPagePlaid />} /> */}
+      <Route path="payment" element={<PaymentPageTruelayer />} />
+      <Route path="payment-method" element={<CheckoutMethodPage />} />
+      <Route
+        path="payment-success"
+        element={<PaymentSuccessPage order={order} />}
+      />
+      <Route
+        path="payment-failure"
+        element={<PaymentFailurePage order={order} />}
+      />
+      <Route
+        path="payment-cancelled"
+        element={<PaymentCancelledPage order={order} />}
+      />
+      <Route
+        path="email-submitted"
+        element={<EmailSubmittedPage order={order} />}
+      />
+    </Routes>
+  ) : (
+    <LoadingPage />
   );
 }

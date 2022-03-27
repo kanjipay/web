@@ -1,5 +1,3 @@
-const orders = [
+const orders = [];
 
-]
-
-module.exports = orders
+module.exports = orders;

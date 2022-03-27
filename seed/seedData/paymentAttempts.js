@@ -1,5 +1,3 @@
-const paymentAttempts = [
+const paymentAttempts = [];
 
-]
-
-module.exports = paymentAttempts
+module.exports = paymentAttempts;

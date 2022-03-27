@@ -5,5 +5,15 @@
 
 .MenuItemConfig__menuItemPicture {
   object-fit: cover;
-  width: 85px;
+  width: 90%;
+}
+
+.MenuItemConfig__menuItemPictureContainer {
+  width: 30%;
+}
+
+.MenuItemConfig__flexContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }

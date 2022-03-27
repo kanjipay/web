@@ -11,7 +11,10 @@ let plaidInstance: PlaidApi | null = null;
 
 function getPlaid() {
   const configuration = new Configuration({
-    basePath: process.env.ENVIRONMENT === 'PROD' ? PlaidEnvironments.development : PlaidEnvironments.sandbox,
+    basePath:
+      process.env.ENVIRONMENT === "PROD"
+        ? PlaidEnvironments.development
+        : PlaidEnvironments.sandbox,
     baseOptions: {
       headers: {
         "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
@@ -27,7 +30,11 @@ function getPlaid() {
 
 export const plaidClient = () => plaidInstance || getPlaid();
 
-export async function createRecipient(accountNumber: string, sort_code: string, paymentName: string) {
+export async function createRecipient(
+  accountNumber: string,
+  sort_code: string,
+  paymentName: string
+) {
   const res = await plaidClient().paymentInitiationRecipientCreate({
     name: paymentName,
     bacs: {
@@ -39,7 +46,10 @@ export async function createRecipient(accountNumber: string, sort_code: string, 
   return res.data.recipient_id;
 }
 
-export async function createPayment(recipient_id: string, amountInPence: number) {
+export async function createPayment(
+  recipient_id: string,
+  amountInPence: number
+) {
   const res = await plaidClient().paymentInitiationPaymentCreate({
     recipient_id,
     reference: "Mercado",
@@ -52,7 +62,10 @@ export async function createPayment(recipient_id: string, amountInPence: number)
   return res.data.payment_id;
 }
 
-export async function createLinkToken(payment_id: string, client_user_id: string) {
+export async function createLinkToken(
+  payment_id: string,
+  client_user_id: string
+) {
   const res = await plaidClient().linkTokenCreate({
     user: {
       client_user_id,

@@ -3,7 +3,11 @@ import LoadingPage from "../../../components/LoadingPage";
 import { usePlaidLink } from "react-plaid-link";
 import { useNavigate, useParams } from "react-router-dom";
 import useBasket from "../basket/useBasket";
-import { createPaymentAttempt, fetchPaymentAttempt, OpenBankingProvider } from "../../../utils/services/PaymentsService";
+import {
+  createPaymentAttempt,
+  fetchPaymentAttempt,
+  OpenBankingProvider,
+} from "../../../utils/services/PaymentsService";
 import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus";
 import {
   AnalyticsEvent,
@@ -132,9 +136,9 @@ export default function PaymentPagePlaid() {
   useEffect(() => {
     createPaymentAttempt(orderId, OpenBankingProvider.PLAID)
       .then((res) => {
-        console.log(res.data)
+        console.log(res.data);
         const { paymentAttemptId } = res.data;
-        const linkToken = res.data.plaid.linkToken
+        const linkToken = res.data.plaid.linkToken;
 
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_PAYMENT_ATTEMPT, {
           paymentAttemptId,
