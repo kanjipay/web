@@ -7,9 +7,6 @@ function OrderItem({ order, menuItems }) {
   var orderListString = "";
 
   const orderTime = formatTimeForDisplayFromTimestamp(order.paidAt);
-    // String(order.paidAt.toDate().getHours()) +
-    // ":" +
-    // String(order.paidAt.toDate().getMinutes());
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
   const enrichedOrderItemElements = order.orderItems.map((orderItem) => {
