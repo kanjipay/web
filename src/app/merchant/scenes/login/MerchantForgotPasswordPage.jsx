@@ -68,6 +68,7 @@ function MerchantForgotPasswordPage() {
           placeholder="Email"
           value={email}
           onChange={handleEmailFieldChange}
+          type="email"
         />
         <Spacer y={2} />
         <MainButton
