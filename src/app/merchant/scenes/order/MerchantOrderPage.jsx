@@ -11,6 +11,7 @@ import Divider from "@mui/material/Divider";
 import { Grid } from "@mui/material";
 import MainButton from "../../../../components/MainButton";
 import { formatCurrency } from "../../../../utils/helpers/money";
+import { Colors } from "../../../../components/CircleButton";
 
 function MerchantOrderPage({ orderList, menuItems }) {
   const navigate = useNavigate();
@@ -105,7 +106,9 @@ function MerchantOrderPage({ orderList, menuItems }) {
         <Spacer y={2} />
       </div>
 
-      <div className="anchored-bottom">
+      <div className="anchored-bottom"
+              style={{ backgroundColor: Colors.WHITE }}
+              >
         <div style={{ margin: "16px" }}>
           <MainButton
             title="Fulfil Order"
