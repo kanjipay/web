@@ -21,4 +21,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: 25px;
+}
+
+.MerchantOrder__flexContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.MerchantOrder__flexSubContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 50%;
 }

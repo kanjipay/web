@@ -5,32 +5,30 @@ const menuItems = [
       price: 240,
       title: "Spicy Rice",
       description: "Basmati rice with paprika, red pepper and a dash of spice.",
-      dietaryAttributes: [
-        "VEGAN",
-        "LACTOSE_FREE"
-      ],
+      dietaryAttributes: ["VEGAN", "LACTOSE_FREE"],
       isAvailable: true,
       spiceLevel: 2,
       photo: "spicy_rice.jpg",
       sortOrder: 1,
       merchantId: "silvas",
-      sectionId: "silvasSides"
-    }
+      sectionId: "silvasSides",
+    },
   },
   {
     id: "silvasChips",
     data: {
       price: 220,
       title: "Peri-peri chips",
-      description: "Fluffy centred chips seasoned with our special peri-peri salt.",
+      description:
+        "Fluffy centred chips seasoned with our special peri-peri salt.",
       dietaryAttributes: ["VEGAN"],
       spiceLevel: 1,
       isAvailable: true,
       photo: "peri_peri_chips.jpg",
       sortOrder: 2,
       merchantId: "silvas",
-      sectionId: "silvasSides"
-    }
+      sectionId: "silvasSides",
+    },
   },
   {
     id: "silvasChicken",
@@ -44,8 +42,8 @@ const menuItems = [
       photo: "chicken.jpg",
       sortOrder: 1,
       merchantId: "silvas",
-      sectionId: "silvasMains"
-    }
+      sectionId: "silvasMains",
+    },
   },
   {
     id: "saplingMartini",
@@ -58,8 +56,8 @@ const menuItems = [
       icon: "cocktail",
       sortOrder: 1,
       merchantId: "sapling",
-      sectionId: "saplingCocktails"
-    }
+      sectionId: "saplingCocktails",
+    },
   },
   {
     id: "saplingIceTea",
@@ -72,8 +70,8 @@ const menuItems = [
       icon: "cocktail",
       sortOrder: 1,
       merchantId: "sapling",
-      sectionId: "saplingCocktails"
-    }
+      sectionId: "saplingCocktails",
+    },
   },
   {
     id: "saplingVodka",
@@ -86,9 +84,9 @@ const menuItems = [
       icon: "bottle",
       sortOrder: 1,
       merchantId: "sapling",
-      sectionId: "saplingBottles"
-    }
+      sectionId: "saplingBottles",
+    },
   },
-]
+];
 
-module.exports = menuItems
+module.exports = menuItems;

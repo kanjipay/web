@@ -40,7 +40,7 @@ export default function BasketPage({ merchant }) {
   }
 
   function checkoutItems() {
-    console.log("checkoutItems")
+    console.log("checkoutItems");
     setIsLoading(true);
 
     const analyticsManager = AnalyticsManager.main;

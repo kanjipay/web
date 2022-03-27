@@ -14,8 +14,6 @@ import { AnalyticsManager } from "../AnalyticsManager";
 export async function createOrder(merchantId, basketItems) {
   const deviceId = AnalyticsManager.main.getDeviceId();
 
-  
-
   const body = {
     merchantId,
     deviceId,
@@ -28,14 +26,14 @@ export async function createOrder(merchantId, basketItems) {
       })),
   };
 
-  console.log("createOrder: ", body)
+  console.log("createOrder: ", body);
 
   const res = await axios.post(
     `${process.env.REACT_APP_SERVER_URL}/orders`,
     body
   );
 
-  console.log("returnData: ", res.data)
+  console.log("returnData: ", res.data);
 
   return res.data.orderId;
 }

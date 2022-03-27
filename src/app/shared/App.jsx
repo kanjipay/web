@@ -17,7 +17,7 @@ export default function App() {
         <Route path="/menu/:merchantId/*" element={<Menu />} />
         <Route path="/checkout/:orderId/*" element={<Checkout />} />
 
-        <Route path="/tl-redirect" element={ <RedirectPageTruelayer />} />
+        <Route path="/tl-redirect" element={<RedirectPageTruelayer />} />
 
         <Route path="/merchant/*" element={<MerchantApp />} />
         <Route path="*" element={<NotFound />} />

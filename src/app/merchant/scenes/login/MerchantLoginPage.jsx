@@ -91,6 +91,7 @@ function MerchantLogin() {
           placeholder="Email"
           value={email}
           onChange={handleEmailFieldChange}
+          type="email"
         />
         <Spacer y={2} />
         {showPasswordInput ? (

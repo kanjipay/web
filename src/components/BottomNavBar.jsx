@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import ManageAccountsOutlinedIcon from "@mui/icons-material/ManageAccountsOutlined";
@@ -19,30 +18,29 @@ export default function BottomNavBar() {
 
   return (
     <div className="NavBar__outerContainer">
-      <div className="NavBar__innerContainer">
-        <Box sx={{ width: 500 }}>
-          <BottomNavigation showLabels value={value} onChange={handleChange}>
-            <BottomNavigationAction
-              component={Link}
-              to="/merchant/dashboard"
-              label="Orders"
-              icon={<ChatBubbleOutlineOutlinedIcon />}
-            />
-            <BottomNavigationAction
-              component={Link}
-              to="/merchant/configure"
-              label="Configure Menu"
-              icon={<ListAltOutlinedIcon />}
-            />
-            <BottomNavigationAction
-              component={Link}
-              to="/merchant/account"
-              label="Account"
-              icon={<ManageAccountsOutlinedIcon />}
-            />
-          </BottomNavigation>
-        </Box>
-      </div>
+      <BottomNavigation showLabels value={value} onChange={handleChange}>
+        <BottomNavigationAction
+          className="NavBar__button"
+          component={Link}
+          to="/merchant/dashboard"
+          label="Orders"
+          icon={<ChatBubbleOutlineOutlinedIcon />}
+        />
+        <BottomNavigationAction
+          className="NavBar__button"
+          component={Link}
+          to="/merchant/configure"
+          label="Configure Menu"
+          icon={<ListAltOutlinedIcon />}
+        />
+        <BottomNavigationAction
+          className="NavBar__button"
+          component={Link}
+          to="/merchant/account"
+          label="Account"
+          icon={<ManageAccountsOutlinedIcon />}
+        />
+      </BottomNavigation>
     </div>
   );
 }

@@ -1,10 +1,10 @@
-const { v4 } = require("uuid")
-const uuid = v4
+const { v4 } = require("uuid");
+const uuid = v4;
 
-const merchantIds = ["silvas", "sapling"]
+const merchantIds = ["silvas", "sapling"];
 
-let dayOfWeek = 1
-let openingHourRanges = []
+let dayOfWeek = 1;
+let openingHourRanges = [];
 
 while (dayOfWeek <= 7) {
   for (const merchantId of merchantIds) {
@@ -14,12 +14,12 @@ while (dayOfWeek <= 7) {
         dayOfWeek,
         merchantId,
         openTime: 660,
-        closeTime: 900
-      }
-    })
+        closeTime: 900,
+      },
+    });
   }
-  
-  dayOfWeek++
+
+  dayOfWeek++;
 }
 
-module.exports = openingHourRanges
+module.exports = openingHourRanges;
