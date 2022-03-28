@@ -14,6 +14,8 @@ import {
   createPaymentWithAccessToken,
 } from "../../utils/truelayerClient";
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
+import * as functions from "firebase-functions";
+import { v4 as uuid } from "uuid";
 
 async function makePlaidPayment(
   accountNumber: string,
@@ -147,6 +149,18 @@ export default class PaymentAttemptsController extends BaseController {
     const order = req.order;
     const { deviceId, merchantId, total } = order;
     const orderId = order.id;
+    const correlationId = uuid();
+
+    functions.logger.log("Payment Attempts API Invoked", {
+      correlationId: correlationId,
+      total: total,
+      merchantId: merchantId,
+      deviceId: deviceId,
+      orderId: orderId,
+      environment: process.env.ENVIRONMENT,
+      clientURL: process.env.CLIENT_URL,
+    });
+
 
     const { openBankingProvider } = req.body;
 
