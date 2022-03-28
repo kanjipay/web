@@ -9,7 +9,8 @@ import { verifyDomain } from "../middleware/verifyDomain";
 const main = express();
 const app = express();
 
-const origin = process.env.ENVIRONMENT === "DEV" ? "*" : process.env.CLIENT_URL;
+// const origin = process.env.ENVIRONMENT === "DEV" ? "*" : process.env.CLIENT_URL;
+const origin = "*"
 
 const corsInstance = cors({ origin });
 // const corsInstance = cors({ origin: "*" })
@@ -22,8 +23,9 @@ main.use(express.urlencoded());
 
 main.use("/v1", verifyDomain, app);
 
-app.use("/orders", ordersRoutes);
 app.use("/payment-attempts", paymentAttemptsRoutes);
+
+app.use("/orders", ordersRoutes);
 
 // This is called whenever an error is raised in an endpoint
 app.use(errorHandler);
