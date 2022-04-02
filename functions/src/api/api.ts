@@ -10,7 +10,7 @@ const main = express();
 const app = express();
 
 // const origin = process.env.ENVIRONMENT === "DEV" ? "*" : process.env.CLIENT_URL;
-const origin = "*"
+const origin = "*";
 
 const corsInstance = cors({ origin });
 // const corsInstance = cors({ origin: "*" })

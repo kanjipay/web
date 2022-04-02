@@ -8,7 +8,6 @@ import MerchantStatus from "../../enums/MerchantStatus";
 import * as functions from "firebase-functions";
 import { v4 as uuid } from "uuid";
 
-
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
     const { email, orderId } = req.body;

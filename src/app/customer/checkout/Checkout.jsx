@@ -1,30 +1,46 @@
 import { useEffect, useState } from "react";
-import { Route, Routes, useParams } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import LoadingPage from "../../../components/LoadingPage";
 import { fetchOrder } from "../../../utils/services/OrdersService";
 import CheckoutMethodPage from "./CheckoutMethodPage";
 import EmailSubmittedPage from "./EmailSubmittedPage";
 import PaymentCancelledPage from "./PaymentCancelledPage";
 import PaymentFailurePage from "./PaymentFailurePage";
-// import PaymentPagePlaid from "./PaymentPagePlaid";
+import PaymentPagePlaid from "./PaymentPagePlaid";
 import PaymentPageTruelayer from "./PaymentPageTruelayer";
 import PaymentSuccessPage from "./PaymentSuccessPage";
 
 export default function Checkout() {
-  const { orderId } = useParams();
+  const [orderId, setOrderId] = useState("");
   const [order, setOrder] = useState(null);
+  const usePlaid = true;
+  // process.env.REACT_APP_ENV_NAME === "PROD" ? true : false;
 
   useEffect(() => {
-    fetchOrder(orderId).then((order) => {
-      console.log(order);
-      setOrder(order);
-    });
+    console.log(localStorage.getItem("orderId"));
+
+    setOrderId(localStorage.getItem("orderId"));
+
+    if (orderId) {
+      fetchOrder(orderId).then((order) => {
+        setOrder(order);
+      });
+    }
   }, [orderId]);
+
+  console.log(order);
 
   return order ? (
     <Routes>
       {/* <Route path="payment" element={<PaymentPagePlaid />} /> */}
-      <Route path="payment" element={<PaymentPageTruelayer />} />
+      {usePlaid ? (
+        <Route path="payment" element={<PaymentPagePlaid order={order} />} />
+      ) : (
+        <Route
+          path="payment"
+          element={<PaymentPageTruelayer order={order} />}
+        />
+      )}
       <Route path="payment-method" element={<CheckoutMethodPage />} />
       <Route
         path="payment-success"
