@@ -22,20 +22,52 @@ async function makePlaidPayment(
   sortCode: string,
   paymentName: string,
   amount: number,
-  userId: string
+  userId: string,
+  correlationId: string,
+  isLocalEnvironment: boolean
 ) {
+  functions.logger.log("Make Plaid Payment Function Invoked", {
+    correlationId: correlationId,
+    accountNumber: accountNumber,
+    sortCode: sortCode,
+    paymentName: paymentName,
+    amount: amount,
+    userId: userId,
+    isLocalEnvironment: isLocalEnvironment,
+  });
+
   const recipientId = await createRecipient(
     accountNumber,
     sortCode,
     paymentName
   );
 
+  functions.logger.log("Make Plaid recipientId complete", {
+    correlationId: correlationId,
+    recipientId: recipientId,
+  });
+
   const paymentId = await createPayment(recipientId, amount);
 
-  const linkResponse = await createLinkToken(paymentId, userId);
+  functions.logger.log("Make Plaid recipientId complete", {
+    correlationId: correlationId,
+    paymentId: paymentId,
+  });
+
+  const linkResponse = await createLinkToken(
+    paymentId,
+    userId,
+    isLocalEnvironment,
+    correlationId
+  );
 
   const linkToken = linkResponse.link_token;
   const linkExpiration = linkResponse.expiration;
+
+  functions.logger.log("Make Plaid payment request complete", {
+    correlationId: correlationId,
+    linkToken: linkToken,
+  });
 
   return {
     providerData: {
@@ -63,17 +95,15 @@ async function makeTruelayerPayment(
 ) {
   functions.logger.log("Make Truelayer Payment Function Invoked", {
     correlationId: correlationId,
-    paymentAttemptId:paymentAttemptId,
+    paymentAttemptId: paymentAttemptId,
   });
-
 
   const accessToken = await createAccessToken();
 
   functions.logger.log("Truelayer Access Token Created", {
     correlationId: correlationId,
-    paymentAttemptId:paymentAttemptId,
+    paymentAttemptId: paymentAttemptId,
   });
-
 
   const { paymentId, resourceToken } = await createPaymentWithAccessToken(
     accessToken,
@@ -86,7 +116,7 @@ async function makeTruelayerPayment(
 
   functions.logger.log("Created Truelayer Payment with Access Token", {
     correlationId: correlationId,
-    paymentAttemptId:paymentAttemptId,
+    paymentAttemptId: paymentAttemptId,
   });
 
   return {
@@ -125,7 +155,8 @@ async function makePayment(
   amount: number,
   userId: string,
   paymentAttemptId: string,
-  correlationId: string
+  correlationId: string,
+  isLocalEnvironment: boolean
 ) {
   let functionPromise;
 
@@ -136,7 +167,9 @@ async function makePayment(
         sortCode,
         paymentName,
         amount,
-        userId
+        userId,
+        correlationId,
+        isLocalEnvironment
       );
       break;
     case OpenBankingProvider.TRUELAYER:
@@ -170,7 +203,7 @@ export default class PaymentAttemptsController extends BaseController {
     const { deviceId, merchantId, total } = order;
     const orderId = order.id;
     const correlationId = uuid();
-    const { openBankingProvider } = req.body;
+    const { openBankingProvider, isLocalEnvironment } = req.body;
 
     functions.logger.log("Payment Attempts API Invoked", {
       correlationId: correlationId,
@@ -178,12 +211,11 @@ export default class PaymentAttemptsController extends BaseController {
       merchantId: merchantId,
       deviceId: deviceId,
       orderId: orderId,
-      openBankingProvider:openBankingProvider,
+      openBankingProvider: openBankingProvider,
       environment: process.env.ENVIRONMENT,
       envClientURL: process.env.CLIENT_URL,
+      isLocalEnvironment: isLocalEnvironment,
     });
-
-
 
     const providers = Object.keys(OpenBankingProvider);
 
@@ -232,10 +264,10 @@ export default class PaymentAttemptsController extends BaseController {
       total: total,
       merchantId: merchantId,
       orderId: orderId,
-      openBankingProvider:openBankingProvider,
+      openBankingProvider: openBankingProvider,
       accountNumber: accountNumber,
       sortCode: sortCode,
-      paymentName:paymentName,
+      paymentName: paymentName,
     });
 
     const { providerData, providerPrivateData, providerReturnData } =
@@ -247,7 +279,8 @@ export default class PaymentAttemptsController extends BaseController {
         total,
         deviceId,
         orderId,
-        correlationId
+        correlationId,
+        isLocalEnvironment
       );
 
     // Write payment attempt object to database
@@ -265,7 +298,7 @@ export default class PaymentAttemptsController extends BaseController {
       createdAt: new Date(),
       deviceId,
       amount: total,
-    }
+    };
 
     const paymentAttemptRef = await db()
       .collection(Collection.PAYMENT_ATTEMPT)
@@ -274,9 +307,8 @@ export default class PaymentAttemptsController extends BaseController {
 
     functions.logger.log("Payment Attempt Doc Added", {
       correlationId: correlationId,
-      paymentAttemptData:paymentAttemptData,
+      paymentAttemptData: paymentAttemptData,
     });
-
 
     await db()
       .doc(paymentAttemptRef.path)
@@ -290,12 +322,11 @@ export default class PaymentAttemptsController extends BaseController {
 
     // Return the link token and payment attempt id for the frontend to use
 
-
     const paymentAttemptId = paymentAttemptRef.id;
 
     functions.logger.log("Payment Attempt Controller Finished returning 200", {
       correlationId: correlationId,
-      paymentAttemptId:paymentAttemptId,
+      paymentAttemptId: paymentAttemptId,
     });
 
     return res.status(200).json({

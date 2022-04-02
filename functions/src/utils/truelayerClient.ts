@@ -12,7 +12,7 @@ const defaultHeaders = {
 export function truelayerUrlName() {
   // return process.env.ENVIRONMENT === "PROD" ? "truelayer" : "truelayer-sandbox";
   //Until we pass approval process and get prod fully elevated, our prod application should use sandbox
-  return "truelayer-sandbox"
+  return "truelayer-sandbox";
 }
 
 export async function createAccessToken() {
