@@ -1,6 +1,7 @@
 import * as express from "express";
 import ordersRoutes from "./routes/ordersRoutes";
 import paymentAttemptsRoutes from "./routes/paymentAttemptsRoutes";
+import loggingRoutes from "./routes/loggingRoutes";
 import * as cors from "cors";
 // import { checkFirebaseAuthToken } from '../middleware/auth'
 import { errorHandler } from "../middleware/errorHandler";
@@ -24,6 +25,7 @@ main.use(express.urlencoded());
 main.use("/v1", verifyDomain, app);
 
 app.use("/payment-attempts", paymentAttemptsRoutes);
+app.use("/log", loggingRoutes);
 
 app.use("/orders", ordersRoutes);
 
