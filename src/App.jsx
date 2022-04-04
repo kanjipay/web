@@ -1,13 +1,12 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Home from "../brand/HomePage";
-import NotFound from "./NotFoundPage";
+import Home from "./app/brand/HomePage";
+import NotFound from "./app/shared/NotFoundPage";
 import { BrowserRouter } from "react-router-dom";
-import Menu from "../customer/menu/Menu";
-import MerchantApp from "../merchant/MerchantApp";
-import RedirectPageTruelayer from "../customer/checkout/RedirectPageTruelayer";
-import RedirectPagePlaid from "../customer/checkout/RedirectPagePlaid";
-import Checkout from "../customer/checkout/Checkout";
+import Menu from "./app/customer/menu/Menu";
+import MerchantApp from "./app/merchant/MerchantApp";
+import RedirectPageTruelayer from "./app/customer/checkout/RedirectPageTruelayer";
+import Checkout from "./app/customer/checkout/Checkout";
 
 export default function App() {
   return (
@@ -20,11 +19,9 @@ export default function App() {
 
         <Route path="/tl-redirect" element={<RedirectPageTruelayer />} />
 
-        <Route path="/plaid-redirect/*" element={<RedirectPagePlaid />} />
-
         <Route path="/merchant/*" element={<MerchantApp />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
-}
+};
