@@ -71,7 +71,7 @@ export class AnalyticsManager {
 
   logEvent(name, properties) {
     const payload = {
-      deviceID: this.deviceId,
+      deviceId: this.deviceId,
       timestamp: Date.now(),
       eventTime: new Date(),
       user_agent: navigator.user_agent,
