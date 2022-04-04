@@ -19,7 +19,7 @@ export default function PaymentUnsuccessfulPage({
   order,
 }) {
   const navigate = useNavigate();
-  const { orderId } = useParams();
+  const orderId = order.id;
   const [isLoading, setIsLoading] = useState(false);
 
   const merchantId = order.merchantId;

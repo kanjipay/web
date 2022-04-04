@@ -14,10 +14,11 @@ export class OpenBankingProvider {
   static MONEYHUB = "MONEYHUB";
 }
 
-export function createPaymentAttempt(orderId, provider) {
+export function createPaymentAttempt(orderId, provider, isLocalEnvironment) {
   const requestBody = {
     orderId,
     openBankingProvider: provider,
+    isLocalEnvironment: isLocalEnvironment,
   };
 
   console.log("createPaymentAttempt: ", requestBody);
