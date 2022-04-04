@@ -75,12 +75,12 @@ export class AnalyticsManager {
       deviceId: this.deviceId,
       timestamp: Date.now(),
       eventTime: new Date(),
-      user_agent: navigator.user_agent,
+      userAgent: navigator.user_agent,
       platform: navigator.platform,
       language:navigator.language,
-      event_name:{name},
-      event_properties:{properties},
-      os_vendor:navigator.vendor,
+      eventName:{name},
+      eventProperties:{properties},
+      osVendor:navigator.vendor,
     };
     axios.post(
       "/api/v1/log",
