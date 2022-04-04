@@ -1,5 +1,6 @@
 import amplitude from "amplitude-js";
 import { v4 as uuid } from "uuid";
+import axios from "axios";
 
 export class AnalyticsEvent {
   static VIEW_PAGE = "ViewPage";
@@ -28,7 +29,11 @@ export class AnalyticsManager {
   static main = new AnalyticsManager();
 
   constructor() {
-    this.deviceId = localStorage.getItem("deviceId") || uuid();
+    const localDeviceId = localStorage.getItem("deviceId");
+    this.deviceId = localDeviceId || uuid();
+    if (localDeviceId) {
+      localStorage.setItem("deviceId", this.deviceId);
+    };
 
     /* 
     This makes amplitude use browser's navigate.sendBeacon API, 
@@ -37,16 +42,15 @@ export class AnalyticsManager {
     const options = { transport: "beacon" };
     const analytics = amplitude.getInstance();
 
-    // Initialise without a user id. user id should only be used when under strong auth I think
+    // // Initialise without a user id. user id should only be used when under strong auth I think
     analytics.init(process.env.REACT_APP_AMPLITUDE_API_KEY, null, options);
 
-    /*
-    I don't believe we want to use the default device id, it's just a uuid in cookies,
-    so will be removed when user clears cookies, or null in private browsing mode
-    We store the uuid in localStorage, which is more persistent
-    */
+    // /*
+    // I don't believe we want to use the default device id, it's just a uuid in cookies,
+    // so will be removed when user clears cookies, or null in private browsing mode
+    // We store the uuid in localStorage, which is more persistent
+    // */
     analytics.setDeviceId(this.deviceId);
-
     this.analytics = analytics;
   }
 
@@ -66,8 +70,25 @@ export class AnalyticsManager {
   }
 
   logEvent(name, properties) {
+    const payload = {
+      deviceID: this.deviceId,
+      timestamp: Date.now(),
+      eventTime: new Date(),
+      user_agent: navigator.user_agent,
+      platform: navigator.userAgentData.platform,
+      language:navigator.language,
+      event_name:{name},
+      event_properties:{properties},
+      flag_mobile:navigator.userAgentData.mobile,
+      os_vendor:navigator.vendor,
+    };
+    axios.post(
+      "/api/v1/log",
+      payload
+    );
     this.analytics.logEvent(name, properties);
   }
+
 }
 
 export function viewPage(page, properties) {
@@ -75,4 +96,4 @@ export function viewPage(page, properties) {
     page,
     ...properties,
   });
-}
+};
