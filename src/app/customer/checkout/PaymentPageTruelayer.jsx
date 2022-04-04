@@ -27,8 +27,9 @@ export default function PaymentPageTruelayer() {
             : "truelayer-sandbox";
         const redirectUrl = new URL(window.location.href);
         redirectUrl.pathname = "/tl-redirect";
-        const truelayerUrl = `https://payment.${appName}.com/payments#payment_id=${paymentId}&resource_token=${resourceToken}&return_uri=${redirectUrl.href}`;
 
+        //Hardcode to truelayer-sandbox until we elevate to prod
+        const truelayerUrl = `https://payment.truelayer-sandbox.com/payments#payment_id=${paymentId}&resource_token=${resourceToken}&return_uri=${redirectUrl.href}`;
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_PAYMENT_ATTEMPT, {
           paymentAttemptId,
         });
