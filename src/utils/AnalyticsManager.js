@@ -69,18 +69,17 @@ export class AnalyticsManager {
     this.analytics.setGroup(groupName, groupValue);
   }
 
+
   logEvent(name, properties) {
     const payload = {
       deviceId: this.deviceId,
       timestamp: Date.now(),
       eventTime: new Date(),
       user_agent: navigator.user_agent,
-      user_agent_data: navigator.userAgentData,
       platform: navigator.platform,
       language:navigator.language,
       event_name:{name},
       event_properties:{properties},
-      flag_mobile:navigator.userAgentData.mobile,
       os_vendor:navigator.vendor,
     };
     axios.post(
