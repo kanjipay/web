@@ -7,7 +7,7 @@ import { PageName, viewPage } from "../../../utils/AnalyticsManager";
 
 export default function EmailSubmittedPage({ order }) {
   const navigate = useNavigate();
-  const { orderId } = useParams();
+  const orderId = order.id;
 
   const merchantId = order.merchantId;
 

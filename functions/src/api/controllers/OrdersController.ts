@@ -5,6 +5,8 @@ import { db } from "../../utils/admin";
 import Collection from "../../enums/Collection";
 import OrderStatus from "../../enums/OrderStatus";
 import MerchantStatus from "../../enums/MerchantStatus";
+import * as functions from "firebase-functions";
+import { v4 as uuid } from "uuid";
 
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
@@ -27,6 +29,16 @@ export default class OrdersController extends BaseController {
 
   create = async (req, res, next) => {
     const { requestedItems, merchantId, deviceId } = req.body;
+    const correlationId = uuid();
+
+    functions.logger.log("Create Order API Invoked", {
+      correlationId: correlationId,
+      requestedItems: requestedItems,
+      merchantId: merchantId,
+      deviceId: deviceId,
+      environment: process.env.ENVIRONMENT,
+      clientURL: process.env.CLIENT_URL,
+    });
 
     // Check merchantId exists and is open
     const merchantDoc = await db()
