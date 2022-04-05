@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import LoadingPage from "../../../components/LoadingPage";
-import { usePlaidLink } from "react-plaid-link";
+import { usePlaidLink, PlaidLinkOptions } from "react-plaid-link";
 import { useNavigate, useParams } from "react-router-dom";
 import useBasket from "../basket/useBasket";
 import {
@@ -25,12 +25,15 @@ class PlaidEventName {
   static HANDOFF = "HANDOFF"; // Called after successfully going through Link
 }
 
-export default function PaymentPagePlaid() {
+export default function PaymentPagePlaid({ order }) {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null);
   const [linkToken, setLinkToken] = useState(null);
-  const { orderId } = useParams();
+  const orderId = order.id;
   const navigate = useNavigate();
   const { clearBasket } = useBasket();
+  const isOAuthRedirect = window.location.href.includes("?oauth_state_id=");
+  const isLocalEnvironment =
+    process.env.REACT_APP_ENV_NAME == "LOCAL" ? true : false;
 
   const onSuccess = (_publicToken, _metadata) => {};
 
@@ -92,14 +95,19 @@ export default function PaymentPagePlaid() {
     }
   };
 
-  const { open, ready } = usePlaidLink({
+  const config = {
+    // token must be the same token used for the first initialization of Link
     onSuccess,
-    onExit,
     onEvent,
+    onExit,
     token: linkToken,
-    //required for OAuth; if not using OAuth, set to null or omit:
-    // receivedRedirectUri: window.location.href,
-  });
+  };
+  if (isOAuthRedirect) {
+    // receivedRedirectUri must include the query params
+    config.receivedRedirectUri = window.location.href;
+  }
+
+  const { open, ready } = usePlaidLink(config);
 
   useEffect(() => {
     if (ready && paymentAttemptId) {
@@ -134,22 +142,35 @@ export default function PaymentPagePlaid() {
   }, [paymentAttemptId, clearBasket, navigate]);
 
   useEffect(() => {
-    createPaymentAttempt(orderId, OpenBankingProvider.PLAID)
-      .then((res) => {
-        console.log(res.data);
-        const { paymentAttemptId } = res.data;
-        const linkToken = res.data.plaid.linkToken;
-
-        AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_PAYMENT_ATTEMPT, {
-          paymentAttemptId,
+    if (isOAuthRedirect) {
+      setLinkToken(localStorage.getItem("linkToken"));
+      setPaymentAttemptId(localStorage.getItem("paymentAttemptId"));
+    } else {
+      createPaymentAttempt(
+        orderId,
+        OpenBankingProvider.PLAID,
+        isLocalEnvironment
+      )
+        .then((res) => {
+          console.log(res.data);
+          const { paymentAttemptId } = res.data;
+          const linkToken = res.data.plaid.linkToken;
+          AnalyticsManager.main.logEvent(
+            AnalyticsEvent.CREATE_PAYMENT_ATTEMPT,
+            {
+              paymentAttemptId,
+            }
+          );
+          setPaymentAttemptId(paymentAttemptId);
+          localStorage.setItem("linkToken", linkToken);
+          localStorage.setItem("paymentAttemptId", paymentAttemptId);
+          setLinkToken(linkToken);
+        })
+        .catch((err) => {
+          console.log(err);
+          navigate("../payment-failure");
         });
-        setPaymentAttemptId(paymentAttemptId);
-        setLinkToken(linkToken);
-      })
-      .catch((err) => {
-        console.log(err);
-        navigate("../payment-failure");
-      });
+    }
   }, [orderId, navigate]);
 
   return <LoadingPage message="Processing your order" />;
