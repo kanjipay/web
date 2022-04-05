@@ -1,11 +1,11 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
-import Menu from "../customer/menu/Menu";
+import Menu from "./app/customer/menu/Menu";
 import MerchantApp from "./app/merchant/MerchantApp";
-import RedirectPageTruelayer from "../customer/checkout/RedirectPageTruelayer";
-import Checkout from "../customer/checkout/Checkout";
-import { Brand } from "../brand/Brand";
+import RedirectPageTruelayer from "./app/customer/checkout/RedirectPageTruelayer";
+import Checkout from "./app/customer/checkout/Checkout";
+import { Brand } from "./app/brand/Brand";
 
 export default function App() {
   return (
