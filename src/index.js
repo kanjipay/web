@@ -6,9 +6,7 @@ import App from "./App";
 import BasketContextProvider from "./app/customer/basket/BasketContext";
 
 console.log("environment: ", process.env.REACT_APP_ENV_NAME);
-console.log("URL", process.env.REACT_APP_BASE_SERVER_URL);
-
-console.log("audit_version", 1);
+console.log("audit_version", 3);
 
 ReactDOM.render(
   <React.StrictMode>
