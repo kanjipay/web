@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 import Menu from "../customer/menu/Menu";
-import MerchantApp from "../merchant/MerchantApp";
+import MerchantApp from "./app/merchant/MerchantApp";
 import RedirectPageTruelayer from "../customer/checkout/RedirectPageTruelayer";
 import Checkout from "../customer/checkout/Checkout";
 import { Brand } from "../brand/Brand";
