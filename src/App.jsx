@@ -1,6 +1,5 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Home from "../brand/HomePage";
 import { BrowserRouter } from "react-router-dom";
 import Menu from "../customer/menu/Menu";
 import MerchantApp from "../merchant/MerchantApp";
@@ -13,7 +12,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/menu/:merchantId/*" element={<Menu />} />
-        <Route path="/checkout/:orderId/*" element={<Checkout />} />
+        <Route path="/checkout/*" element={<Checkout />} />
 
         <Route path="/tl-redirect" element={<RedirectPageTruelayer />} />
 
@@ -22,4 +21,4 @@ export default function App() {
       </Routes>
     </BrowserRouter>
   );
-}
+};
