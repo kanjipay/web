@@ -1,5 +1,5 @@
 import Collection from "../../enums/Collection";
-import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
+import { OpenBankingProvider } from "../../enums/PaymentProvider";
 import OrderStatus from "../../enums/OrderStatus";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
 import { db } from "../../utils/admin";

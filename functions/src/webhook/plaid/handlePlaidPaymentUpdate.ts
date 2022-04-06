@@ -2,7 +2,7 @@ import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
 import { verify } from "./verify";
 import { receivePaymentUpdate } from "../shared/receivePaymentUpdate";
-import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
+import { OpenBankingProvider } from "../../enums/PaymentProvider";
 import * as functions from "firebase-functions";
 import { v4 as uuid } from "uuid";
 

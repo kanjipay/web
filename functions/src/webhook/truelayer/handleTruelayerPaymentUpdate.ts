@@ -1,4 +1,4 @@
-import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
+import { OpenBankingProvider } from "../../enums/PaymentProvider";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
 import { receivePaymentUpdate } from "../shared/receivePaymentUpdate";
