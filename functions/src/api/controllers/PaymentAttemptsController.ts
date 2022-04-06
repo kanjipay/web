@@ -13,7 +13,7 @@ import {
   createAccessToken,
   createPaymentWithAccessToken,
 } from "../../utils/truelayerClient";
-import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
+import { PaymentProvider } from "../../enums/PaymentProvider";
 import * as functions from "firebase-functions";
 import { v4 as uuid } from "uuid";
 
@@ -147,8 +147,8 @@ async function makeMoneyhubPayment(
   };
 }
 
-async function makePayment(
-  provider: OpenBankingProvider,
+async function makeOpenbankingPayment(
+  provider: PaymentProvider,
   accountNumber: string,
   sortCode: string,
   paymentName: string,
@@ -161,7 +161,7 @@ async function makePayment(
   let functionPromise;
 
   switch (provider) {
-    case OpenBankingProvider.PLAID:
+    case PaymentProvider.PLAID:
       functionPromise = makePlaidPayment(
         accountNumber,
         sortCode,
@@ -172,7 +172,7 @@ async function makePayment(
         isLocalEnvironment
       );
       break;
-    case OpenBankingProvider.TRUELAYER:
+    case PaymentProvider.TRUELAYER:
       functionPromise = makeTruelayerPayment(
         accountNumber,
         sortCode,
@@ -183,7 +183,7 @@ async function makePayment(
         correlationId
       );
       break;
-    case OpenBankingProvider.MONEYHUB:
+    case PaymentProvider.MONEYHUB:
       functionPromise = makeMoneyhubPayment(
         accountNumber,
         sortCode,
@@ -203,7 +203,7 @@ export default class PaymentAttemptsController extends BaseController {
     const { deviceId, merchantId, total } = order;
     const orderId = order.id;
     const correlationId = uuid();
-    const { openBankingProvider, isLocalEnvironment } = req.body;
+    const { PaymentProvider, isLocalEnvironment } = req.body;
 
     functions.logger.log("Payment Attempts API Invoked", {
       correlationId: correlationId,
@@ -211,20 +211,20 @@ export default class PaymentAttemptsController extends BaseController {
       merchantId: merchantId,
       deviceId: deviceId,
       orderId: orderId,
-      openBankingProvider: openBankingProvider,
+      PaymentProvider: PaymentProvider,
       environment: process.env.ENVIRONMENT,
       envClientURL: process.env.CLIENT_URL,
       isLocalEnvironment: isLocalEnvironment,
     });
 
-    const providers = Object.keys(OpenBankingProvider);
+    const providers = Object.keys(PaymentProvider);
 
-    if (!openBankingProvider || !providers.includes(openBankingProvider)) {
+    if (!PaymentProvider || !providers.includes(PaymentProvider)) {
       next(
         new HttpError(
           HttpStatusCode.BAD_REQUEST,
           "Something went wrong",
-          `Invalid open banking provider ${openBankingProvider} in request body. Should be in: ${providers}`
+          `Invalid payment provider ${PaymentProvider} in request body. Should be in: ${providers}`
         )
       );
       return;
@@ -256,35 +256,37 @@ export default class PaymentAttemptsController extends BaseController {
       );
       return;
     }
+    if (!(PaymentProvider === "STRIPE")) {
+      const { accountNumber, sortCode, paymentName } = merchantDoc.data();
+      functions.logger.log("Merchant Doc Retrieved", {
+        correlationId: correlationId,
+        total: total,
+        merchantId: merchantId,
+        orderId: orderId,
+        openBankingProvider: PaymentProvider,
+        accountNumber: accountNumber,
+        sortCode: sortCode,
+        paymentName: paymentName,
 
-    const { accountNumber, sortCode, paymentName } = merchantDoc.data();
+        const { providerData, providerPrivateData, providerReturnData } =
+        await makeOpenbankingPayment(
+          PaymentProvider,
+          accountNumber,
+          sortCode,
+          paymentName,
+          total,
+          deviceId,
+          orderId,
+          correlationId,
+          isLocalEnvironment
+        );
+      });
+    }
 
-    functions.logger.log("Merchant Doc Retrieved", {
-      correlationId: correlationId,
-      total: total,
-      merchantId: merchantId,
-      orderId: orderId,
-      openBankingProvider: openBankingProvider,
-      accountNumber: accountNumber,
-      sortCode: sortCode,
-      paymentName: paymentName,
-    });
 
-    const { providerData, providerPrivateData, providerReturnData } =
-      await makePayment(
-        openBankingProvider,
-        accountNumber,
-        sortCode,
-        paymentName,
-        total,
-        deviceId,
-        orderId,
-        correlationId,
-        isLocalEnvironment
-      );
 
     // Write payment attempt object to database
-    const providerKey = openBankingProvider.toLowerCase();
+    const providerKey = PaymentProvider.toLowerCase();
 
     functions.logger.log("Make Payment Function Completed", {
       correlationId: correlationId,
