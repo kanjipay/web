@@ -9,6 +9,7 @@ export default class Collection {
   static PAYMENT_ATTEMPT = new Collection("PaymentAttempt");
   static OPENING_HOUR_RANGE = new Collection("OpeningHourRange");
   static CONTACT_REQUEST = new Collection("ContactRequest");
+  static LINK = new Collection("Link");
 
   constructor(name) {
     this.name = name;

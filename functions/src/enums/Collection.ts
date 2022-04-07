@@ -6,6 +6,7 @@ enum Collection {
   PAYMENT_ATTEMPT = "PaymentAttempt",
   OPENING_HOUR_RANGE = "OpeningHourRange",
   WEB_AUDIT_LOG = "WebAuditLog",
+  LINK = "Link"
 }
 
 export default Collection;
