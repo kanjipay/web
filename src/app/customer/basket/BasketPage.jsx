@@ -35,12 +35,11 @@ export default function BasketPage({ merchant }) {
     </div>
   );
 
-  function toggleEdit() {
+  const toggleEdit = () => {
     setIsEditing(!isEditing);
   }
 
-  function checkoutItems() {
-    console.log("checkoutItems");
+  const checkoutItems = () => {
     setIsLoading(true);
 
     const analyticsManager = AnalyticsManager.main;
@@ -53,8 +52,13 @@ export default function BasketPage({ merchant }) {
       .then((orderId) => {
         setIsLoading(false);
         analyticsManager.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId });
-        localStorage.setItem("orderId", orderId);
-        navigate(`/checkout/payment`);
+
+        // Use this if paying with Plaid
+        // localStorage.setItem("orderId", orderId);
+        // navigate(`/checkout/payment`);
+
+        // Use this if paying with Moneyhub
+        navigate(`/checkout/o/${orderId}/choose-bank`)
       })
       .catch((err) => {
         setIsLoading(false);
@@ -74,7 +78,7 @@ export default function BasketPage({ merchant }) {
         rightElements={[
           <NavBarButton
             title={isEditing ? "Done" : "Edit"}
-            onClick={() => toggleEdit()}
+            onClick={toggleEdit}
           />,
         ]}
       />
@@ -106,7 +110,7 @@ export default function BasketPage({ merchant }) {
             title="Proceed to checkout"
             isLoading={isLoading}
             style={{ boxSizing: "borderBox" }}
-            onClick={() => checkoutItems()}
+            onClick={checkoutItems}
             disabled={basketItems.length === 0}
           />
         </div>
