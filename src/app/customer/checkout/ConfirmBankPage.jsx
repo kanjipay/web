@@ -23,7 +23,6 @@ export default function ConfirmBankPage({ order }) {
   const bankDatumFromState = location.state?.bankDatum;
   const bankIdFromUrl = useParams().bankId
   const [linkId, setLinkId] = useState(null)
-  const [linkWasUsed, setLinkWasUsed] = useState(false)
 
   const [bankDatum, setBankDatum] = useState(bankDatumFromState)
 
@@ -44,20 +43,6 @@ export default function ConfirmBankPage({ order }) {
   }
 
   useEffect(() => {
-    if (linkId) {
-      const unsub = onSnapshot(Collection.LINK.docRef(linkId), doc => {
-        if (doc.data().wasUsed) {
-          setLinkWasUsed(true)
-        }
-      })
-
-      return () => {
-        unsub()
-      }
-    }
-  }, [linkId])
-
-  useEffect(() => {
     if (bankDatum) {
       if (!isMobile) {
         createLink(`/checkout/o/${order.id}/confirm-bank/${bankDatum.id}`).then(linkId => {
@@ -73,6 +58,18 @@ export default function ConfirmBankPage({ order }) {
     }
     
   }, [order, bankDatum, bankIdFromUrl])
+
+  useEffect(() => {
+    if (linkId) {
+      const unsub = onSnapshot(Collection.LINK.docRef(linkId), doc => {
+        if (doc.data().wasUsed) {
+          navigate("../mobile-handover")
+        }
+      })
+
+      return () => unsub()
+    }
+  }, [linkId, navigate])
 
   return bankDatum ?
     <div className="container">
@@ -94,12 +91,7 @@ export default function ConfirmBankPage({ order }) {
 
       <div style={{ position: "absolute", bottom: 0, padding: "0 16px", textAlign: "center" }}>
         { !isMobile && <div>
-          { linkWasUsed ?
-            <div style={{ textAlign: "left" }}>
-              <h3 className="header-s">Your mobile is synced</h3>
-              <Spacer y={2} />
-              <p className="text-body-faded">Don't reload the page</p>
-            </div> :
+          
             <div>
               <div style={{ display: "flex", columnGap: 32 }}>
                 <div style={{ flexGrow: 10, textAlign: "left" }}>
@@ -122,7 +114,6 @@ export default function ConfirmBankPage({ order }) {
               <Spacer y={3} />
 
             </div>
-          }
         </div> }
             
         <MainButton
