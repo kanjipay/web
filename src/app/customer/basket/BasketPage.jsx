@@ -54,8 +54,8 @@ export default function BasketPage({ merchant }) {
         setIsLoading(false);
         analyticsManager.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId });
         localStorage.setItem("orderId", orderId);
-        localStorage.setItem("paymentAttemptId", "");       
-        localStorage.setItem("linkToken", "");
+        localStorage.removeItem("paymentAttemptId");       
+        localStorage.removeItem("linkToken");
         navigate(`/checkout/payment`);
       })
       .catch((err) => {
