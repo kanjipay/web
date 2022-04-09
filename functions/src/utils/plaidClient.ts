@@ -33,11 +33,6 @@ function getPlaid() {
     },
   });
 
-  functions.logger.log("Plaid Instance Initiated", {
-    plaidEnvironment: basePath,
-    apiEnvironment: process.env.ENVIRONMENT,
-  });
-
   plaidInstance = new PlaidApi(configuration);
 
   return plaidInstance;
@@ -107,7 +102,7 @@ export async function createLinkToken(
   //     ? "https://mercadopay.co/checkout/payment"
   //     : "https://mercadopay-dev.web.app/checkout/payment";
 
-  const res = await plaidClient().linkTokenCreate({
+  try {const res = await plaidClient().linkTokenCreate({
     user: {
       client_user_id,
     },
@@ -120,7 +115,18 @@ export async function createLinkToken(
     payment_initiation: {
       payment_id,
     },
-  });
+  })
 
-  return res.data;
-}
+  return res.data;}
+  catch (err) {
+    functions.logger.log("Make Link Token Error", {
+      correlationId: correlationId,
+      isLocalEnvironment: isLocalEnvironment,
+      plaidRedirectUri: plaidRedirectUri,
+      payment_id: payment_id,
+      client_user_id: client_user_id,
+      webhook: process.env.WEBHOOK_URL, 
+      error:err
+    });  
+  };
+};
