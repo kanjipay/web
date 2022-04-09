@@ -3,24 +3,17 @@ import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
 import { verify } from "./verify";
 import { receivePaymentUpdate } from "../shared/receivePaymentUpdate";
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
-import * as functions from "firebase-functions";
-import { v4 as uuid } from "uuid";
+import LoggingController from "../../utils/loggingClient";
 
 export const handlePlaidPaymentUpdate = async (req, res, next) => {
-  const correlationId = uuid();
-
-  functions.logger.log("Handle Plaid Payment Update Invoked", {
-    correlationId: correlationId,
-  });
+  const loggingClient = new LoggingController("Plaid Webhook");
+  loggingClient.log('Handle Plaid Payment Update Invoked', {}, {provider:"PLAID"});
 
   const isValid = await verify(req).catch(
     new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
   );
 
-  functions.logger.log("Handle Plaid Payment Verification Complete", {
-    correlationId: correlationId,
-    verified: isValid,
-  });
+  loggingClient.log("Handle Plaid Payment Verification Complete", {}, {verified: isValid});
 
   if (!isValid) {
     next(new HttpError(HttpStatusCode.UNAUTHORIZED, "Unauthorized"));
@@ -40,14 +33,12 @@ export const handlePlaidPaymentUpdate = async (req, res, next) => {
 
   const paymentAttemptStatus = paymentStatusMap[new_payment_status];
 
-  functions.logger.log("Handle Plaid Payment Request mapped", {
-    correlationId: correlationId,
-    verified: isValid,
+  loggingClient.log("Handle Plaid Payment Request Mapped", 
+  {},
+  {
     payment_id: payment_id,
     new_payment_status: new_payment_status,
     paymentAttemptStatus: paymentAttemptStatus,
-    rawBody: req.body,
-    rawRequest: req,
   });
 
   if (paymentAttemptStatus) {
@@ -60,15 +51,10 @@ export const handlePlaidPaymentUpdate = async (req, res, next) => {
       payment_id,
       paymentAttemptStatus,
       failureReason,
+      loggingClient,
       next
     );
   }
-  functions.logger.log("Handle Plaid Payment Request Complete, Returning 200", {
-    correlationId: correlationId,
-    verified: isValid,
-    payment_id: payment_id,
-    new_payment_status: new_payment_status,
-    paymentAttemptStatus: paymentAttemptStatus,
-  });
+  loggingClient.log("Handle Plaid Payment Request Complete, Returning 200");
   return res.sendStatus(200);
 };
