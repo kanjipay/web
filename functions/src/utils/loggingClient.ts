@@ -7,47 +7,47 @@ import * as functions from "firebase-functions";
 //which will be included in all future log method calls.
 export default class LoggingController {
     process;
-    processData;
+    persistentData;
 
     constructor(process: string) {
         const correlationId = uuid();
         const processStartTime = new Date();
-        this.processData = {
+        this.persistentData = {
             correlationId,
             process,
             processStartTime,
         };
     };
 
-    enrichProcessData(additionalProcessData:object){
-        this.processData = Object.assign({}, this.processData, additionalProcessData);
+    enrichProcessData(additionalPersistantData:object){
+        this.persistentData = Object.assign({}, this.persistentData, additionalPersistantData);
     };
 
     createLogBody(eventData:object) {
         eventData['eventTime'] = new Date();
-        return Object.assign({}, this.processData, eventData);;
+        return Object.assign({}, this.persistentData, eventData);;
     };
 
-    log(eventName:string, eventData:object = {}, additionalProcessData:object = {}) {
-        this.enrichProcessData(additionalProcessData);
+    log(eventName:string, eventData:object = {}, additionalPersistantData:object = {}) {
+        this.enrichProcessData(additionalPersistantData);
         const eventBody = this.createLogBody(eventData);
         functions.logger.log(eventName, eventBody);
     };
 
-    warn(eventName:string, eventData:object = {}, additionalProcessData:object = {}) {
-        this.enrichProcessData(additionalProcessData);
+    warn(eventName:string, eventData:object = {}, additionalPersistantData:object = {}) {
+        this.enrichProcessData(additionalPersistantData);
         const eventBody = this.createLogBody(eventData);
         functions.logger.warn(eventName, eventBody);
     };
 
-    info(eventName:string, eventData:object = {}, additionalProcessData:object = {}) {
-        this.enrichProcessData(additionalProcessData);
+    info(eventName:string, eventData:object = {}, additionalPersistantData:object = {}) {
+        this.enrichProcessData(additionalPersistantData);
         const eventBody = this.createLogBody(eventData);
         functions.logger.info(eventName, eventBody);
     };
 
-    error(eventName:string, eventData:object = {}, additionalProcessData:object = {}) {
-        this.enrichProcessData(additionalProcessData);
+    error(eventName:string, eventData:object = {}, additionalPersistantData:object = {}) {
+        this.enrichProcessData(additionalPersistantData);
         const eventBody = this.createLogBody(eventData);
         functions.logger.error(eventName, eventBody);
     };
