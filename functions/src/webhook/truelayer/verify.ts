@@ -8,17 +8,9 @@ let cachedJwks: string | null;
 function parseRawHeaders(arr: string[], loggingClient) {
   loggingClient.log("Parsing headers for Truelayer Webhook Request");
 
-  // functions.logger.log("Parsing headers for Truelayer Webhook Request", {
-  //   correlationId: correlationId,
-  // });
-
   const len = arr.length;
   if (len % 2 !== 0) {
     loggingClient.log("Header has odd number of elements", {header: arr});
-    // functions.logger.error("Header has odd number of elements", {
-    //   correlationId: correlationId,
-    //   header: arr,
-    // });
     throw new Error("Headers array cannot have an odd number of elements");
   }
 
@@ -60,13 +52,6 @@ export const verify = async (req, loggingClient) => {
       {headerJKU: jku,
       expectedJKU: `https://webhooks.${truelayerUrlName()}.com/.well-known/jwks`,
       });
-
-
-    // functions.logger.error("JKU does not match expected version", {
-    //   correlationId: correlationId,
-    //   headerJKU: jku,
-    //   expectedJKU: `https://webhooks.${truelayerUrlName()}.com/.well-known/jwks`,
-    // });
     return false;
   }
 
@@ -78,9 +63,7 @@ export const verify = async (req, loggingClient) => {
     loggingClient.log("Cached jwks found");
     jwks = cachedJwks;
   } else {
-    // functions.logger.log("No cached jwks, retrieving from url", {
-    //   correlationId: correlationId,
-    // });
+
     loggingClient.log("No cached jwks, retrieving from url");
     const res = await axios.get(jku);
     jwks = JSON.stringify(res.data);
