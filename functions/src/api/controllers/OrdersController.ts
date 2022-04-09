@@ -38,19 +38,6 @@ export default class OrdersController extends BaseController {
       deviceId: deviceId,});
 
 
-
-
-    // const correlationId = uuid();
-
-    // functions.logger.log("Create Order API Invoked", {
-    //   correlationId: correlationId,
-    //   requestedItems: requestedItems,
-    //   merchantId: merchantId,
-    //   deviceId: deviceId,
-    //   environment: process.env.ENVIRONMENT,
-    //   clientURL: process.env.CLIENT_URL,
-    // });
-
     // Check merchantId exists and is open
     const merchantDoc = await db()
       .collection(Collection.MERCHANT)
