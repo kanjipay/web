@@ -38,10 +38,6 @@ export const verify = async (req, loggingClient) => {
 
   if (!tlSignature) {
     loggingClient.error("Truelayer Signature Missing");
-
-    // functions.logger.error("Truelayer Signature Missing", {
-    //   correlationId: correlationId,
-    // });
     return false;
   }
 
