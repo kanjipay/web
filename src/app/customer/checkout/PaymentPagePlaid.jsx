@@ -29,7 +29,7 @@ class PlaidEventName {
 export default function PaymentPagePlaid({ order, updateStatus }) {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null);
   const [linkToken, setLinkToken] = useState(null);
-  console.log('Order', order);
+  console.log("Order", order);
   const orderId = order.id;
   const navigate = useNavigate();
   const { clearBasket } = useBasket();
@@ -38,9 +38,9 @@ export default function PaymentPagePlaid({ order, updateStatus }) {
     process.env.REACT_APP_ENV_NAME == "LOCAL" ? true : false;
 
   const onSuccess = (_publicToken, _metadata) => {
-    console.log('Success!')
-    updateStatus('PAID');
-    clearBasket(); 
+    console.log("Success!");
+    updateStatus("PAID");
+    clearBasket();
     navigate("../payment-success");
   };
 
@@ -153,7 +153,7 @@ export default function PaymentPagePlaid({ order, updateStatus }) {
       setLinkToken(localStorage.getItem("linkToken"));
       setPaymentAttemptId(localStorage.getItem("paymentAttemptId"));
     } else {
-      updateStatus('');
+      updateStatus("");
       createPaymentAttempt(
         orderId,
         OpenBankingProvider.PLAID,

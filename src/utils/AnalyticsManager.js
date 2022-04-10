@@ -33,7 +33,7 @@ export class AnalyticsManager {
     this.deviceId = localDeviceId || uuid();
     if (localDeviceId) {
       localStorage.setItem("deviceId", this.deviceId);
-    };
+    }
 
     /* 
     This makes amplitude use browser's navigate.sendBeacon API, 
@@ -69,7 +69,6 @@ export class AnalyticsManager {
     this.analytics.setGroup(groupName, groupValue);
   }
 
-
   logEvent(name, properties) {
     const payload = {
       deviceId: this.deviceId,
@@ -77,18 +76,14 @@ export class AnalyticsManager {
       eventTime: new Date(),
       userAgent: navigator.user_agent,
       platform: navigator.platform,
-      language:navigator.language,
-      eventName:{name},
-      eventProperties:{properties},
-      osVendor:navigator.vendor,
+      language: navigator.language,
+      eventName: { name },
+      eventProperties: { properties },
+      osVendor: navigator.vendor,
     };
-    axios.post(
-      "/api/v1/log",
-      payload
-    );
+    axios.post("/api/v1/log", payload);
     this.analytics.logEvent(name, properties);
   }
-
 }
 
 export function viewPage(page, properties) {
@@ -96,4 +91,4 @@ export function viewPage(page, properties) {
     page,
     ...properties,
   });
-};
+}

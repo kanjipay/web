@@ -7,17 +7,23 @@ import LoggingController from "../../utils/loggingClient";
 
 export const handleTruelayerPaymentUpdate = async (req, res, next) => {
   const loggingClient = new LoggingController("Truelayer Webhook");
-  loggingClient.log("Truelayer Payment Webhook Initiated", {}, {provider:'TRUELAYER'});
+  loggingClient.log(
+    "Truelayer Payment Webhook Initiated",
+    {},
+    { provider: "TRUELAYER" }
+  );
 
-  loggingClient.log('TL raw data read', {body: req.body,
-    rawHeaders: req.rawHeaders});
+  loggingClient.log("TL raw data read", {
+    body: req.body,
+    rawHeaders: req.rawHeaders,
+  });
 
   const isVerified = await verify(req, loggingClient).catch(
     new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
   );
 
   if (!isVerified) {
-    loggingClient.warn("Truelayer verification failed, returning unauthorized")
+    loggingClient.warn("Truelayer verification failed, returning unauthorized");
 
     next(new HttpError(HttpStatusCode.UNAUTHORIZED, "Unauthorized"));
     return;
@@ -33,12 +39,16 @@ export const handleTruelayerPaymentUpdate = async (req, res, next) => {
   const paymentAttemptStatus = paymentStatusMap[type];
 
   if (paymentAttemptStatus) {
-    loggingClient.log("Attempting to update status of a payment attempt", {}, 
-    {      paymentId: payment_id,
-      type: type,
-      failureReason: failure_reason,
-      paymentAttemptStatus: paymentAttemptStatus,
-    });
+    loggingClient.log(
+      "Attempting to update status of a payment attempt",
+      {},
+      {
+        paymentId: payment_id,
+        type: type,
+        failureReason: failure_reason,
+        paymentAttemptStatus: paymentAttemptStatus,
+      }
+    );
 
     await receivePaymentUpdate(
       OpenBankingProvider.TRUELAYER,
@@ -49,7 +59,6 @@ export const handleTruelayerPaymentUpdate = async (req, res, next) => {
       next
     );
     loggingClient.log("Completed update of status of payment attempt");
-
   }
 
   return res.sendStatus(200);
