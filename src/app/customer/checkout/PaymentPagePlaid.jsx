@@ -13,6 +13,7 @@ import {
   AnalyticsEvent,
   AnalyticsManager,
 } from "../../../utils/AnalyticsManager";
+import { setOrderStatus } from "../../../utils/services/OrdersService";
 
 class PlaidEventName {
   static OPEN = "OPEN"; // Open the dialog
@@ -25,7 +26,7 @@ class PlaidEventName {
   static HANDOFF = "HANDOFF"; // Called after successfully going through Link
 }
 
-export default function PaymentPagePlaid({ order }) {
+export default function PaymentPagePlaid({ order, updateStatus }) {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null);
   const [linkToken, setLinkToken] = useState(null);
   console.log("Order", order);
@@ -38,6 +39,7 @@ export default function PaymentPagePlaid({ order }) {
 
   const onSuccess = (_publicToken, _metadata) => {
     console.log("Success!");
+    updateStatus("PAID");
     clearBasket();
     navigate("../payment-success");
   };
@@ -151,6 +153,7 @@ export default function PaymentPagePlaid({ order }) {
       setLinkToken(localStorage.getItem("linkToken"));
       setPaymentAttemptId(localStorage.getItem("paymentAttemptId"));
     } else {
+      updateStatus("");
       createPaymentAttempt(
         orderId,
         OpenBankingProvider.PLAID,
