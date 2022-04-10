@@ -102,31 +102,32 @@ export async function createLinkToken(
   //     ? "https://mercadopay.co/checkout/payment"
   //     : "https://mercadopay-dev.web.app/checkout/payment";
 
-  try {const res = await plaidClient().linkTokenCreate({
-    user: {
-      client_user_id,
-    },
-    client_name: "Mercado",
-    products: [Products.PaymentInitiation],
-    country_codes: [CountryCode.Gb],
-    language: "en",
-    webhook: `${process.env.WEBHOOK_URL}/plaid`,
-    redirect_uri: plaidRedirectUri,
-    payment_initiation: {
-      payment_id,
-    },
-  })
+  try {
+    const res = await plaidClient().linkTokenCreate({
+      user: {
+        client_user_id,
+      },
+      client_name: "Mercado",
+      products: [Products.PaymentInitiation],
+      country_codes: [CountryCode.Gb],
+      language: "en",
+      webhook: `${process.env.WEBHOOK_URL}/plaid`,
+      redirect_uri: plaidRedirectUri,
+      payment_initiation: {
+        payment_id,
+      },
+    });
 
-  return res.data;}
-  catch (err) {
+    return res.data;
+  } catch (err) {
     functions.logger.log("Make Link Token Error", {
       correlationId: correlationId,
       isLocalEnvironment: isLocalEnvironment,
       plaidRedirectUri: plaidRedirectUri,
       payment_id: payment_id,
       client_user_id: client_user_id,
-      webhook: process.env.WEBHOOK_URL, 
-      error:err
-    });  
-  };
-};
+      webhook: process.env.WEBHOOK_URL,
+      error: err,
+    });
+  }
+}

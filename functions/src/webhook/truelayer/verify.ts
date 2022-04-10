@@ -10,7 +10,7 @@ function parseRawHeaders(arr: string[], loggingClient) {
 
   const len = arr.length;
   if (len % 2 !== 0) {
-    loggingClient.log("Header has odd number of elements", {header: arr});
+    loggingClient.log("Header has odd number of elements", { header: arr });
     throw new Error("Headers array cannot have an odd number of elements");
   }
 
@@ -48,10 +48,10 @@ export const verify = async (req, loggingClient) => {
   const jku = tlSigning.extractJku(tlSignature);
 
   if (jku !== `https://webhooks.${truelayerUrlName()}.com/.well-known/jwks`) {
-    loggingClient.error("JKU does not match expected version",
-      {headerJKU: jku,
+    loggingClient.error("JKU does not match expected version", {
+      headerJKU: jku,
       expectedJKU: `https://webhooks.${truelayerUrlName()}.com/.well-known/jwks`,
-      });
+    });
     return false;
   }
 
@@ -63,7 +63,6 @@ export const verify = async (req, loggingClient) => {
     loggingClient.log("Cached jwks found");
     jwks = cachedJwks;
   } else {
-
     loggingClient.log("No cached jwks, retrieving from url");
     const res = await axios.get(jku);
     jwks = JSON.stringify(res.data);
@@ -81,14 +80,10 @@ export const verify = async (req, loggingClient) => {
       headers,
     });
 
-    
     loggingClient.log("Truelayer verification sucessful");
     return true;
   } catch (err) {
-
-    loggingClient.error("Failed to verify Truelayer signature",
-      {error:err}
-    );
+    loggingClient.error("Failed to verify Truelayer signature", { error: err });
     return false;
   }
 };

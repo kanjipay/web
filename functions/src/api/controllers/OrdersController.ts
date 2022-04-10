@@ -30,13 +30,18 @@ export default class OrdersController extends BaseController {
     const { requestedItems, merchantId, deviceId } = req.body;
 
     const loggingClient = new LoggingController("Order Controller");
-    loggingClient.log("Order creation started", 
-    {      environment: process.env.ENVIRONMENT,
-      clientURL: process.env.CLIENT_URL,
-    }, {      requestedItems: requestedItems,
-      merchantId: merchantId,
-      deviceId: deviceId,});
-
+    loggingClient.log(
+      "Order creation started",
+      {
+        environment: process.env.ENVIRONMENT,
+        clientURL: process.env.CLIENT_URL,
+      },
+      {
+        requestedItems: requestedItems,
+        merchantId: merchantId,
+        deviceId: deviceId,
+      }
+    );
 
     // Check merchantId exists and is open
     const merchantDoc = await db()
@@ -76,7 +81,7 @@ export default class OrdersController extends BaseController {
       .get();
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
-  loggingClient.log("Menu items retreived");
+    loggingClient.log("Menu items retreived");
 
     const menuItems = menuItemsSnapshot.docs.map((item) => {
       const { isAvailable, price, title, photo } = item.data();
@@ -109,8 +114,9 @@ export default class OrdersController extends BaseController {
       } on the menu: ${nonexistantMenuItemTitles.join(
         ", "
       )}. Please remove from your basket to continue.`;
-      loggingClient.error("Non existent menu items requested in order", 
-        {nonexistantMenuItemTitles});
+      loggingClient.error("Non existent menu items requested in order", {
+        nonexistantMenuItemTitles,
+      });
       next(new HttpError(HttpStatusCode.BAD_REQUEST, clientMessage));
       return;
     }
@@ -122,8 +128,9 @@ export default class OrdersController extends BaseController {
       } currently unavailable: ${unavailableMenuItemTitles.join(
         ", "
       )}. Please remove from your basket to continue.`;
-      loggingClient.warn("Unavailable menu items requested in order", 
-      {unavailableMenuItemTitles});
+      loggingClient.warn("Unavailable menu items requested in order", {
+        unavailableMenuItemTitles,
+      });
       next(new HttpError(HttpStatusCode.BAD_REQUEST, clientMessage));
       return;
     }
@@ -163,7 +170,7 @@ export default class OrdersController extends BaseController {
     } else {
       orderNumber = 1;
     }
-    loggingClient.log("Order number set", {}, {orderNumber});
+    loggingClient.log("Order number set", {}, { orderNumber });
 
     const orderRef = await db()
       .collection(Collection.ORDER)
@@ -194,7 +201,7 @@ export default class OrdersController extends BaseController {
 
     const orderId = orderRef.id;
 
-    loggingClient.log("Order document creation complete", {}, {orderId});
+    loggingClient.log("Order document creation complete", {}, { orderId });
 
     // Having created the order, need to create a subcollection containing the order items
     const batch = db().batch();
