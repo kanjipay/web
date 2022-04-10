@@ -12,7 +12,7 @@ import PaymentSuccessPage from "./PaymentSuccessPage";
 export default function Checkout() {
   const [orderId, setOrderId] = useState("");
   const [order, setOrder] = useState(null);
-  console.log('Checkout');
+  console.log("Checkout");
   // const usePlaid = true;
   // process.env.REACT_APP_ENV_NAME === "PROD" ? true : false;
 

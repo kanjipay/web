@@ -7,13 +7,21 @@ import LoggingController from "../../utils/loggingClient";
 
 export const handlePlaidPaymentUpdate = async (req, res, next) => {
   const loggingClient = new LoggingController("Plaid Webhook");
-  loggingClient.log('Handle Plaid Payment Update Invoked', {}, {provider:"PLAID"});
+  loggingClient.log(
+    "Handle Plaid Payment Update Invoked",
+    {},
+    { provider: "PLAID" }
+  );
 
   const isValid = await verify(req).catch(
     new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
   );
 
-  loggingClient.log("Handle Plaid Payment Verification Complete", {}, {verified: isValid});
+  loggingClient.log(
+    "Handle Plaid Payment Verification Complete",
+    {},
+    { verified: isValid }
+  );
 
   if (!isValid) {
     next(new HttpError(HttpStatusCode.UNAUTHORIZED, "Unauthorized"));
@@ -33,13 +41,15 @@ export const handlePlaidPaymentUpdate = async (req, res, next) => {
 
   const paymentAttemptStatus = paymentStatusMap[new_payment_status];
 
-  loggingClient.log("Handle Plaid Payment Request Mapped", 
-  {},
-  {
-    payment_id: payment_id,
-    new_payment_status: new_payment_status,
-    paymentAttemptStatus: paymentAttemptStatus,
-  });
+  loggingClient.log(
+    "Handle Plaid Payment Request Mapped",
+    {},
+    {
+      payment_id: payment_id,
+      new_payment_status: new_payment_status,
+      paymentAttemptStatus: paymentAttemptStatus,
+    }
+  );
 
   if (paymentAttemptStatus) {
     const failureReason =

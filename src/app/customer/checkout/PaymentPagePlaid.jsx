@@ -28,7 +28,7 @@ class PlaidEventName {
 export default function PaymentPagePlaid({ order }) {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null);
   const [linkToken, setLinkToken] = useState(null);
-  console.log('Order', order);
+  console.log("Order", order);
   const orderId = order.id;
   const navigate = useNavigate();
   const { clearBasket } = useBasket();
@@ -37,7 +37,7 @@ export default function PaymentPagePlaid({ order }) {
     process.env.REACT_APP_ENV_NAME == "LOCAL" ? true : false;
 
   const onSuccess = (_publicToken, _metadata) => {
-    console.log('Success!')
+    console.log("Success!");
     clearBasket();
     navigate("../payment-success");
   };

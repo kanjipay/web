@@ -16,6 +16,7 @@ import {
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
 import * as functions from "firebase-functions";
 import { v4 as uuid } from "uuid";
+import LoggingController from "../../utils/loggingClient";
 
 async function makePlaidPayment(
   accountNumber: string,
@@ -23,18 +24,10 @@ async function makePlaidPayment(
   paymentName: string,
   amount: number,
   userId: string,
-  correlationId: string,
+  loggingClient,
   isLocalEnvironment: boolean
 ) {
-  functions.logger.log("Make Plaid Payment Function Invoked", {
-    correlationId: correlationId,
-    accountNumber: accountNumber,
-    sortCode: sortCode,
-    paymentName: paymentName,
-    amount: amount,
-    userId: userId,
-    isLocalEnvironment: isLocalEnvironment,
-  });
+  loggingClient.log("Making Plaid payment");
 
   const recipientId = await createRecipient(
     accountNumber,
@@ -42,23 +35,27 @@ async function makePlaidPayment(
     paymentName
   );
 
-  functions.logger.log("Make Plaid recipientId complete", {
-    correlationId: correlationId,
-    recipientId: recipientId,
-  });
+  loggingClient.log(
+    "Make Plaid recipientId complete",
+    {},
+    {
+      recipientId: recipientId,
+    }
+  );
 
   const paymentId = await createPayment(recipientId, amount);
 
-  functions.logger.log("Make Plaid recipientId complete", {
-    correlationId: correlationId,
-    paymentId: paymentId,
-  });
+  loggingClient.log(
+    "Plaid createPayment complete",
+    {},
+    { paymentId: paymentId }
+  );
 
   const linkResponse = await createLinkToken(
     paymentId,
     userId,
     isLocalEnvironment,
-    correlationId
+    loggingClient
   );
 
   const linkToken = linkResponse.link_token;
@@ -91,19 +88,13 @@ async function makeTruelayerPayment(
   amount: number,
   userId: string,
   paymentAttemptId: string,
-  correlationId: string
+  loggingClient
 ) {
-  functions.logger.log("Make Truelayer Payment Function Invoked", {
-    correlationId: correlationId,
-    paymentAttemptId: paymentAttemptId,
-  });
+  loggingClient.log("Making Truelayer Payment");
 
   const accessToken = await createAccessToken();
 
-  functions.logger.log("Truelayer Access Token Created", {
-    correlationId: correlationId,
-    paymentAttemptId: paymentAttemptId,
-  });
+  loggingClient.log("Truelayer acess token created");
 
   const { paymentId, resourceToken } = await createPaymentWithAccessToken(
     accessToken,
@@ -114,10 +105,7 @@ async function makeTruelayerPayment(
     userId
   );
 
-  functions.logger.log("Created Truelayer Payment with Access Token", {
-    correlationId: correlationId,
-    paymentAttemptId: paymentAttemptId,
-  });
+  loggingClient.log("Truelayer payment created", {}, { paymentId });
 
   return {
     providerData: {
@@ -155,8 +143,8 @@ async function makePayment(
   amount: number,
   userId: string,
   paymentAttemptId: string,
-  correlationId: string,
-  isLocalEnvironment: boolean
+  isLocalEnvironment: boolean,
+  loggingClient
 ) {
   let functionPromise;
 
@@ -168,7 +156,7 @@ async function makePayment(
         paymentName,
         amount,
         userId,
-        correlationId,
+        loggingClient,
         isLocalEnvironment
       );
       break;
@@ -180,7 +168,7 @@ async function makePayment(
         amount,
         userId,
         paymentAttemptId,
-        correlationId
+        loggingClient
       );
       break;
     case OpenBankingProvider.MONEYHUB:
@@ -202,20 +190,24 @@ export default class PaymentAttemptsController extends BaseController {
     const order = req.order;
     const { deviceId, merchantId, total } = order;
     const orderId = order.id;
-    const correlationId = uuid();
     const { openBankingProvider, isLocalEnvironment } = req.body;
 
-    functions.logger.log("Payment Attempts API Invoked", {
-      correlationId: correlationId,
-      total: total,
-      merchantId: merchantId,
-      deviceId: deviceId,
-      orderId: orderId,
-      openBankingProvider: openBankingProvider,
-      environment: process.env.ENVIRONMENT,
-      envClientURL: process.env.CLIENT_URL,
-      isLocalEnvironment: isLocalEnvironment,
-    });
+    const loggingClient = new LoggingController("Payment Attempts Controller");
+    loggingClient.log(
+      "Payment Attempt Initiated",
+      {
+        openBankingProvider: openBankingProvider,
+        environment: process.env.ENVIRONMENT,
+        envClientURL: process.env.CLIENT_URL,
+        isLocalEnvironment: isLocalEnvironment,
+      },
+      {
+        merchantId: merchantId,
+        deviceId: deviceId,
+        orderId: orderId,
+        total: total,
+      }
+    );
 
     const providers = Object.keys(OpenBankingProvider);
 
@@ -259,12 +251,7 @@ export default class PaymentAttemptsController extends BaseController {
 
     const { accountNumber, sortCode, paymentName } = merchantDoc.data();
 
-    functions.logger.log("Merchant Doc Retrieved", {
-      correlationId: correlationId,
-      total: total,
-      merchantId: merchantId,
-      orderId: orderId,
-      openBankingProvider: openBankingProvider,
+    loggingClient.log("Merchant data fetched", {
       accountNumber: accountNumber,
       sortCode: sortCode,
       paymentName: paymentName,
@@ -279,16 +266,14 @@ export default class PaymentAttemptsController extends BaseController {
         total,
         deviceId,
         orderId,
-        correlationId,
-        isLocalEnvironment
+        isLocalEnvironment,
+        loggingClient
       );
 
     // Write payment attempt object to database
     const providerKey = openBankingProvider.toLowerCase();
 
-    functions.logger.log("Make Payment Function Completed", {
-      correlationId: correlationId,
-    });
+    loggingClient.log("Make payment function complete");
 
     const paymentAttemptData = {
       [providerKey]: providerData,
@@ -305,10 +290,7 @@ export default class PaymentAttemptsController extends BaseController {
       .add(paymentAttemptData);
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
-    functions.logger.log("Payment Attempt Doc Added", {
-      correlationId: correlationId,
-      paymentAttemptData: paymentAttemptData,
-    });
+    loggingClient.log("Payment attempt doc added", { paymentAttemptData });
 
     await db()
       .doc(paymentAttemptRef.path)
@@ -324,9 +306,8 @@ export default class PaymentAttemptsController extends BaseController {
 
     const paymentAttemptId = paymentAttemptRef.id;
 
-    functions.logger.log("Payment Attempt Controller Finished returning 200", {
-      correlationId: correlationId,
-      paymentAttemptId: paymentAttemptId,
+    loggingClient.log("Payment Attempt Controller Finished returning 200", {
+      paymentAttemptId,
     });
 
     return res.status(200).json({
