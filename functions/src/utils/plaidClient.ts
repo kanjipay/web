@@ -6,7 +6,6 @@ import {
   PlaidEnvironments,
   Products,
 } from "plaid";
-import * as functions from "firebase-functions";
 
 let plaidInstance: PlaidApi | null = null;
 
@@ -76,7 +75,7 @@ export async function createLinkToken(
   payment_id: string,
   client_user_id: string,
   isLocalEnvironment: boolean,
-  correlationId: string
+  loggingClient
 ) {
   let plaidRedirectUri = "";
 
@@ -88,9 +87,7 @@ export async function createLinkToken(
     plaidRedirectUri = "https://mercadopay-dev.web.app/checkout/payment";
   }
 
-  functions.logger.log("Make Link Token Configuration Settings", {
-    correlationId: correlationId,
-    isLocalEnvironment: isLocalEnvironment,
+  loggingClient.log("Plaid Link Token Configuration Set", {
     plaidRedirectUri: plaidRedirectUri,
     payment_id: payment_id,
     client_user_id: client_user_id,
@@ -120,8 +117,7 @@ export async function createLinkToken(
 
     return res.data;
   } catch (err) {
-    functions.logger.log("Make Link Token Error", {
-      correlationId: correlationId,
+    loggingClient.error("Make Link Token Error", {
       isLocalEnvironment: isLocalEnvironment,
       plaidRedirectUri: plaidRedirectUri,
       payment_id: payment_id,
