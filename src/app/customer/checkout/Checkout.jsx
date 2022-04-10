@@ -12,9 +12,13 @@ import PaymentSuccessPage from "./PaymentSuccessPage";
 export default function Checkout() {
   const [orderId, setOrderId] = useState("");
   const [order, setOrder] = useState(null);
+  const [status, setStatus] = useState(null);
   console.log('Checkout');
   // const usePlaid = true;
   // process.env.REACT_APP_ENV_NAME === "PROD" ? true : false;
+  function updateStatus(newStatus) {
+    setStatus(newStatus)
+  };
 
   useEffect(() => {
     console.log(localStorage.getItem("orderId"));
@@ -33,11 +37,11 @@ export default function Checkout() {
   return order ? (
     <Routes>
       {/* <Route path="payment" element={<PaymentPagePlaid />} /> */}
-      <Route path="payment" element={<PaymentPagePlaid order={order} />} />
+      <Route path="payment" element={<PaymentPagePlaid order={order} updateStatus={updateStatus} />} />
       <Route path="payment-method" element={<CheckoutMethodPage />} />
       <Route
         path="payment-success"
-        element={<PaymentSuccessPage order={order} />}
+        element={<PaymentSuccessPage order={order} status={status} />}
       />
       <Route
         path="payment-failure"

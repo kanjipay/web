@@ -13,8 +13,9 @@ import { validateEmail } from "../../../utils/helpers/validation";
 import { sendOrderReceipt } from "../../../utils/services/OrdersService";
 import { Colors } from "../../../components/CircleButton";
 import ResultBanner, { ResultType } from "../../../components/ResultBanner";
+import NotFound from "../../shared/NotFoundPage";
 
-export default function PaymentSuccessPage({ order }) {
+export default function PaymentSuccessPage({ order, status }) {
   const navigate = useNavigate();
   const { orderId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -43,8 +44,8 @@ export default function PaymentSuccessPage({ order }) {
   function handleEmailFieldChange(event) {
     setEmail(event.target.value);
   }
-
-  return (
+  if (status == 'PAID') {
+    return (
     <div className="container">
       <div className="content">
         <Spacer y={3} />
@@ -154,5 +155,12 @@ export default function PaymentSuccessPage({ order }) {
         </div>
       )}
     </div>
-  );
+    )}
+    else {
+      return (
+        <NotFound/>
+      )
+    }
+
+
 }
