@@ -13,17 +13,17 @@ export const receivePaymentUpdate = async (
   loggingClient,
   next
 ) => {
-  loggingClient.log("Received Payment Update Subroutine Started")
+  loggingClient.log("Received Payment Update Subroutine Started");
   const paymentAttemptSnapshot = await db()
     .collection(Collection.PAYMENT_ATTEMPT)
     .where(`${provider.toLowerCase()}.paymentId`, "==", paymentId)
     .limit(1)
     .get();
 
-  loggingClient.log("Loaded payment attempt snapshot")
+  loggingClient.log("Loaded payment attempt snapshot");
 
   if (paymentAttemptSnapshot.docs.length === 0) {
-    loggingClient.error("Could not find payment attempt")
+    loggingClient.error("Could not find payment attempt");
     next(
       new HttpError(
         HttpStatusCode.NOT_FOUND,
@@ -47,8 +47,7 @@ export const receivePaymentUpdate = async (
     .set(update, { merge: true })
     .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
 
-
-  loggingClient.log("Update payment attempt complete")
+  loggingClient.log("Update payment attempt complete");
 
   if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
     const orderId = paymentAttemptDoc.data().orderId;
@@ -61,7 +60,7 @@ export const receivePaymentUpdate = async (
         new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
       );
   }
-  loggingClient.log("Update payment attempt complete")
+  loggingClient.log("Update payment attempt complete");
 
   return;
 };
