@@ -13,4 +13,13 @@ routes.post(
   controller.create
 );
 
+routes.post(
+  "/auth-url",
+  new RequestValidator({ orderId: "string", bankId: "string" }, "body").validate,
+  readOrder,
+  controller.createAuthUrl
+);
+
+
+
 export default routes;

@@ -116,3 +116,43 @@ export async function createPaymentWithAccessToken(
 
   return { paymentId, resourceToken };
 }
+
+export async function makeTruelayerPayment(
+  accountNumber: string,
+  sortCode: string,
+  paymentName: string,
+  amount: number,
+  userId: string,
+  paymentAttemptId: string,
+  loggingClient
+) {
+  loggingClient.log("Making Truelayer Payment");
+
+  const accessToken = await createAccessToken();
+
+  loggingClient.log("Truelayer acess token created");
+
+  const { paymentId, resourceToken } = await createPaymentWithAccessToken(
+    accessToken,
+    amount,
+    paymentName,
+    sortCode,
+    accountNumber,
+    userId
+  );
+
+  loggingClient.log("Truelayer payment created", {}, { paymentId });
+
+  return {
+    providerData: {
+      paymentId,
+    },
+    providerPrivateData: {
+      resourceToken,
+    },
+    providerReturnData: {
+      resourceToken,
+      paymentId,
+    },
+  };
+}

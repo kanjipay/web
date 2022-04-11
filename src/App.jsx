@@ -8,6 +8,7 @@ import Checkout from "./app/customer/checkout/Checkout";
 import { Brand } from "./app/brand/Brand";
 import CheckoutPlaid from "./app/customer/checkout/CheckoutPlaid";
 import OneTimeLinkPage from "./app/shared/OneTimeLinkPage";
+import RedirectPageMoneyhub from "./app/customer/checkout/RedirectPageMoneyhub";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/checkout/*" element={<CheckoutPlaid />} />
 
         <Route path="/tl-redirect" element={<RedirectPageTruelayer />} />
+        <Route path="/mh-redirect" element={<RedirectPageMoneyhub />} />
 
         <Route path="/merchant/*" element={<MerchantApp />} />
         <Route path="/link/:linkId" element={<OneTimeLinkPage />} />

@@ -1,5 +1,6 @@
 import * as express from "express";
 import ordersRoutes from "./routes/ordersRoutes";
+import merchantsRoutes from "./routes/merchantsRoutes";
 import linksRoutes from "./routes/linksRoutes";
 import paymentAttemptsRoutes from "./routes/paymentAttemptsRoutes";
 import loggingRoutes from "./routes/loggingRoutes";
@@ -27,8 +28,12 @@ main.use("/v1", verifyDomain, app);
 
 app.use("/payment-attempts", paymentAttemptsRoutes);
 app.use("/orders", ordersRoutes);
+app.use("/merchants", merchantsRoutes);
 app.use("/links", linksRoutes);
 app.use("/log", loggingRoutes);
+app.get("/status", (req, res) => {
+  res.sendStatus(200)
+})
 
 // This is called whenever an error is raised in an endpoint
 app.use(errorHandler);
