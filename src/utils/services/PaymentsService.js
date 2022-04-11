@@ -29,6 +29,20 @@ export function createPaymentAttempt(orderId, provider, isLocalEnvironment) {
   );
 }
 
+export async function createMoneyhubAuthUrl(orderId, bankId) {
+  const res = await axios.post(
+    `${process.env.REACT_APP_SERVER_URL}/payment-attempts/auth-url`,
+    {
+      orderId,
+      bankId
+    }
+  )
+
+  console.log(res.data)
+
+  return res.data.authUrl
+}
+
 export function fetchPaymentAttempt(paymentAttemptId, onComplete) {
   return onSnapshot(
     Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId),

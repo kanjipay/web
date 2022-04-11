@@ -127,3 +127,65 @@ export async function createLinkToken(
     });
   }
 }
+
+export async function makePlaidPayment(
+  accountNumber: string,
+  sortCode: string,
+  paymentName: string,
+  amount: number,
+  userId: string,
+  loggingClient,
+  isLocalEnvironment: boolean
+) {
+  loggingClient.log("Making Plaid payment");
+
+  const recipientId = await createRecipient(
+    accountNumber,
+    sortCode,
+    paymentName
+  );
+
+  loggingClient.log(
+    "Make Plaid recipientId complete",
+    {},
+    { recipientId }
+  );
+
+  const paymentId = await createPayment(recipientId, amount);
+
+  loggingClient.log(
+    "Plaid createPayment complete",
+    {},
+    { paymentId }
+  );
+
+  const linkResponse = await createLinkToken(
+    paymentId,
+    userId,
+    isLocalEnvironment,
+    loggingClient
+  );
+
+  const linkToken = linkResponse.link_token;
+  const linkExpiration = linkResponse.expiration;
+
+  loggingClient.log(
+    "Make Plaid payment request complete",
+    {},
+    { linkToken }
+  )
+
+  return {
+    providerData: {
+      paymentId,
+    },
+    providerPrivateData: {
+      recipientId,
+      linkToken,
+      linkExpiration,
+    },
+    providerReturnData: {
+      linkToken,
+    },
+  };
+}

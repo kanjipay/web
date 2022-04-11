@@ -25,7 +25,6 @@ export default function Checkout() {
   return order ? 
     <Routes>
       <Route path="payment" element={<PaymentPageMoneyhub order={order} />} />
-      {/* <Route path="payment-method" element={<PaymentMethodPage order={order} />} /> */}
       <Route path="choose-bank" element={<ChooseBankPage order={order} />} />
       <Route path="confirm-bank" element={<ConfirmBankPage order={order} />} />
       <Route path="confirm-bank/:bankId" element={<ConfirmBankPage order={order} />} />

@@ -3,137 +3,12 @@ import BaseController from "./BaseController";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
 import { db } from "../../utils/admin";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../utils/errors";
-import {
-  createLinkToken,
-  createPayment,
-  createRecipient,
-} from "../../utils/plaidClient";
+import { makePlaidPayment } from "../../utils/plaidClient";
 import OrderStatus from "../../enums/OrderStatus";
-import {
-  createAccessToken,
-  createPaymentWithAccessToken,
-} from "../../utils/truelayerClient";
+import { makeTruelayerPayment } from "../../utils/truelayerClient";
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
-import * as functions from "firebase-functions";
-import { v4 as uuid } from "uuid";
 import LoggingController from "../../utils/loggingClient";
-
-async function makePlaidPayment(
-  accountNumber: string,
-  sortCode: string,
-  paymentName: string,
-  amount: number,
-  userId: string,
-  loggingClient,
-  isLocalEnvironment: boolean
-) {
-  loggingClient.log("Making Plaid payment");
-
-  const recipientId = await createRecipient(
-    accountNumber,
-    sortCode,
-    paymentName
-  );
-
-  loggingClient.log(
-    "Make Plaid recipientId complete",
-    {},
-    {
-      recipientId: recipientId,
-    }
-  );
-
-  const paymentId = await createPayment(recipientId, amount);
-
-  loggingClient.log(
-    "Plaid createPayment complete",
-    {},
-    { paymentId: paymentId }
-  );
-
-  const linkResponse = await createLinkToken(
-    paymentId,
-    userId,
-    isLocalEnvironment,
-    loggingClient
-  );
-
-  const linkToken = linkResponse.link_token;
-  const linkExpiration = linkResponse.expiration;
-
-  functions.logger.log("Make Plaid payment request complete", {
-    correlationId: correlationId,
-    linkToken: linkToken,
-  });
-
-  return {
-    providerData: {
-      paymentId,
-    },
-    providerPrivateData: {
-      recipientId,
-      linkToken,
-      linkExpiration,
-    },
-    providerReturnData: {
-      linkToken,
-    },
-  };
-}
-
-async function makeTruelayerPayment(
-  accountNumber: string,
-  sortCode: string,
-  paymentName: string,
-  amount: number,
-  userId: string,
-  paymentAttemptId: string,
-  loggingClient
-) {
-  loggingClient.log("Making Truelayer Payment");
-
-  const accessToken = await createAccessToken();
-
-  loggingClient.log("Truelayer acess token created");
-
-  const { paymentId, resourceToken } = await createPaymentWithAccessToken(
-    accessToken,
-    amount,
-    paymentName,
-    sortCode,
-    accountNumber,
-    userId
-  );
-
-  loggingClient.log("Truelayer payment created", {}, { paymentId });
-
-  return {
-    providerData: {
-      paymentId,
-    },
-    providerPrivateData: {
-      resourceToken,
-    },
-    providerReturnData: {
-      resourceToken,
-      paymentId,
-    },
-  };
-}
-
-async function makeMoneyhubPayment(
-  accountNumber: string,
-  sortCode: string,
-  paymentName: string,
-  amount: number,
-  userId: string
-) {
-  return {
-    providerData: {},
-    providerPrivateData: {},
-    providerReturnData: {},
-  };
-}
+import { getPaymentAuthUrl, makeMoneyhubPayment } from "../../utils/moneyhubClient";
 
 async function makePayment(
   provider: OpenBankingProvider,
@@ -315,4 +190,37 @@ export default class PaymentAttemptsController extends BaseController {
       paymentAttemptId,
     });
   };
+
+  createAuthUrl = async (req, res, next) => {
+    const order = req.order;
+    const { merchantId, total } = order
+    const { bankId } = req.body
+
+    const merchantDoc = await db()
+      .collection(Collection.MERCHANT)
+      .doc(merchantId)
+      .get()
+      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
+
+    if (!merchantDoc) {
+      next(new HttpError(HttpStatusCode.NOT_FOUND, "Couldn't find that merchant"));
+      return;
+    }
+
+    const { moneyhubPayeeId, status, displayName } = merchantDoc.data()
+
+    if (status !== "OPEN") {
+      next(new HttpError(HttpStatusCode.BAD_REQUEST, "The merchant isn't open at the moment"));
+      return;
+    }
+
+    if (!moneyhubPayeeId) {
+      next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR));
+      return;
+    }
+
+    const authUrl = await getPaymentAuthUrl(bankId, moneyhubPayeeId, displayName, total)
+
+    res.sendStatus(200).json({ authUrl })
+  }
 }

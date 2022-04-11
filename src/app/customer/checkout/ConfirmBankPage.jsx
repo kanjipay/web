@@ -19,11 +19,11 @@ import Spinner from "../../../assets/Spinner";
 
 export default function ConfirmBankPage({ order }) {
   const location = useLocation();
-  const navigate = useNavigate()
   const bankDatumFromState = location.state?.bankDatum;
+  const navigate = useNavigate()
+  
   const bankIdFromUrl = useParams().bankId
   const [linkId, setLinkId] = useState(null)
-
   const [bankDatum, setBankDatum] = useState(bankDatumFromState)
 
   function generateLink(linkId) {
@@ -39,7 +39,7 @@ export default function ConfirmBankPage({ order }) {
   }
 
   const handleContinueToBank = () => {
-    navigate("../payment")
+    navigate("../payment", { state: { bankId: bankDatum.id } })
   }
 
   useEffect(() => {

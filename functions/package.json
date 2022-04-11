@@ -18,6 +18,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@mft/moneyhub-api-client": "^4.16.0",
     "@sendgrid/mail": "^7.6.2",
     "axios": "^0.26.1",
     "base-64": "^1.0.0",

@@ -70,22 +70,22 @@ export class AnalyticsManager {
   }
 
   logEvent(name, properties) {
-    const payload = {
-      deviceId: this.deviceId,
-      timestamp: Date.now(),
-      eventTime: new Date(),
-      userAgent: navigator.user_agent,
-      platform: navigator.platform,
-      language: navigator.language,
-      eventName: { name },
-      eventProperties: { properties },
-      osVendor: navigator.vendor,
-    };
+    // const payload = {
+      // deviceId: this.deviceId,
+      // timestamp: Date.now(),
+      // eventTime: new Date(),
+      // userAgent: navigator.user_agent,
+      // platform: navigator.platform,
+      // language: navigator.language,
+      // eventName: { name },
+      // eventProperties: { properties },
+      // osVendor: navigator.vendor,
+    // };
     
-    axios.post(
-      `${process.env.REACT_APP_SERVER_URL}/log`,
-      payload
-    );
+    // axios.post(
+    //   `${process.env.REACT_APP_SERVER_URL}/log`,
+    //   payload
+    // );
     this.analytics.logEvent(name, properties);
   }
 }
