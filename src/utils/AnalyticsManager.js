@@ -81,7 +81,11 @@ export class AnalyticsManager {
       eventProperties: { properties },
       osVendor: navigator.vendor,
     };
-    axios.post("/api/v1/log", payload);
+    
+    axios.post(
+      `${process.env.REACT_APP_SERVER_URL}/log`,
+      payload
+    );
     this.analytics.logEvent(name, properties);
   }
 }
