@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function useWindowSize() {
-  const isServerSideRendered = typeof window !== "undefined";
+  const isServerSideRendered = typeof window === "undefined";
 
   const [windowSize, setWindowSize] = useState({
     width: isServerSideRendered ? 1200 : window.innerWidth,

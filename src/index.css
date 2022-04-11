@@ -17,7 +17,8 @@ select:focus {
 }
 
 img,
-button {
+button,
+input {
   border: 0;
 }
 
@@ -35,7 +36,7 @@ button {
   --color-text-body-faded: #888;
   --color-clear: #ffffff00;
 
-  --font-brand-title: bold 8rem "Rubik", sans-serif;
+  --font-brand-title: 600 "Rubik", sans-serif;
   --font-header-l: 800 2em "Nunito", sans-serif;
   --font-header-m: 800 1.5em "Nunito", sans-serif;
   --font-header-s: 500 1.25em "Roboto", sans-serif;

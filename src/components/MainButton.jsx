@@ -39,6 +39,7 @@ export default function MainButton({
     alignItems: "center",
     justifyContent: "center",
     color: foregroundColor,
+    cursor: "pointer",
     ...style,
   };
 
