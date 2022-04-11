@@ -21,7 +21,7 @@ main.options("*", corsInstance); // Think this is needed for preflight requests
 
 // These are needed to read request body (as JSON or urlencoded)
 main.use(express.json());
-main.use(express.urlencoded());
+main.use(express.urlencoded({ extended: true }));
 
 main.use("/v1", verifyDomain, app);
 
