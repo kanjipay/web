@@ -4,13 +4,13 @@ import NavBar from "../../../components/NavBar";
 import Spacer from "../../../components/Spacer";
 import PaymentOption from "./PaymentOption";
 
-export default function CheckoutMethodPage() {
+export default function PaymentMethodPage({ order }) {
   return (
     <div className="container">
       <Helmet>
         <title>Checkout</title>
       </Helmet>
-      <NavBar title="Checkout" backPath="../.." />
+      <NavBar title="Checkout" backPath={`/menu/${order.merchantId}`} />
 
       <div className="content">
         <Spacer y={9} />
