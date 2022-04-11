@@ -2,60 +2,57 @@
   background-color: var(--color-primary-light);
 }
 
-/* Header */
-.Home__headerContainer {
-  max-width: 1200px;
-  margin: auto;
-}
-
 .Home__headerLogo {
-  font: var(--font-brand-title);
   font-size: 3rem;
+  font-weight: 800;
+  font-family: "Rubik" sans-serif;
   color: var(--color-primary);
-  padding: 16px;
 }
 
-/* Body */
-.Home__content {
-  text-align: center;
-  max-width: 900px;
-  margin: auto;
-  padding: 0 16px;
+.Home__accordion {
+  background-image: linear-gradient(
+    var(--color-primary-light-shaded),
+    var(--color-clear)
+  );
+  border-radius: 16px;
+  padding: 24px;
 }
 
-.Home__title {
-  font: var(--font-brand-title);
-  color: var(--color-primary-dark);
-  margin: auto;
-  margin-bottom: 32px;
+.Home__testimonialBox {
+  background-image: linear-gradient(
+    var(--color-primary-light-shaded),
+    var(--color-clear)
+  );
+  border-radius: 16px;
+  padding: 24px;
 }
 
-.Home__titleHighlight {
-  color: var(--color-primary);
-  font: var(--font-brand-title);
+.Home__testimonialImage {
+  height: 32px;
+  width: 32px;
+  border-radius: 16px;
 }
 
-@media (max-width: 900px) {
-  .Home__title,
-  .Home__titleHighlight {
-    font-size: 14vw;
-  }
+.Home__headingLarge {
+  font-size: 5rem;
+  font-weight: 600;
+  font-family: "Rubik";
 }
 
-.Home__salesCopy {
-  font-weight: 500;
-  font-size: 1.3rem;
+.Home__headingMedium {
+  font-size: 2.5rem;
+  font-weight: 600;
+  font-family: "Rubik" sans-serif;
 }
 
-.Home__screenshots {
-  width: 100%;
-  margin-top: 64px;
-  margin-bottom: 64px;
+.Home__headingSmall {
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-family: "Rubik" sans-serif;
 }
 
 /* Footer */
 
 .Home__footer {
-  height: 160px;
   background-color: var(--color-primary-light-shaded);
 }
