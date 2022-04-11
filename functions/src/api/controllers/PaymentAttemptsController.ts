@@ -14,8 +14,6 @@ import {
   createPaymentWithAccessToken,
 } from "../../utils/truelayerClient";
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
-import * as functions from "firebase-functions";
-import { v4 as uuid } from "uuid";
 import LoggingController from "../../utils/loggingClient";
 
 async function makePlaidPayment(
@@ -61,10 +59,11 @@ async function makePlaidPayment(
   const linkToken = linkResponse.link_token;
   const linkExpiration = linkResponse.expiration;
 
-  functions.logger.log("Make Plaid payment request complete", {
-    correlationId: correlationId,
-    linkToken: linkToken,
-  });
+  loggingClient.log(
+    "Make Plaid payment request complete",
+    {},
+    { linkToken }
+  );
 
   return {
     providerData: {
