@@ -6,6 +6,7 @@ import Back from "../assets/icons/Back";
 
 export default function NavBar({
   showsBackButton = true,
+  backAction,
   backPath,
   title,
   titleElement,
@@ -20,6 +21,10 @@ export default function NavBar({
   const initialOpacity = changesOpacity ? 0 : 1;
 
   const [opacity, setOpacity] = useState(initialOpacity);
+
+  const handleBackClick = () => {
+    backAction ? backAction() : navigate(backPath ?? -1)
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,7 +59,7 @@ export default function NavBar({
               <CircleButton
                 Icon={Back}
                 buttonTheme={ButtonTheme.NAVBAR}
-                onClick={() => navigate(backPath ?? -1)}
+                onClick={handleBackClick}
               />
             </div>
           )}

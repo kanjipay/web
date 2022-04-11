@@ -1,58 +1,39 @@
 import { useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useParams } from "react-router-dom";
 import LoadingPage from "../../../components/LoadingPage";
 import { fetchOrder } from "../../../utils/services/OrdersService";
-import CheckoutMethodPage from "./CheckoutMethodPage";
+// import PaymentMethodPage from "./PaymentMethodPage";
+import ConfirmBankPage from "./ConfirmBankPage";
 import EmailSubmittedPage from "./EmailSubmittedPage";
 import PaymentCancelledPage from "./PaymentCancelledPage";
 import PaymentFailurePage from "./PaymentFailurePage";
-import PaymentPagePlaid from "./PaymentPagePlaid";
 import PaymentSuccessPage from "./PaymentSuccessPage";
+import ChooseBankPage from "./ChooseBankPage";
+import PaymentPageMoneyhub from "./PaymentPageMoneyhub";
+import MobileHandoverPage from "./MobileHandoverPage";
 
 export default function Checkout() {
-  const [orderId, setOrderId] = useState("");
   const [order, setOrder] = useState(null);
-  console.log('Checkout');
-  // const usePlaid = true;
-  // process.env.REACT_APP_ENV_NAME === "PROD" ? true : false;
+  const { orderId } = useParams()
 
   useEffect(() => {
-    console.log(localStorage.getItem("orderId"));
-
-    setOrderId(localStorage.getItem("orderId"));
-
-    if (orderId) {
-      fetchOrder(orderId).then((order) => {
-        setOrder(order);
-      });
-    }
+    fetchOrder(orderId).then((order) => {
+      setOrder(order);
+    });
   }, [orderId]);
 
-  console.log(order);
-
-  return order ? (
+  return order ? 
     <Routes>
-      {/* <Route path="payment" element={<PaymentPagePlaid />} /> */}
-      <Route path="payment" element={<PaymentPagePlaid order={order} />} />
-      <Route path="payment-method" element={<CheckoutMethodPage />} />
-      <Route
-        path="payment-success"
-        element={<PaymentSuccessPage order={order} />}
-      />
-      <Route
-        path="payment-failure"
-        element={<PaymentFailurePage order={order} />}
-      />
-      <Route
-        path="payment-cancelled"
-        element={<PaymentCancelledPage order={order} />}
-      />
-      <Route
-        path="email-submitted"
-        element={<EmailSubmittedPage order={order} />}
-      />
-    </Routes>
-  ) : (
+      <Route path="payment" element={<PaymentPageMoneyhub order={order} />} />
+      {/* <Route path="payment-method" element={<PaymentMethodPage order={order} />} /> */}
+      <Route path="choose-bank" element={<ChooseBankPage order={order} />} />
+      <Route path="confirm-bank" element={<ConfirmBankPage order={order} />} />
+      <Route path="confirm-bank/:bankId" element={<ConfirmBankPage order={order} />} />
+      <Route path="mobile-handover" element={<MobileHandoverPage order={order} />} />
+      <Route path="payment-success" element={<PaymentSuccessPage order={order} />} />
+      <Route path="payment-failure" element={<PaymentFailurePage order={order} />} />
+      <Route path="payment-cancelled" element={<PaymentCancelledPage order={order} />} />
+      <Route path="email-submitted" element={<EmailSubmittedPage order={order} />} />
+    </Routes> :
     <LoadingPage />
-  );
 }

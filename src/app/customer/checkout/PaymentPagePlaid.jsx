@@ -13,6 +13,7 @@ import {
   AnalyticsEvent,
   AnalyticsManager,
 } from "../../../utils/AnalyticsManager";
+import { setOrderStatus } from "../../../utils/services/OrdersService";
 
 class PlaidEventName {
   static OPEN = "OPEN"; // Open the dialog
@@ -25,9 +26,10 @@ class PlaidEventName {
   static HANDOFF = "HANDOFF"; // Called after successfully going through Link
 }
 
-export default function PaymentPagePlaid({ order }) {
+export default function PaymentPagePlaid({ order, updateStatus }) {
   const [paymentAttemptId, setPaymentAttemptId] = useState(null);
   const [linkToken, setLinkToken] = useState(null);
+  console.log("Order", order);
   const orderId = order.id;
   const navigate = useNavigate();
   const { clearBasket } = useBasket();
@@ -35,7 +37,12 @@ export default function PaymentPagePlaid({ order }) {
   const isLocalEnvironment =
     process.env.REACT_APP_ENV_NAME == "LOCAL" ? true : false;
 
-  const onSuccess = (_publicToken, _metadata) => {};
+  const onSuccess = (_publicToken, _metadata) => {
+    console.log("Success!");
+    updateStatus("PAID");
+    clearBasket();
+    navigate("../payment-success");
+  };
 
   const onExit = (err, metadata) => {
     console.log("onExit", err, metadata);
@@ -121,10 +128,10 @@ export default function PaymentPagePlaid({ order }) {
         const { status } = doc.data();
 
         switch (status) {
-          case PaymentAttemptStatus.SUCCESSFUL:
-            clearBasket();
-            navigate("../payment-success");
-            break;
+          // case PaymentAttemptStatus.SUCCESSFUL:
+          //   clearBasket();
+          //   navigate("../payment-success");
+          //   break;
           case PaymentAttemptStatus.CANCELLED:
             navigate("../payment-cancelled");
             break;
@@ -146,6 +153,7 @@ export default function PaymentPagePlaid({ order }) {
       setLinkToken(localStorage.getItem("linkToken"));
       setPaymentAttemptId(localStorage.getItem("paymentAttemptId"));
     } else {
+      updateStatus("");
       createPaymentAttempt(
         orderId,
         OpenBankingProvider.PLAID,
