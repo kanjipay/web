@@ -5,8 +5,7 @@ import { db } from "../../utils/admin";
 import Collection from "../../enums/Collection";
 import OrderStatus from "../../enums/OrderStatus";
 import MerchantStatus from "../../enums/MerchantStatus";
-import * as functions from "firebase-functions";
-import { v4 as uuid } from "uuid";
+import LoggingController from "../../utils/loggingClient";
 
 export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
@@ -29,16 +28,20 @@ export default class OrdersController extends BaseController {
 
   create = async (req, res, next) => {
     const { requestedItems, merchantId, deviceId } = req.body;
-    const correlationId = uuid();
 
-    functions.logger.log("Create Order API Invoked", {
-      correlationId: correlationId,
-      requestedItems: requestedItems,
-      merchantId: merchantId,
-      deviceId: deviceId,
-      environment: process.env.ENVIRONMENT,
-      clientURL: process.env.CLIENT_URL,
-    });
+    const loggingClient = new LoggingController("Order Controller");
+    loggingClient.log(
+      "Order creation started",
+      {
+        environment: process.env.ENVIRONMENT,
+        clientURL: process.env.CLIENT_URL,
+      },
+      {
+        requestedItems: requestedItems,
+        merchantId: merchantId,
+        deviceId: deviceId,
+      }
+    );
 
     // Check merchantId exists and is open
     const merchantDoc = await db()
@@ -50,6 +53,7 @@ export default class OrdersController extends BaseController {
       );
 
     if (!merchantDoc) {
+      loggingClient.warn("Order creation attempted for non-existent merchant");
       next(
         new HttpError(HttpStatusCode.NOT_FOUND, "That merchant doesn't exist")
       );
@@ -59,6 +63,7 @@ export default class OrdersController extends BaseController {
     const merchant = { id: merchantDoc.id, status: merchantDoc.data().status };
 
     if (merchant.status !== MerchantStatus.OPEN) {
+      loggingClient.log("Order creation attempted for closed merchant");
       next(
         new HttpError(
           HttpStatusCode.BAD_REQUEST,
@@ -75,6 +80,8 @@ export default class OrdersController extends BaseController {
       .where("merchantId", "==", merchantId)
       .get();
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+
+    loggingClient.log("Menu items retreived");
 
     const menuItems = menuItemsSnapshot.docs.map((item) => {
       const { isAvailable, price, title, photo } = item.data();
@@ -107,6 +114,9 @@ export default class OrdersController extends BaseController {
       } on the menu: ${nonexistantMenuItemTitles.join(
         ", "
       )}. Please remove from your basket to continue.`;
+      loggingClient.error("Non existent menu items requested in order", {
+        nonexistantMenuItemTitles,
+      });
       next(new HttpError(HttpStatusCode.BAD_REQUEST, clientMessage));
       return;
     }
@@ -118,6 +128,9 @@ export default class OrdersController extends BaseController {
       } currently unavailable: ${unavailableMenuItemTitles.join(
         ", "
       )}. Please remove from your basket to continue.`;
+      loggingClient.warn("Unavailable menu items requested in order", {
+        unavailableMenuItemTitles,
+      });
       next(new HttpError(HttpStatusCode.BAD_REQUEST, clientMessage));
       return;
     }
@@ -157,6 +170,7 @@ export default class OrdersController extends BaseController {
     } else {
       orderNumber = 1;
     }
+    loggingClient.log("Order number set", {}, { orderNumber });
 
     const orderRef = await db()
       .collection(Collection.ORDER)
@@ -187,6 +201,8 @@ export default class OrdersController extends BaseController {
 
     const orderId = orderRef.id;
 
+    loggingClient.log("Order document creation complete", {}, { orderId });
+
     // Having created the order, need to create a subcollection containing the order items
     const batch = db().batch();
 
@@ -205,6 +221,8 @@ export default class OrdersController extends BaseController {
     }
 
     await batch.commit();
+
+    loggingClient.log("Order subcollection creation complete");
 
     return res.status(200).json({ orderId });
   };
