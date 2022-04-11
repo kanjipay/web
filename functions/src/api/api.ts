@@ -1,5 +1,6 @@
 import * as express from "express";
 import ordersRoutes from "./routes/ordersRoutes";
+import linksRoutes from "./routes/linksRoutes";
 import paymentAttemptsRoutes from "./routes/paymentAttemptsRoutes";
 import loggingRoutes from "./routes/loggingRoutes";
 import * as cors from "cors";
@@ -20,14 +21,14 @@ main.options("*", corsInstance); // Think this is needed for preflight requests
 
 // These are needed to read request body (as JSON or urlencoded)
 main.use(express.json());
-main.use(express.urlencoded());
+main.use(express.urlencoded({ extended: true }));
 
 main.use("/v1", verifyDomain, app);
 
 app.use("/payment-attempts", paymentAttemptsRoutes);
-app.use("/log", loggingRoutes);
-
 app.use("/orders", ordersRoutes);
+app.use("/links", linksRoutes);
+app.use("/log", loggingRoutes);
 
 // This is called whenever an error is raised in an endpoint
 app.use(errorHandler);

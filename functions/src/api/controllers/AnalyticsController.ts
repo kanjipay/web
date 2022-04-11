@@ -1,4 +1,3 @@
-
 import BaseController from "./BaseController";
 import { db } from "../../utils/admin";
 import Collection from "../../enums/Collection";

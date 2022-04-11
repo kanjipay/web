@@ -6,7 +6,6 @@ import {
   PlaidEnvironments,
   Products,
 } from "plaid";
-import * as functions from "firebase-functions";
 
 let plaidInstance: PlaidApi | null = null;
 
@@ -31,11 +30,6 @@ function getPlaid() {
         "PLAID-SECRET": plaidSecret, // Either PLAID_SECRET or PLAID_SECRET_SANDBOX,
       },
     },
-  });
-
-  functions.logger.log("Plaid Instance Initiated", {
-    plaidEnvironment: basePath,
-    apiEnvironment: process.env.ENVIRONMENT,
   });
 
   plaidInstance = new PlaidApi(configuration);
@@ -81,7 +75,7 @@ export async function createLinkToken(
   payment_id: string,
   client_user_id: string,
   isLocalEnvironment: boolean,
-  correlationId: string
+  loggingClient
 ) {
   let plaidRedirectUri = "";
 
@@ -93,9 +87,7 @@ export async function createLinkToken(
     plaidRedirectUri = "https://mercadopay-dev.web.app/checkout/payment";
   }
 
-  functions.logger.log("Make Link Token Configuration Settings", {
-    correlationId: correlationId,
-    isLocalEnvironment: isLocalEnvironment,
+  loggingClient.log("Plaid Link Token Configuration Set", {
     plaidRedirectUri: plaidRedirectUri,
     payment_id: payment_id,
     client_user_id: client_user_id,
@@ -107,20 +99,31 @@ export async function createLinkToken(
   //     ? "https://mercadopay.co/checkout/payment"
   //     : "https://mercadopay-dev.web.app/checkout/payment";
 
-  const res = await plaidClient().linkTokenCreate({
-    user: {
-      client_user_id,
-    },
-    client_name: "Mercado",
-    products: [Products.PaymentInitiation],
-    country_codes: [CountryCode.Gb],
-    language: "en",
-    webhook: `${process.env.WEBHOOK_URL}/plaid`,
-    redirect_uri: plaidRedirectUri,
-    payment_initiation: {
-      payment_id,
-    },
-  });
+  try {
+    const res = await plaidClient().linkTokenCreate({
+      user: {
+        client_user_id,
+      },
+      client_name: "Mercado",
+      products: [Products.PaymentInitiation],
+      country_codes: [CountryCode.Gb],
+      language: "en",
+      webhook: `${process.env.WEBHOOK_URL}/plaid`,
+      redirect_uri: plaidRedirectUri,
+      payment_initiation: {
+        payment_id,
+      },
+    });
 
-  return res.data;
+    return res.data;
+  } catch (err) {
+    loggingClient.error("Make Link Token Error", {
+      isLocalEnvironment: isLocalEnvironment,
+      plaidRedirectUri: plaidRedirectUri,
+      payment_id: payment_id,
+      client_user_id: client_user_id,
+      webhook: process.env.WEBHOOK_URL,
+      error: err,
+    });
+  }
 }
