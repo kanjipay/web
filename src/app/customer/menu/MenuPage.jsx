@@ -136,7 +136,7 @@ export default function MenuPage({
               </Link>
             )}
             {orders.length > 0 && (
-              <Link to={`/checkout/payment-success`}>
+              <Link to={`/checkout/0/${orders[0].id}/payment-success`}>
                 <MainButton
                   title={`View order`}
                   style={{ boxSizing: "borderBox" }}
