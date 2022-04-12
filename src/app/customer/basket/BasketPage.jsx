@@ -56,13 +56,13 @@ export default function BasketPage({ merchant }) {
         analyticsManager.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId });
 
         // Use this if paying with Plaid
-        localStorage.setItem("orderId", orderId);
-        localStorage.removeItem("paymentAttemptId");
-        localStorage.removeItem("linkToken");
-        navigate(`/checkout/payment`);
+        // localStorage.setItem("orderId", orderId);
+        // localStorage.removeItem("paymentAttemptId");
+        // localStorage.removeItem("linkToken");
+        // navigate(`/checkout/payment`);
 
         // Use this if paying with Moneyhub
-        // navigate(`/checkout/o/${orderId}/choose-bank`)
+        navigate(`/checkout/o/${orderId}/choose-bank`)
       })
       .catch((err) => {
         setIsLoading(false);
