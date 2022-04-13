@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import LoadingPage from "../../../components/LoadingPage";
-import { createMoneyhubAuthUrl } from "../../../utils/services/PaymentsService";
+import { createPaymentAttempt, OpenBankingProvider } from "../../../utils/services/PaymentsService";
+import { v4 as uuid } from "uuid";
 
 export default function PaymentPageMoneyhub({ order }) {
   const location = useLocation();
@@ -9,10 +10,11 @@ export default function PaymentPageMoneyhub({ order }) {
   const orderId = order.id
 
   useEffect(() => {
-    createMoneyhubAuthUrl(orderId, bankId).then(url => {
-      // redirect user to url
-      console.log(url)
-      window.location.href = url
+    createPaymentAttempt(orderId, OpenBankingProvider.MONEYHUB, { bankId }).then(res => {
+      console.log(res.data)
+      const { moneyhub, paymentAttemptId } = res.data
+      localStorage.setItem("paymentAttemptId", paymentAttemptId)
+      window.location.href = moneyhub.authUrl
     })
   }, [bankId, orderId])
 

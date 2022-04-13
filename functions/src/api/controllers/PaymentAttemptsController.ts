@@ -8,20 +8,24 @@ import OrderStatus from "../../enums/OrderStatus";
 import { makeTruelayerPayment } from "../../utils/truelayerClient";
 import { OpenBankingProvider } from "../../enums/OpenBankingProvider";
 import LoggingController from "../../utils/loggingClient";
-import { getPaymentAuthUrl, makeMoneyhubPayment } from "../../utils/moneyhubClient";
+import { getPayees, makeMoneyhubPayment, createPayee, processAuthSuccess } from "../../utils/moneyhubClient";
+import { v4 as uuid } from "uuid";
+import * as jwt from "jsonwebtoken";
 
 async function makePayment(
   provider: OpenBankingProvider,
-  accountNumber: string,
-  sortCode: string,
-  paymentName: string,
+  merchant: any,
   amount: number,
   userId: string,
   paymentAttemptId: string,
-  isLocalEnvironment: boolean,
-  loggingClient
+  args: any = {},
+  loggingClient: LoggingController
 ) {
-  let functionPromise;
+  let functionPromise: Promise<any>;
+
+  const { accountNumber, sortCode, paymentName } = merchant
+
+  const isLocal = process.env.IS_LOCAL === "TRUE"
 
   switch (provider) {
     case OpenBankingProvider.PLAID:
@@ -32,8 +36,9 @@ async function makePayment(
         amount,
         userId,
         loggingClient,
-        isLocalEnvironment
+        isLocal
       );
+
       break;
     case OpenBankingProvider.TRUELAYER:
       functionPromise = makeTruelayerPayment(
@@ -42,18 +47,23 @@ async function makePayment(
         paymentName,
         amount,
         userId,
-        paymentAttemptId,
         loggingClient
       );
+
       break;
     case OpenBankingProvider.MONEYHUB:
+      const { bankId } = args
+      const { moneyhubPayeeId, moneyhubPayeeIdLocal } = merchant
+      const payeeId = process.env.IS_LOCAL === "TRUE" ? moneyhubPayeeIdLocal : moneyhubPayeeId
+
       functionPromise = makeMoneyhubPayment(
-        accountNumber,
-        sortCode,
+        payeeId,
         paymentName,
+        bankId,
         amount,
-        userId
+        paymentAttemptId
       );
+
       break;
   }
 
@@ -62,165 +72,183 @@ async function makePayment(
 
 export default class PaymentAttemptsController extends BaseController {
   create = async (req, res, next) => {
-    const order = req.order;
-    const { deviceId, merchantId, total } = order;
-    const orderId = order.id;
-    const { openBankingProvider, isLocalEnvironment } = req.body;
+    try {
+      const order = req.order;
+      const { deviceId, merchantId, total } = order;
+      const orderId = order.id;
+      const { openBankingProvider, args } = req.body;
+      const isLocalEnvironment = process.env.IS_LOCAL === "TRUE"
 
-    const loggingClient = new LoggingController("Payment Attempts Controller");
-    loggingClient.log(
-      "Payment Attempt Initiated",
-      {
-        openBankingProvider: openBankingProvider,
-        environment: process.env.ENVIRONMENT,
-        envClientURL: process.env.CLIENT_URL,
-        isLocalEnvironment: isLocalEnvironment,
-      },
-      {
-        merchantId: merchantId,
-        deviceId: deviceId,
-        orderId: orderId,
-        total: total,
+      const loggingClient = new LoggingController("Payment Attempts Controller");
+      loggingClient.log(
+        "Payment Attempt Initiated",
+        {
+          openBankingProvider: openBankingProvider,
+          environment: process.env.ENVIRONMENT,
+          envClientURL: process.env.CLIENT_URL,
+          isLocalEnvironment,
+        },
+        {
+          merchantId: merchantId,
+          deviceId: deviceId,
+          orderId: orderId,
+          total: total,
+        }
+      );
+
+      const providers = Object.keys(OpenBankingProvider);
+
+      if (!openBankingProvider || !providers.includes(openBankingProvider)) {
+        next(
+          new HttpError(
+            HttpStatusCode.BAD_REQUEST,
+            "Something went wrong",
+            `Invalid open banking provider ${openBankingProvider} in request body. Should be in: ${providers}`
+          )
+        );
+        return;
       }
-    );
 
-    const providers = Object.keys(OpenBankingProvider);
+      if (order.status !== OrderStatus.PENDING) {
+        next(
+          new HttpError(
+            HttpStatusCode.BAD_REQUEST,
+            `That order was ${order.status.toLowerCase()}`
+          )
+        );
+        return;
+      }
 
-    if (!openBankingProvider || !providers.includes(openBankingProvider)) {
-      next(
-        new HttpError(
-          HttpStatusCode.BAD_REQUEST,
-          "Something went wrong",
-          `Invalid open banking provider ${openBankingProvider} in request body. Should be in: ${providers}`
-        )
-      );
-      return;
-    }
+      // Search for merchant on order and load in sort code/acc number
 
-    if (order.status !== OrderStatus.PENDING) {
-      next(
-        new HttpError(
-          HttpStatusCode.BAD_REQUEST,
-          `That order was ${order.status.toLowerCase()}`
-        )
-      );
-      return;
-    }
+      const merchantDoc = await db()
+        .collection(Collection.MERCHANT)
+        .doc(merchantId)
+        .get()
+        .catch(
+          new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
+        );
 
-    // Search for merchant on order and load in sort code/acc number
+      if (!merchantDoc) {
+        next(
+          new HttpError(HttpStatusCode.NOT_FOUND, "Couldn't find that merchant")
+        );
+        return;
+      }
 
-    const merchantDoc = await db()
-      .collection(Collection.MERCHANT)
-      .doc(merchantId)
-      .get()
-      .catch(
-        new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
-      );
+      const merchant: any = { id: merchantDoc.id, ...merchantDoc.data() }
 
-    if (!merchantDoc) {
-      next(
-        new HttpError(HttpStatusCode.NOT_FOUND, "Couldn't find that merchant")
-      );
-      return;
-    }
+      if (merchant.status !== "OPEN") {
+        next(new HttpError(HttpStatusCode.BAD_REQUEST, "The merchant isn't open at the moment"));
+        return;
+      }
 
-    const { accountNumber, sortCode, paymentName } = merchantDoc.data();
+      loggingClient.log("Merchant data fetched", merchant);
 
-    loggingClient.log("Merchant data fetched", {
-      accountNumber: accountNumber,
-      sortCode: sortCode,
-      paymentName: paymentName,
-    });
+      const paymentAttemptId = uuid()
 
-    const { providerData, providerPrivateData, providerReturnData } =
-      await makePayment(
+      const { providerData, providerPrivateData, providerReturnData } = await makePayment(
         openBankingProvider,
-        accountNumber,
-        sortCode,
-        paymentName,
+        merchant,
         total,
         deviceId,
-        orderId,
-        isLocalEnvironment,
+        paymentAttemptId,
+        args,
         loggingClient
       );
 
-    // Write payment attempt object to database
-    const providerKey = openBankingProvider.toLowerCase();
+      // Write payment attempt object to database
+      const providerKey = openBankingProvider.toLowerCase();
 
-    loggingClient.log("Make payment function complete");
+      loggingClient.log("Make payment function complete");
 
-    const paymentAttemptData = {
-      [providerKey]: providerData,
-      orderId,
-      merchantId,
-      status: PaymentAttemptStatus.PENDING,
-      createdAt: new Date(),
-      deviceId,
-      amount: total,
-    };
+      const paymentAttemptData = {
+        [providerKey]: providerData,
+        orderId,
+        merchantId,
+        status: PaymentAttemptStatus.PENDING,
+        createdAt: new Date(),
+        deviceId,
+        amount: total,
+      };
 
-    const paymentAttemptRef = await db()
-      .collection(Collection.PAYMENT_ATTEMPT)
-      .add(paymentAttemptData);
-    // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+      await db()
+        .collection(Collection.PAYMENT_ATTEMPT)
+        .doc(paymentAttemptId)
+        .set(paymentAttemptData)
+        .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
-    loggingClient.log("Payment attempt doc added", { paymentAttemptData });
+      loggingClient.log("Payment attempt doc added", { paymentAttemptData });
 
-    await db()
-      .doc(paymentAttemptRef.path)
-      .collection("Private")
-      .add({
-        [providerKey]: providerPrivateData,
-      })
-      .catch(
-        new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
-      );
+      await db()
+        .collection(Collection.PAYMENT_ATTEMPT)
+        .doc(paymentAttemptId)
+        .collection("Private")
+        .add({
+          [providerKey]: providerPrivateData,
+        })
+        .catch(
+          new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
+        );
 
-    // Return the link token and payment attempt id for the frontend to use
+      loggingClient.log("Payment Attempt Controller Finished returning 200", {
+        paymentAttemptId,
+      });
 
-    const paymentAttemptId = paymentAttemptRef.id;
-
-    loggingClient.log("Payment Attempt Controller Finished returning 200", {
-      paymentAttemptId,
-    });
-
-    return res.status(200).json({
-      [providerKey]: providerReturnData,
-      paymentAttemptId,
-    });
+      return res.status(200).json({
+        [providerKey]: providerReturnData,
+        paymentAttemptId,
+      });
+    } catch (err) {
+      console.log(err)
+      return res.sendStatus(500)
+    }
   };
 
-  createAuthUrl = async (req, res, next) => {
-    const order = req.order;
-    const { merchantId, total } = order
-    const { bankId } = req.body
+  swapCode = async (req, res, next) => {
+    try {
+      const { code, state, idToken } = req.body
+      const paymentAttemptId = state
 
-    const merchantDoc = await db()
-      .collection(Collection.MERCHANT)
-      .doc(merchantId)
-      .get()
-      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
+      const { id_token } = await processAuthSuccess(code, state, idToken, paymentAttemptId)
 
-    if (!merchantDoc) {
-      next(new HttpError(HttpStatusCode.NOT_FOUND, "Couldn't find that merchant"));
-      return;
+      const decoded = jwt.decode(id_token, { complete: true })
+      console.log(decoded)
+      const paymentId = decoded.payload["mh:payment"]
+
+      await db()
+        .collection(Collection.PAYMENT_ATTEMPT)
+        .doc(paymentAttemptId)
+        .update({
+          "moneyhub.paymentId": paymentId
+        })
+
+      return res.sendStatus(200)
+    } catch (err) {
+      console.log(err)
+      return res.sendStatus(500)
     }
+  }
 
-    const { moneyhubPayeeId, status, displayName } = merchantDoc.data()
-
-    if (status !== "OPEN") {
-      next(new HttpError(HttpStatusCode.BAD_REQUEST, "The merchant isn't open at the moment"));
-      return;
+  listPayees = async (req, res, next) => {
+    try {
+      const payees = await getPayees()
+      return res.status(200).json({ payees })
+    } catch (err) {
+      console.log(err)
+      res.sendStatus(500)
     }
+  }
 
-    if (!moneyhubPayeeId) {
-      next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR));
-      return;
+  addPayee = async (req, res, next) => {
+    try {
+      const { accountNumber, sortCode, name } = req.body
+      const id = uuid()
+      await createPayee(accountNumber, sortCode, name, id)
+      return res.sendStatus(200)
+    } catch (err) {
+      console.log(err)
+      res.sendStatus(500)
     }
-
-    const authUrl = await getPaymentAuthUrl(bankId, moneyhubPayeeId, displayName, total)
-
-    res.sendStatus(200).json({ authUrl })
   }
 }

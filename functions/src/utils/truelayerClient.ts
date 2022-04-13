@@ -1,8 +1,8 @@
 import axios from "axios";
 import * as tlSigning from "truelayer-signing";
-// import * as jwt from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
 import * as base64 from "base-64";
+import LoggingController from "./loggingClient";
 
 const defaultHeaders = {
   "Content-Type": "application/json; charset=UTF-8",
@@ -123,8 +123,7 @@ export async function makeTruelayerPayment(
   paymentName: string,
   amount: number,
   userId: string,
-  paymentAttemptId: string,
-  loggingClient
+  loggingClient: LoggingController
 ) {
   loggingClient.log("Making Truelayer Payment");
 

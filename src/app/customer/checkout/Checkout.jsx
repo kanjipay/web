@@ -17,9 +17,13 @@ export default function Checkout() {
   const { orderId } = useParams()
 
   useEffect(() => {
-    fetchOrder(orderId).then((order) => {
+    const unsub = fetchOrder(orderId, doc => {
+      const order = { id: doc.id, ...doc.data() }
+      console.log("updated order: ", order)
       setOrder(order);
-    });
+    })
+
+    return unsub
   }, [orderId]);
 
   return order ? 

@@ -6,6 +6,7 @@ import {
   PlaidEnvironments,
   Products,
 } from "plaid";
+import LoggingController from "./loggingClient";
 
 let plaidInstance: PlaidApi | null = null;
 
@@ -134,7 +135,7 @@ export async function makePlaidPayment(
   paymentName: string,
   amount: number,
   userId: string,
-  loggingClient,
+  loggingClient: LoggingController,
   isLocalEnvironment: boolean
 ) {
   loggingClient.log("Making Plaid payment");

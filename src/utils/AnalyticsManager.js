@@ -29,10 +29,14 @@ export class AnalyticsManager {
   static main = new AnalyticsManager();
 
   constructor() {
-    const localDeviceId = localStorage.getItem("deviceId");
-    this.deviceId = localDeviceId || uuid();
-    if (localDeviceId) {
-      localStorage.setItem("deviceId", this.deviceId);
+    const storedDeviceId = localStorage.getItem("deviceId") 
+
+    if (storedDeviceId) {
+      this.deviceId = storedDeviceId
+    } else {
+      const generatedDeviceId = uuid()
+      this.deviceId = generatedDeviceId
+      localStorage.setItem("deviceId", generatedDeviceId);
     }
 
     /* 

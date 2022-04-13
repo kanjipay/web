@@ -14,11 +14,12 @@ export class OpenBankingProvider {
   static MONEYHUB = "MONEYHUB";
 }
 
-export function createPaymentAttempt(orderId, provider, isLocalEnvironment) {
+export function createPaymentAttempt(orderId, provider, args = {}, isLocalEnvironment = false) {
   const requestBody = {
     orderId,
     openBankingProvider: provider,
     isLocalEnvironment: isLocalEnvironment,
+    args
   };
 
   console.log("createPaymentAttempt: ", requestBody);
@@ -29,18 +30,23 @@ export function createPaymentAttempt(orderId, provider, isLocalEnvironment) {
   );
 }
 
-export async function createMoneyhubAuthUrl(orderId, bankId) {
-  const res = await axios.post(
-    `${process.env.REACT_APP_SERVER_URL}/payment-attempts/auth-url`,
-    {
-      orderId,
-      bankId
-    }
-  )
+export async function swapCode(code, state, idToken, nonce) {
+  console.log("swapCode running")
+  try {
+    const res = await axios.post(
+      `${process.env.REACT_APP_SERVER_URL}/payment-attempts/swap-code`,
+      {
+        code,
+        state,
+        idToken,
+        nonce
+      }
+    )
 
-  console.log(res.data)
-
-  return res.data.authUrl
+    return res
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 export function fetchPaymentAttempt(paymentAttemptId, onComplete) {
@@ -50,10 +56,10 @@ export function fetchPaymentAttempt(paymentAttemptId, onComplete) {
   );
 }
 
-export async function fetchTruelayerPaymentAttempt(paymentId) {
+export async function fetchProviderPaymentAttempt(paymentId, provider) {
   const q = query(
     Collection.PAYMENT_ATTEMPT.ref,
-    where("truelayer.paymentId", "==", paymentId)
+    where(`${provider.toLowerCase()}.paymentId`, "==", paymentId)
   );
   const snapshot = await getDocs(q);
 

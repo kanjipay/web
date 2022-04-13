@@ -41,14 +41,6 @@ export const receivePaymentUpdate = async (
     update["failureReason"] = failureReason;
   }
 
-  await db()
-    .collection(Collection.PAYMENT_ATTEMPT)
-    .doc(paymentAttemptDoc.id)
-    .set(update, { merge: true })
-    .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
-
-  loggingClient.log("Update payment attempt complete");
-
   if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
     const orderId = paymentAttemptDoc.data().orderId;
 
@@ -60,7 +52,12 @@ export const receivePaymentUpdate = async (
         new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
       );
   }
-  loggingClient.log("Update payment attempt complete");
+
+  await db()
+    .collection(Collection.PAYMENT_ATTEMPT)
+    .doc(paymentAttemptDoc.id)
+    .set(update, { merge: true })
+    .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
 
   return;
 };
