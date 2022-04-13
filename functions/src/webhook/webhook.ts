@@ -2,6 +2,7 @@ import * as express from "express";
 import { errorHandler } from "../middleware/errorHandler";
 import routes from "./routes";
 import * as cors from "cors";
+import * as bodyParser from "body-parser"
 
 const app = express();
 
@@ -12,6 +13,9 @@ app.options("*", corsInstance); // Think this is needed for preflight requests
 // These are needed to read request body (as JSON or urlencoded)
 app.use(express.json());
 app.use(express.urlencoded());
+app.use(bodyParser.raw({
+  type: "application/jwt"
+}))
 
 app.use("/", routes);
 

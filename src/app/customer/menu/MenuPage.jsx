@@ -23,6 +23,8 @@ export default function MenuPage({
   const { itemCount } = useBasket();
   const { merchantId } = useParams();
 
+  console.log("orders: ", orders)
+
   useEffect(() => {
     viewPage(PageName.MENU, { merchantId });
   }, [merchantId]);
@@ -136,7 +138,7 @@ export default function MenuPage({
               </Link>
             )}
             {orders.length > 0 && (
-              <Link to={`/checkout/0/${orders[0].id}/payment-success`}>
+              <Link to={`/checkout/o/${orders[0].id}/payment-success`}>
                 <MainButton
                   title={`View order`}
                   style={{ boxSizing: "borderBox" }}

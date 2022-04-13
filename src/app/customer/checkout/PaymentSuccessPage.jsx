@@ -15,17 +15,16 @@ import { Colors } from "../../../components/CircleButton";
 import ResultBanner, { ResultType } from "../../../components/ResultBanner";
 import NotFound from "../../shared/NotFoundPage";
 
-export default function PaymentSuccessPage({ order, status }) {
+export default function PaymentSuccessPage({ order }) {
   const navigate = useNavigate();
-  const { orderId } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
 
-  const merchantId = order.merchantId;
+  const { merchantId, status } = order;
 
-  useEffect(() => {
-    viewPage(PageName.PAYMENT_SUCCESS, { orderId });
-  }, [orderId]);
+  // useEffect(() => {
+  //   viewPage(PageName.PAYMENT_SUCCESS, { orderId });
+  // }, [orderId]);
 
   function handleSendEmail() {
     setIsLoading(true);
@@ -44,7 +43,7 @@ export default function PaymentSuccessPage({ order, status }) {
   function handleEmailFieldChange(event) {
     setEmail(event.target.value);
   }
-  if (status == "PAID") {
+  if (status === "PAID") {
     return (
       <div className="container">
         <div className="content">

@@ -23,6 +23,7 @@ export default function Menu() {
   const [orders, setOrders] = useState([]);
 
   const deviceId = AnalyticsManager.main.getDeviceId();
+  console.log("deviceId: ", deviceId)
 
   useEffect(() => {
     const merchantUnsub = fetchMerchant(merchantId, (doc) => {

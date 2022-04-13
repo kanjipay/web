@@ -4,7 +4,8 @@ import LoadingPage from "../../../components/LoadingPage";
 import PaymentAttemptStatus from "../../../enums/PaymentAttemptStatus";
 import {
   fetchPaymentAttempt,
-  fetchTruelayerPaymentAttempt,
+  fetchProviderPaymentAttempt,
+  OpenBankingProvider,
 } from "../../../utils/services/PaymentsService";
 import useBasket from "../basket/useBasket";
 
@@ -25,7 +26,7 @@ export default function RedirectPageTruelayer() {
     if (paymentId) {
       let unsub;
 
-      fetchTruelayerPaymentAttempt(paymentId)
+      fetchProviderPaymentAttempt(paymentId, OpenBankingProvider.TRUELAYER)
         .then((paymentAttempt) => {
           console.log(paymentAttempt);
           unsub = fetchPaymentAttempt(paymentAttempt.id, (doc) => {

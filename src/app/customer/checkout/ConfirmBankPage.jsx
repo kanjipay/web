@@ -39,6 +39,7 @@ export default function ConfirmBankPage({ order }) {
   }
 
   const handleContinueToBank = () => {
+    console.log("handleContinueToBank")
     navigate("../payment", { state: { bankId: bankDatum.id } })
   }
 

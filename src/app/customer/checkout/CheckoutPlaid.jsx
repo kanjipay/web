@@ -26,10 +26,17 @@ export default function CheckoutPlaid() {
   useEffect(() => {
     const orderId = localStorage.getItem("orderId")
 
+    let unsub
+
     if (orderId) {
-      fetchOrder(orderId).then((order) => {
+      unsub = fetchOrder(orderId, doc => {
+        const order = { id: doc.id, ...doc.data() }
         setOrder(order);
-      });
+      })
+    }
+
+    return () => {
+      if (unsub) { unsub() }
     }
   }, []);
 

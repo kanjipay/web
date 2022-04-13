@@ -38,14 +38,11 @@ export async function createOrder(merchantId, basketItems) {
   return res.data.orderId;
 }
 
-export async function fetchOrder(orderId) {
-  const orderDoc = await getDoc(Collection.ORDER.docRef(orderId));
-
-  if (!orderDoc.exists()) {
-    throw new Error(`No order with id ${orderId}`);
-  }
-
-  return { id: orderDoc.id, ...orderDoc.data() };
+export async function fetchOrder(orderId, onComplete) {
+  return onSnapshot(
+    Collection.ORDER.docRef(orderId), 
+    onComplete
+  );
 }
 
 export function fetchOrders(deviceId, merchantId, onComplete) {
