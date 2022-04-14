@@ -32,11 +32,11 @@ export default function RedirectPageMoneyhub() {
   const areVariablesInHash = Object.keys(hashParams).length > 0
   const [hasSwappedCode, setHasSwappedCode] = useState(false)
 
-  const [state, code, errorName, idToken] = ["state", "code", "error", "id_token"].map(i => hashParams[i] ?? searchParams.get(i));
+  const [state, code, error, idToken] = ["state", "code", "error", "id_token"].map(i => hashParams[i] ?? searchParams.get(i));
   const [paymentAttemptId, stateId] = state.split(":")
 
   useEffect(() => {
-    const areRightVariablesPresent = !errorName && state && code && (!areVariablesInHash || idToken)
+    const areRightVariablesPresent = !error && state && code && (!areVariablesInHash || idToken)
 
     if (areRightVariablesPresent) {
       if (hasSwappedCode) { return }
@@ -53,30 +53,39 @@ export default function RedirectPageMoneyhub() {
     return () => {
       loadBasket()
     }
-  }, [state, code, errorName, idToken, stateId, areVariablesInHash, hasSwappedCode, loadBasket, paymentAttemptId])
+  }, [state, code, error, idToken, stateId, areVariablesInHash, hasSwappedCode, loadBasket, paymentAttemptId])
 
   useEffect(() => {
     const unsub = fetchPaymentAttempt(paymentAttemptId, doc => {
       const { status, orderId } = doc.data();
       const basePath = `/checkout/o/${orderId}`;
 
-      switch (status) {
-        case PaymentAttemptStatus.SUCCESSFUL:
-          clearBasket();
-          navigate(`${basePath}/payment-success`);
-          break;
-        case PaymentAttemptStatus.CANCELLED:
+      if (error) {
+        if (error === "login_required") {
           navigate(`${basePath}/payment-cancelled`);
-          break;
-        case PaymentAttemptStatus.FAILED:
+        } else {
           navigate(`${basePath}/payment-failure`);
-          break;
-        default:
+        }
+      } else {
+        switch (status) {
+          case PaymentAttemptStatus.SUCCESSFUL:
+            clearBasket();
+            navigate(`${basePath}/payment-success`);
+            break;
+          case PaymentAttemptStatus.CANCELLED:
+            navigate(`${basePath}/payment-cancelled`);
+            break;
+          case PaymentAttemptStatus.FAILED:
+            navigate(`${basePath}/payment-failure`);
+            break;
+          default:
+        }
       }
+      
     })
 
     return unsub
-  }, [paymentAttemptId, navigate, clearBasket])
+  }, [paymentAttemptId, navigate, clearBasket, error])
 
   return <LoadingPage message="Processing your order" />
 }
