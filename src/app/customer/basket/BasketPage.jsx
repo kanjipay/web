@@ -16,8 +16,6 @@ import {
   PageName,
   viewPage,
 } from "../../../utils/AnalyticsManager";
-import ResultBanner from "../../../components/ResultBanner";
-import { ResultType } from "../../../components/ResultBanner";
 
 export default function BasketPage({ merchant }) {
   const { total, basketItems } = useBasket();
@@ -110,21 +108,12 @@ export default function BasketPage({ merchant }) {
 
       <div className="anchored-bottom">
         <div style={{ margin: 16 }}>
-          {total >= 500 ? (
-            <ResultBanner
-              resultType={ResultType.ERROR}
-              message="This demo store only supports transactions up to £5"
-            />
-          ) : (
-            <div />
-          )}
-          <Spacer y={3} />
           <MainButton
             title="Proceed to checkout"
             isLoading={isLoading}
             style={{ boxSizing: "borderBox" }}
             onClick={checkoutItems}
-            disabled={basketItems.length === 0 || total >= 500}
+            disabled={basketItems.length === 0}
           />
         </div>
       </div>

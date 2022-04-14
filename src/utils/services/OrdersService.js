@@ -9,14 +9,16 @@ import {
 import axios from "axios";
 import OrderStatus from "../../enums/OrderStatus";
 import Collection from "../../enums/Collection";
-import { AnalyticsManager } from "../AnalyticsManager";
+import { IdentityManager } from "../IdentityManager";
 
 export async function createOrder(merchantId, basketItems) {
-  const deviceId = AnalyticsManager.main.getDeviceId();
+  const deviceId = IdentityManager.main.getDeviceId();
+  const userId = IdentityManager.main.getPseudoUserId()
 
   const body = {
     merchantId,
     deviceId,
+    userId,
     requestedItems: basketItems
       .filter((item) => item.merchantId === merchantId)
       .map((item) => ({
@@ -26,14 +28,10 @@ export async function createOrder(merchantId, basketItems) {
       })),
   };
 
-  console.log("createOrder: ", body);
-
   const res = await axios.post(
     `${process.env.REACT_APP_SERVER_URL}/orders`,
     body
   );
-
-  console.log("returnData: ", res.data);
 
   return res.data.orderId;
 }
@@ -45,11 +43,13 @@ export async function fetchOrder(orderId, onComplete) {
   );
 }
 
-export function fetchOrders(deviceId, merchantId, onComplete) {
+export function fetchOrders(merchantId, onComplete) {
+  const userId = IdentityManager.main.getPseudoUserId()
+  
   const ordersQuery = query(
     Collection.ORDER.ref,
     where("merchantId", "==", merchantId),
-    where("deviceId", "==", deviceId),
+    where("userId", "==", userId),
     where("status", "==", OrderStatus.PAID),
     orderBy("createdAt", "desc")
   );

@@ -5,6 +5,7 @@ import {
   AnalyticsEvent,
   AnalyticsManager,
 } from "../../../utils/AnalyticsManager";
+import { IdentityManager } from "../../../utils/IdentityManager";
 import {
   createPaymentAttempt,
   OpenBankingProvider,

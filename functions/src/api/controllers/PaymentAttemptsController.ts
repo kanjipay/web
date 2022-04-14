@@ -52,7 +52,7 @@ async function makePayment(
 
       break;
     case OpenBankingProvider.MONEYHUB:
-      const { bankId } = args
+      const { bankId, stateId } = args
       const { moneyhubPayeeId, moneyhubPayeeIdLocal } = merchant
       const payeeId = process.env.IS_LOCAL === "TRUE" ? moneyhubPayeeIdLocal : moneyhubPayeeId
 
@@ -60,6 +60,7 @@ async function makePayment(
         payeeId,
         paymentName,
         bankId,
+        stateId,
         amount,
         paymentAttemptId
       );
@@ -74,25 +75,26 @@ export default class PaymentAttemptsController extends BaseController {
   create = async (req, res, next) => {
     try {
       const order = req.order;
-      const { deviceId, merchantId, total } = order;
+      const { userId, merchantId, total } = order;
       const orderId = order.id;
-      const { openBankingProvider, args } = req.body;
+      const { openBankingProvider, args, deviceId } = req.body;
       const isLocalEnvironment = process.env.IS_LOCAL === "TRUE"
 
       const loggingClient = new LoggingController("Payment Attempts Controller");
       loggingClient.log(
         "Payment Attempt Initiated",
         {
-          openBankingProvider: openBankingProvider,
+          openBankingProvider,
           environment: process.env.ENVIRONMENT,
           envClientURL: process.env.CLIENT_URL,
           isLocalEnvironment,
         },
         {
-          merchantId: merchantId,
-          deviceId: deviceId,
-          orderId: orderId,
-          total: total,
+          merchantId,
+          deviceId,
+          userId,
+          orderId,
+          total,
         }
       );
 
@@ -169,6 +171,7 @@ export default class PaymentAttemptsController extends BaseController {
         status: PaymentAttemptStatus.PENDING,
         createdAt: new Date(),
         deviceId,
+        userId,
         amount: total,
       };
 
@@ -207,13 +210,10 @@ export default class PaymentAttemptsController extends BaseController {
 
   swapCode = async (req, res, next) => {
     try {
-      const { code, state, idToken } = req.body
-      const paymentAttemptId = state
-
+      const { code, state, idToken, paymentAttemptId } = req.body
       const { id_token } = await processAuthSuccess(code, state, idToken, paymentAttemptId)
 
       const decoded = jwt.decode(id_token, { complete: true })
-      console.log(decoded)
       const paymentId = decoded.payload["mh:payment"]
 
       await db()

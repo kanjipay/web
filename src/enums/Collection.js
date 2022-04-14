@@ -10,6 +10,7 @@ export default class Collection {
   static OPENING_HOUR_RANGE = new Collection("OpeningHourRange");
   static CONTACT_REQUEST = new Collection("ContactRequest");
   static LINK = new Collection("Link");
+  static STATE = new Collection("State");
 
   constructor(name) {
     this.name = name;

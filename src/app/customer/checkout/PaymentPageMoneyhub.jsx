@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import LoadingPage from "../../../components/LoadingPage";
 import { createPaymentAttempt, OpenBankingProvider } from "../../../utils/services/PaymentsService";
 import { v4 as uuid } from "uuid";
+import { saveState } from "../../../utils/services/StateService";
 
 export default function PaymentPageMoneyhub({ order }) {
   const location = useLocation();
@@ -10,13 +11,13 @@ export default function PaymentPageMoneyhub({ order }) {
   const orderId = order.id
 
   useEffect(() => {
-    createPaymentAttempt(orderId, OpenBankingProvider.MONEYHUB, { bankId }).then(res => {
-      console.log(res.data)
-      const { moneyhub, paymentAttemptId } = res.data
-      localStorage.setItem("paymentAttemptId", paymentAttemptId)
-      window.location.href = moneyhub.authUrl
+    saveState().then(stateId => {
+      createPaymentAttempt(orderId, OpenBankingProvider.MONEYHUB, { bankId, stateId }).then(res => {
+        const { moneyhub } = res.data
+        window.location.href = moneyhub.authUrl
+      })
     })
   }, [bankId, orderId])
 
-  return <LoadingPage message="Processing your order" />
+  return <LoadingPage message="Redirecting to your bank" />
 }

@@ -5,4 +5,5 @@ export default class BasketAction {
   static CHECKOUT = "CHECKOUT";
   static CLEAR = "CLEAR";
   static CHANGE_MERCHANT = "CHANGE_MERCHANT";
+  static LOAD = "LOAD"
 }

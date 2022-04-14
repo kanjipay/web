@@ -27,7 +27,7 @@ export default class OrdersController extends BaseController {
   };
 
   create = async (req, res, next) => {
-    const { requestedItems, merchantId, deviceId } = req.body;
+    const { requestedItems, merchantId, deviceId, userId } = req.body;
 
     const loggingClient = new LoggingController("Order Controller");
     loggingClient.log(
@@ -37,9 +37,9 @@ export default class OrdersController extends BaseController {
         clientURL: process.env.CLIENT_URL,
       },
       {
-        requestedItems: requestedItems,
-        merchantId: merchantId,
-        deviceId: deviceId,
+        requestedItems,
+        merchantId,
+        deviceId,
       }
     );
 
@@ -179,6 +179,7 @@ export default class OrdersController extends BaseController {
         status: OrderStatus.PENDING,
         total,
         deviceId,
+        userId,
         merchantId,
         receiptSent: false,
         orderNumber,

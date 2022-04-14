@@ -1,4 +1,5 @@
 import BasketAction from "./BasketAction";
+import { loadBasketState, loadState } from "./BasketContext";
 
 function storeItems(basketItems) {
   localStorage.setItem(
@@ -16,6 +17,7 @@ function storeMerchant(merchant) {
 
 export const sumItems = (basketItems) => {
   storeItems(basketItems);
+  
   let itemCount = basketItems.reduce(
     (total, product) => total + product.quantity,
     0
@@ -39,17 +41,14 @@ export default function BasketReducer(state, action) {
       return {
         ...state,
         ...sumItems(state.basketItems),
-        basketItems: [...state.basketItems],
+        // basketItems: [...state.basketItems],
       };
     case BasketAction.REMOVE_ITEM:
+      state.basketItems = state.basketItems.filter((item) => item.id !== action.payload.id)
       return {
         ...state,
-        ...sumItems(
-          state.basketItems.filter((item) => item.id !== action.payload.id)
-        ),
-        basketItems: [
-          ...state.basketItems.filter((item) => item.id !== action.payload.id),
-        ],
+        ...sumItems(state.basketItems),
+        // basketItems: [...state.basketItems],
       };
     case BasketAction.CHANGE_QUANTITY:
       const { itemId, quantity } = action.payload;
@@ -61,7 +60,7 @@ export default function BasketReducer(state, action) {
       return {
         ...state,
         ...sumItems(state.basketItems),
-        basketItems: [...state.basketItems],
+        // basketItems: [...state.basketItems],
       };
     case BasketAction.CHANGE_MERCHANT:
       const basketMerchant = action.payload;
@@ -79,18 +78,20 @@ export default function BasketReducer(state, action) {
 
       return {
         basketItems: [],
-        merchant: null,
-        checkout: true,
         ...sumItems([]),
+        basketMerchant: null,
+        checkout: true,
       };
     case BasketAction.CLEAR:
       storeMerchant(null);
 
       return {
         basketItems: [],
-        merchant: null,
         ...sumItems([]),
+        basketMerchant: null,
       };
+    case BasketAction.LOAD:
+      return loadBasketState()
     default:
       return state;
   }

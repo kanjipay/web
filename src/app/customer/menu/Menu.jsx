@@ -11,7 +11,7 @@ import MenuPage from "./MenuPage";
 import MerchantAboutPage from "./MerchantAboutPage";
 import BasketPage from "../basket/BasketPage";
 import { fetchOrders } from "../../../utils/services/OrdersService";
-import { AnalyticsManager } from "../../../utils/AnalyticsManager";
+import { IdentityManager } from "../../../utils/IdentityManager";
 
 export default function Menu() {
   let { merchantId } = useParams();
@@ -21,9 +21,6 @@ export default function Menu() {
   const [menuItems, setMenuItems] = useState([]);
   const [openHourRanges, setOpenHourRanges] = useState([]);
   const [orders, setOrders] = useState([]);
-
-  const deviceId = AnalyticsManager.main.getDeviceId();
-  console.log("deviceId: ", deviceId)
 
   useEffect(() => {
     const merchantUnsub = fetchMerchant(merchantId, (doc) => {
@@ -51,7 +48,7 @@ export default function Menu() {
       setMenuItems(items);
     });
 
-    const orderUnsub = fetchOrders(deviceId, merchantId, (snapshot) => {
+    const orderUnsub = fetchOrders(merchantId, (snapshot) => {
       const orders = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -66,7 +63,7 @@ export default function Menu() {
       hourRangeUnsub();
       orderUnsub();
     };
-  }, [merchantId, deviceId]);
+  }, [merchantId]);
 
   return (
     <div>

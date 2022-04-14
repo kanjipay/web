@@ -7,6 +7,7 @@ import {
 } from "firebase/firestore";
 import axios from "axios";
 import Collection from "../../enums/Collection";
+import { IdentityManager } from "../IdentityManager";
 
 export class OpenBankingProvider {
   static PLAID = "PLAID";
@@ -15,8 +16,11 @@ export class OpenBankingProvider {
 }
 
 export function createPaymentAttempt(orderId, provider, args = {}, isLocalEnvironment = false) {
+  const deviceId = IdentityManager.main.getDeviceId()
+  
   const requestBody = {
     orderId,
+    deviceId,
     openBankingProvider: provider,
     isLocalEnvironment: isLocalEnvironment,
     args
@@ -30,8 +34,7 @@ export function createPaymentAttempt(orderId, provider, args = {}, isLocalEnviro
   );
 }
 
-export async function swapCode(code, state, idToken, nonce) {
-  console.log("swapCode running")
+export async function swapCode(code, state, idToken, paymentAttemptId) {
   try {
     const res = await axios.post(
       `${process.env.REACT_APP_SERVER_URL}/payment-attempts/swap-code`,
@@ -39,7 +42,7 @@ export async function swapCode(code, state, idToken, nonce) {
         code,
         state,
         idToken,
-        nonce
+        paymentAttemptId
       }
     )
 
