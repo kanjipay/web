@@ -19,7 +19,6 @@ export default function Checkout() {
   useEffect(() => {
     const unsub = fetchOrder(orderId, doc => {
       const order = { id: doc.id, ...doc.data() }
-      console.log("updated order: ", order)
       setOrder(order);
     })
 

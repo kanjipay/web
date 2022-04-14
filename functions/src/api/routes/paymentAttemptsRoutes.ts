@@ -16,7 +16,7 @@ routes.post(
 const swapCodeRequiredFields = { 
   code: "string", 
   state: "string", 
-  nonce: "string"
+  paymentAttemptId: "string"
 }
 
 const isLocal = process.env.IS_LOCAL === "TRUE"

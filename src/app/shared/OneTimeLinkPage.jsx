@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
-import { fetchLink, updateLinkAsUsed } from "../../utils/services/LinksService";
+import { fetchLink, acceptLink } from "../../utils/services/LinksService";
 
 export default function OneTimeLinkPage() {
   const { linkId } = useParams()
@@ -14,7 +14,7 @@ export default function OneTimeLinkPage() {
       const isValid = expiresAt < new Date() && !wasUsed
 
       if (isValid) {
-        updateLinkAsUsed(linkId).then(() => {
+        acceptLink(linkId).then(() => {
           navigate(path)
         })
       } else {

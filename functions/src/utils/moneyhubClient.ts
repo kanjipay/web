@@ -1,9 +1,11 @@
 const Moneyhub = require("@mft/moneyhub-api-client")
-const moneyhubInstance = null
+let moneyhubInstance = null
 
 async function getMoneyhub() {
+  console.log("Generating moneyhub client")
   const isLocal = process.env.IS_LOCAL === "TRUE"
   const client_id = isLocal ? process.env.MONEYHUB_CLIENT_ID_LOCAL : process.env.MONEYHUB_CLIENT_ID
+  console.log("ClientId: ", client_id)
   const client_secret = isLocal ? process.env.MONEYHUB_CLIENT_SECRET_LOCAL : process.env.MONEYHUB_CLIENT_SECRET
   const redirect_uri = `${process.env.CLIENT_URL}/mh-redirect`
   const response_type = isLocal ? "code" : "code id_token"
@@ -25,7 +27,10 @@ async function getMoneyhub() {
     }
   }
 
-  return await Moneyhub(config)
+  const moneyhub = await Moneyhub(config)
+  moneyhubInstance = moneyhub
+  
+  return moneyhub
 }
 
 const getMoneyhubClient = async () => moneyhubInstance || await getMoneyhub();
@@ -112,11 +117,12 @@ export async function makeMoneyhubPayment(
   payeeId: string,
   payerRef: string,
   bankId: string,
+  stateId: string,
   amount: number,
   paymentAttemptId: string,
 ) {
   try {
-    const state = paymentAttemptId
+    const state = `${paymentAttemptId}:${stateId}`
     const nonce = paymentAttemptId
     const authUrl = await generateAuthUrl(bankId, payeeId, amount, payerRef, state, nonce)
 

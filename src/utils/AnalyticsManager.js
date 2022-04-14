@@ -1,6 +1,6 @@
 import amplitude from "amplitude-js";
-import { v4 as uuid } from "uuid";
-import axios from "axios";
+// import axios from "axios";
+import { IdentityManager } from "./IdentityManager";
 
 export class AnalyticsEvent {
   static VIEW_PAGE = "ViewPage";
@@ -29,16 +29,6 @@ export class AnalyticsManager {
   static main = new AnalyticsManager();
 
   constructor() {
-    const storedDeviceId = localStorage.getItem("deviceId") 
-
-    if (storedDeviceId) {
-      this.deviceId = storedDeviceId
-    } else {
-      const generatedDeviceId = uuid()
-      this.deviceId = generatedDeviceId
-      localStorage.setItem("deviceId", generatedDeviceId);
-    }
-
     /* 
     This makes amplitude use browser's navigate.sendBeacon API, 
     so the browser sends requests even if user closes the window 
@@ -54,12 +44,8 @@ export class AnalyticsManager {
     // so will be removed when user clears cookies, or null in private browsing mode
     // We store the uuid in localStorage, which is more persistent
     // */
-    analytics.setDeviceId(this.deviceId);
+    analytics.setDeviceId(IdentityManager.main.getDeviceId());
     this.analytics = analytics;
-  }
-
-  getDeviceId() {
-    return this.deviceId;
   }
 
   setMerchant(userId, merchantId) {

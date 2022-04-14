@@ -4,7 +4,7 @@ import BaseController from "./BaseController";
 
 export default class LinksController extends BaseController {
   create = async (req, res, next) => {
-    const { path } = req.body
+    const { path, stateId } = req.body
 
     // Expires 30 mins from now
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
@@ -14,6 +14,7 @@ export default class LinksController extends BaseController {
       .add({
         expiresAt,
         path,
+        stateId,
         wasUsed: false
       });
 
