@@ -19,5 +19,5 @@ export default function PaymentPageMoneyhub({ order }) {
     })
   }, [bankId, orderId])
 
-  return <LoadingPage message="Redirecting to your bank" />
+  return <LoadingPage message="Sending you to your bank" />
 }

@@ -122,7 +122,7 @@ export async function makeMoneyhubPayment(
   paymentAttemptId: string,
 ) {
   try {
-    const state = `${paymentAttemptId}:${stateId}`
+    const state = `${paymentAttemptId}.${stateId}`
     const nonce = paymentAttemptId
     const authUrl = await generateAuthUrl(bankId, payeeId, amount, payerRef, state, nonce)
 
