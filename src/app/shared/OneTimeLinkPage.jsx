@@ -14,7 +14,7 @@ export default function OneTimeLinkPage() {
       const isValid = expiresAt < new Date() && !wasUsed
 
       if (isValid) {
-        acceptLink(linkId).then(() => {
+        acceptLink(link).then(() => {
           navigate(path)
         })
       } else {
@@ -23,7 +23,7 @@ export default function OneTimeLinkPage() {
     }).catch(err => {
       console.log("Doesn't exist")
     })
-  })
+  }, [linkId, navigate])
   return isInvalid ?
     <div>
       Link expired

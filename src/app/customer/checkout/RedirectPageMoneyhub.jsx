@@ -33,7 +33,8 @@ export default function RedirectPageMoneyhub() {
   const [hasSwappedCode, setHasSwappedCode] = useState(false)
 
   const [state, code, error, idToken] = ["state", "code", "error", "id_token"].map(i => hashParams[i] ?? searchParams.get(i));
-  const [paymentAttemptId, stateId] = state.split(":")
+  console.log("state: ", state)
+  const [paymentAttemptId, stateId] = state.split(".")
 
   useEffect(() => {
     const areRightVariablesPresent = !error && state && code && (!areVariablesInHash || idToken)
