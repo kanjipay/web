@@ -60,8 +60,6 @@ export class Mercado {
     this.baseHeaders = config.baseHeaders
   }
 
-  
-
   public async createPaymentIntent(req: PaymentIntentCreateRequest) {
     const { lineItems, userId, redirectUrl, redirectUrlSet } = req
 
@@ -187,3 +185,10 @@ export class Mercado {
     }
   }
 }
+
+const mercado = new Mercado(new MercadoConfiguration({
+  clientId: "abc",
+  clientSecret: "cba",
+  environment: MercadoEnvironment.SANDBOX,
+  options: {}
+}))
