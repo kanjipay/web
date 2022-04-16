@@ -1,35 +1,31 @@
 import * as functions from "firebase-functions";
-import apiApp from "./api/api";
-import webhookApp from "./webhook/webhook";
+import internalApp from "./internal/internalApp";
+import clientApiApp from "./client/api/clientApiApp";
+import onlineMenuApp from "./onlineMenu/onlineMenuApp";
 
 const REGION = "europe-west2";
 
-const secrets = [
-  "SERVICE_ACCOUNT",
-  "MONEYHUB_CLIENT_ID",
-  "MONEYHUB_CLIENT_SECRET",
-  "MONEYHUB_PRIVATE_JWKS",
-  "PLAID_CLIENT_ID",
-  "PLAID_SECRET",
-  "PLAID_SECRET_SANDBOX",
-  "TRUELAYER_CLIENT_ID",
-  "TRUELAYER_CLIENT_SECRET",
-  "TRUELAYER_PRIVATE_KEY_PEM",
-  "SENDGRID_API_KEY",
-];
-
-export const api = functions
+export const internal = functions
   .region(REGION)
-  .runWith({ secrets })
-  .https.onRequest(apiApp);
+  .runWith({ secrets: [
+    "SERVICE_ACCOUNT",
+    "MONEYHUB_CLIENT_ID",
+    "MONEYHUB_CLIENT_SECRET",
+    "MONEYHUB_PRIVATE_JWKS",
+    "SENDGRID_API_KEY",
+  ] })
+  .https.onRequest(internalApp);
 
-export const webhook = functions
+export const clientApi = functions
   .region(REGION)
-  .runWith({ secrets })
-  .https.onRequest(webhookApp);
+  .runWith({ secrets: [
+    "SERVICE_ACCOUNT"
+  ] })
+  .https.onRequest(clientApiApp);
 
-export const status = functions.region(REGION).https.onRequest((req, res) => {
-  console.log("Healthcheck");
-  console.log(process.env.ENVIRONMENT);
-  res.sendStatus(200);
-});
+export const onlineMenu = functions
+  .region(REGION)
+  .runWith({ secrets: [
+    "SERVICE_ACCOUNT"
+  ] })
+  .https.onRequest(onlineMenuApp);

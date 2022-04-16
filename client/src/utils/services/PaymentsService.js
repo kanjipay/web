@@ -9,24 +9,18 @@ import axios from "axios";
 import Collection from "../../enums/Collection";
 import { IdentityManager } from "../IdentityManager";
 
-export class OpenBankingProvider {
-  static PLAID = "PLAID";
-  static TRUELAYER = "TRUELAYER";
-  static MONEYHUB = "MONEYHUB";
-}
-
-export function createPaymentAttempt(orderId, provider, args = {}, isLocalEnvironment = false) {
+export function createPaymentAttempt(orderId, bankId, stateId, isLocalEnvironment = false) {
   const deviceId = IdentityManager.main.getDeviceId()
   
   const requestBody = {
     orderId,
     deviceId,
-    openBankingProvider: provider,
     isLocalEnvironment: isLocalEnvironment,
-    args
+    stateId,
+    moneyhub: {
+      bankId
+    }
   };
-
-  console.log("createPaymentAttempt: ", requestBody);
 
   return axios.post(
     `${process.env.REACT_APP_SERVER_URL}/payment-attempts`,
