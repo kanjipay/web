@@ -1,11 +1,11 @@
 import Collection from "../../../../shared/enums/Collection";
-import BaseController from "./BaseController";
+import BaseController from "../../../../shared/BaseController";
 import PaymentAttemptStatus from "../../../../shared/enums/PaymentAttemptStatus";
 import { db } from "../../../../shared/utils/admin";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../../../shared/utils/errors";
 import OrderStatus from "../../../../shared/enums/OrderStatus";
 import LoggingController from "../../../../shared/utils/loggingClient";
-import { getPayees, makeMoneyhubPayment, createPayee, processAuthSuccess } from "../../../../shared/utils/moneyhubClient";
+import { getPayees, generateMoneyhubPaymentAuthUrl, createPayee, processAuthSuccess } from "../../../../shared/utils/moneyhubClient";
 import { v4 as uuid } from "uuid";
 import * as jwt from "jsonwebtoken";
 
@@ -73,11 +73,15 @@ export default class PaymentAttemptsController extends BaseController {
 
       const paymentAttemptId = uuid()
 
-      const { bankId } = moneyhub
+      let { bankId } = moneyhub
       const { moneyhubPayeeId, moneyhubPayeeIdLocal, paymentName } = merchant
       const payeeId = process.env.IS_LOCAL === "TRUE" ? moneyhubPayeeIdLocal : moneyhubPayeeId
 
-      const { authUrl } = await makeMoneyhubPayment(
+      if (process.env.ENVIRONMENT !== "PROD") {
+        bankId = "5233db2a04fe41dd01d3308ea92e8bd7"
+      }
+
+      const authUrl = await generateMoneyhubPaymentAuthUrl(
         payeeId,
         paymentName,
         bankId,

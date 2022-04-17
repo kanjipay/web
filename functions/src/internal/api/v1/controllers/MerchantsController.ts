@@ -1,7 +1,7 @@
 import Collection from "../../../../shared/enums/Collection";
 import { db } from "../../../../shared/utils/admin";
 import { createPayee } from "../../../../shared/utils/moneyhubClient";
-import BaseController from "./BaseController";
+import BaseController from "../../../../shared/BaseController";
 import { v4 as uuid } from "uuid";
 
 export default class MerchantsController extends BaseController {
