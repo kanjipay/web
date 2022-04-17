@@ -6,6 +6,7 @@ export class LocalStorageKeys {
   static MONEYHUB_BANK_ID = "moneyhubBankId"
   static BASKET = "basket"
   static BASKET_MERCHANT = "basketMerchant"
+  static EMAIL = "email"
 }
 
 export class IdentityManager {

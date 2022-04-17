@@ -12,11 +12,13 @@ import { sendOrderReceipt } from "../../utils/services/OrdersService";
 import { Colors } from "../../components/CircleButton";
 import ResultBanner, { ResultType } from "../../components/ResultBanner";
 import NotFound from "../shared/NotFoundPage";
+import { LocalStorageKeys } from "../../utils/IdentityManager";
 
 export default function PaymentSuccessPage({ order }) {
   const navigate = useNavigate();
+  const initialEmail = localStorage.getItem(LocalStorageKeys.EMAIL) ?? ""
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail);
 
   const { merchantId, status } = order;
 
@@ -26,6 +28,8 @@ export default function PaymentSuccessPage({ order }) {
 
   function handleSendEmail() {
     setIsLoading(true);
+
+    localStorage.setItem(LocalStorageKeys.EMAIL, email)
 
     sendOrderReceipt(order.id, email)
       .then((res) => {
@@ -122,10 +126,10 @@ export default function PaymentSuccessPage({ order }) {
               />
               <Spacer y={1} />
               <MainButton
-                title="Submit email"
+                title="Email my receipt"
                 isLoading={isLoading}
                 disabled={!validateEmail(email)}
-                onClick={() => handleSendEmail()}
+                onClick={handleSendEmail}
               />
               <Spacer y={2} />
               <OrDivider />

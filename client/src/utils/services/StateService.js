@@ -8,7 +8,8 @@ export async function saveState() {
     LocalStorageKeys.BASKET,
     LocalStorageKeys.BASKET_MERCHANT,
     LocalStorageKeys.MONEYHUB_BANK_ID,
-    LocalStorageKeys.PSEUDO_USER_ID
+    LocalStorageKeys.PSEUDO_USER_ID,
+    LocalStorageKeys.EMAIL
   ]
 
   const state = keys.reduce((currState, key) => {

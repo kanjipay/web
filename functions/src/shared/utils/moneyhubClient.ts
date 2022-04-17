@@ -82,54 +82,101 @@ export async function createPayee(accountNumber: string, sortCode: string, compa
   }
 }
 
-export async function generateAuthUrl(
-  bankId: string,
-  payeeId: string,
-  amount: number,
-  payerRef: string,
-  state: string,
-  nonce: string
-) {
-  try {
-    const moneyhub = await getMoneyhubClient()
+export async function fetchMoneyhubPayment(paymentId: string) {
+  const moneyhub = await getMoneyhubClient()
 
-    if (process.env.ENVIRONMENT !== "PROD") {
-      bankId = "5233db2a04fe41dd01d3308ea92e8bd7"
+  const res = await moneyhub.getPayment({
+    id: paymentId,
+  })
+
+  const errorCode = res.code
+
+  if (errorCode) {
+    return { 
+      exists: false
     }
-
-    return await moneyhub.getPaymentAuthorizeUrl({
-      bankId,
-      payeeId,
-      payeeType: "api-payee",
-      context: "PartyToParty",
-      amount,
-      payeeRef: "Mercado",
-      payerRef,
-      state,
-      nonce
-    })
-  } catch (err) {
-    console.log(err)
+  } else {
+    return {
+      exists: true,
+      paymentData: res
+    }
   }
 }
 
-export async function makeMoneyhubPayment(
+export async function generateMoneyhubPaymentAuthUrl(
   payeeId: string,
   payerRef: string,
   bankId: string,
   stateId: string,
   amount: number,
   paymentAttemptId: string,
-) {
-  try {
-    const state = `${paymentAttemptId}.${stateId}`
-    const nonce = paymentAttemptId
-    const authUrl = await generateAuthUrl(bankId, payeeId, amount, payerRef, state, nonce)
+): Promise<string> {
+  const state = `${paymentAttemptId}.${stateId}`
+  const nonce = paymentAttemptId
 
-    return {
-      authUrl
-    };
+  try {
+    const moneyhub = await getMoneyhubClient()
+    const payeeRef = "Mercado"
+    const payeeType = "api-payee"
+
+    return await moneyhub.getPaymentAuthorizeUrl({
+      bankId,
+      payeeId,
+      payeeType,
+      context: "PartyToParty",
+      amount,
+      payeeRef,
+      payerRef,
+      state,
+      nonce,
+      claims: {
+        id_token: {
+          "mh:con_id": {
+            essential: true,
+          },
+          "mh:payment": {
+            essential: true,
+            value: {
+              amount,
+              payeeRef,
+              payerRef,
+              payeeId,
+              payeeType,
+              payerId: null,
+              payerType: null,
+              payerName: null,
+              payerEmail: null,
+              readRefundAccount: false
+            },
+          },
+        },
+      }
+    })
   } catch (err) {
     console.log(err)
   }
+}
+
+export async function generateMoneyhubReversePaymentAuthUrl(
+  bankId: string, 
+  paymentId: string,
+  stateId: string,
+  paymentAttemptId: string
+) {
+  const state = `${paymentAttemptId}.${stateId}`
+  const nonce = paymentAttemptId
+  
+  try {
+    const moneyhub = await getMoneyhubClient()
+
+    return await moneyhub.getReversePaymentAuthorizeUrl({
+      bankId,
+      paymentId,
+      state,
+      nonce,
+    })
+  } catch (err) {
+
+  }
+  
 }

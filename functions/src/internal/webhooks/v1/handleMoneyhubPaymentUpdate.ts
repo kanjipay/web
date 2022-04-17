@@ -1,68 +1,99 @@
-import axios from "axios";
-import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus";
-import { HttpError, HttpStatusCode } from "../../../shared/utils/errors";
-import LoggingController from "../../../shared/utils/loggingClient";
-import { receivePaymentUpdate } from "./receivePaymentUpdate";
-import * as jwt from "jsonwebtoken";
-import * as jwkToPem from "jwk-to-pem";
 
-const keyCache = new Map()
+import Collection from "../../../shared/enums/Collection";
+import OrderStatus from "../../../shared/enums/OrderStatus";
+import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus";
+import { db } from "../../../shared/utils/admin";
+import { ErrorHandler, HttpError, HttpStatusCode } from "../../../shared/utils/errors";
+import LoggingController from "../../../shared/utils/loggingClient";
+import { fetchMoneyhubPayment } from "../../../shared/utils/moneyhubClient";
 
 export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
   try {
     const loggingClient = new LoggingController("Moneyhub Webhook");
 
-    const token = req.body.toString()
-    const decoded = jwt.decode(token, { complete: true })
-    const currKeyId = decoded.header.kid
+    const { payload } = req
 
-    // If keyId not in cache, make a call to the endpoint that has the up to date ones
-    if (!keyCache.has(currKeyId)) {
-      const configRes = await axios.get("https://identity.moneyhub.co.uk/oidc/.well-known/openid-configuration")
-      const jwkUri = configRes.data.jwks_uri
-      const jwksRes = await axios.get(jwkUri)
-      const jwks = jwksRes.data
-      const loadedKeys = jwks.keys.filter(key => key.use === "sig")
-
-      keyCache.clear()
-
-      for (const key of loadedKeys) {
-        const keyId = key.kid
-        keyCache.set(keyId, key)
-      }
-
-      // If the received key id is not in the ones retrieved from Moneyhub, raise error
-      if (!keyCache.has(currKeyId)) {
-        next(new HttpError(HttpStatusCode.UNAUTHORIZED, "Unauthorized"));
-        return;
-      }
+    const moneyhubPaymentStatuses = {
+      "urn:com:moneyhub:events:payment-completed": PaymentAttemptStatus.SUCCESSFUL,
+      "urn:com:moneyhub:events:payment-rejected": PaymentAttemptStatus.FAILED
     }
 
-    const key = keyCache.get(currKeyId);
-    const pem = jwkToPem(key);
+    const eventUrn = Object.keys(payload.events).find(e => true)
 
-    let payload
+    if (eventUrn || !(eventUrn in moneyhubPaymentStatuses)) {
+      loggingClient.log("Non-payment event urn received")
+      return res.sendStatus(200)
+    }
 
-    try {
-      payload = jwt.verify(token, pem)
-    } catch (err) {
-      console.log(err)
-      next(new HttpError(HttpStatusCode.UNAUTHORIZED, "Unauthorized"));
+    const paymentAttemptStatus = moneyhubPaymentStatuses[eventUrn]
+    const { paymentId, paymentSubmissionId } = payload.events[eventUrn]
+
+    loggingClient.log("Received Payment Update Subroutine Started");
+    const paymentAttemptSnapshot = await db()
+      .collection(Collection.PAYMENT_ATTEMPT)
+      .where(`moneyhub.paymentId`, "==", paymentId)
+      .limit(1)
+      .get();
+
+    loggingClient.log("Loaded payment attempt snapshot");
+
+    if (paymentAttemptSnapshot.docs.length === 0) {
+      loggingClient.error("Could not find payment attempt");
+      next(
+        new HttpError(
+          HttpStatusCode.NOT_FOUND,
+          "Something went wrong",
+          `PaymentAttempt with paymentId ${paymentId} with provider moneyhub not found`
+        )
+      );
       return;
     }
-    
-    const data = payload.events["urn:com:moneyhub:events:payment-completed"] || payload.events["urn:com:moneyhub:events:payment-rejected"]
-    const { paymentId, status } = data
 
-    const paymentAttemptStatus = status === "completed" ? PaymentAttemptStatus.SUCCESSFUL : PaymentAttemptStatus.FAILED
+    const paymentAttemptDoc = paymentAttemptSnapshot.docs[0];
+    const paymentAttemptId = paymentAttemptDoc.id
 
-    await receivePaymentUpdate(
-      paymentId,
-      paymentAttemptStatus,
-      null,
-      loggingClient,
-      next
-    );
+    const { exists, paymentData } = await fetchMoneyhubPayment(paymentId)
+
+    if (!exists) {
+      next(
+        new HttpError(
+          HttpStatusCode.NOT_FOUND,
+          "Something went wrong",
+          `Moneyhub payment with paymentId ${paymentId} with not found`
+        )
+      );
+      return;
+    }
+
+    if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
+      const orderId = paymentAttemptDoc.data().orderId;
+      const { isReversible } = paymentData
+
+      // This needs to be changed into creating a new order
+      await db()
+        .collection(Collection.ORDER)
+        .doc(orderId)
+        .set({ 
+          status: OrderStatus.PAID, 
+          paidAt: new Date(),
+          paymentAttemptId,
+          moneyhub: {
+            paymentSubmissionId
+          },
+          isReversible
+        }, { merge: true })
+        .catch(
+          new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
+        );
+    }
+
+    await db()
+      .collection(Collection.PAYMENT_ATTEMPT)
+      .doc(paymentAttemptDoc.id)
+      .set({ 
+        status: paymentAttemptStatus,
+      }, { merge: true })
+      .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
 
     res.sendStatus(200)
 

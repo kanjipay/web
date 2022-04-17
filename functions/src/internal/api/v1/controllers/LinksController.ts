@@ -1,6 +1,6 @@
 import Collection from "../../../../shared/enums/Collection";
 import { db } from "../../../../shared/utils/admin";
-import BaseController from "./BaseController";
+import BaseController from "../../../../shared/BaseController";
 
 export default class LinksController extends BaseController {
   create = async (req, res, next) => {

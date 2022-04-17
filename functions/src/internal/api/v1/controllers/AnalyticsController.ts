@@ -1,4 +1,4 @@
-import BaseController from "./BaseController";
+import BaseController from "../../../../shared/BaseController";
 import { db } from "../../../../shared/utils/admin";
 import Collection from "../../../../shared/enums/Collection";
 import * as functions from "firebase-functions";

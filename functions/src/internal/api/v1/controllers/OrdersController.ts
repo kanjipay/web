@@ -1,4 +1,4 @@
-import BaseController from "./BaseController";
+import BaseController from "../../../../shared/BaseController";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../../../shared/utils/errors";
 import { sendEmail } from "../../../emails";
 import { db } from "../../../../shared/utils/admin";
