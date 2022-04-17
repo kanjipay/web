@@ -1,8 +1,9 @@
 import BaseController from "../../../../shared/BaseController";
 import Collection from "../../../../shared/enums/Collection";
+import MerchantStatus from "../../../../shared/enums/MerchantStatus";
 import { db } from "../../../../shared/utils/admin";
 
-enum MerchantStatus {
+export enum MerchantApprovalStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
   DECLINED = "DECLINED"
@@ -30,7 +31,8 @@ export default class MerchantsController extends BaseController {
           accountNumber,
           address,
           clientId,
-          status: MerchantStatus.PENDING
+          approvalStatus: MerchantApprovalStatus.PENDING,
+          status: MerchantStatus.CLOSED
         })
 
       const merchantId = merchantDoc.id

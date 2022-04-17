@@ -6,16 +6,11 @@ const controller = new MerchantsController();
 const routes = Router();
 
 routes.post(
-  "/",
+  "/:merchantId/review",
   new RequestValidator({ 
-    accountNumber: "string",
-    sortCode: "string",
-    companyName: "string",
-    displayName: "string",
-    address: "string",
-    userId: "string"
+    approvalStatus: "string"
   }, "body").validate,
-  controller.create
+  controller.review
 );
 
 export default routes;
