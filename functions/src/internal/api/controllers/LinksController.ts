@@ -1,6 +1,7 @@
 import Collection from "../../../shared/enums/Collection";
 import BaseController from "../../../shared/BaseController";
 import { addDocument } from "../../../shared/utils/addDocument";
+import { firestore } from "firebase-admin";
 
 export default class LinksController extends BaseController {
   create = async (req, res, next) => {
@@ -13,7 +14,8 @@ export default class LinksController extends BaseController {
       expiresAt,
       path,
       stateId,
-      wasUsed: false
+      wasUsed: false,
+      createdAt: firestore.FieldValue.serverTimestamp()
     })
 
     return res.status(200).json({ linkId });
