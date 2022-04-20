@@ -35,14 +35,24 @@ async function getMoneyhub() {
 
 const getMoneyhubClient = async () => moneyhubInstance || await getMoneyhub();
 
-export async function processAuthSuccess(code: string, state: any, idToken: any, nonce: string) {
+export async function processAuthSuccess(
+  code: string, 
+  state: any, 
+  idToken: any, 
+  paymentAttemptId: string, 
+  stateId: string, 
+  clientState: string
+) {
+  const localState = `${paymentAttemptId}.${stateId}.${clientState}`
+  const nonce = paymentAttemptId
+
   try {
     const moneyhub = await getMoneyhubClient()
 
     return await moneyhub.exchangeCodeForTokens({
       localParams: {
         nonce,
-        state,
+        state: localState,
       },
       paramsFromCallback: {
         code,
@@ -108,10 +118,11 @@ export async function generateMoneyhubPaymentAuthUrl(
   payerRef: string,
   bankId: string,
   stateId: string,
+  clientState: string,
   amount: number,
   paymentAttemptId: string,
 ): Promise<string> {
-  const state = `${paymentAttemptId}.${stateId}`
+  const state = `${paymentAttemptId}.${stateId}.${clientState}`
   const nonce = paymentAttemptId
 
   try {
@@ -161,9 +172,10 @@ export async function generateMoneyhubReversePaymentAuthUrl(
   bankId: string, 
   paymentId: string,
   stateId: string,
+  clientState: string,
   paymentAttemptId: string
 ) {
-  const state = `${paymentAttemptId}.${stateId}`
+  const state = `${paymentAttemptId}.${stateId}.${clientState}`
   const nonce = paymentAttemptId
   
   try {
