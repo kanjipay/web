@@ -17,7 +17,10 @@ export default class PaymentIntentsController extends BaseController {
       return
     }
 
-    const { moneyhubPayeeId, moneyhubPayeeIdLocal, companyName } = payee
+    const { moneyhub, companyName } = payee
+    const moneyhubPayeeId = moneyhub.payeeId
+    const moneyhubPayeeIdLocal = moneyhub.payeeIdLocal
+
     const mhPayeeId = process.env.IS_LOCAL === "TRUE" ? moneyhubPayeeIdLocal : moneyhubPayeeId
 
     const { paymentIntentId } = await addDocument(Collection.PAYMENT_INTENT, {

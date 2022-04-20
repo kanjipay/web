@@ -28,7 +28,7 @@ export default class PayeesController extends BaseController {
 
       if (approvalStatus == PayeeApprovalStatus.APPROVED) {
         const moneyhubPayeeData = await createPayee(accountNumber, sortCode, companyName, payeeId)
-        update["moneyhubPayeeId"] = moneyhubPayeeData.id
+        update["moneyhub"] = { payeeId: moneyhubPayeeData.id }
       }
 
       await db()
@@ -36,7 +36,7 @@ export default class PayeesController extends BaseController {
         .doc(payeeId)
         .update(update)
 
-      return res.status(200).json({ payeeId });
+      return res.sendStatus(200)
     } catch (err) {
       console.log(err)
       res.sendStatus(500)
