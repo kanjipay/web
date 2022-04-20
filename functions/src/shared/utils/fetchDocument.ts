@@ -20,7 +20,7 @@ export async function fetchDocument(collectionName: Collection, docId: string, c
     return generateErrorObject(error)
   }
 
-  for (const [fieldName, requiredValue] of checks) {
+  for (const [fieldName, requiredValue] of Object.entries(checks)) {
     const actualValue = doc.data()[fieldName]
 
     if (actualValue !== requiredValue) {

@@ -82,14 +82,13 @@ export default class PayeesController extends BaseController {
   index = async (req, res, next) => {
     try {
       const { clientId } = req
-      const { limit } = req.query
-
-      const limitInt = parseInt(limit, 10)
+      const limitFromQuery = req.query.limit ?? "10"
+      const limit = parseInt(limitFromQuery, 10)
 
       const snapshot = await db()
         .collection(Collection.PAYEE)
         .where(`clientId`, "==", clientId)
-        .limit(limitInt)
+        .limit(limit)
         .get();
 
       const payees = snapshot.docs.map(doc => {
