@@ -13,7 +13,7 @@ export default function RedirectPageMercado() {
   useEffect(() => {
     const orderQuery = query(
       Collection.ORDER.ref,
-      where("paymentIntentId", "==", paymentIntentId)
+      where("mercado.paymentIntentId", "==", paymentIntentId)
     );
 
     onSnapshot(orderQuery, snapshot => {

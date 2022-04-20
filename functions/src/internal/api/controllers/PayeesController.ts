@@ -4,6 +4,7 @@ import { createPayee } from "../../../shared/utils/moneyhubClient";
 import BaseController from "../../../shared/BaseController";
 import { PayeeApprovalStatus as PayeeApprovalStatus } from "../../../clientApi/v1/controllers/PayeesController";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
+import { firestore } from "firebase-admin";
 
 export default class PayeesController extends BaseController {
   review = async (req, res, next) => {
@@ -20,7 +21,10 @@ export default class PayeesController extends BaseController {
 
       const { accountNumber, sortCode, companyName } = payee
 
-      const update = { approvalStatus }
+      const update = { 
+        approvalStatus,
+        reviewedAt: firestore.FieldValue.serverTimestamp()
+      }
 
       if (approvalStatus == PayeeApprovalStatus.APPROVED) {
         const moneyhubPayeeData = await createPayee(accountNumber, sortCode, companyName, payeeId)

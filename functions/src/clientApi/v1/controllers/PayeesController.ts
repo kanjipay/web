@@ -1,4 +1,5 @@
 import { NextFunction } from "express";
+import { firestore } from "firebase-admin";
 import BaseController from "../../../shared/BaseController";
 import Collection from "../../../shared/enums/Collection";
 import { addDocument } from "../../../shared/utils/addDocument";
@@ -48,6 +49,7 @@ export default class PayeesController extends BaseController {
         address,
         clientId,
         approvalStatus: PayeeApprovalStatus.PENDING,
+        createdAt: firestore.FieldValue.serverTimestamp()
       })
 
       res.status(200).json({ payeeId })
