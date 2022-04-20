@@ -14,7 +14,7 @@
     "postbuild": "copyfiles -u 1 src/**/*.handlebars src/**/*.json lib/"
   },
   "engines": {
-    "node": "17"
+    "node": "16"
   },
   "main": "lib/index.js",
   "dependencies": {

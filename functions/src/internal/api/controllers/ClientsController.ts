@@ -7,21 +7,25 @@ import { firestore } from "firebase-admin";
 
 export default class ClientsController extends BaseController {
   create = async (req, res, next) => {
-    const { companyName } = req.body
+    try {
+      const { companyName } = req.body
 
-    const clientId = uuid()
-    const clientSecret = crypto.randomBytes(32).toString("hex")
-    const clientSecretHash = crypto.createHash("sha256").update(clientSecret, "utf-8").digest("hex")
+      const clientId = uuid()
+      const clientSecret = crypto.randomBytes(32).toString("hex")
+      const clientSecretHash = crypto.createHash("sha256").update(clientSecret, "utf-8").digest("hex")
 
-    await db()
-      .collection(Collection.CLIENT)
-      .doc(clientId)
-      .set({
-        companyName,
-        clientSecretHash,
-        createdAt: firestore.FieldValue.serverTimestamp()
-      })
+      await db()
+        .collection(Collection.CLIENT)
+        .doc(clientId)
+        .set({
+          companyName,
+          clientSecretHash,
+          createdAt: firestore.FieldValue.serverTimestamp()
+        })
 
-    return res.status(200).json({ clientId, clientSecret });
+      return res.status(200).json({ clientId, clientSecret });
+    } catch (err) {
+      res.sendStatus(500)
+    }
   }
 }
