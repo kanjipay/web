@@ -109,25 +109,24 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
       }
 
       const { webhookUrl } = client
-      const body = {
+
+      // TODO: implement retries
+      await sendWebhook(webhookUrl, {
         webhookCode: "PAYMENT_INTENT_UPDATE",
         paymentAttemptId,
         paymentIntentId,
         payeeId,
         timestamp: new Date(),
         paymentIntentStatus: PaymentIntentStatus.SUCCESSFUL
-      }
-
-      // TODO: implement retries
-      await sendWebhook(webhookUrl, body)
+      })
     }
 
     await db()
       .collection(Collection.PAYMENT_ATTEMPT)
       .doc(paymentAttemptDoc.id)
-      .set({ 
+      .update({
         status: paymentAttemptStatus,
-      }, { merge: true })
+      })
       .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle);
 
     res.sendStatus(200)
