@@ -4,6 +4,7 @@ import payeesRoutes from "./routes/payeesRoutes";
 import linksRoutes from "./routes/linksRoutes";
 import paymentAttemptsRoutes from "./routes/paymentAttemptsRoutes";
 import loggingRoutes from "./routes/loggingRoutes";
+import clientsRoutes from "./routes/clientsRoutes";
 
 const apiApp = express();
 
@@ -14,6 +15,7 @@ apiApp.options("*", corsInstanceApi);
 
 apiApp.use("/payment-attempts", paymentAttemptsRoutes);
 apiApp.use("/payees", payeesRoutes);
+apiApp.use("/clients", clientsRoutes);
 apiApp.use("/links", linksRoutes);
 apiApp.use("/log", loggingRoutes);
 apiApp.get("/status", (req, res) => {
