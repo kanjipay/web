@@ -11,6 +11,7 @@ function getAdmin() {
   admin.initializeApp({ credential });
 
   dbInstance = admin.firestore();
+  dbInstance.settings({ ignoreUndefinedProperties: true })
   authInstance = admin.auth();
 
   return { db: dbInstance, auth: authInstance };
