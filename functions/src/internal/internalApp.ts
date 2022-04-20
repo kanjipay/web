@@ -12,9 +12,9 @@ main.use(express.json());
 main.use(express.urlencoded({ extended: true }));
 main.use(bodyParser.raw({ type: "application/jwt" }))
 
-main.use(errorHandler);
-
 main.use("/api/v1", verifyDomain, apiApp);
 main.use("/webhooks/v1", webhooksApp)
+
+main.use(errorHandler);
 
 export default main;
