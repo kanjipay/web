@@ -17,7 +17,7 @@ import OrDivider from "../../components/OrDivider";
 import QRCode from "react-qr-code";
 import Spinner from "../../assets/Spinner";
 
-export default function ConfirmBankPage({ order }) {
+export default function ConfirmBankPage({ paymentIntent }) {
   const location = useLocation();
   const bankDatumFromState = location.state?.bankDatum;
   const navigate = useNavigate()
@@ -29,7 +29,6 @@ export default function ConfirmBankPage({ order }) {
   function generateLink(linkId) {
     const redirectUrl = new URL(window.location.href);
     redirectUrl.pathname = `/link/${linkId}`;
-    console.log(redirectUrl.href)
     return redirectUrl.href
   }
 
@@ -46,7 +45,7 @@ export default function ConfirmBankPage({ order }) {
   useEffect(() => {
     if (bankDatum) {
       if (!isMobile) {
-        createLink(`/checkout/${order.id}/confirm-bank/${bankDatum.id}`).then(linkId => {
+        createLink(`/checkout/${paymentIntent.id}/confirm-bank/${bankDatum.id}`).then(linkId => {
           setLinkId(linkId)
         })
       }
@@ -58,7 +57,7 @@ export default function ConfirmBankPage({ order }) {
       console.log("couldn't find bank id on url or bankDatum in local state")
     }
     
-  }, [order, bankDatum, bankIdFromUrl])
+  }, [paymentIntent, bankDatum, bankIdFromUrl])
 
   useEffect(() => {
     if (linkId) {
@@ -86,7 +85,7 @@ export default function ConfirmBankPage({ order }) {
           <Spacer y={2} />
           <h3 className="header-s">We're redirecting you to your bank</h3>
           <Spacer y={2} />
-          <p className="text-body-faded">You'll be sent back here after you confirm your payment of <span style={{ fontWeight: 800}}>{formatCurrency(order.total)}</span></p>
+          <p className="text-body-faded">You'll be sent back here after you confirm your payment of <span style={{ fontWeight: 800}}>{formatCurrency(paymentIntent.amount)}</span></p>
         </div>
       </div>
 

@@ -22,7 +22,6 @@ export default function BasketPage({ merchant }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { merchantId } = useParams();
-  const navigate = useNavigate();
 
   useEffect(() => {
     viewPage(PageName.BASKET, { merchantId });
@@ -49,10 +48,11 @@ export default function BasketPage({ merchant }) {
     });
 
     createOrder(merchantId, basketItems)
-      .then((orderId) => {
+      .then((res) => {
+        const { checkoutUrl, orderId } = res
         setIsLoading(false);
         analyticsManager.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId });
-        navigate(`/checkout/${orderId}/choose-bank`)
+        window.location.href = checkoutUrl
       })
       .catch((err) => {
         setIsLoading(false);

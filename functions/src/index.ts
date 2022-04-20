@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import internalApp from "./internal/internalApp";
-import clientApiApp from "./client/api/clientApiApp";
+import clientApiApp from "./clientApi/clientApiApp";
 import onlineMenuApp from "./onlineMenu/onlineMenuApp";
 
 const REGION = "europe-west2";

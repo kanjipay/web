@@ -1,9 +1,9 @@
 import * as express from "express";
 import * as bodyParser from "body-parser"
-// import { checkFirebaseAuthToken } from '../middleware/auth'
 import { errorHandler } from "../shared/middleware/errorHandler";
 import webhooksApp from "./webhooks/webhooksApp";
 import apiApp from "./api/apiApp";
+import { verifyDomain } from "../shared/middleware/verifyDomain";
 
 const main = express();
 
@@ -14,7 +14,7 @@ main.use(bodyParser.raw({ type: "application/jwt" }))
 
 main.use(errorHandler);
 
-main.use("/api", apiApp);
-main.use("/webhooks", webhooksApp)
+main.use("/api/v1", verifyDomain, apiApp);
+main.use("/webhooks/v1", webhooksApp)
 
 export default main;

@@ -8,6 +8,7 @@ import {
   AnalyticsManager,
   viewPage,
 } from "../../utils/AnalyticsManager";
+import { cancelPaymentIntent } from "./redirects";
 
 export default function PaymentUnsuccessfulPage({
   Icon,
@@ -16,21 +17,14 @@ export default function PaymentUnsuccessfulPage({
   title,
   body,
   pageName,
-  order,
+  paymentIntent,
 }) {
   const navigate = useNavigate();
-  const orderId = order.id;
   const [isLoading, setIsLoading] = useState(false);
-
-  const merchantId = order.merchantId;
-
-  useEffect(() => {
-    viewPage(pageName, { orderId });
-  }, [orderId, pageName]);
 
   const handleTryAgain = () => {
     AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
-      button: "retryOrderPayment",
+      button: "retryPayment",
     });
     navigate("../payment");
   };
@@ -39,21 +33,13 @@ export default function PaymentUnsuccessfulPage({
     setIsLoading(true);
 
     AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
-      button: "cancelOrder",
+      button: "cancelPaymentIntent",
     });
 
-    setOrderStatus(orderId, OrderStatus.ABANDONED)
-      .then((doc) => {
-        setIsLoading(false);
-        AnalyticsManager.main.logEvent(AnalyticsEvent.ABANDON_ORDER, {
-          orderId,
-        });
-        navigate(`/menu/${merchantId}`);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
-      });
+    cancelPaymentIntent(paymentIntent).then(redirectUrl => {
+      setIsLoading(false)
+      window.location.href = redirectUrl
+    })
   };
 
   return (

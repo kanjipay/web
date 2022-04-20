@@ -9,7 +9,7 @@ export class AnalyticsEvent {
   static REMOVE_FROM_BASKET = "RemoveFromBasket";
   static CHANGE_BASKET_AMOUNT = "ChangeBasketAmount";
   static CREATE_ORDER = "CreateOrder";
-  static ABANDON_ORDER = "AbandonOrder";
+  static ABANDON_PAYMENT_INTENT = "AbandonPaymentIntent";
   static RECEIVE_PLAID_EVENT = "ReceivePlaidEvent";
   static CREATE_PAYMENT_ATTEMPT = "CreatePaymentAttempt";
 }

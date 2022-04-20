@@ -6,6 +6,7 @@ export default class Collection {
   static MENU_ITEM = new Collection("MenuItem");
   static MENU_SECTION = new Collection("MenuSection");
   static ORDER = new Collection("Order");
+  static PAYMENT_INTENT = new Collection("PaymentIntent");
   static PAYMENT_ATTEMPT = new Collection("PaymentAttempt");
   static OPENING_HOUR_RANGE = new Collection("OpeningHourRange");
   static CONTACT_REQUEST = new Collection("ContactRequest");

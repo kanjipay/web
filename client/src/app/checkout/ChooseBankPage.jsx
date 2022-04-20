@@ -1,4 +1,5 @@
 import axios from "axios";
+import { updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
@@ -8,9 +9,10 @@ import CircleIcon from "../../components/CircleIcon";
 import LoadingPage from "../../components/LoadingPage";
 import NavBar from "../../components/NavBar";
 import Spacer from "../../components/Spacer";
-import OrderStatus from "../../enums/OrderStatus";
-import { setOrderStatus } from "../../utils/services/OrdersService";
+import Collection from "../../enums/Collection";
+import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
 import BankTile from "./BankTile";
+import { cancelPaymentIntent } from "./redirects";
 
 async function fetchBankData() {
   const res = await axios.get("https://identity.moneyhub.co.uk/oidc/.well-known/api-connections")
@@ -32,7 +34,7 @@ export async function fetchBankDatum(bankId) {
   return bankData.find(datum => datum.id === bankId)
 }
 
-export default function ChooseBankPage({ order }) {
+export default function ChooseBankPage({ paymentIntent }) {
   const [bankName, setBankName] = useState("")
   const [bankData, setBankData] = useState([])
   const [filteredBankData, setFilteredBankData] = useState([])
@@ -77,9 +79,8 @@ export default function ChooseBankPage({ order }) {
   const handleClickBack = () => {
     setIsLoading(true)
 
-    setOrderStatus(order.id, OrderStatus.ABANDONED).then(() => {
-      navigate(`/menu/${order.merchantId}`)
-      setIsLoading(false)
+    cancelPaymentIntent(paymentIntent).then(redirectUrl => {
+      window.location.href = redirectUrl
     })
   }
 

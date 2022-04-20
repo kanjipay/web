@@ -15,25 +15,24 @@ export async function createOrder(merchantId, basketItems) {
   const deviceId = IdentityManager.main.getDeviceId();
   const userId = IdentityManager.main.getPseudoUserId()
 
-  const body = {
+  const requestedItems = basketItems
+    .filter((item) => item.merchantId === merchantId)
+    .map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+      title: item.title,
+    }))
+
+  const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/onlineMenu/api/v1/orders`, {
     merchantId,
     deviceId,
     userId,
-    requestedItems: basketItems
-      .filter((item) => item.merchantId === merchantId)
-      .map((item) => ({
-        id: item.id,
-        quantity: item.quantity,
-        title: item.title,
-      })),
-  };
+    requestedItems
+  });
 
-  const res = await axios.post(
-    `${process.env.REACT_APP_SERVER_URL}/orders`,
-    body
-  );
+  const { checkoutUrl, orderId } = res.data
 
-  return res.data.orderId;
+  return { checkoutUrl, orderId };
 }
 
 export async function fetchOrder(orderId, onComplete) {

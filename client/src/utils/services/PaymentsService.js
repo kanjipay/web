@@ -8,39 +8,40 @@ import {
 import axios from "axios";
 import Collection from "../../enums/Collection";
 import { IdentityManager } from "../IdentityManager";
+import { restoreState, saveState } from "./StateService";
+import { v4 as uuid } from "uuid"
 
-export function createPaymentAttempt(orderId, bankId, stateId, isLocalEnvironment = false) {
+export async function createPaymentAttempt(paymentIntentId, bankId) {
   const deviceId = IdentityManager.main.getDeviceId()
-  
-  const requestBody = {
-    orderId,
-    deviceId,
-    isLocalEnvironment: isLocalEnvironment,
-    stateId,
-    moneyhub: {
-      bankId
-    }
-  };
+  const clientState = uuid()
+  const stateId = await saveState({ clientState })
 
-  return axios.post(
-    `${process.env.REACT_APP_SERVER_URL}/payment-attempts`,
-    requestBody
-  );
+  const res = axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts`, {
+    paymentIntentId,
+    deviceId,
+    stateId,
+    clientState,
+    moneyhubBankId: bankId
+  });
+
+  const { authUrl } = res.data
+
+  return authUrl
 }
 
-export async function swapCode(code, state, idToken, paymentAttemptId) {
+export async function confirmPayment(code, state, idToken) {
   try {
-    const res = await axios.post(
-      `${process.env.REACT_APP_SERVER_URL}/payment-attempts/swap-code`,
-      {
-        code,
-        state,
-        idToken,
-        paymentAttemptId
-      }
-    )
+    const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts/confirm`, {
+      code,
+      state,
+      idToken,
+    })
 
-    return res
+    const { paymentAttemptId, stateId } = res.data
+
+    await restoreState(stateId)
+
+    return paymentAttemptId
   } catch (err) {
     console.log(err)
   }

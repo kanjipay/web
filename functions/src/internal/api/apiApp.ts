@@ -1,8 +1,9 @@
 import * as express from "express";
 import * as cors from "cors";
-import v1App from "./v1/v1App";
-// import { checkFirebaseAuthToken } from '../../../shared/middleware/auth'
-import { verifyDomain } from "../../shared/middleware/verifyDomain";
+import payeesRoutes from "./routes/payeesRoutes";
+import linksRoutes from "./routes/linksRoutes";
+import paymentAttemptsRoutes from "./routes/paymentAttemptsRoutes";
+import loggingRoutes from "./routes/loggingRoutes";
 
 const apiApp = express();
 
@@ -11,9 +12,12 @@ const corsInstanceApi = cors({ origin });
 apiApp.use(corsInstanceApi);
 apiApp.options("*", corsInstanceApi);
 
-apiApp.use("/v1", verifyDomain, v1App)
-
-// Do this to enable protected routes
-// app.use('/orders', checkFirebaseAuthToken, ordersRoutes)
+apiApp.use("/payment-attempts", paymentAttemptsRoutes);
+apiApp.use("/payees", payeesRoutes);
+apiApp.use("/links", linksRoutes);
+apiApp.use("/log", loggingRoutes);
+apiApp.get("/status", (req, res) => {
+  res.sendStatus(200)
+})
 
 export default apiApp;
