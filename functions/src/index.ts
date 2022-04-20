@@ -26,6 +26,8 @@ export const clientApi = functions
 export const onlineMenu = functions
   .region(REGION)
   .runWith({ secrets: [
-    "SERVICE_ACCOUNT"
+    "SERVICE_ACCOUNT",
+    "MERCADO_CLIENT_ID",
+    "MERCADO_CLIENT_SECRET"
   ] })
   .https.onRequest(onlineMenuApp);
