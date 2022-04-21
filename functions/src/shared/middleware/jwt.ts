@@ -11,16 +11,18 @@ async function sign(body, iatDelta) {
   const [key] = keyStore.all({ use: 'sig' });
   const opt = { compact: true, jwk: key, fields: { typ: 'jwt' } };
   const payload = await makePayload(body, iatDelta);
-  const kid = await jose.JWS.createSign(opt, key).update(payload).final();
+  const kid = key.kid;
+  const sign = await jose.JWS.createSign(opt, key).update(payload).final();
   return {
       alg: 'RS256',
       kid,
+      sign,
       typ: "JWT"
   }
 };
 
-async function makePayload(body, iatDelta){
-    const bodyHash = await sha256(body);
+function makePayload(body, iatDelta){
+    const bodyHash = sha256(body);
     return JSON.stringify({
         exp: Math.floor((Date.now() + ms(iatDelta)) / 1000),
         iat: Math.floor(Date.now() / 1000),
@@ -29,11 +31,17 @@ async function makePayload(body, iatDelta){
 }
 
 async function verify(token){
-  const jwksUrl = `${process.env.BASE_SERVER_URL}/clientApi/v1/jwks`;
-  const {data} = await axios.get(jwksUrl);
-  const [firstKey] = data.keys
-  const publicKey = jwktopem(firstKey)
-  return jwt.verify(token, publicKey);
+    const jwksUrl = `${process.env.BASE_SERVER_URL}/clientApi/v1/jwks`;
+    const {data} = await axios.get(jwksUrl);
+    const [firstKey] = data.keys;
+    const keyPem = jwktopem(firstKey);
+    try {
+        return jwt.verify(token, keyPem);
+    }
+    catch (error) {
+        console.log(error);
+        return 'invalid key';
+    }
 }
 
 export default {sign, verify} 
