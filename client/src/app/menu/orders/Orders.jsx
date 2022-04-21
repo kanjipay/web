@@ -2,7 +2,7 @@ import { onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Route, Routes, useParams } from "react-router-dom";
 import Collection from "../../../enums/Collection";
-import LoadingPage from "../../components/LoadingPage";
+import LoadingPage from "../../../components/LoadingPage";
 import OrderPaidPage from "./OrderPaidPage"
 import EmailSubmittedPage from "./EmailSubmittedPage"
 import OrderAbandonedPage from "./OrderAbandonedPage"

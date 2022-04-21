@@ -4,7 +4,7 @@ import * as crypto from "crypto"
 import { v4 as uuid } from "uuid"
 import { db } from "../../../shared/utils/admin";
 import { firestore } from "firebase-admin";
-import { generateHash } from "../../../shared/utils/createHash";
+import sha256 = require("sha256");
 
 export default class ClientsController extends BaseController {
   create = async (req, res, next) => {
@@ -13,7 +13,7 @@ export default class ClientsController extends BaseController {
 
       const clientId = uuid()
       const clientSecret = crypto.randomBytes(32).toString("hex")
-      const clientSecretHash = generateHash(clientSecret)
+      const clientSecretHash = sha256(clientSecret)
 
       await db()
         .collection(Collection.CLIENT)

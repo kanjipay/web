@@ -1,5 +1,5 @@
+import sha256 = require("sha256")
 import Collection from "../../shared/enums/Collection"
-import { generateHash } from "../../shared/utils/createHash"
 import { fetchDocument } from "../../shared/utils/fetchDocument"
 
 
@@ -20,7 +20,7 @@ export const checkClientCredentials = async (req, res, next) => {
   }
 
   const clientSecret = req.headers["mcp-client-secret"]
-  const clientSecretHash = generateHash(clientSecret)
+  const clientSecretHash = sha256(clientSecret)
 
   if (client.clientSecretHash !== clientSecretHash) {
     console.log("hash mismatch")
