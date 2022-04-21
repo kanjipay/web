@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as jwt from "jsonwebtoken"
 import * as jwkToPem from "jwk-to-pem";
-import { generateHash } from "../../shared/utils/createHash";
+import sha256 = require("sha256");
 
 const keyCache = new Map()
 
@@ -9,6 +9,11 @@ export const verifyMercado = async (req, res, next) => {
   const errorRes = res.status(403).send("Unauthorized");
 
   const signature = req.headers["mcp-signature"]
+
+  if (!signature) {
+    return errorRes
+  }
+
   const decoded = jwt.decode(signature, { complete: true })
   const receivedKid = decoded.header.kid
 
@@ -46,9 +51,18 @@ export const verifyMercado = async (req, res, next) => {
   }
 
   const bodyString = JSON.stringify(req.body)
-  const bodyHash = generateHash(bodyString)
+  const bodyHash = sha256(bodyString)
 
-  
-  
+  if (bodyHash !== payload.body_sha_256) { return errorRes }
+
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+  const { iat } = payload
+
+  if (!iat) { return errorRes }
+
+  const signatureIssuedAt = new Date(iat)
+
+  if (signatureIssuedAt < fiveMinutesAgo) { return errorRes }
+
   next()
 }
