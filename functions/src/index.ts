@@ -21,7 +21,7 @@ export const clientApi = functions
   .region(REGION)
   .runWith({ secrets: [
     "SERVICE_ACCOUNT",
-    "JWKS_PRIVATE_KEY"
+    "JWKS_PUBLIC_KEY"
   ] })
   .https.onRequest(clientApiApp);
 
