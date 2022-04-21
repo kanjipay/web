@@ -12,6 +12,7 @@ export const internal = functions
     "MONEYHUB_CLIENT_ID",
     "MONEYHUB_CLIENT_SECRET",
     "MONEYHUB_PRIVATE_JWKS",
+    "JWKS_PRIVATE_KEY",
     "SENDGRID_API_KEY",
   ] })
   .https.onRequest(internalApp);
@@ -19,7 +20,8 @@ export const internal = functions
 export const clientApi = functions
   .region(REGION)
   .runWith({ secrets: [
-    "SERVICE_ACCOUNT"
+    "SERVICE_ACCOUNT",
+    "JWKS_PUBLIC_KEY"
   ] })
   .https.onRequest(clientApiApp);
 
