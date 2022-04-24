@@ -1,5 +1,4 @@
 import axios from "axios";
-import { updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
@@ -9,8 +8,6 @@ import CircleIcon from "../../components/CircleIcon";
 import LoadingPage from "../../components/LoadingPage";
 import NavBar from "../../components/NavBar";
 import Spacer from "../../components/Spacer";
-import Collection from "../../enums/Collection";
-import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
 import BankTile from "./BankTile";
 import { cancelPaymentIntent } from "./redirects";
 

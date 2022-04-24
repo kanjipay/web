@@ -6,7 +6,7 @@ import { formatCurrency } from "../../../utils/helpers/money";
 import BasketItem from "./BasketItem";
 import useBasket from "./useBasket";
 import Divider from "@mui/material/Divider";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import NavBarButton from "../../../components/NavBarButton";
 import { createOrder } from "../../../utils/services/OrdersService";

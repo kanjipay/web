@@ -1,10 +1,14 @@
 import axios from "axios";
 import * as jwt from "jsonwebtoken";
 import * as jwkToPem from "jwk-to-pem";
+import LoggingController from "../../shared/utils/loggingClient";
 
 const keyCache = new Map()
 
 export const verifyMoneyhub = async (req, res, next) => {
+  const loggingClient = new LoggingController("Moneyhub Webhook verification");
+
+  loggingClient.log("Start verifying Moneyhub")
   const token = req.body.toString()
 
   let decoded

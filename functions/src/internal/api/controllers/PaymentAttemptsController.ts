@@ -4,7 +4,7 @@ import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus";
 import { db } from "../../../shared/utils/admin";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../../shared/utils/errors";
 import LoggingController from "../../../shared/utils/loggingClient";
-import { generateMoneyhubPaymentAuthUrl, processAuthSuccess } from "../../../shared/utils/moneyhubClient";
+import { generateMoneyhubPaymentAuthUrl, getMoneyhubPayment, processAuthSuccess } from "../../../shared/utils/moneyhubClient";
 import { v4 as uuid } from "uuid";
 import * as jwt from "jsonwebtoken";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
@@ -43,7 +43,7 @@ export default class PaymentAttemptsController extends BaseController {
       );
 
       const paymentAttemptId = uuid()
-      const bankId = process.env.ENVIRONMENT !== "PROD" ? "5233db2a04fe41dd01d3308ea92e8bd7" : moneyhubBankId
+      const bankId = process.env.ENVIRONMENT !== "PROD" ? "1ffe704d39629a929c8e293880fb449a" : moneyhubBankId
       
       const authUrl = await generateMoneyhubPaymentAuthUrl(
         moneyhubPayeeId,
@@ -102,8 +102,13 @@ export default class PaymentAttemptsController extends BaseController {
       }
 
       const [paymentAttemptId, stateId] = stateVars
+      console.log("stateId: ", stateId)
 
-      const { stateObject, stateError } = await fetchDocument(Collection.STATE, stateId)
+      const stateResult = await fetchDocument(Collection.STATE, stateId)
+      const stateObject = stateResult.state
+      const { stateError } = stateResult
+
+      console.log("stateObject: ", JSON.stringify(stateObject))
 
       if (stateError) {
         next(stateError)
@@ -114,7 +119,11 @@ export default class PaymentAttemptsController extends BaseController {
 
       const { id_token } = await processAuthSuccess(code, state, idToken, paymentAttemptId, stateId, clientState)
 
+      console.log("get id token back: ", id_token)
+
       const decoded = jwt.decode(id_token, { complete: true })
+
+      console.log("decoded id token: ", JSON.stringify(decoded))
       const paymentId = decoded.payload["mh:payment"]
 
       await db()
@@ -128,6 +137,18 @@ export default class PaymentAttemptsController extends BaseController {
     } catch (err) {
       console.log(err)
       return res.sendStatus(500)
+    }
+  }
+
+  getPayment = async (req, res, next) => {
+    try {
+      console.log("what is happening")
+      const { moneyhubPaymentId } = req.params
+      const data = await getMoneyhubPayment(moneyhubPaymentId)
+
+      res.status(200).json(data)
+    } catch (err) {
+      console.log(err)
     }
   }
 }

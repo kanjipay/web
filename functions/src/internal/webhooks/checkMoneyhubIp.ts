@@ -9,7 +9,7 @@ export const checkMoneyhubIp = (req, res, next) => {
 
   if (!moneyhubIps.includes(requestIp)) {
     console.log(`IP address ${requestIp} calling webhook but not a Moneyhub IP`);
-    return res.sendStatus(401) 
+    return res.sendStatus(401)
   }
 
   next()

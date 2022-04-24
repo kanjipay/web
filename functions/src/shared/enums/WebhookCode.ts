@@ -1,0 +1,3 @@
+export enum WebhookCode {
+  PAYMENT_INTENT_UPDATE = "PAYMENT_INTENT_UPDATE"
+}

@@ -1,10 +1,9 @@
 import * as jose from "node-jose";
 import * as ms from "ms";
-import {sha256} from 'js-sha256';
 import * as jwt from 'jsonwebtoken';
 import * as jwktopem from 'jwk-to-pem';
-
 import axios from 'axios';
+import sha256 = require("sha256");
 
 async function sign(body, iatDelta) { 
   const keyStore = await jose.JWK.asKeyStore(process.env.JWKS_PRIVATE_KEY);

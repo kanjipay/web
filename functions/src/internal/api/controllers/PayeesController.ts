@@ -5,7 +5,6 @@ import BaseController from "../../../shared/BaseController";
 import { PayeeApprovalStatus as PayeeApprovalStatus } from "../../../clientApi/v1/controllers/PayeesController";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import { firestore } from "firebase-admin";
-import sha256 = require("sha256");
 
 export default class PayeesController extends BaseController {
   review = async (req, res, next) => {

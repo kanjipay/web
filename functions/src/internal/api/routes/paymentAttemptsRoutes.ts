@@ -34,27 +34,29 @@ routes.post(
   controller.create
 );
 
-const confirmPaymentAttemptRequiredFields = ["code", "state"]
 const isLocal = process.env.IS_LOCAL === "TRUE"
+const confirmPaymentAttemptRequiredFields = ["code", "state"]
+const confirmPaymentAttemptProperties = {
+  code: {
+    type: "string"
+  },
+  state: {
+    type: "string"
+  },
+} as const
+
 
 if (!isLocal) {
   confirmPaymentAttemptRequiredFields.push("idToken")
+  confirmPaymentAttemptProperties["idToken"] = {
+    type: "string"
+  }
 }
 
 const confirmPaymentAttemptSchema: AllowedSchema = {
   type: "object",
   required: confirmPaymentAttemptRequiredFields,
-  properties: {
-    code: {
-      type: "string"
-    },
-    state: {
-      type: "string"
-    },
-    idToken: {
-      type: "string"
-    }
-  }
+  properties: confirmPaymentAttemptProperties
 }
 
 routes.post(
@@ -62,5 +64,10 @@ routes.post(
   validate({ body: confirmPaymentAttemptSchema }),
   controller.confirm
 );
+
+routes.get(
+  "/moneyhub-payments/:moneyhubPaymentId",
+  controller.getPayment
+)
 
 export default routes;
