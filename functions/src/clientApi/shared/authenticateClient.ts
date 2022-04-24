@@ -13,7 +13,6 @@ export const checkClientCredentials = async (req, res, next) => {
   }
 
   const { client } = await fetchDocument(Collection.CLIENT, clientId)
-
   if (!client) {
     console.log("No such client id ", clientId)
     return res.sendStatus(403)
@@ -28,6 +27,5 @@ export const checkClientCredentials = async (req, res, next) => {
   }
 
   req.clientId = clientId
-
-  next()
+  return next()
 }
