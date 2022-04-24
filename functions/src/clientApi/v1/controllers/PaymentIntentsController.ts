@@ -19,9 +19,6 @@ export default class PaymentIntentsController extends BaseController {
 
     const { moneyhub, companyName } = payee
     const moneyhubPayeeId = moneyhub.payeeId
-    const moneyhubPayeeIdLocal = moneyhub.payeeIdLocal
-
-    const mhPayeeId = process.env.IS_LOCAL === "TRUE" ? moneyhubPayeeIdLocal : moneyhubPayeeId
 
     const { paymentIntentId } = await addDocument(Collection.PAYMENT_INTENT, {
       amount,
@@ -30,7 +27,7 @@ export default class PaymentIntentsController extends BaseController {
       clientId,
       payee: {
         payeeId,
-        moneyhubPayeeId: mhPayeeId,
+        moneyhubPayeeId,
         companyName
       },
       status: PaymentIntentStatus.PENDING,

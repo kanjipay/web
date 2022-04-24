@@ -4,11 +4,10 @@ import Collection from "../../enums/Collection";
 import { restoreState, saveState } from "./StateService";
 
 export async function createLink(path) {
-  // I think a state should always be created when creating a link
   const stateId = await saveState()
-
+  
   const res = await axios.post(
-    `${process.env.REACT_APP_SERVER_URL}/links`,
+    `${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/links`,
     { path, stateId }
   );
 

@@ -3,7 +3,7 @@ import { Colors } from "../../components/CircleButton";
 import { PageName } from "../../utils/AnalyticsManager";
 import PaymentUnsuccessfulPage from "./PaymentUnsuccessfulPage";
 
-export default function PaymentFailurePage({ order }) {
+export default function PaymentFailurePage({ paymentIntent }) {
   return (
     <PaymentUnsuccessfulPage
       Icon={Cross}
@@ -12,7 +12,7 @@ export default function PaymentFailurePage({ order }) {
       title="Your payment failed"
       body="Don't worry, you haven't been charged"
       pageName={PageName.PAYMENT_FAILURE}
-      order={order}
+      paymentIntent={paymentIntent}
     />
   );
 }

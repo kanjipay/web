@@ -10,13 +10,17 @@ import { fetchDocument } from "../../shared/utils/fetchDocument";
 import LoggingController from "../../shared/utils/loggingClient";
 // import { fetchMoneyhubPayment } from "../../shared/utils/moneyhubClient";
 import * as jwt from "jsonwebtoken"
+import * as jwkToPem from "jwk-to-pem"
 import { v4 as uuid } from "uuid"
+import { WebhookCode } from "../../shared/enums/WebhookCode";
 
 export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
   try {
     const loggingClient = new LoggingController("Moneyhub Webhook");
 
     const { payload } = req // Attached to request by verifyMoneyhub middleware
+
+    loggingClient.log("Payload received", {}, payload)
 
     const moneyhubPaymentStatuses = {
       "urn:com:moneyhub:events:payment-completed": PaymentAttemptStatus.SUCCESSFUL,
@@ -33,7 +37,12 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
     const paymentAttemptStatus = moneyhubPaymentStatuses[eventUrn]
     const { paymentId, paymentSubmissionId } = payload.events[eventUrn]
 
-    loggingClient.log("Received Payment Update Subroutine Started");
+    loggingClient.log("Received Payment Update Subroutine Started", {}, {
+      paymentId,
+      paymentSubmissionId,
+      paymentAttemptStatus
+    });
+
     const paymentAttemptSnapshot = await db()
       .collection(Collection.PAYMENT_ATTEMPT)
       .where(`moneyhub.paymentId`, "==", paymentId)
@@ -112,7 +121,7 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
 
       // TODO: implement retries
       await sendWebhook(webhookUrl, {
-        webhookCode: "PAYMENT_INTENT_UPDATE",
+        webhookCode: WebhookCode.PAYMENT_INTENT_UPDATE,
         paymentAttemptId,
         paymentIntentId,
         payeeId,
@@ -151,15 +160,18 @@ export async function sendWebhook(webhookUrl: string, body: Object) {
     body_sha_256: bodyHash
   }
 
+  const jwks = JSON.parse(process.env.JWKS_PRIVATE_KEY)
+  const [key] = jwks.keys
+  const pem = jwkToPem(key)
+
   let signature: string
 
   try {
-    // TODO: get our private key here
-    signature = jwt.sign(payload, "private key")
+    signature = jwt.sign(payload, pem)
   } catch (err) {
     return false
   }
-
+  
   await axios.post(webhookUrl, body, {
     headers: {
       "mcp-signature": signature

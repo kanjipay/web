@@ -10,6 +10,7 @@ export default function PaymentPageMoneyhub({ paymentIntent }) {
 
   useEffect(() => {
     createPaymentAttempt(paymentIntentId, bankId).then(authUrl => {
+      console.log(authUrl)
       window.location.href = authUrl
     })
   }, [bankId, paymentIntentId])

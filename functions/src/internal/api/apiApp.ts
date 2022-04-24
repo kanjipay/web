@@ -3,6 +3,7 @@ import * as cors from "cors";
 import payeesRoutes from "./routes/payeesRoutes";
 import linksRoutes from "./routes/linksRoutes";
 import paymentAttemptsRoutes from "./routes/paymentAttemptsRoutes";
+import paymentIntentsRoutes from "./routes/paymentIntentsRoutes";
 import loggingRoutes from "./routes/loggingRoutes";
 import clientsRoutes from "./routes/clientsRoutes";
 
@@ -14,6 +15,7 @@ apiApp.use(corsInstanceApi);
 apiApp.options("*", corsInstanceApi);
 
 apiApp.use("/payment-attempts", paymentAttemptsRoutes);
+apiApp.use("/payment-intents", paymentIntentsRoutes);
 apiApp.use("/payees", payeesRoutes);
 apiApp.use("/clients", clientsRoutes);
 apiApp.use("/links", linksRoutes);

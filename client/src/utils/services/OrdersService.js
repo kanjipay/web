@@ -67,7 +67,7 @@ export function sendOrderReceipt(orderId, email) {
   };
 
   return axios.post(
-    `${process.env.REACT_APP_SERVER_URL}/orders/email-receipt`,
+    `${process.env.REACT_APP_BASE_SERVER_URL}/onlineMenu/api/v1/orders/email-receipt`,
     requestBody
   );
 }

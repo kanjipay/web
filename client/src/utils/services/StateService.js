@@ -2,7 +2,7 @@ import { addDoc, deleteDoc, getDoc } from "firebase/firestore"
 import Collection from "../../enums/Collection"
 import { LocalStorageKeys } from "../IdentityManager"
 
-export async function saveState(additionalData) {
+export async function saveState(additionalData = {}) {
   const localStorageKeys = [
     LocalStorageKeys.MONEYHUB_BANK_ID,
     LocalStorageKeys.PSEUDO_USER_ID,
@@ -14,6 +14,9 @@ export async function saveState(additionalData) {
   }, {})
 
   const stateDoc = await addDoc(Collection.STATE.ref, { localStorageData, additionalData })
+
+
+  console.log("saved state id: ", stateDoc.id)
   const stateId = stateDoc.id
 
   return stateId
@@ -27,9 +30,9 @@ export async function restoreState(stateId, shouldDelete = true) {
 
     if (!stateDoc.exists()) { return null }
 
-    const { state } = stateDoc.data()
+    const { localStorageData } = stateDoc.data()
 
-    for (const [key, value] of Object.entries(state)) {
+    for (const [key, value] of Object.entries(localStorageData)) {
       localStorage.setItem(key, value)
     }
 
@@ -37,7 +40,7 @@ export async function restoreState(stateId, shouldDelete = true) {
       await deleteDoc(docRef)
     }
 
-    return state
+    return localStorageData
   } catch (err) {
     console.log(err)
   }

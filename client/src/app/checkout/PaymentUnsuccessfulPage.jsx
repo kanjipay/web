@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import IconActionPage from "../../components/IconActionPage";
-import { setOrderStatus } from "../../utils/services/OrdersService";
-import OrderStatus from "../../enums/OrderStatus";
 import {
   AnalyticsEvent,
   AnalyticsManager,
-  viewPage,
 } from "../../utils/AnalyticsManager";
 import { cancelPaymentIntent } from "./redirects";
 
@@ -26,7 +23,7 @@ export default function PaymentUnsuccessfulPage({
     AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
       button: "retryPayment",
     });
-    navigate("../payment");
+    navigate("../choose-bank");
   };
 
   const handleCancelOrder = () => {
@@ -51,7 +48,7 @@ export default function PaymentUnsuccessfulPage({
       body={body}
       primaryActionTitle="Try again"
       primaryAction={handleTryAgain}
-      secondaryActionTitle="Cancel order"
+      secondaryActionTitle="Cancel payment"
       secondaryAction={handleCancelOrder}
       secondaryIsLoading={isLoading}
     />

@@ -3,7 +3,7 @@ import { Colors } from "../../components/CircleButton";
 import { PageName } from "../../utils/AnalyticsManager";
 import PaymentUnsuccessfulPage from "./PaymentUnsuccessfulPage";
 
-export default function PaymentCancelledPage({ order }) {
+export default function PaymentCancelledPage({ paymentIntent }) {
   return (
     <PaymentUnsuccessfulPage
       Icon={Back}
@@ -12,7 +12,7 @@ export default function PaymentCancelledPage({ order }) {
       title="You cancelled the payment"
       body="Don't worry, you haven't been charged"
       pageName={PageName.PAYMENT_CANCELLED}
-      order={order}
+      paymentIntent={paymentIntent}
     />
   );
 }

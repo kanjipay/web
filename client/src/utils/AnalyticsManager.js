@@ -73,7 +73,7 @@ export class AnalyticsManager {
     // };
     
     // axios.post(
-    //   `${process.env.REACT_APP_SERVER_URL}/log`,
+    //   `${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/log`,
     //   payload
     // );
     this.analytics.logEvent(name, properties);

@@ -65,6 +65,12 @@ export async function processAuthSuccess(
   }
 }
 
+export async function getMoneyhubPayment(paymentId: string) {
+  const moneyhub = await getMoneyhubClient()
+
+  return await moneyhub.getPayment({ id: paymentId })
+}
+
 export async function getPayees() {
   try {
     const moneyhub = await getMoneyhubClient()

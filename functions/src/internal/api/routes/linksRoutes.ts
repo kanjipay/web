@@ -12,7 +12,6 @@ const createLinkSchema: AllowedSchema = {
   properties: {
     path: {
       type: "string",
-      format: "uri"
     },
     stateId: {
       type: "string"

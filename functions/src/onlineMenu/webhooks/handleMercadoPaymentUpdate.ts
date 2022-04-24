@@ -2,13 +2,14 @@ import { firestore } from "firebase-admin";
 import Collection from "../../shared/enums/Collection";
 import OrderStatus from "../../shared/enums/OrderStatus";
 import { PaymentIntentStatus } from "../../shared/enums/PaymentIntentStatus";
+import { WebhookCode } from "../../shared/enums/WebhookCode";
 import { db } from "../../shared/utils/admin";
 
 export const handleMercadoPaymentUpdate = async (req, res, next) => {
   try {
     const { paymentIntentId, paymentAttemptId, webhookCode, paymentIntentStatus } = req.body
 
-    if (webhookCode !== "PAYMENT_INTENT_UPDATE" || paymentIntentStatus !== PaymentIntentStatus.SUCCESSFUL) {
+    if (webhookCode !== WebhookCode.PAYMENT_INTENT_UPDATE || paymentIntentStatus !== PaymentIntentStatus.SUCCESSFUL) {
       console.log("Wrong webhookCode or paymentIntentStatus")
       return res.sendStatus(200)
     }
@@ -27,12 +28,18 @@ export const handleMercadoPaymentUpdate = async (req, res, next) => {
     }
 
     const orderId = orderDocs[0].id
+    const orderStatusMap = {
+      [PaymentIntentStatus.SUCCESSFUL]: OrderStatus.PAID,
+      [PaymentIntentStatus.CANCELLED]: OrderStatus.ABANDONED
+    }
+
+    const orderStatus = orderStatusMap[paymentIntentStatus]
 
     await db()
       .collection(Collection.ORDER)
       .doc(orderId)
       .update({
-        status: OrderStatus.PAID,
+        status: orderStatus,
         paidAt: firestore.FieldValue.serverTimestamp(),
         mercado: {
           paymentAttemptId

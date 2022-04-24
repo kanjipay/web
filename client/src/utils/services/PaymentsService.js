@@ -8,7 +8,7 @@ import {
 import axios from "axios";
 import Collection from "../../enums/Collection";
 import { IdentityManager } from "../IdentityManager";
-import { restoreState, saveState } from "./StateService";
+import { saveState } from "./StateService";
 import { v4 as uuid } from "uuid"
 
 export async function createPaymentAttempt(paymentIntentId, bankId) {
@@ -16,7 +16,7 @@ export async function createPaymentAttempt(paymentIntentId, bankId) {
   const clientState = uuid()
   const stateId = await saveState({ clientState })
 
-  const res = axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts`, {
+  const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts`, {
     paymentIntentId,
     deviceId,
     stateId,
@@ -37,9 +37,7 @@ export async function confirmPayment(code, state, idToken) {
       idToken,
     })
 
-    const { paymentAttemptId, stateId } = res.data
-
-    await restoreState(stateId)
+    const { paymentAttemptId } = res.data
 
     return paymentAttemptId
   } catch (err) {
