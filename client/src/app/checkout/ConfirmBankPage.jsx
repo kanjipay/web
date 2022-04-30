@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ButtonTheme } from "../../components/CircleButton";
 import MainButton from "../../components/MainButton";
 import NavBar from "../../components/NavBar";
@@ -16,11 +16,15 @@ import Collection from "../../enums/Collection";
 import OrDivider from "../../components/OrDivider";
 import QRCode from "react-qr-code";
 import Spinner from "../../assets/Spinner";
+import { IdentityManager } from "../../utils/IdentityManager";
 
 export default function ConfirmBankPage({ paymentIntent }) {
   const location = useLocation();
   const bankDatumFromState = location.state?.bankDatum;
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  const referringDeviceId = searchParams.get("referringDeviceId")
   
   const bankIdFromUrl = useParams().bankId
   const [linkId, setLinkId] = useState(null)
@@ -39,13 +43,14 @@ export default function ConfirmBankPage({ paymentIntent }) {
 
   const handleContinueToBank = () => {
     console.log("handleContinueToBank")
-    navigate("../payment", { state: { bankId: bankDatum.id } })
+    navigate("../payment", { state: { bankId: bankDatum.id, referringDeviceId } })
   }
 
   useEffect(() => {
     if (bankDatum) {
       if (!isMobile) {
-        createLink(`/checkout/${paymentIntent.id}/confirm-bank/${bankDatum.id}`).then(linkId => {
+        const deviceId = IdentityManager.main.getDeviceId()
+        createLink(`/checkout/${paymentIntent.id}/confirm-bank/${bankDatum.id}?referringDeviceId=${deviceId}`).then(linkId => {
           setLinkId(linkId)
         })
       }

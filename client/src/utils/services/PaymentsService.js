@@ -7,12 +7,10 @@ import {
 } from "firebase/firestore";
 import axios from "axios";
 import Collection from "../../enums/Collection";
-import { IdentityManager } from "../IdentityManager";
 import { saveState } from "./StateService";
 import { v4 as uuid } from "uuid"
 
-export async function createPaymentAttempt(paymentIntentId, bankId) {
-  const deviceId = IdentityManager.main.getDeviceId()
+export async function createPaymentAttempt(paymentIntentId, bankId, deviceId) {
   const clientState = uuid()
   const stateId = await saveState({ clientState })
 

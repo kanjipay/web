@@ -65,9 +65,9 @@ routes.post(
   controller.confirm
 );
 
-routes.get(
-  "/moneyhub-payments/:moneyhubPaymentId",
-  controller.getPayment
+routes.post(
+  "/pa/:paymentAttemptId/check-status",
+  controller.checkPayment
 )
 
 export default routes;

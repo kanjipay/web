@@ -10,6 +10,7 @@ import PaymentPageMoneyhub from "./PaymentPageMoneyhub";
 import MobileHandoverPage from "./MobileHandoverPage";
 import { onSnapshot } from "firebase/firestore";
 import Collection from "../../enums/Collection";
+import MobileFinishedPage from "./MobileFinishedPage";
 
 export default function Checkout() {
   const [paymentIntent, setPaymentIntent] = useState(null);
@@ -31,6 +32,7 @@ export default function Checkout() {
       <Route path="confirm-bank" element={<ConfirmBankPage paymentIntent={paymentIntent} />} />
       <Route path="confirm-bank/:bankId" element={<ConfirmBankPage paymentIntent={paymentIntent} />} />
       <Route path="mobile-handover" element={<MobileHandoverPage paymentIntent={paymentIntent} />} />
+      <Route path="mobile-finished" element={<MobileFinishedPage />} />
       <Route path="payment-failure" element={<PaymentFailurePage paymentIntent={paymentIntent} />} />
       <Route path="payment-cancelled" element={<PaymentCancelledPage paymentIntent={paymentIntent} />} />
     </Routes> :

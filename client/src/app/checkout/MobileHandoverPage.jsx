@@ -7,37 +7,32 @@ import CircleIcon from "../../components/CircleIcon";
 import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";
 import OrderStatus from "../../enums/OrderStatus";
+import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
 import useBasket from "../menu/basket/useBasket";
+import { generateRedirectUrl } from "./redirects";
 
 export default function MobileHandoverPage() {
   // Should be polling order for status paid
-  const { orderId } = useParams()
+  const { paymentIntentId } = useParams()
   const navigate = useNavigate()
   const { clearBasket } = useBasket()
 
+  console.log(`paymentIntentId: ${paymentIntentId}`)
+
   useEffect(() => {
-    return onSnapshot(Collection.ORDER.docRef(orderId), doc => {
-      const { status, merchantId } = doc.data()
+    return onSnapshot(Collection.PAYMENT_INTENT.docRef(paymentIntentId), doc => {
+      const paymentIntent = { id: doc.id, ...doc.data() }
+      const { status } = paymentIntent
 
-      // Order can only ever be PENDING, PAID or ABANDONED here
-      // If pending, stay on this page
-      // If paid, go to payment success page
-      // If abandoned, user will have had to have exited the checkout flow on mobile, so redirect them to the merchant's menu
-      // FULFILLED and CANCELLED statuses are only possible after the customer pays
+      console.log(`paymentIntent: ${JSON.stringify(paymentIntent)}`)
 
-      switch (status) {
-        case OrderStatus.PAID:
-          clearBasket()
-          navigate("../payment-success")
-          break;
-        case OrderStatus.ABANDONED:
-          navigate(`/menu/${merchantId}`)
-          break;
-        default:
-          
+      if (status !== PaymentIntentStatus.PENDING) {
+        const redirectUrl = generateRedirectUrl(status, paymentIntent)
+        console.log(`redirectUrl: ${redirectUrl}`)
+        window.location.href = redirectUrl
       }
     });
-  }, [orderId, navigate, clearBasket])
+  }, [paymentIntentId, navigate, clearBasket])
 
   return <div className="container">
     <div className="content">

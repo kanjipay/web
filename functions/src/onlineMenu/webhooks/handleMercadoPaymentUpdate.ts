@@ -4,14 +4,28 @@ import OrderStatus from "../../shared/enums/OrderStatus";
 import { PaymentIntentStatus } from "../../shared/enums/PaymentIntentStatus";
 import { WebhookCode } from "../../shared/enums/WebhookCode";
 import { db } from "../../shared/utils/admin";
+import LoggingController from "../../shared/utils/loggingClient";
 
 export const handleMercadoPaymentUpdate = async (req, res, next) => {
   try {
+    const logger = new LoggingController("Mercado Payment Update")
     const { paymentIntentId, paymentAttemptId, webhookCode, paymentIntentStatus } = req.body
 
-    if (webhookCode !== WebhookCode.PAYMENT_INTENT_UPDATE || paymentIntentStatus !== PaymentIntentStatus.SUCCESSFUL) {
-      console.log("Wrong webhookCode or paymentIntentStatus")
-      return res.sendStatus(200)
+    logger.log("Receive body params", {
+      paymentAttemptId,
+      paymentIntentId,
+      webhookCode,
+      paymentIntentStatus
+    })
+
+    const validPaymentIntentStatuses = [
+      PaymentIntentStatus.SUCCESSFUL,
+      PaymentIntentStatus.CANCELLED
+    ]
+
+    if (webhookCode !== WebhookCode.PAYMENT_INTENT_UPDATE || !validPaymentIntentStatuses.includes(paymentIntentStatus)) {
+      logger.log("Wrong webhookCode or paymentIntentStatus")
+      return res.status(200).json({})
     }
 
     const snapshot = await db()
@@ -23,11 +37,14 @@ export const handleMercadoPaymentUpdate = async (req, res, next) => {
     const orderDocs = snapshot.docs
 
     if (orderDocs.length === 0) {
-      console.log("No order found")
-      return res.sendStatus(200)
+      logger.log("No order found")
+      return res.status(200).json({})
     }
 
     const orderId = orderDocs[0].id
+
+    logger.log("Fetched order", { orderId })
+
     const orderStatusMap = {
       [PaymentIntentStatus.SUCCESSFUL]: OrderStatus.PAID,
       [PaymentIntentStatus.CANCELLED]: OrderStatus.ABANDONED
@@ -38,16 +55,15 @@ export const handleMercadoPaymentUpdate = async (req, res, next) => {
     await db()
       .collection(Collection.ORDER)
       .doc(orderId)
-      .update({
+      .set({
         status: orderStatus,
         paidAt: firestore.FieldValue.serverTimestamp(),
-        mercado: {
-          paymentAttemptId
-        }
-      })
+      }, { merge: true })
+
+    logger.log("Updated order", { orderStatus })
     
-    res.sendStatus(200)
+    return res.sendStatus(200)
   } catch (err) {
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 }

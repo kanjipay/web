@@ -9,7 +9,8 @@ routes.get("/config", async (req, res, next) => {
 })
 
 routes.get("/jwks", async (req, res, next) => {
-  res.status(200).json(process.env.JWKS_PUBLIC_KEY);
+  const jwks = JSON.parse(process.env.JWKS_PUBLIC_KEY)
+  res.status(200).json(jwks);
 })
 
 export default routes
