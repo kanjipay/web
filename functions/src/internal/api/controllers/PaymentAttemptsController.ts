@@ -10,6 +10,7 @@ import * as jwt from "jsonwebtoken";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import { firestore } from "firebase-admin";
 import { PaymentIntentStatus } from "../../../shared/enums/PaymentIntentStatus";
+import { updatePaymentAttemptIfNeeded } from "../updatePaymentAttempt";
 
 export default class PaymentAttemptsController extends BaseController {
   create = async (req, res, next) => {
@@ -116,7 +117,6 @@ export default class PaymentAttemptsController extends BaseController {
       }
 
       const { clientState } = stateObject.additionalData
-
       const { id_token } = await processAuthSuccess(code, state, idToken, paymentAttemptId, stateId, clientState)
 
       console.log("get id token back: ", id_token)
@@ -140,13 +140,51 @@ export default class PaymentAttemptsController extends BaseController {
     }
   }
 
-  getPayment = async (req, res, next) => {
+  checkPayment = async (req, res, next) => {
     try {
-      console.log("what is happening")
-      const { moneyhubPaymentId } = req.params
-      const data = await getMoneyhubPayment(moneyhubPaymentId)
+      const logger = new LoggingController("Check payment")
+      const { paymentAttemptId } = req.params
 
-      res.status(200).json(data)
+      const { paymentAttempt, paymentAttemptError } = await fetchDocument(Collection.PAYMENT_ATTEMPT, paymentAttemptId)
+      
+      if (paymentAttemptError) {
+        next(paymentAttemptError)
+        return
+      }
+
+      // If status has already been updated, return early
+      if (paymentAttempt.status !== PaymentAttemptStatus.PENDING) {
+        res.status(200).json({ paymentAttemptStatus: paymentAttempt.status })
+      }
+
+      const moneyhubPaymentId = paymentAttempt.moneyhub.paymentId
+
+      logger.log("Got moneyhub payment id", {}, { moneyhubPaymentId })
+      const { paymentSubmissionId, status } = await getMoneyhubPayment(moneyhubPaymentId)
+
+      logger.log("Got moneyhub data", {}, { paymentSubmissionId, status })
+
+      const moneyhubStatusMap = {
+        "completed": PaymentAttemptStatus.SUCCESSFUL,
+        "rejected": PaymentAttemptStatus.FAILED,
+        "pending": PaymentAttemptStatus.PENDING
+      }
+
+      const paymentAttemptStatus = moneyhubStatusMap[status]
+
+      if (!paymentAttemptStatus) {
+        next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Something went wrong", "Invalid moneyhub status " + status))
+        return
+      }
+
+      const { error, redirectUrl, paymentIntentId } = await updatePaymentAttemptIfNeeded(moneyhubPaymentId, paymentSubmissionId, paymentAttemptStatus)
+
+      if (error) {
+        next(error)
+        return
+      }
+
+      res.status(200).json({ redirectUrl, paymentAttemptStatus, paymentIntentId })
     } catch (err) {
       console.log(err)
     }

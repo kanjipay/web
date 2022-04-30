@@ -16,12 +16,15 @@ import {
   PageName,
   viewPage,
 } from "../../../utils/AnalyticsManager";
+import LoadingPage from "../../../components/LoadingPage";
 
 export default function BasketPage({ merchant }) {
   const { total, basketItems } = useBasket();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { merchantId } = useParams();
+
+  const merchantBasketItems = () => basketItems.filter(i => i.merchantId === merchant.id)
 
   useEffect(() => {
     viewPage(PageName.BASKET, { merchantId });
@@ -60,7 +63,7 @@ export default function BasketPage({ merchant }) {
       });
   }
 
-  return (
+  return merchant ?
     <div className="BasketPage container">
       <Helmet>
         <title>Your basket</title>
@@ -81,7 +84,7 @@ export default function BasketPage({ merchant }) {
       <div className="content">
         <h3 className="header-s">Your order</h3>
         <Spacer y={2} />
-        {basketItems.map((item) => {
+        {merchantBasketItems().map((item) => {
           return (
             <div key={item.id}>
               <BasketItem item={item} isEditing={isEditing} />
@@ -105,10 +108,10 @@ export default function BasketPage({ merchant }) {
             isLoading={isLoading}
             style={{ boxSizing: "borderBox" }}
             onClick={checkoutItems}
-            disabled={basketItems.length === 0}
+            disabled={merchantBasketItems().length === 0}
           />
         </div>
       </div>
-    </div>
-  );
+    </div> :
+    <LoadingPage />
 }

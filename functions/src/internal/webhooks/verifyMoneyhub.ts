@@ -27,8 +27,7 @@ export const verifyMoneyhub = async (req, res, next) => {
     const configRes = await axios.get("https://identity.moneyhub.co.uk/oidc/.well-known/openid-configuration")
     const jwkUri = configRes.data.jwks_uri
     const jwksRes = await axios.get(jwkUri)
-    const jwks = jwksRes.data
-    const loadedKeys = jwks.keys.filter(key => key.use === "sig")
+    const loadedKeys = jwksRes.data.keys.filter(key => key.use === "sig")
 
     keyCache.clear()
 

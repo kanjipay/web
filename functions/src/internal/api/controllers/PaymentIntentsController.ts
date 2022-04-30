@@ -3,7 +3,7 @@ import BaseController from "../../../shared/BaseController";
 import { db } from "../../../shared/utils/admin";
 import { PaymentIntentStatus } from "../../../shared/enums/PaymentIntentStatus";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
-import { sendWebhook } from "../../webhooks/handleMoneyhubPaymentUpdate";
+import { sendWebhook } from "../../webhooks/sendWebhook";
 import { WebhookCode } from "../../../shared/enums/WebhookCode";
 import LoggingController from "../../../shared/utils/loggingClient";
 
@@ -14,16 +14,16 @@ export default class PaymentIntentsController extends BaseController {
 
       const { paymentIntentId } = req.params
 
-      logger.log("Cancelling payment intent", {}, { paymentIntentId })
+      logger.log("Cancelling payment intent", { paymentIntentId })
       const { paymentIntent, paymentIntentError } = await fetchDocument(Collection.PAYMENT_INTENT, paymentIntentId)
 
       if (paymentIntentError) {
-        logger.log("Payment intent error", {}, { paymentIntentError })
+        logger.log("Payment intent error", { paymentIntentError })
         next(paymentIntentError)
         return
       }
 
-      logger.log("Fetched payment intent", {}, { paymentIntent })
+      logger.log("Fetched payment intent", { paymentIntent })
 
       await db()
         .collection(Collection.PAYMENT_INTENT)
@@ -35,19 +35,21 @@ export default class PaymentIntentsController extends BaseController {
       const { client, clientError } = await fetchDocument(Collection.CLIENT, paymentIntent.clientId)
 
       if (clientError) {
-        logger.log("Error fetching client", {}, { clientError })
+        logger.log("Error fetching client", { clientError })
         next(clientError)
         return
       }
 
-      logger.log("Fetched Client for payment attempt", {}, { client })
+      logger.log("Fetched Client for payment intent", { client })
 
-      await sendWebhook(client.webhookUrl, {
+      const didSendWebhook = await sendWebhook(client.webhookUrl, {
         webhookCode: WebhookCode.PAYMENT_INTENT_UPDATE,
         paymentIntentId,
         timestamp: new Date(),
         paymentIntentStatus: PaymentIntentStatus.CANCELLED
       })
+
+      logger.log("Did send webhook", { didSendWebhook })
 
       return res.sendStatus(200)
     } catch (err) {

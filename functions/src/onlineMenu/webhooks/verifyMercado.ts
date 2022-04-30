@@ -9,40 +9,41 @@ const keyCache = new Map()
 export const verifyMercado = async (req, res, next) => {
   const logger = new LoggingController("Verifying Mercado webhook")
 
-  const errorRes = res.status(403).send("Unauthorized");
-
   const signature = req.headers["mcp-signature"]
 
   if (!signature) {
     logger.log("No signature found")
-    return errorRes
+    return res.status(403).send("Unauthorized");
   }
 
   const decoded = jwt.decode(signature, { complete: true })
   const receivedKid = decoded.header.kid
 
-  logger.log("Got kid from signature", {}, { receivedKid })
+  logger.log("Got kid from signature", { receivedKid })
 
   if (!keyCache.has(receivedKid)) {
     logger.log("Kid not in cache, retrieving")
     const configRes = await axios.get(`${process.env.BASE_SERVER_URL}/clientApi/.well-known/config`)
     const { jwksUrl } = configRes.data
     const jwksRes = await axios.get(jwksUrl)
-    logger.log("Got JWKS", {}, jwksRes.data)
-    const { keys } = jwksRes.data
+    const loadedKeys = jwksRes.data.keys.filter(key => key.use === "sig")
+    logger.log("Got JWKS", { loadedKeys })
 
-    for (const key of keys) {
-      const kid = key.kid
-      keyCache[kid] = key
+    keyCache.clear()
+
+    for (const key of loadedKeys) {
+      keyCache.set(key.kid, key)
     }
 
     if (!keyCache.has(receivedKid)) {
       logger.log("Kid not in jwks")
-      return errorRes
+      return res.status(403).send("Unauthorized");
     }
   }
 
-  const key = keyCache[receivedKid]
+  const key = keyCache.get(receivedKid)
+  
+  logger.log("Got key from cache", { key })
   const pem = jwkToPem(key)
 
   let payload: jwt.JwtPayload
@@ -57,7 +58,7 @@ export const verifyMercado = async (req, res, next) => {
     }
   } catch (err) {
     logger.log("Could not verify signature with public key")
-    return errorRes
+    return res.status(403).send("Unauthorized");
   }
 
   logger.log("Verified signature", {}, { payload })
@@ -67,7 +68,7 @@ export const verifyMercado = async (req, res, next) => {
 
   if (bodyHash !== payload.body_sha_256) { 
     logger.log("Body hash mismatch")
-    return errorRes
+    return res.status(403).send("Unauthorized");
   }
 
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
@@ -75,14 +76,14 @@ export const verifyMercado = async (req, res, next) => {
 
   if (!iat) { 
     logger.log("No iat property")
-    return errorRes
+    return res.status(403).send("Unauthorized");
   }
 
-  const signatureIssuedAt = new Date(iat)
+  const signatureIssuedAt = new Date(iat * 1000)
 
   if (signatureIssuedAt < fiveMinutesAgo) {
     logger.log("iat more than 5 mins ago")
-    return errorRes
+    return res.status(403).send("Unauthorized");
   }
 
   next()

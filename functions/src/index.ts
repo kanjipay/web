@@ -14,6 +14,7 @@ export const internal = functions
     "MONEYHUB_PRIVATE_JWKS",
     "JWKS_PRIVATE_KEY",
     "SENDGRID_API_KEY",
+    "CREZCO_API_KEY"
   ] })
   .https.onRequest(internalApp);
 

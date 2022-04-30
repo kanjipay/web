@@ -45,6 +45,7 @@ export default function PaymentSuccessPage({ order }) {
   function handleEmailFieldChange(event) {
     setEmail(event.target.value);
   }
+  
   if (status === "PAID") {
     return (
       <div className="container">

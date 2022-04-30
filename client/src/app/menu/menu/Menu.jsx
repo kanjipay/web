@@ -11,6 +11,7 @@ import MenuPage from "./MenuPage";
 import MerchantAboutPage from "./MerchantAboutPage";
 import BasketPage from "../basket/BasketPage";
 import { fetchOrders } from "../../../utils/services/OrdersService";
+import useBasket from "../basket/useBasket";
 
 export default function Menu() {
   let { merchantId } = useParams();
@@ -21,7 +22,13 @@ export default function Menu() {
   const [openHourRanges, setOpenHourRanges] = useState([]);
   const [orders, setOrders] = useState([]);
 
+  const { basketItems, clearBasket } = useBasket()
+
   useEffect(() => {
+    if (basketItems.some(i => i.merchantId !== merchantId)) {
+      clearBasket()
+    }
+
     const merchantUnsub = fetchMerchant(merchantId, (doc) => {
       setMerchant({ id: doc.id, ...doc.data() });
     });
