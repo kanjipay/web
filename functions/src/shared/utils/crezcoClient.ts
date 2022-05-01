@@ -21,6 +21,7 @@ export async function createUser() {
 export async function createPaymentDemand(
   crezcoUserId: string, 
   paymentAttemptId: string,
+  paymentIntentId: string,
   payeeName: string,
   reference: string,
   sortCode: string,
@@ -38,7 +39,8 @@ export async function createPaymentDemand(
       currency: "GBP",
       amount,
       metadata: {
-        paymentAttemptId
+        paymentAttemptId,
+        paymentIntentId
       }
     },
     idempotencyId: paymentAttemptId

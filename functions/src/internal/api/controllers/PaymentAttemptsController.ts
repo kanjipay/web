@@ -50,6 +50,7 @@ export default class PaymentAttemptsController extends BaseController {
       const paymentDemandId = await createPaymentDemand(
         crezcoUserId, 
         paymentAttemptId, 
+        paymentIntentId,
         companyName, 
         companyName, 
         sortCode, 
