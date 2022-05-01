@@ -5,6 +5,7 @@ import Collection from "../../../shared/enums/Collection";
 import { addDocument } from "../../../shared/utils/addDocument";
 import { db } from "../../../shared/utils/admin";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
+import { filterObjectKeys } from "../../../shared/utils/filterObjectKeys";
 
 export enum PayeeApprovalStatus {
   PENDING = "PENDING",
@@ -21,12 +22,6 @@ const returnedPayeeFields = [
   "approvalStatus"
 ]
 
-function filterObjectKeys(obj: any, keys: string[]) {
-  return Object.keys(obj).reduce((currObj, key) => {
-    currObj[key] = obj[key]
-    return currObj
-  }, {})
-}
 
 export default class PayeesController extends BaseController {
   create = async (req, res, next) => {
