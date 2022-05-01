@@ -10,7 +10,19 @@ import Collection from "../../enums/Collection";
 import { saveState } from "./StateService";
 import { v4 as uuid } from "uuid"
 
-export async function createPaymentAttempt(paymentIntentId, bankId, deviceId) {
+export async function createPaymentAttemptCrezco(paymentIntentId, bankCode, deviceId) {
+  const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts/crezco`, {
+    paymentIntentId,
+    deviceId,
+    crezcoBankCode: bankCode
+  })
+
+  const { redirectUrl } = res.data
+
+  return redirectUrl
+}
+
+export async function createPaymentAttemptMoneyhub(paymentIntentId, bankId, deviceId) {
   const clientState = uuid()
   const stateId = await saveState({ clientState })
 

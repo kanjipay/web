@@ -1,6 +1,6 @@
-import PaymentAttemptStatus from "../../shared/enums/PaymentAttemptStatus";
-import LoggingController from "../../shared/utils/loggingClient";
-import { updatePaymentAttemptIfNeeded } from "../api/updatePaymentAttempt";
+import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus";
+import LoggingController from "../../../shared/utils/loggingClient";
+import { updatePaymentAttemptIfNeeded } from "../../api/updatePaymentAttempt";
 
 export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
   try {

@@ -1,8 +1,8 @@
 import * as express from "express";
 import * as cors from "cors";
-import { checkMoneyhubIp } from "./checkMoneyhubIp";
-import { handleMoneyhubPaymentUpdate } from "./handleMoneyhubPaymentUpdate";
-import { verifyMoneyhub } from "./verifyMoneyhub";
+import { checkMoneyhubIp } from "./moneyhub/checkMoneyhubIp";
+import { handleMoneyhubPaymentUpdate } from "./moneyhub/handleMoneyhubPaymentUpdate";
+import { verifyMoneyhub } from "./moneyhub/verifyMoneyhub";
 
 const webhooksApp = express();
 

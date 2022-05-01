@@ -1,9 +1,9 @@
 import { Router } from "express";
 import BanksController from "../controllers/BanksController";
 
-const controller = new BanksController();
-const routes = Router();
+const banksController = new BanksController();
+const banksRoutes = Router();
 
-routes.get("/", controller.index);
+banksRoutes.get("/", banksController.index);
 
-export default routes;
+export default banksRoutes;
