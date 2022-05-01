@@ -9,6 +9,7 @@ import OneTimeLinkPage from "./app/shared/OneTimeLinkPage";
 import RedirectPageMoneyhub from "./app/shared/RedirectPageMoneyhub";
 import Orders from "./app/menu/orders/Orders";
 import RedirectPageMercado from "./app/shared/RedirectPageMercado";
+import RedirectPageCrezco from "./app/shared/RedirectPageCrezco";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/checkout/:paymentIntentId/*" element={<Checkout />} />
         <Route path="/link/:linkId" element={<OneTimeLinkPage />} />
         <Route path="/mh-redirect" element={<RedirectPageMoneyhub />} />
+        <Route path="/cr-redirect" element={<RedirectPageCrezco />} />
         
         {/* Merchant dashboard pages */}
         <Route path="/merchant/*" element={<MerchantApp />} />

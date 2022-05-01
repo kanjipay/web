@@ -11,6 +11,8 @@ import MobileHandoverPage from "./MobileHandoverPage";
 import { onSnapshot } from "firebase/firestore";
 import Collection from "../../enums/Collection";
 import MobileFinishedPage from "./MobileFinishedPage";
+import CrezcoChooseBankPage from "./CrezcoChooseBankPage";
+import PaymentPageCrezco from "./PaymentPageCrezco";
 
 export default function Checkout() {
   const [paymentIntent, setPaymentIntent] = useState(null);
@@ -27,10 +29,10 @@ export default function Checkout() {
 
   return paymentIntent ? 
     <Routes>
-      <Route path="payment" element={<PaymentPageMoneyhub paymentIntent={paymentIntent} />} />
-      <Route path="choose-bank" element={<ChooseBankPage paymentIntent={paymentIntent} />} />
-      <Route path="confirm-bank" element={<ConfirmBankPage paymentIntent={paymentIntent} />} />
-      <Route path="confirm-bank/:bankId" element={<ConfirmBankPage paymentIntent={paymentIntent} />} />
+      <Route path="payment" element={<PaymentPageCrezco paymentIntent={paymentIntent} />} />
+      <Route path="choose-bank" element={<CrezcoChooseBankPage paymentIntent={paymentIntent} />} />
+      {/* <Route path="confirm-bank" element={<ConfirmBankPage paymentIntent={paymentIntent} />} />
+      <Route path="confirm-bank/:bankId" element={<ConfirmBankPage paymentIntent={paymentIntent} />} /> */}
       <Route path="mobile-handover" element={<MobileHandoverPage paymentIntent={paymentIntent} />} />
       <Route path="mobile-finished" element={<MobileFinishedPage />} />
       <Route path="payment-failure" element={<PaymentFailurePage paymentIntent={paymentIntent} />} />

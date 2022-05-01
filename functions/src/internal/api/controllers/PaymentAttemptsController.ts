@@ -11,9 +11,92 @@ import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import { firestore } from "firebase-admin";
 import { PaymentIntentStatus } from "../../../shared/enums/PaymentIntentStatus";
 import { updatePaymentAttemptIfNeeded } from "../updatePaymentAttempt";
+import { createPayment, createPaymentDemand } from "../../../shared/utils/crezcoClient";
 
 export default class PaymentAttemptsController extends BaseController {
-  create = async (req, res, next) => {
+  createCrezco = async (req, res, next) => {
+    try {
+      const { paymentIntentId, crezcoBankCode, deviceId } = req.body;
+
+      const { paymentIntent, paymentIntentError } = await fetchDocument(Collection.PAYMENT_INTENT, paymentIntentId, {
+        status: PaymentIntentStatus.PENDING
+      })
+
+      if (paymentIntentError) {
+        next(paymentIntentError)
+        return
+      }
+
+      const { amount, payee } = paymentIntent
+      const { crezcoUserId, companyName, payeeId, sortCode, accountNumber } = payee
+
+      const loggingClient = new LoggingController("Payment Attempts Controller");
+      loggingClient.log(
+        "Payment Attempt Initiated",
+        {
+          environment: process.env.ENVIRONMENT,
+          envClientURL: process.env.CLIENT_URL,
+          provider: "Crezco"
+        },
+        {
+          paymentIntentId,
+          deviceId,
+          amount,
+        }
+      );
+
+      const paymentAttemptId = uuid()
+      
+      const paymentDemandId = await createPaymentDemand(
+        crezcoUserId, 
+        paymentAttemptId, 
+        companyName, 
+        companyName, 
+        sortCode, 
+        accountNumber, 
+        amount
+      )
+
+      const redirectUrl = await createPayment(
+        crezcoUserId, 
+        paymentDemandId, 
+        crezcoBankCode
+      )
+
+      loggingClient.log("Make payment function complete");
+
+      const paymentAttemptData = {
+        paymentIntentId,
+        crezco: {
+          bankCode: crezcoBankCode,
+          paymentDemandId
+        },
+        payeeId,
+        status: PaymentAttemptStatus.PENDING,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        deviceId,
+        amount,
+      };
+
+      await db()
+        .collection(Collection.PAYMENT_ATTEMPT)
+        .doc(paymentAttemptId)
+        .set(paymentAttemptData)
+        .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+
+      loggingClient.log("Payment attempt doc added", { paymentAttemptData });
+
+      loggingClient.log("Payment Attempt Controller Finished returning 200", {
+        paymentAttemptId,
+      });
+
+      return res.status(200).json({ redirectUrl });
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  createMoneyhub = async (req, res, next) => {
     try {
       const { paymentIntentId, moneyhubBankId, deviceId, stateId, clientState } = req.body;
 
@@ -35,6 +118,7 @@ export default class PaymentAttemptsController extends BaseController {
         {
           environment: process.env.ENVIRONMENT,
           envClientURL: process.env.CLIENT_URL,
+          provider: "Moneyhub"
         },
         {
           paymentIntentId,
@@ -45,6 +129,7 @@ export default class PaymentAttemptsController extends BaseController {
 
       const paymentAttemptId = uuid()
       const bankId = process.env.ENVIRONMENT !== "PROD" ? "1ffe704d39629a929c8e293880fb449a" : moneyhubBankId
+      // const bankId = moneyhubBankId
       
       const authUrl = await generateMoneyhubPaymentAuthUrl(
         moneyhubPayeeId,

@@ -1,13 +1,13 @@
-import Collection from "../../../shared/enums/Collection";
+
 import BaseController from "../../../shared/BaseController";
-import { addDocument } from "../../../shared/utils/addDocument";
-import { firestore } from "firebase-admin";
+import { fetchBankData } from "../../../shared/utils/crezcoClient";
 
 export default class BanksController extends BaseController {
   index = async (req, res, next) => {
     try {
-
-      return res.status(200).json({});
+      const bankData = await fetchBankData()
+      
+      return res.status(200).json(bankData);
     } catch (err) {
       next(err)
     }

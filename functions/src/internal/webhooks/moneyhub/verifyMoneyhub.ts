@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as jwt from "jsonwebtoken";
 import * as jwkToPem from "jwk-to-pem";
-import LoggingController from "../../shared/utils/loggingClient";
+import LoggingController from "../../../shared/utils/loggingClient";
 
 const keyCache = new Map()
 

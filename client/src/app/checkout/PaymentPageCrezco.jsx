@@ -2,19 +2,19 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 import { IdentityManager } from "../../utils/IdentityManager";
-import { createPaymentAttemptMoneyhub } from "../../utils/services/PaymentsService";
+import { createPaymentAttemptCrezco } from "../../utils/services/PaymentsService";
 
-export default function PaymentPageMoneyhub({ paymentIntent }) {
+export default function PaymentPageCrezco({ paymentIntent }) {
   const location = useLocation();
-  const { bankId, referringDeviceId } = location.state
+  const { bankCode, referringDeviceId } = location.state
   const paymentIntentId = paymentIntent.id
 
   useEffect(() => {
     const deviceId = referringDeviceId ?? IdentityManager.main.getDeviceId()
-    createPaymentAttemptMoneyhub(paymentIntentId, bankId, deviceId).then(authUrl => {
-      window.location.href = authUrl
+    createPaymentAttemptCrezco(paymentIntentId, bankCode, deviceId).then(redirectUrl => {
+      window.location.href = redirectUrl
     })
-  }, [bankId, paymentIntentId, referringDeviceId])
+  }, [bankCode, paymentIntentId, referringDeviceId])
 
   return <LoadingPage message="Sending you to your bank" />
 }
