@@ -33,8 +33,6 @@ export async function createUser(firstName, lastName, eMail){
   }
   const userUrl = `${baseUrl}/v1/users`
   const response = await axios.post(userUrl,userBody,{headers:headers});
-  console.log(response.status);
-  console.log(response.data);
   return response.data;
 }
 
