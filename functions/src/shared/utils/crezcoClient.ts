@@ -1,22 +1,54 @@
 import axios from "axios"
+import {v4} from 'uuid'
 
 const defaultHeaders = {
   "X-Crezco-Key": process.env.CREZCO_API_KEY
 }
+const baseUrl = process.env.CREZCO_URL;
 
-const baseUrl = process.env.CREZCO_URL
+function makeUserBody(firstName, lastName, eMail) {
+  return  {
+      'request': {
+          firstName,
+          lastName,
+          'displayName': firstName + ' ' + lastName,
+          eMail 
+      },
+      'idempotencyId':v4()
+  }
+}
 
 export async function fetchBankData() {
   const { data } = await axios.get(`${baseUrl}/v1/banks/GB/DomesticInstantPayment`, {
     headers: defaultHeaders
   })
-
   return data
 }
 
-export async function createUser() {
-
+export async function createUser(firstName, lastName, eMail){
+  const userBody = makeUserBody(firstName, lastName, eMail)
+  const headers = {
+      'Content-Type': 'application/json',
+      'X-Crezco-Key': process.env.CREZCO_API_KEY
+  }
+  const userUrl = `${baseUrl}/v1/users`
+  const response = await axios.post(userUrl,userBody,{headers:headers});
+  console.log(response.status);
+  console.log(response.data);
+  return response.data;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 export async function createPaymentDemand(
   crezcoUserId: string, 

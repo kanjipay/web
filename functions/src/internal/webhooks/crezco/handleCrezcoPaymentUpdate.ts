@@ -19,10 +19,6 @@ export const handleCrezcoPaymentUpdate = async (req, res, next) => {
     const [{eventType, id, metadata}] = req.body // Todo create some verification middleware
     loggingClient.log("Request received", { req })
     loggingClient.log("Payload received", { eventType, id, metadata })
-    
-    console.log(Object.keys(crezcoPaymentStatuses))
-    console.log(eventType in crezcoPaymentStatuses)
-
     if (!eventType || !(eventType in crezcoPaymentStatuses)) {
       loggingClient.log("Non-payment event type received", { eventType })
       return res.sendStatus(200)
