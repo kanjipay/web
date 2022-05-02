@@ -28,7 +28,7 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
     const paymentAttemptStatus = moneyhubPaymentStatuses[eventUrn]
     const { paymentId, paymentSubmissionId } = payload.events[eventUrn]
 
-    await updatePaymentAttemptIfNeeded(paymentId, paymentSubmissionId, paymentAttemptStatus)
+    await updatePaymentAttemptIfNeeded('moneyhub', paymentId, paymentSubmissionId, paymentAttemptStatus)
 
     res.sendStatus(200)
   } catch (err) {

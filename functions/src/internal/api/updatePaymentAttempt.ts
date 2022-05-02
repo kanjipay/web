@@ -9,16 +9,30 @@ import { fetchDocument } from "../../shared/utils/fetchDocument";
 import LoggingController from "../../shared/utils/loggingClient";
 import { sendWebhook } from "../webhooks/sendWebhook";
 
+ 
+function createPaymentIntentData(paymentAttemptId, PaymentSubmissionId, provider){
+  return {
+    status: PaymentIntentStatus.SUCCESSFUL,
+    paidAt: firestore.FieldValue.serverTimestamp(),
+    paymentAttemptId,
+    PaymentSubmissionId,
+    provider,
+    isReversible: false
+  }
+}
+
 export async function updatePaymentAttemptIfNeeded(
-  moneyhubPaymentId: string, 
-  moneyhubPaymentSubmissionId: string, 
+  provider: string,
+  PaymentId: string, 
+  PaymentSubmissionId: string, 
   paymentAttemptStatus: PaymentAttemptStatus
 ) {
   const loggingClient = new LoggingController("Update payment attempt")
 
   loggingClient.log("Received Payment Update Subroutine Started", {}, {
-    moneyhubPaymentId,
-    moneyhubPaymentSubmissionId,
+    provider,
+    PaymentId,
+    PaymentSubmissionId,
     paymentAttemptStatus
   });
 
@@ -26,7 +40,7 @@ export async function updatePaymentAttemptIfNeeded(
 
   const paymentAttemptSnapshot = await db()
     .collection(Collection.PAYMENT_ATTEMPT)
-    .where(`moneyhub.paymentId`, "==", moneyhubPaymentId)
+    .where(`paymentId`, "==", PaymentId)
     .limit(1)
     .get();
 
@@ -37,7 +51,7 @@ export async function updatePaymentAttemptIfNeeded(
     const error = new HttpError(
       HttpStatusCode.NOT_FOUND,
       "Something went wrong",
-      `PaymentAttempt with paymentId ${moneyhubPaymentId} with provider moneyhub not found`
+      `PaymentAttempt with paymentId ${PaymentId} with provider ${provider} not found`
     )
 
     return { error }
@@ -74,20 +88,13 @@ export async function updatePaymentAttemptIfNeeded(
     // }
     // const { isReversible } = paymentData
     
+    const paymentIntentData = createPaymentIntentData(paymentAttemptId, PaymentSubmissionId, provider);
 
     // I don't think there's a way of updating and retrieving the payment intent at the same time annoyingly
     await db()
       .collection(Collection.PAYMENT_INTENT)
       .doc(paymentIntentId)
-      .set({
-        status: PaymentIntentStatus.SUCCESSFUL,
-        paidAt: firestore.FieldValue.serverTimestamp(),
-        paymentAttemptId,
-        moneyhub: {
-          paymentSubmissionId: moneyhubPaymentSubmissionId
-        },
-        isReversible: false
-      }, { merge: true })
+      .set(paymentIntentData, { merge: true })
 
     const { clientId, payee } = paymentIntent
     const { payeeId } = payee

@@ -1,10 +1,16 @@
 import axios from "axios"
 import {v4} from 'uuid'
+import * as sha256 from "sha256";
 
 const defaultHeaders = {
   "X-Crezco-Key": process.env.CREZCO_API_KEY
 }
 const baseUrl = process.env.CREZCO_URL;
+
+function createPaymentHash(paymentIntentId){
+  /* hash the paymentid concatenated with crezco secret */
+  return sha256(process.env.CREZCO_API_KEY + paymentIntentId);
+}
 
 function makeUserBody(firstName, lastName, eMail) {
   return  {
@@ -36,18 +42,6 @@ export async function createUser(firstName, lastName, eMail){
   return response.data;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 export async function createPaymentDemand(
   crezcoUserId: string, 
   paymentAttemptId: string,
@@ -58,6 +52,7 @@ export async function createPaymentDemand(
   accountNumber: string,
   amount: number
 ) {
+  const paymentHash = createPaymentHash(paymentIntentId);
   const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands`, {
     request: {
       payeeName,
@@ -70,7 +65,8 @@ export async function createPaymentDemand(
       amount,
       metadata: {
         paymentAttemptId,
-        paymentIntentId
+        paymentIntentId,
+        paymentHash
       }
     },
     idempotencyId: paymentAttemptId
