@@ -243,9 +243,9 @@ export default class PaymentAttemptsController extends BaseController {
         res.status(200).json({ paymentAttemptStatus: paymentAttempt.status })
       }
 
-      const moneyhubPaymentId = paymentAttempt.moneyhub.paymentId
+      const moneyhubPaymentId = paymentAttempt.paymentId
 
-      logger.log("Got moneyhub payment id", {}, { moneyhubPaymentId })
+      logger.log("Got payment id", {}, { moneyhubPaymentId })
       const { paymentSubmissionId, status } = await getMoneyhubPayment(moneyhubPaymentId)
 
       logger.log("Got moneyhub data", {}, { paymentSubmissionId, status })
@@ -259,11 +259,11 @@ export default class PaymentAttemptsController extends BaseController {
       const paymentAttemptStatus = moneyhubStatusMap[status]
 
       if (!paymentAttemptStatus) {
-        next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Something went wrong", "Invalid moneyhub status " + status))
+        next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, "Something went wrong", "Invalid status " + status))
         return
       }
 
-      const { error, redirectUrl, paymentIntentId } = await updatePaymentAttemptIfNeeded(moneyhubPaymentId, paymentSubmissionId, paymentAttemptStatus)
+      const { error, redirectUrl, paymentIntentId } = await updatePaymentAttemptIfNeeded('moneyhub', moneyhubPaymentId, paymentSubmissionId, paymentAttemptStatus)
 
       if (error) {
         next(error)
