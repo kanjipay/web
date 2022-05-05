@@ -23,7 +23,7 @@
     "react-plaid-link": "^3.3.0",
     "react-qr-code": "^2.0.5",
     "react-router-dom": "^6.2.1",
-    "react-scripts": "5.0.0",
+    "react-scripts": "^5.0.0",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4"
   },
@@ -34,7 +34,7 @@
     "eject": "react-scripts eject",
     "lint": "npx prettier --write .",
     "build:prod": "env-cmd -f ./.env.production npm run-script build",
-    "build:stage": "env-cmd -f ./.stage.env npm run-script build"
+    "build:stage": "env-cmd -f ./.env.development npm run-script build"
   },
   "eslintConfig": {
     "extends": [
