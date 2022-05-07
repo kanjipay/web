@@ -36,7 +36,7 @@ routes.post(
 
 const createCrezcoPaymentAttemptSchema: AllowedSchema = {
   type: "object",
-  required: ["paymentIntentId", "moneyhubBankId", "deviceId", "stateId", "clientState"],
+  required: ["paymentIntentId", "crezcoBankCode", "deviceId"],
   properties: {
     paymentIntentId: {
       type: "string",

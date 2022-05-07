@@ -9,9 +9,10 @@ import axios from "axios";
 import Collection from "../../enums/Collection";
 import { saveState } from "./StateService";
 import { v4 as uuid } from "uuid"
+import { ApiName, NetworkManager } from "../NetworkManager";
 
 export async function createPaymentAttemptCrezco(paymentIntentId, bankCode, deviceId) {
-  const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts/crezco`, {
+  const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts/crezco", {
     paymentIntentId,
     deviceId,
     crezcoBankCode: bankCode
@@ -26,13 +27,13 @@ export async function createPaymentAttemptMoneyhub(paymentIntentId, bankId, devi
   const clientState = uuid()
   const stateId = await saveState({ clientState })
 
-  const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts`, {
+  const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts", {
     paymentIntentId,
     deviceId,
     stateId,
     clientState,
     moneyhubBankId: bankId
-  });
+  })
 
   const { authUrl } = res.data
 
@@ -41,7 +42,7 @@ export async function createPaymentAttemptMoneyhub(paymentIntentId, bankId, devi
 
 export async function confirmPayment(code, state, idToken) {
   try {
-    const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts/confirm`, {
+    const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts/confirm", {
       code,
       state,
       idToken,

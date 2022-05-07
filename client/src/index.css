@@ -185,7 +185,7 @@ a {
 
 .text-caption {
   font: var(--font-caption);
-  color: var(--color-text-body-faded);
+  color: var(--color-text-caption);
 }
 
 .text-disclaimer {

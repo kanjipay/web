@@ -61,8 +61,8 @@ export async function createPayment(
   const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment)`, {
     bankId,
     countryIso2Code: "GB",
-    successCallbackUri: `${process.env.CLIENT_URL}/cr-redirect`,
-    failureRedirectUri: `${process.env.CLIENT_URL}/cr-redirect`,
+    successCallbackUri: `${process.env.CLIENT_URL}/checkout/cr-redirect`,
+    failureRedirectUri: `${process.env.CLIENT_URL}/checkout/cr-redirect`,
     initialScreen: "ContinueToBank",
     finalScreen: "PaymentStatus"
   }, {

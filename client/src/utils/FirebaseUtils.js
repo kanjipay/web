@@ -4,6 +4,7 @@ import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import Environment from "../enums/Environment";
+import { getAuth, inMemoryPersistence, setPersistence } from "firebase/auth";
 // import { getPerformance } from "firebase/performance";
 // import { getAnalytics } from "firebase/analytics";
 
@@ -23,6 +24,7 @@ const firebaseApp = initializeApp({
 
 const db = getFirestore();
 const storage = getStorage();
+const auth = getAuth()
 const functions = getFunctions(firebaseApp);
 
 const environment = process.env.REACT_APP_ENV_NAME;
@@ -39,4 +41,4 @@ initializeAppCheck(firebaseApp, {
   isTokenAutoRefreshEnabled: true,
 });
 
-export { firebaseApp, db, storage, functions };
+export { firebaseApp, db, storage, auth, functions };

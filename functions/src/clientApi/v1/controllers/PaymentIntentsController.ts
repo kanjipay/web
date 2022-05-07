@@ -35,7 +35,7 @@ export default class PaymentIntentsController extends BaseController {
     })
 
     res.status(200).json({
-      checkoutUrl: `${process.env.CLIENT_URL}/checkout/${paymentIntentId}/choose-bank`,
+      checkoutUrl: `${process.env.CLIENT_URL}/checkout/pi/${paymentIntentId}/choose-bank`,
       paymentIntentId
     })
   }

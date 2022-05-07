@@ -1,10 +1,12 @@
-import axios from "axios";
 import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
 import { AnalyticsEvent, AnalyticsManager } from "../../utils/AnalyticsManager";
+import { ApiName, NetworkManager } from "../../utils/NetworkManager";
 
 export async function cancelPaymentIntent(paymentIntent) {
   const paymentIntentId = paymentIntent.id
-  await axios.put(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-intents/${paymentIntentId}/cancel`)
+  await NetworkManager.put(ApiName.INTERNAL, `/payment-intents/${paymentIntentId}/cancel`, {
+    cancelReason: "USER"
+  })
 
   AnalyticsManager.main.logEvent(AnalyticsEvent.ABANDON_ORDER, {
     paymentIntentId,
