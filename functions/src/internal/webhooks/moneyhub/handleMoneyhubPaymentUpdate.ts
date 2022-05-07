@@ -17,9 +17,6 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
 
     const eventUrn = Object.keys(payload.events).find(e => true)
 
-    console.log(Object.keys(moneyhubPaymentStatuses))
-    console.log(eventUrn in moneyhubPaymentStatuses)
-
     if (!eventUrn || !(eventUrn in moneyhubPaymentStatuses)) {
       loggingClient.log("Non-payment event urn received", { eventUrn })
       return res.sendStatus(200)
@@ -30,7 +27,7 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
 
     await updatePaymentAttemptIfNeeded(paymentId, paymentSubmissionId, paymentAttemptStatus)
 
-    res.sendStatus(200)
+    return res.sendStatus(200)
   } catch (err) {
     console.log(err)
     res.sendStatus(500)

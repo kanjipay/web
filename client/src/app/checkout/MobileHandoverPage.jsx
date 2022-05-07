@@ -6,9 +6,8 @@ import { Colors } from "../../components/CircleButton";
 import CircleIcon from "../../components/CircleIcon";
 import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";
-import OrderStatus from "../../enums/OrderStatus";
 import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
-import useBasket from "../menu/basket/useBasket";
+import useBasket from "../customer/menu/basket/useBasket";
 import { generateRedirectUrl } from "./redirects";
 
 export default function MobileHandoverPage() {
@@ -16,8 +15,6 @@ export default function MobileHandoverPage() {
   const { paymentIntentId } = useParams()
   const navigate = useNavigate()
   const { clearBasket } = useBasket()
-
-  console.log(`paymentIntentId: ${paymentIntentId}`)
 
   useEffect(() => {
     return onSnapshot(Collection.PAYMENT_INTENT.docRef(paymentIntentId), doc => {

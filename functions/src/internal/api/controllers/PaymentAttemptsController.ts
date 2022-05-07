@@ -93,6 +93,7 @@ export default class PaymentAttemptsController extends BaseController {
 
       return res.status(200).json({ redirectUrl });
     } catch (err) {
+      console.log(err.response.data.errors)
       next(err)
     }
   }
@@ -173,7 +174,6 @@ export default class PaymentAttemptsController extends BaseController {
         authUrl,
       });
     } catch (err) {
-      console.log(err)
       return res.sendStatus(500)
     }
   };

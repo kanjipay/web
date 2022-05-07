@@ -1,5 +1,4 @@
 import {
-  getDoc,
   onSnapshot,
   orderBy,
   query,
@@ -10,8 +9,9 @@ import axios from "axios";
 import OrderStatus from "../../enums/OrderStatus";
 import Collection from "../../enums/Collection";
 import { IdentityManager } from "../IdentityManager";
+import { ApiName, NetworkManager } from "../NetworkManager";
 
-export async function createOrder(merchantId, basketItems) {
+export async function createMenuOrder(merchantId, basketItems) {
   const deviceId = IdentityManager.main.getDeviceId();
   const userId = IdentityManager.main.getPseudoUserId()
 
@@ -23,16 +23,30 @@ export async function createOrder(merchantId, basketItems) {
       title: item.title,
     }))
 
-  const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/onlineMenu/api/v1/orders`, {
+  const res = await NetworkManager.post(ApiName.ONLINE_MENU, "/orders/menu", {
     merchantId,
     deviceId,
     userId,
     requestedItems
-  });
+  })
 
   const { checkoutUrl, orderId } = res.data
 
   return { checkoutUrl, orderId };
+}
+
+export async function createTicketOrder(productId, quantity) {
+  const deviceId = IdentityManager.main.getDeviceId()
+
+  const res = await NetworkManager.post(ApiName.ONLINE_MENU, "/orders/tickets", {
+    productId,
+    quantity,
+    deviceId
+  })
+
+  const { checkoutUrl, orderId } = res.data
+
+  return { checkoutUrl, orderId }
 }
 
 export async function fetchOrder(orderId, onComplete) {
@@ -61,13 +75,8 @@ export function setOrderStatus(orderId, status) {
 }
 
 export function sendOrderReceipt(orderId, email) {
-  const requestBody = {
+  return NetworkManager.post(ApiName.ONLINE_MENU, "/orders/email-receipt", {
     orderId,
     email,
-  };
-
-  return axios.post(
-    `${process.env.REACT_APP_BASE_SERVER_URL}/onlineMenu/api/v1/orders/email-receipt`,
-    requestBody
-  );
+  })
 }

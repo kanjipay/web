@@ -11,3 +11,10 @@ export function getMenuItemStorageRef(merchantId, itemId, filename) {
     `merchants/${merchantId}/menu_items/${itemId}/${filename}`
   );
 }
+
+export function getEventStorageRef(merchantId, eventId, filename) {
+  return ref(
+    storage,
+    `merchants/${merchantId}/events/${eventId}/${filename}`
+  );
+}

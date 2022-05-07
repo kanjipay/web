@@ -13,6 +13,7 @@ export default class PaymentIntentsController extends BaseController {
       const logger = new LoggingController("Cancel Payment Intent")
 
       const { paymentIntentId } = req.params
+      const { cancelReason } = req.body
 
       logger.log("Cancelling payment intent", { paymentIntentId })
       const { paymentIntent, paymentIntentError } = await fetchDocument(Collection.PAYMENT_INTENT, paymentIntentId)
@@ -29,7 +30,8 @@ export default class PaymentIntentsController extends BaseController {
         .collection(Collection.PAYMENT_INTENT)
         .doc(paymentIntentId)
         .update({
-          status: PaymentIntentStatus.CANCELLED
+          status: PaymentIntentStatus.CANCELLED,
+          cancelReason
         })
 
       const { client, clientError } = await fetchDocument(Collection.CLIENT, paymentIntent.clientId)

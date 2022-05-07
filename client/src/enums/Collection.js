@@ -1,8 +1,10 @@
-import { collection, doc } from "firebase/firestore";
+import { collection, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../utils/FirebaseUtils";
 
 export default class Collection {
   static MERCHANT = new Collection("Merchant");
+  static PRODUCT = new Collection("Product");
+  static EVENT = new Collection("Event")
   static MENU_ITEM = new Collection("MenuItem");
   static MENU_SECTION = new Collection("MenuSection");
   static ORDER = new Collection("Order");
@@ -17,5 +19,11 @@ export default class Collection {
     this.name = name;
     this.ref = collection(db, this.name);
     this.docRef = (docId) => doc(db, this.name, docId);
+
+    this.onChange = (docId, callback) => {
+      return onSnapshot(this.docRef(docId), doc => {
+        callback({ id: doc.id, ...doc.data() })
+      })
+    }
   }
 }

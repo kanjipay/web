@@ -50,7 +50,7 @@ export async function updatePaymentAttemptIfNeeded(
   loggingClient.log("Got payment attempt", { paymentAttempt })
 
   const { paymentIntentId } = paymentAttemptDoc.data();
-  const { paymentIntent, paymentIntentError } = await fetchDocument(Collection.PAYMENT_INTENT, paymentIntentId)
+  const { paymentIntent, paymentIntentError } = await fetchDocument(Collection.PAYMENT_INTENT, paymentIntentId, { status: PaymentIntentStatus.PENDING })
 
   if (paymentIntentError) {
     return { error: paymentIntentError }
