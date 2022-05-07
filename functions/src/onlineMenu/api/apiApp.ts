@@ -4,7 +4,7 @@ import ordersRoutes from "./routes/ordersRoutes";
 
 const apiApp = express();
 
-const origin = process.env.ENVIRONMENT === "DEV" ? "*" : process.env.CLIENT_URL;
+const origin = process.env.ENVIRONMENT != "PROD" ? "*" : process.env.CLIENT_URL;
 const corsInstanceApi = cors({ origin });
 apiApp.use(corsInstanceApi);
 apiApp.options("*", corsInstanceApi);

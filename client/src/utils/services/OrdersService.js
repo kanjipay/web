@@ -22,7 +22,7 @@ export async function createOrder(merchantId, basketItems) {
       quantity: item.quantity,
       title: item.title,
     }))
-
+    console.log(process.env.REACT_APP_BASE_SERVER_URL)
   const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/onlineMenu/api/v1/orders`, {
     merchantId,
     deviceId,
