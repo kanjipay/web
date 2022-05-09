@@ -5,6 +5,28 @@ import * as jwt from "jsonwebtoken";
 import * as jwkToPem from "jwk-to-pem";
 import { v4 as uuid } from "uuid";
 
+export function createSignature(payload: any, audience: string) {
+  const jwks = JSON.parse(process.env.JWKS_PRIVATE_KEY);
+  const [key] = jwks.keys;
+  const pem = jwkToPem(key, { private: true });
+
+  try {
+    const signature = jwt.sign(payload, pem, {
+      keyid: key.kid,
+      subject: `${process.env.BASE_SERVER_URL}/clientApi`,
+      issuer: `${process.env.BASE_SERVER_URL}/internal`,
+      audience,
+      jwtid: uuid(),
+      expiresIn: 3600,
+      algorithm: "RS256",
+    });
+
+    return { signature }
+  } catch (err) {
+    return { signatureError: err }
+  }
+}
+
 export async function sendWebhook(webhookUrl: string, body: Object) {
   const logger = new LoggingController("Sending webhook");
   
@@ -16,25 +38,11 @@ export async function sendWebhook(webhookUrl: string, body: Object) {
     body_sha_256: bodyHash
   };
 
-  const jwks = JSON.parse(process.env.JWKS_PRIVATE_KEY);
-  const [key] = jwks.keys;
-  const pem = jwkToPem(key, { private: true });
+  const { signature, signatureError } = createSignature(payload, webhookUrl)
 
-  let signature: string;
-
-  try {
-    signature = jwt.sign(payload, pem, {
-      keyid: key.kid,
-      subject: `${process.env.BASE_SERVER_URL}/clientApi`,
-      issuer: `${process.env.BASE_SERVER_URL}/internal`,
-      audience: webhookUrl,
-      jwtid: uuid(),
-      expiresIn: 3600,
-      algorithm: "RS256",
-    });
-  } catch (err) {
-    logger.log("Signing JWT Failed", { error: err });
-    return false;
+  if (signatureError) {
+    logger.log("Creating signature failed", { signatureError })
+    return
   }
 
   try {

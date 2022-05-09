@@ -1,5 +1,4 @@
 import axios from "axios"
-import { getAuth } from "firebase/auth"
 import { auth } from "./FirebaseUtils"
 
 export class ApiName {
@@ -28,6 +27,7 @@ export class NetworkManager {
     }
 
     const currUser = auth.currentUser
+    console.log(currUser.uid)
 
     if (currUser) {
       const idToken = await currUser.getIdToken()

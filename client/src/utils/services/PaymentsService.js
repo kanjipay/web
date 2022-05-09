@@ -5,7 +5,6 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import axios from "axios";
 import Collection from "../../enums/Collection";
 import { saveState } from "./StateService";
 import { v4 as uuid } from "uuid"

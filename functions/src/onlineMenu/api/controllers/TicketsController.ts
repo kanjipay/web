@@ -1,7 +1,6 @@
 import BaseController from "../../../shared/BaseController";
 import Collection from "../../../shared/enums/Collection";
 import { db } from "../../../shared/utils/admin";
-import { startOfDay } from 'date-fns'
 import { firestore } from "firebase-admin";
 import { dateFromTimestamp } from "../../../shared/utils/time";
 
@@ -13,7 +12,6 @@ export default class TicketsController extends BaseController {
       const ticketSnapshot = await db()
         .collection(Collection.TICKET)
         .where("customerId", "==", customerId)
-        .where("eventEndsAt", ">", startOfDay(new Date()))
         .limit(1000)
         .get()
 
@@ -25,8 +23,6 @@ export default class TicketsController extends BaseController {
       if (tickets.length === 0) {
         return res.status(200).json({ events: [] })
       }
-
-      console.log(tickets)
 
       const eventIds = [...new Set(tickets.map(t => t.eventId))]
       const productIds = [...new Set(tickets.map(t => t.productId))]

@@ -5,26 +5,40 @@ import LoadingPage from "../../components/LoadingPage";
 import Collection from "../../enums/Collection";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
 import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
+import { IdentityManager } from "../../utils/IdentityManager";
 import { generateRedirectUrl } from "./redirects";
 
 export default function RedirectPageCrezco() {
   const [searchParams] = useSearchParams()
   const paymentAttemptId = searchParams.get("paymentAttemptId")
   const navigate = useNavigate()
-  const [shouldRedirectToSuccessUrl, setShouldRedirectToSuccessUrl] = useState(false)
-  const [paymentIntentId, setPaymentIntentId] = useState(null)
+  const [hasRedirected, setHasRedirected] = useState(false)
 
   useEffect(() => {
     const unsub = onSnapshot(Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId), doc => {
-      const { status, paymentIntentId } = doc.data()
+      const { status, paymentIntentId, deviceId } = doc.data()
+      const basePath = `/checkout/pi/${paymentIntentId}`;
+
+      if (hasRedirected) { return }
+
+      setHasRedirected(true)
 
       switch (status) {
         case PaymentAttemptStatus.SUCCESSFUL:
-          setShouldRedirectToSuccessUrl(true)
-          setPaymentIntentId(paymentIntentId)
+          getDoc(Collection.PAYMENT_INTENT.docRef(paymentIntentId)).then(doc => {
+            const paymentIntent = { id: doc.id, ...doc.data() }
+            const currentDeviceId = IdentityManager.main.getDeviceId()
+
+            if (currentDeviceId === deviceId) {
+              const successUrl = generateRedirectUrl(PaymentIntentStatus.SUCCESSFUL, paymentIntent)
+              window.location.href = successUrl
+            } else {
+              navigate(`${basePath}/mobile-finished`)
+            }
+          })
           break;
         case PaymentAttemptStatus.FAILED:
-          navigate(`/checkout/pi/${paymentIntentId}/payment-failure`);
+          navigate(`${basePath}/payment-failure`);
           break;
         default:
       }
@@ -33,19 +47,7 @@ export default function RedirectPageCrezco() {
     return () => {
       unsub()
     }
-  }, [paymentAttemptId, navigate])
-
-  useState(() => {
-    if (!shouldRedirectToSuccessUrl || !paymentIntentId) { return }
-
-    setShouldRedirectToSuccessUrl(false)
-
-    getDoc(Collection.PAYMENT_INTENT.docRef(paymentIntentId)).then(doc => {
-      const paymentIntent = { id: doc.id, ...doc.data() }
-      const redirectUrl = generateRedirectUrl(PaymentIntentStatus.SUCCESSFUL, paymentIntent)
-      window.location.href = redirectUrl
-    })
-  }, [shouldRedirectToSuccessUrl])
+  }, [paymentAttemptId, navigate, hasRedirected])
 
   return <LoadingPage />
 }

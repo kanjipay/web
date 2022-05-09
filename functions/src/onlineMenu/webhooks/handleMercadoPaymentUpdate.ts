@@ -4,7 +4,6 @@ import OrderStatus from "../../shared/enums/OrderStatus";
 import { PaymentIntentStatus } from "../../shared/enums/PaymentIntentStatus";
 import { WebhookCode } from "../../shared/enums/WebhookCode";
 import { db } from "../../shared/utils/admin";
-import { fetchDocument } from "../../shared/utils/fetchDocument";
 import LoggingController from "../../shared/utils/loggingClient";
 import { v4 as uuid } from "uuid"
 import sha256 = require("sha256");

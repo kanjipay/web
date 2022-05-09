@@ -44,7 +44,11 @@ export default function AuthPage() {
     setIsLoading(true)
 
     const emailLinkUrl = new URL(window.location.href)
-    emailLinkUrl.pathname += "/email-link"
+    emailLinkUrl.pathname = "/events/auth/email-link"
+    emailLinkUrl.searchParams.append("first", firstName)
+    emailLinkUrl.searchParams.append("last", lastName)
+
+    console.log(emailLinkUrl)
 
     sendSignInLinkToEmail(auth, email, {
       url: emailLinkUrl.href,

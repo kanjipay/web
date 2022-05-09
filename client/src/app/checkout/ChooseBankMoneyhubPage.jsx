@@ -1,4 +1,3 @@
-import axios from "axios"
 import { onSnapshot } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { isMobile } from "react-device-detect"
@@ -20,26 +19,7 @@ import { IdentityManager } from "../../utils/IdentityManager"
 import { createLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
 import { cancelPaymentIntent } from "./redirects"
-
-async function fetchBankData() {
-  const res = await axios.get("https://identity.moneyhub.co.uk/oidc/.well-known/api-connections")
-
-  return res.data
-    .filter(datum => {
-      return (
-        datum.country === 'GB' &&
-        !datum.isBeta &&
-        datum.accountTypes.some(accountType => accountType.name === "cash") &&
-        datum.status.sync === 'AVAILABLE' &&
-        datum.status.auth === 'AVAILABLE' &&
-        datum.userTypes.includes('personal')
-      )
-    })
-    .map(datum => {
-      datum.name = datum.name.replace(' Open Banking', '')
-      return datum
-    })
-}
+import { fetchMoneyhubBankData } from "./fetchMoneyhubBankData"
 
 export default function ChooseBankMoneyhubPage({ paymentIntent }) {
   const navigate = useNavigate()
@@ -80,7 +60,6 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
   }
 
   const handleChooseBank = (bankDatum) => {
-    console.log(bankDatum.id)
     setBankId(bankDatum.id)
   }
 
@@ -100,7 +79,7 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
   }
 
   useEffect(() => {
-    fetchBankData().then(bankData => {
+    fetchMoneyhubBankData().then(bankData => {
       setBankData(bankData)
       setFilteredBankData(bankData)
       setIsLoading(false)
@@ -130,7 +109,7 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
     })
 
     return unsub
-  }, [linkId])
+  }, [linkId, navigate])
 
   if (isLoading) {
     return <LoadingPage />
@@ -196,7 +175,8 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
           By continuing you are permitting Moneyhub to initiate a payment from your bank account. You also agree to Moneyhub's
           <a href="https://www.moneyhub.com/terms-of-use" target="_blank" rel="noreferrer"> Terms of Use </a>
           and
-          <a href="https://www.moneyhub.com/privacy-policy-and-cookies" target="_blank" rel="noreferrer"> Privacy Policy</a>.</p>
+          <a href="https://www.moneyhub.com/privacy-policy-and-cookies" target="_blank" rel="noreferrer"> Privacy Policy</a>.
+        </p>
         <Spacer y={3} />
       </div>
     </div>

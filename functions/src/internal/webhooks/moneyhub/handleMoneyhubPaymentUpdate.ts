@@ -1,6 +1,11 @@
 import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus";
 import LoggingController from "../../../shared/utils/loggingClient";
-import { updatePaymentAttemptIfNeeded } from "../../api/updatePaymentAttempt";
+import { updatePaymentAttemptIfNeededMoneyhub } from "../../api/updatePaymentAttempt";
+
+const moneyhubPaymentStatuses = {
+  "urn:com:moneyhub:events:payment-completed": PaymentAttemptStatus.SUCCESSFUL,
+  "urn:com:moneyhub:events:payment-rejected": PaymentAttemptStatus.FAILED
+}
 
 export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
   try {
@@ -9,11 +14,6 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
     const { payload } = req // Attached to request by verifyMoneyhub middleware
 
     loggingClient.log("Payload received", { payload })
-
-    const moneyhubPaymentStatuses = {
-      "urn:com:moneyhub:events:payment-completed": PaymentAttemptStatus.SUCCESSFUL,
-      "urn:com:moneyhub:events:payment-rejected": PaymentAttemptStatus.FAILED
-    }
 
     const eventUrn = Object.keys(payload.events).find(e => true)
 
@@ -25,7 +25,7 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
     const paymentAttemptStatus = moneyhubPaymentStatuses[eventUrn]
     const { paymentId, paymentSubmissionId } = payload.events[eventUrn]
 
-    await updatePaymentAttemptIfNeeded(paymentId, paymentSubmissionId, paymentAttemptStatus)
+    await updatePaymentAttemptIfNeededMoneyhub(paymentId, paymentSubmissionId, paymentAttemptStatus)
 
     return res.sendStatus(200)
   } catch (err) {

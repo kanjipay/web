@@ -6,6 +6,7 @@ import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import { sendWebhook } from "../../webhooks/sendWebhook";
 import { WebhookCode } from "../../../shared/enums/WebhookCode";
 import LoggingController from "../../../shared/utils/loggingClient";
+import { PaymentIntentCancelReason } from "../../../shared/enums/PaymentIntentCancelReason";
 
 export default class PaymentIntentsController extends BaseController {
   cancel = async (req, res, next) => {
@@ -48,7 +49,8 @@ export default class PaymentIntentsController extends BaseController {
         webhookCode: WebhookCode.PAYMENT_INTENT_UPDATE,
         paymentIntentId,
         timestamp: new Date(),
-        paymentIntentStatus: PaymentIntentStatus.CANCELLED
+        paymentIntentStatus: PaymentIntentStatus.CANCELLED,
+        cancelReason: PaymentIntentCancelReason.USER
       })
 
       logger.log("Did send webhook", { didSendWebhook })

@@ -10,13 +10,17 @@ import * as jwt from "jsonwebtoken";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import { firestore } from "firebase-admin";
 import { PaymentIntentStatus } from "../../../shared/enums/PaymentIntentStatus";
-import { updatePaymentAttemptIfNeeded } from "../updatePaymentAttempt";
+import { updatePaymentAttemptIfNeededMoneyhub } from "../updatePaymentAttempt";
 import { createPayment, createPaymentDemand } from "../../../shared/utils/crezcoClient";
 
 export default class PaymentAttemptsController extends BaseController {
   createCrezco = async (req, res, next) => {
     try {
+      const logger = new LoggingController("Create payment attempt with crezco")
+
       const { paymentIntentId, crezcoBankCode, deviceId } = req.body;
+
+      logger.log("Got body vars", {}, { paymentIntentId, crezcoBankCode, deviceId })
 
       const { paymentIntent, paymentIntentError } = await fetchDocument(Collection.PAYMENT_INTENT, paymentIntentId, {
         status: PaymentIntentStatus.PENDING
@@ -27,29 +31,27 @@ export default class PaymentAttemptsController extends BaseController {
         return
       }
 
-      const { amount, payee } = paymentIntent
-      const { crezcoUserId, companyName, payeeId, sortCode, accountNumber } = payee
+      const { amount, payeeId } = paymentIntent
 
-      const loggingClient = new LoggingController("Payment Attempts Controller");
-      loggingClient.log(
-        "Payment Attempt Initiated",
-        {
-          environment: process.env.ENVIRONMENT,
-          envClientURL: process.env.CLIENT_URL,
-          provider: "Crezco"
-        },
-        {
-          paymentIntentId,
-          deviceId,
-          amount,
-        }
-      );
+      const { payee, payeeError } = await fetchDocument(Collection.PAYEE, payeeId)
+
+      if (payeeError) {
+        next(payeeError)
+        return
+      }
+
+      const { crezco, companyName, sortCode, accountNumber } = payee
+      const crezcoUserId = crezco.userId
+
+      logger.log("Got paymentIntent", {}, { paymentIntent })
 
       const paymentAttemptId = uuid()
+
+      logger.log("Created paymentAttemptId", {}, { paymentAttemptId })
       
-      const paymentDemandId = await createPaymentDemand(
+      const { paymentDemandId, payDemandError } = await createPaymentDemand(
         crezcoUserId, 
-        paymentAttemptId, 
+        paymentAttemptId,
         paymentIntentId,
         companyName, 
         companyName, 
@@ -58,13 +60,26 @@ export default class PaymentAttemptsController extends BaseController {
         amount
       )
 
-      const redirectUrl = await createPayment(
+      if (payDemandError) {
+        next(payDemandError)
+        return
+      }
+
+      logger.log("Created crezco paymentDemandId", {}, { paymentDemandId })
+
+      const { redirectUrl, paymentError } = await createPayment(
         crezcoUserId, 
-        paymentDemandId, 
+        paymentDemandId,
+        paymentAttemptId,
         crezcoBankCode
       )
 
-      loggingClient.log("Make payment function complete");
+      if (paymentError) {
+        next(paymentError)
+        return
+      }
+
+      logger.log("Got crezco redirect url", {}, { redirectUrl })
 
       const paymentAttemptData = {
         paymentIntentId,
@@ -85,15 +100,11 @@ export default class PaymentAttemptsController extends BaseController {
         .set(paymentAttemptData)
         .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
-      loggingClient.log("Payment attempt doc added", { paymentAttemptData });
-
-      loggingClient.log("Payment Attempt Controller Finished returning 200", {
-        paymentAttemptId,
-      });
+      logger.log("Payment attempt doc added", { paymentAttemptData });
 
       return res.status(200).json({ redirectUrl });
     } catch (err) {
-      console.log(err.response.data.errors)
+      console.log(err)
       next(err)
     }
   }
@@ -111,8 +122,17 @@ export default class PaymentAttemptsController extends BaseController {
         return
       }
 
-      const { amount, payee } = paymentIntent
-      const { moneyhubPayeeId, companyName, payeeId } = payee
+      const { amount, payeeId } = paymentIntent
+
+      const { payee, payeeError } = await fetchDocument(Collection.PAYEE, payeeId)
+
+      if (payeeError) {
+        next(payeeError)
+        return
+      }
+
+      const { moneyhub, companyName } = payee
+      const moneyhubPayeeId = moneyhub.payeeId
 
       const loggingClient = new LoggingController("Payment Attempts Controller");
       loggingClient.log(
@@ -263,7 +283,7 @@ export default class PaymentAttemptsController extends BaseController {
         return
       }
 
-      const { error, redirectUrl, paymentIntentId } = await updatePaymentAttemptIfNeeded(moneyhubPaymentId, paymentSubmissionId, paymentAttemptStatus)
+      const { error, redirectUrl, paymentIntentId } = await updatePaymentAttemptIfNeededMoneyhub(moneyhubPaymentId, paymentSubmissionId, paymentAttemptStatus)
 
       if (error) {
         next(error)

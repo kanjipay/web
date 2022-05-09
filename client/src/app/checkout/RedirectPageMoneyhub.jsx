@@ -69,7 +69,6 @@ export default function RedirectPageMoneyhub() {
       } else {
         switch (status) {
           case PaymentAttemptStatus.SUCCESSFUL:
-            console.log("Got successful payment status change")
             getDoc(Collection.PAYMENT_INTENT.docRef(paymentIntentId)).then(doc => {
               if (hasRedirected) { return }
 

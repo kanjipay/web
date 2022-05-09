@@ -9,7 +9,72 @@ import { fetchDocument } from "../../shared/utils/fetchDocument";
 import LoggingController from "../../shared/utils/loggingClient";
 import { sendWebhook } from "../webhooks/sendWebhook";
 
-export async function updatePaymentAttemptIfNeeded(
+export async function updatePaymentAttemptIfNeededCrezco(paymentAttemptId: string, paymentAttemptStatus: PaymentAttemptStatus) {
+  const logger = new LoggingController("Update payment attempt if needed crezco")
+  logger.log("Got variables", {}, {
+    paymentAttemptId,
+    paymentAttemptStatus
+  })
+
+  const { paymentAttempt, paymentAttemptError } = await fetchDocument(Collection.PAYMENT_ATTEMPT, paymentAttemptId)
+
+  if (paymentAttemptError) {
+    return { error: paymentAttemptError }
+  }
+
+  const { paymentIntentId } = paymentAttempt;
+  const { paymentIntent, paymentIntentError } = await fetchDocument(Collection.PAYMENT_INTENT, paymentIntentId, { status: PaymentIntentStatus.PENDING })
+
+  if (paymentIntentError) {
+    return { error: paymentIntentError }
+  }
+
+  const redirectUrl = paymentIntent.successUrl
+
+  if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
+    await db()
+      .collection(Collection.PAYMENT_INTENT)
+      .doc(paymentIntentId)
+      .set({
+        status: PaymentIntentStatus.SUCCESSFUL,
+        paidAt: firestore.FieldValue.serverTimestamp(),
+        paymentAttemptId,
+        crezco: {
+          
+        },
+      }, { merge: true })
+
+    const { clientId, payeeId } = paymentIntent
+    const { client, clientError } = await fetchDocument(Collection.CLIENT, clientId)
+
+    if (clientError) {
+      return { error: clientError }
+    }
+
+    const { webhookUrl } = client
+
+    // TODO: implement retries
+    await sendWebhook(webhookUrl, {
+      webhookCode: WebhookCode.PAYMENT_INTENT_UPDATE,
+      paymentAttemptId,
+      paymentIntentId,
+      payeeId,
+      timestamp: new Date(),
+      paymentIntentStatus: PaymentIntentStatus.SUCCESSFUL
+    })
+  }
+
+  await db()
+    .collection(Collection.PAYMENT_ATTEMPT)
+    .doc(paymentAttemptId)
+    .update({
+      status: paymentAttemptStatus,
+    })
+
+  return { redirectUrl, paymentIntentId }
+}
+
+export async function updatePaymentAttemptIfNeededMoneyhub(
   moneyhubPaymentId: string, 
   moneyhubPaymentSubmissionId: string, 
   paymentAttemptStatus: PaymentAttemptStatus
@@ -45,11 +110,11 @@ export async function updatePaymentAttemptIfNeeded(
 
   const paymentAttemptDoc = paymentAttemptSnapshot.docs[0];
   const paymentAttemptId = paymentAttemptDoc.id
-  const paymentAttempt = { id: paymentAttemptId, ...paymentAttemptDoc.data() }
+  const paymentAttempt: any = { id: paymentAttemptId, ...paymentAttemptDoc.data() }
 
   loggingClient.log("Got payment attempt", { paymentAttempt })
 
-  const { paymentIntentId } = paymentAttemptDoc.data();
+  const { paymentIntentId } = paymentAttempt;
   const { paymentIntent, paymentIntentError } = await fetchDocument(Collection.PAYMENT_INTENT, paymentIntentId, { status: PaymentIntentStatus.PENDING })
 
   if (paymentIntentError) {

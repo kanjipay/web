@@ -2,7 +2,7 @@ import { Router } from "express";
 import { validate } from "../../../shared/utils/validate";
 import PayeesController from "../controllers/PayeesController";
 import { AllowedSchema } from "express-json-validator-middleware";
-import { PayeeApprovalStatus } from "../../../clientApi/v1/controllers/PayeesController";
+import { PayeeApprovalStatus } from "../../../shared/enums/PayeeApprovalStatus";
 import { enumValues } from "../../../shared/utils/enumValues";
 
 const controller = new PayeesController();

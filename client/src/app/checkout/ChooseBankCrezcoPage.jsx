@@ -1,3 +1,4 @@
+import { onSnapshot } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { isMobile } from "react-device-detect"
 import { Helmet } from "react-helmet-async"
@@ -12,6 +13,7 @@ import MainButton from "../../components/MainButton"
 import NavBar from "../../components/NavBar"
 import OrDivider from "../../components/OrDivider"
 import Spacer from "../../components/Spacer"
+import Collection from "../../enums/Collection"
 import { formatCurrency } from "../../utils/helpers/money"
 import { IdentityManager } from "../../utils/IdentityManager"
 import { ApiName, NetworkManager } from "../../utils/NetworkManager"
@@ -57,6 +59,10 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
     })
   }
 
+  const handleChooseBank = (bankDatum) => {
+    setBankCode(bankDatum.bankCode)
+  }
+
   const handleContinueToBank = () => {
     localStorage.setItem("crezcoBankCode", bankCode)
     navigate("../payment", { state: { bankCode, referringDeviceId } })
@@ -75,7 +81,6 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   useEffect(() => {
     NetworkManager.get(ApiName.INTERNAL, "/banks").then(res => {
       const bankData = res.data
-      console.log(bankData)
       setBankData(bankData)
       setFilteredBankData(bankData)
       setIsLoading(false)
@@ -92,6 +97,20 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
       setLinkId(null)
     }
   }, [paymentIntent, bankCode])
+
+  useEffect(() => {
+    if (!linkId) { return }
+
+    const unsub = onSnapshot(Collection.LINK.docRef(linkId), doc => {
+      const { wasUsed } = doc.data()
+
+      if (wasUsed) {
+        navigate("../mobile-handover")
+      }
+    })
+
+    return unsub
+  }, [linkId, navigate])
 
   if (isLoading) {
     return <LoadingPage />
@@ -152,12 +171,13 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
           onClick={handleChooseAnotherBank}
           buttonTheme={ButtonTheme.SECONDARY}
         />
-        <Spacer y={2} />
+        {/* <Spacer y={2} />
         <p className="text-caption">
           By continuing you are permitting Crezco to initiate a payment from your bank account. You also agree to Crezco's
           <a href="https://www.crezco.com/terms" target="_blank" rel="noreferrer"> Terms of Use </a>
           and
-          <a href="https://www.crezco.com/privacy-policy" target="_blank" rel="noreferrer"> Privacy Policy</a>.</p>
+          <a href="https://www.crezco.com/privacy-policy" target="_blank" rel="noreferrer"> Privacy Policy</a>.
+        </p> */}
         <Spacer y={3} />
       </div>
     </div>
@@ -198,7 +218,7 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
           filteredBankData.length > 0 ?
             <div style={{ display: 'grid', gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 16 }}>
               {
-                filteredBankData.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => setBankCode(datum.bankCode)} />)
+                filteredBankData.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => handleChooseBank(datum)} />)
               }
             </div> :
             <div style={{ textAlign: "center" }}>

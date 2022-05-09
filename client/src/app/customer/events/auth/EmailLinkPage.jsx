@@ -1,5 +1,5 @@
 import * as base64 from "base-64"
-import { getAuth, isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth"
+import { getAuth, isSignInWithEmailLink, signInWithEmailLink, updateProfile } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import Cross from "../../../../assets/icons/Cross"
@@ -16,6 +16,7 @@ export default function EmailLinkPage() {
 
   const [searchParams] = useSearchParams()
   const [backPath, successPath] = ["back", "success"].map(e => base64.decode(searchParams.get(e)))
+  const [firstName, lastName] = ["first", "last"].map(e => searchParams.get(e))
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
 
   const emailFromLocalStorage = localStorage.getItem("emailForSignIn")
@@ -30,7 +31,13 @@ export default function EmailLinkPage() {
       signInWithEmailLink(auth, emailForSignIn, window.location.href)
         .then(result => {
           localStorage.removeItem("emailForSignIn")
-          navigate(successPath, { state: successState })
+          const user = result.user
+          const displayName = `${firstName} ${lastName}`
+
+          updateProfile(user, { displayName }).then(() => {
+            navigate(successPath, { state: successState })
+          })
+          
         })
         .catch(error => {
           setError({
@@ -44,7 +51,7 @@ export default function EmailLinkPage() {
         body: "This isn't a valid email sign in link."
       })
     }
-  }, [emailForSignIn, auth, navigate, successPath, successState])
+  }, [emailForSignIn, navigate, successPath, successState, firstName, lastName])
 
   const handleEmailFieldChange = (event) => {
     setEmailFromField(event.target.value)
