@@ -26,6 +26,9 @@ export default function RedirectPageMercado() {
       const order = orders[0]
       const { merchantId } = order
 
+      console.log(order.status)
+      console.log(order.id)
+
       switch (order.status) {
         case OrderStatus.PAID:
           navigate(`/events/s/orders/${order.id}/confirmation`)

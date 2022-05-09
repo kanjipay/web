@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import LoadingPage from "../../../../../components/LoadingPage";
-import Spacer from "../../../../../components/Spacer"
 import { ApiName, NetworkManager } from "../../../../../utils/NetworkManager";
-import EventListing from "../../event/EventListing";
 import CustomerEventPage from "./CustomerEventPage";
 import CustomerEventListPage from "./CustomerEventsListPage";
 
@@ -13,6 +11,7 @@ export default function CustomerTickets() {
   useEffect(() => {
     NetworkManager.get(ApiName.ONLINE_MENU, "/tickets").then(res => {
       const { events } = res.data
+      console.log(events)
       setEvents(events)
     })
   }, [])
