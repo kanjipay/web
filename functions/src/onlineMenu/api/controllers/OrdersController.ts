@@ -9,6 +9,7 @@ import LoggingController from "../../../shared/utils/loggingClient";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import { createMercadoPaymentIntent } from "../../utils/mercadoClient";
 import { firestore } from "firebase-admin";
+import { OrderType } from "../../../shared/enums/OrderType";
 
 export default class OrdersController extends BaseController {
   private async fetchMenuItems(requestedItems: { id: string, quantity: number, title: string }[], merchantId: string) {
@@ -159,7 +160,7 @@ export default class OrdersController extends BaseController {
     await batch.commit();
   }
 
-  create = async (req, res, next) => {
+  createWithMenuItems = async (req, res, next) => {
     const { requestedItems, merchantId, deviceId, userId } = req.body;
 
     const loggingClient = new LoggingController("Order Controller");
@@ -195,13 +196,14 @@ export default class OrdersController extends BaseController {
     const total = this.calculateOrderTotal(requestedItems, menuItems)
     const orderItems = this.generateOrderItems(requestedItems, menuItems)
     const orderNumber = await this.generateOrderNumber(merchantId, loggingClient)
-    const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId)
+    const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId, OrderType.MENU)
 
     const orderRef = await db()
       .collection(Collection.ORDER)
       .add({
         createdAt: firestore.FieldValue.serverTimestamp(),
         status: OrderStatus.PENDING,
+        type: OrderType.MENU,
         mercado: {
           paymentIntentId
         },
@@ -224,6 +226,110 @@ export default class OrdersController extends BaseController {
 
     return res.status(200).json({ checkoutUrl, orderId });
   };
+
+  createWithTickets = async (req, res, next) => {
+    try {
+      const customerId = req.user.id
+      const { productId, quantity, deviceId } = req.body
+
+      const { product, productError } = await fetchDocument(Collection.PRODUCT, productId)
+
+      if (productError) {
+        next(productError)
+        return
+      }
+
+      const { soldCount, reservedCount, capacity, eventId, merchantId, price, title } = product
+
+      if (soldCount + reservedCount + quantity >= capacity) {
+        const errorMessage = "This ticket is sold out."
+        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        return
+      }
+
+      const { event, eventError } = await fetchDocument(Collection.EVENT, eventId)
+
+      if (eventError) {
+        next(eventError)
+        return
+      }
+
+      const { maxTicketsPerPerson, endsAt } = event
+
+      const existingTicketDocs = await db()
+        .collection(Collection.TICKET)
+        .where("customerId", "==", customerId)
+        .where("eventId", "==", eventId)
+        .get()
+
+      const currentTicketCount = existingTicketDocs.docs.length
+
+      if (currentTicketCount + quantity > maxTicketsPerPerson) {
+        let errorMessage
+
+        if (currentTicketCount > 0) {
+          errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person. You currently have ${currentTicketCount} and tried to order ${quantity}.`
+        } else {
+          errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person.`
+        }
+        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        return
+      }
+
+      const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
+
+      if (merchantError) {
+        next(merchantError)
+        return
+      }
+
+      const { payeeId } = merchant
+
+      const total = price * quantity
+
+      const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId, OrderType.TICKETS)
+
+      const orderItems = [{
+        productId,
+        eventId,
+        title,
+        price,
+        eventEndsAt: endsAt,
+        quantity
+      }]
+
+      const orderRef = await db()
+        .collection(Collection.ORDER)
+        .add({
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          status: OrderStatus.PENDING,
+          type: OrderType.TICKETS,
+          mercado: {
+            paymentIntentId
+          },
+          total,
+          deviceId,
+          customerId,
+          eventId,
+          merchantId,
+          orderItems,
+          wereTicketsCreated: false
+        });
+
+      await db()
+        .collection(Collection.PRODUCT)
+        .doc(productId)
+        .update({
+          reservedCount: firestore.FieldValue.increment(quantity)
+        })
+
+      const orderId = orderRef.id;
+
+      res.status(200).json({ checkoutUrl, orderId })
+    } catch (err) {
+      next(err)
+    }
+  }
 
   sendEmailReceipt = async (req, res, next) => {
     const { email, orderId } = req.body;

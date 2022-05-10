@@ -1,4 +1,5 @@
 import axios from "axios";
+import { OrderType } from "../../shared/enums/OrderType";
 
 const mercadoBaseUrl = `${process.env.BASE_SERVER_URL}/clientApi/v1`
 
@@ -7,9 +8,20 @@ const defaultHeaders = {
   "mcp-client-secret": process.env.MERCADO_CLIENT_SECRET
 }
 
-export async function createMercadoPaymentIntent(amount: number, payeeId: string) {
-  const successUrl = `${process.env.CLIENT_URL}/mcp-redirect`
-  const cancelledUrl = `${process.env.CLIENT_URL}/mcp-redirect`
+export async function createMercadoPaymentIntent(amount: number, payeeId: string, orderType: OrderType) {
+  let subPath: string
+
+  switch (orderType) {
+    case OrderType.MENU:
+      subPath = "menu"
+      break;
+    case OrderType.TICKETS:
+      subPath = "events"
+      break;
+  }
+
+  const successUrl = `${process.env.CLIENT_URL}/${subPath}/mcp-redirect`
+  const cancelledUrl = `${process.env.CLIENT_URL}/${subPath}/mcp-redirect`
 
   const res = await axios.post(`${mercadoBaseUrl}/payment-intents`, {
     amount,

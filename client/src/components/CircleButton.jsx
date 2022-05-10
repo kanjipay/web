@@ -50,6 +50,7 @@ export class ButtonTheme {
 export default function CircleButton({
   length = 32,
   Icon,
+  imageRef,
   buttonTheme,
   style,
   ...props
@@ -79,11 +80,9 @@ export default function CircleButton({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    cursor: "pointer",
     ...style,
   };
-
-  const iconSize = 16;
-  const iconStyle = { height: iconSize, width: iconSize, objectFit: "contain" };
 
   return (
     <button
@@ -94,7 +93,8 @@ export default function CircleButton({
       onTouchEnd={() => setIsPressed(false)}
       {...props}
     >
-      <Icon style={iconStyle} color={foregroundColor} />
+      { Icon && <Icon color={foregroundColor} /> }
+      { imageRef && <img style={{ width: 32, height: 32 }} src={imageRef} alt="" />}
     </button>
   );
 }

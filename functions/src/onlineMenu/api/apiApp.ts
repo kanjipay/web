@@ -1,6 +1,8 @@
 import * as express from "express";
 import * as cors from "cors";
 import ordersRoutes from "./routes/ordersRoutes";
+import ticketsRoutes from "./routes/ticketsRoutes";
+import authRoutes from "./routes/authRoutes";
 
 const apiApp = express();
 
@@ -10,6 +12,8 @@ apiApp.use(corsInstanceApi);
 apiApp.options("*", corsInstanceApi);
 
 apiApp.use("/orders", ordersRoutes);
+apiApp.use("/tickets", ticketsRoutes);
+apiApp.use("/auth", authRoutes)
 apiApp.get("/status", (req, res) => {
   res.sendStatus(200)
 })

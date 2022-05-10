@@ -5,12 +5,7 @@ import Collection from "../../../shared/enums/Collection";
 import { addDocument } from "../../../shared/utils/addDocument";
 import { db } from "../../../shared/utils/admin";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
-
-export enum PayeeApprovalStatus {
-  PENDING = "PENDING",
-  APPROVED = "APPROVED",
-  DECLINED = "DECLINED"
-}
+import { PayeeApprovalStatus } from "../../../shared/enums/PayeeApprovalStatus";
 
 const returnedPayeeFields = [
   "companyName",

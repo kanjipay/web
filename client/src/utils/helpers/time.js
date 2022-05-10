@@ -12,6 +12,11 @@ export function formatMinutes(mins) {
   return `${hours}:${minsRemainder}`;
 }
 
+export function dateFromTimestamp(timestamp) {
+  const seconds = timestamp.seconds ?? timestamp._seconds
+  return new Date(seconds * 1000)
+}
+
 export function getWeekdays(locale) {
   var baseDate = new Date(Date.UTC(2017, 0, 2)); // just a Monday
   var weekDays = [];
@@ -35,8 +40,8 @@ export function getTimeFromUnixTimestamp(UNIX_timestamp) {
 }
 
 export function formatTimeForDisplayFromTimestamp(timestamp) {
-  const hours = timestamp.toDate().getHours();
-  const minutes = timestamp.toDate().getMinutes();
+  const hours = dateFromTimestamp(timestamp).getHours();
+  const minutes = dateFromTimestamp(timestamp).getMinutes();
 
   var hoursString = "";
   var minutesString = "";

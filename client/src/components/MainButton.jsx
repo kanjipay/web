@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Spinner from "../assets/Spinner";
-import { ButtonTheme, Colors } from "./CircleButton";
+import { ButtonTheme } from "./CircleButton";
 import "./MainButton.css";
 
 export default function MainButton({

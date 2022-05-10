@@ -1,11 +1,9 @@
-import "./NavBar.css";
-import CircleButton, { ButtonTheme } from "./CircleButton";
+import CircleButton, { ButtonTheme, Colors } from "./CircleButton";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Back from "../assets/icons/Back";
 
 export default function NavBar({
-  showsBackButton = true,
   backAction,
   backPath,
   title,
@@ -49,37 +47,54 @@ export default function NavBar({
     }
   }, [transparentDepth, opaqueDepth, changesOpacity]);
 
-  return (
-    <div className="NavBar">
-      <div className="NavBar__content">
-        <div className="NavBar__background" style={{ opacity }} />
-        <div className="NavBar__left">
-          {showsBackButton && (
-            <div className="NavBar__item">
-              <CircleButton
-                Icon={Back}
-                buttonTheme={ButtonTheme.NAVBAR}
-                onClick={handleBackClick}
-              />
-            </div>
-          )}
-          {leftElements.map((e, index) => (
-            <div key={index} className="NavBar__item">
-              {e}
-            </div>
-          ))}
-        </div>
-        <div className="NavBar__title header-xs" style={{ opacity }}>
-          {title || titleElement}
-        </div>
-        <div className="NavBar__right">
-          {rightElements.map((e, index) => (
-            <div key={index} className="NavBar__item">
-              {e}
-            </div>
-          ))}
-        </div>
-      </div>
+  return <div style={{
+    position: "fixed",
+    width: "100%",
+    height: 48,
+    zIndex: 100,
+    maxWidth: 600,
+    display: "relative"
+  }}>
+    <div style={{
+      backgroundColor: Colors.WHITE,
+      opacity,
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      borderBottom: `1px solid ${Colors.OFF_WHITE}`
+    }}>
+      {titleElement ?? <h1 className="header-xs">{title}</h1>}
     </div>
-  );
+
+    <div style={{
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+      display: "flex",
+      alignItems: "center",
+      columnGap: 8,
+      padding: "0px 8px",
+      boxSizing: "border-box",
+    }}>
+      {(backPath || backAction) && (
+        <div className="NavBar__item">
+          <CircleButton
+            Icon={Back}
+            buttonTheme={ButtonTheme.NAVBAR}
+            onClick={handleBackClick}
+          />
+        </div>
+      )}
+      {
+        leftElements.map((e, index) => <div key={index}>{e}</div>)
+      }
+      <div className="flex-spacer" />
+      {
+        rightElements.map((e, index) => <div key={index}>{e}</div>)
+      }
+    </div>
+  </div>
 }
