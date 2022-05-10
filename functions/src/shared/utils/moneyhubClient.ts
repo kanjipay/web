@@ -1,3 +1,5 @@
+import LoggingController from "./loggingClient"
+
 const Moneyhub = require("@mft/moneyhub-api-client")
 let moneyhubInstance = null
 
@@ -7,7 +9,7 @@ async function getMoneyhub() {
   const client_id = isLocal ? process.env.MONEYHUB_CLIENT_ID_LOCAL : process.env.MONEYHUB_CLIENT_ID
   console.log("ClientId: ", client_id)
   const client_secret = isLocal ? process.env.MONEYHUB_CLIENT_SECRET_LOCAL : process.env.MONEYHUB_CLIENT_SECRET
-  const redirect_uri = `${process.env.CLIENT_URL}/mh-redirect`
+  const redirect_uri = `${process.env.CLIENT_URL}/checkout/mh-redirect`
   const response_type = isLocal ? "code" : "code id_token"
   const keysString = isLocal ? process.env.MONEYHUB_PRIVATE_JWKS_LOCAL : process.env.MONEYHUB_PRIVATE_JWKS
   const keys = JSON.parse(keysString)
@@ -37,28 +39,41 @@ const getMoneyhubClient = async () => moneyhubInstance || await getMoneyhub();
 
 export async function processAuthSuccess(
   code: string, 
-  state: any, 
-  idToken: any, 
+  state: string, 
+  idToken: string, 
   paymentAttemptId: string, 
   stateId: string, 
   clientState: string
 ) {
+  const logger = new LoggingController("Moneyhub process auth success")
+
   const localState = `${paymentAttemptId}.${stateId}.${clientState}`
   const nonce = paymentAttemptId
 
+  logger.log("States", {
+    localState,
+    state,
+    idToken
+  })
+
   try {
     const moneyhub = await getMoneyhubClient()
+
+    const paramsFromCallback = {
+      code,
+      state,
+    }
+
+    if (process.env.IS_LOCAL !== "TRUE") {
+      paramsFromCallback["id_token"] = idToken
+    }
 
     return await moneyhub.exchangeCodeForTokens({
       localParams: {
         nonce,
         state: localState,
       },
-      paramsFromCallback: {
-        code,
-        state,
-        id_token: idToken,
-      },
+      paramsFromCallback,
     })
   } catch (err) {
     console.log(err)
@@ -67,8 +82,9 @@ export async function processAuthSuccess(
 
 export async function getMoneyhubPayment(paymentId: string) {
   const moneyhub = await getMoneyhubClient()
+  const { data } = await moneyhub.getPayment({ id: paymentId })
 
-  return await moneyhub.getPayment({ id: paymentId })
+  return data
 }
 
 export async function getPayees() {

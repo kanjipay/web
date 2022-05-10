@@ -1,11 +1,13 @@
 import Tick from "../assets/icons/Tick";
 import Cross from "../assets/icons/Cross";
+import Details from "../assets/icons/Details";
 import { Colors } from "./CircleButton";
 import CircleIcon from "./CircleIcon";
 
 export class ResultType {
   static SUCCESS = new ResultType(Colors.PRIMARY_LIGHT, Colors.PRIMARY, Tick);
   static ERROR = new ResultType(Colors.RED_LIGHT, Colors.RED, Cross);
+  static INFO = new ResultType(Colors.OFF_WHITE, Colors.GRAY, Details);
 
   constructor(
     backgroundColor,

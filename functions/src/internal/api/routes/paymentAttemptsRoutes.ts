@@ -31,8 +31,30 @@ const createPaymentAttemptSchema: AllowedSchema = {
 routes.post(
   "/",
   validate({ body: createPaymentAttemptSchema }),
-  controller.create
+  controller.createMoneyhub
 );
+
+const createCrezcoPaymentAttemptSchema: AllowedSchema = {
+  type: "object",
+  required: ["paymentIntentId", "crezcoBankCode", "deviceId"],
+  properties: {
+    paymentIntentId: {
+      type: "string",
+    },
+    crezcoBankCode: {
+      type: "string"
+    },
+    deviceId: {
+      type: "string"
+    },
+  },
+}
+
+routes.post(
+  "/crezco",
+  validate({ body: createCrezcoPaymentAttemptSchema }),
+  controller.createCrezco
+)
 
 const isLocal = process.env.IS_LOCAL === "TRUE"
 const confirmPaymentAttemptRequiredFields = ["code", "state"]
@@ -65,9 +87,9 @@ routes.post(
   controller.confirm
 );
 
-routes.get(
-  "/moneyhub-payments/:moneyhubPaymentId",
-  controller.getPayment
+routes.post(
+  "/pa/:paymentAttemptId/check-status",
+  controller.checkPayment
 )
 
 export default routes;

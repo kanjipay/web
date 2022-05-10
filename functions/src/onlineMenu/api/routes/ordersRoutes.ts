@@ -2,11 +2,12 @@ import { Router } from "express";
 import OrdersController from "../controllers/OrdersController";
 import { validate } from "../../../shared/utils/validate";
 import { AllowedSchema } from "express-json-validator-middleware";
+import { authenticate } from "../../../shared/middleware/auth";
 
 const controller = new OrdersController();
 const routes = Router();
 
-const createOrderSchema: AllowedSchema = {
+const createOrderWithMenuItemsSchema: AllowedSchema = {
   type: "object",
   required: ["requestedItems", "merchantId", "deviceId", "userId"],
   properties: {
@@ -45,9 +46,32 @@ const createOrderSchema: AllowedSchema = {
 }
 
 routes.post(
-  "/", 
-  validate({ body: createOrderSchema }), 
-  controller.create
+  "/menu", 
+  validate({ body: createOrderWithMenuItemsSchema }), 
+  controller.createWithMenuItems
+);
+
+const createOrderWithTicketsSchema: AllowedSchema = {
+  type: "object",
+  required: ["productId", "quantity", "deviceId"],
+  properties: {
+    productId: {
+      type: "string"
+    },
+    quantity: {
+      type: "integer"
+    },
+    deviceId: {
+      type: "string"
+    }
+  }
+}
+
+routes.post(
+  "/tickets",
+  validate({ body: createOrderWithTicketsSchema }),
+  authenticate,
+  controller.createWithTickets
 );
 
 const sendEmailSchema: AllowedSchema = {

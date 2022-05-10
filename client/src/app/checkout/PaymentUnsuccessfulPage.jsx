@@ -13,7 +13,6 @@ export default function PaymentUnsuccessfulPage({
   iconForegroundColor,
   title,
   body,
-  pageName,
   paymentIntent,
 }) {
   const navigate = useNavigate();

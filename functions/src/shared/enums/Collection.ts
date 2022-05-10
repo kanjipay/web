@@ -16,6 +16,10 @@ enum Collection {
   ORDER = "Order",
   OPENING_HOUR_RANGE = "OpeningHourRange",
   WEB_AUDIT_LOG = "WebAuditLog",
+  TICKET = "Ticket",
+  PRODUCT = "Product",
+  EVENT = "Event",
+  CUSTOMER = "Customer"
 }
 
 export default Collection;

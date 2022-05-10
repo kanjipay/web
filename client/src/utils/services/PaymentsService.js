@@ -5,24 +5,34 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import axios from "axios";
 import Collection from "../../enums/Collection";
-import { IdentityManager } from "../IdentityManager";
 import { saveState } from "./StateService";
 import { v4 as uuid } from "uuid"
+import { ApiName, NetworkManager } from "../NetworkManager";
 
-export async function createPaymentAttempt(paymentIntentId, bankId) {
-  const deviceId = IdentityManager.main.getDeviceId()
+export async function createPaymentAttemptCrezco(paymentIntentId, bankCode, deviceId) {
+  const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts/crezco", {
+    paymentIntentId,
+    deviceId,
+    crezcoBankCode: bankCode
+  })
+
+  const { redirectUrl } = res.data
+
+  return redirectUrl
+}
+
+export async function createPaymentAttemptMoneyhub(paymentIntentId, bankId, deviceId) {
   const clientState = uuid()
   const stateId = await saveState({ clientState })
 
-  const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts`, {
+  const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts", {
     paymentIntentId,
     deviceId,
     stateId,
     clientState,
     moneyhubBankId: bankId
-  });
+  })
 
   const { authUrl } = res.data
 
@@ -31,7 +41,7 @@ export async function createPaymentAttempt(paymentIntentId, bankId) {
 
 export async function confirmPayment(code, state, idToken) {
   try {
-    const res = await axios.post(`${process.env.REACT_APP_BASE_SERVER_URL}/internal/api/v1/payment-attempts/confirm`, {
+    const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts/confirm", {
       code,
       state,
       idToken,

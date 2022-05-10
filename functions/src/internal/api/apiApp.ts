@@ -6,6 +6,7 @@ import paymentAttemptsRoutes from "./routes/paymentAttemptsRoutes";
 import paymentIntentsRoutes from "./routes/paymentIntentsRoutes";
 import loggingRoutes from "./routes/loggingRoutes";
 import clientsRoutes from "./routes/clientsRoutes";
+import banksRoutes from "./routes/banksRoutes";
 
 const apiApp = express();
 
@@ -19,6 +20,7 @@ apiApp.use("/payment-intents", paymentIntentsRoutes);
 apiApp.use("/payees", payeesRoutes);
 apiApp.use("/clients", clientsRoutes);
 apiApp.use("/links", linksRoutes);
+apiApp.use("/banks", banksRoutes);
 apiApp.use("/log", loggingRoutes);
 apiApp.get("/status", (req, res) => {
   res.sendStatus(200)

@@ -1,7 +1,7 @@
 import { auth } from "../utils/admin";
 
-export const checkFirebaseAuthToken = async (req, res, next) => {
-  let idToken;
+export const authenticate = async (req, res, next) => {
+  let idToken: string;
 
   if (
     req.headers.authorization &&
@@ -10,15 +10,15 @@ export const checkFirebaseAuthToken = async (req, res, next) => {
     idToken = req.headers.authorization.split("Bearer ")[1];
   } else {
     res.status(403).send("Unauthorized");
+    return
   }
 
   try {
     const decodedIdToken = await auth().verifyIdToken(idToken);
-    req.user = decodedIdToken;
+    const { uid, email, name } = decodedIdToken
+    req.user = { id: uid, email, name };
     next();
-    return;
   } catch (err) {
     res.status(403).send("Unauthorized");
-    return;
   }
 };
