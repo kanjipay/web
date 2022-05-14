@@ -1,8 +1,10 @@
 import Discover from "../../../../../assets/icons/Discover";
-import { Colors } from "../../../../../components/CircleButton";
+import { ButtonTheme, Colors } from "../../../../../components/CircleButton";
 import IconPage from "../../../../../components/IconPage";
 import LoadingPage from "../../../../../components/LoadingPage";
+import SmallButton from "../../../../../components/SmallButton";
 import Spacer from "../../../../../components/Spacer";
+import { auth } from "../../../../../utils/FirebaseUtils";
 import EventListing from "../../event/EventListing";
 import EventsAppNavBar from "../EventsAppNavBar";
 
@@ -31,8 +33,6 @@ export default function CustomerEventListPage({ events }) {
     } else {
       pageContents = <IconPage
         Icon={Discover}
-        iconBackgroundColor={Colors.PRIMARY_LIGHT}
-        iconForegroundColor={Colors.PRIMARY}
         title="No events yet"
         body="You haven't bought any event tickets yet. When you do, they'll appear here."
       />
@@ -40,9 +40,17 @@ export default function CustomerEventListPage({ events }) {
   } else {
     pageContents = <LoadingPage />
   }
+
+  const handleSignOut = () => {
+    auth.signOut().then(() => {
+      console.log("Signed out")
+    })
+  }
+
   return <div className="container">
     <EventsAppNavBar
       title="Your events"
+      rightElements={[<SmallButton title="Sign out" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={handleSignOut} style={{ padding: "4px 8px" }}/>]}
     />
     { pageContents }
   </div>

@@ -5,8 +5,6 @@ import { Colors } from "./CircleButton";
 export default function AsyncImage({ imageRef, alt = "", ...props }) {
   const [url, setUrl] = useState(null);
 
-  
-
   useEffect(() => {
     getDownloadURL(imageRef)
       .then((url) => {
@@ -20,6 +18,6 @@ export default function AsyncImage({ imageRef, alt = "", ...props }) {
   return url ? (
     <img src={url} alt={alt} {...props} />
   ) : (
-    <div style={{ backgroundColor: Colors.OFF_WHITE }} {...props} />
+    <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT }} {...props} />
   );
 }

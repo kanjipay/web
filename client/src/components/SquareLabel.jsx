@@ -1,17 +1,16 @@
 import { Colors } from "./CircleButton";
 
-export default function Bubble({
+export default function SquareLabel({
   children,
-  backgroundColor = Colors.OFF_WHITE_LIGHT,
-  foregroundColor = Colors.BLACK,
+  backgroundColor = Colors.BLACK,
+  foregroundColor = Colors.WHITE,
   fontSize = 15,
-  padding = "2px 6px",
+  padding = "4px 6px",
   ...props
 }) {
   return <div {...props} style={{
     backgroundColor,
     color: foregroundColor,
-    borderRadius: 1000,
     fontSize,
     padding,
     fontWeight: 500,

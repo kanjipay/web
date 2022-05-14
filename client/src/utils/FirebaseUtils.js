@@ -4,7 +4,7 @@ import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import Environment from "../enums/Environment";
-import { getAuth, inMemoryPersistence, setPersistence } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 // import { getPerformance } from "firebase/performance";
 // import { getAnalytics } from "firebase/analytics";
 

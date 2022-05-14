@@ -154,8 +154,7 @@ export async function updatePaymentAttemptIfNeededMoneyhub(
         isReversible: false
       }, { merge: true })
 
-    const { clientId, payee } = paymentIntent
-    const { payeeId } = payee
+    const { clientId, payeeId } = paymentIntent
     const { client, clientError } = await fetchDocument(Collection.CLIENT, clientId)
 
     if (clientError) {

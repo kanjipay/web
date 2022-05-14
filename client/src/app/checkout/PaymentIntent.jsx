@@ -28,12 +28,12 @@ export default function PaymentIntent() {
   return paymentIntent ? 
     <Routes>
       {/* Crezco */}
-      <Route path="payment" element={<PaymentPageCrezco paymentIntent={paymentIntent} />} />
-      <Route path="choose-bank" element={<ChooseBankCrezcoPage paymentIntent={paymentIntent} />} />
+      {/* <Route path="payment" element={<PaymentPageCrezco paymentIntent={paymentIntent} />} />
+      <Route path="choose-bank" element={<ChooseBankCrezcoPage paymentIntent={paymentIntent} />} /> */}
 
       {/* Moneyhub */}
-      {/* <Route path="choose-bank" element={<ChooseBankMoneyhubPage paymentIntent={paymentIntent} />} />
-      <Route path="payment" element={<PaymentPageMoneyhub paymentIntent={paymentIntent} />} /> */}
+      <Route path="choose-bank" element={<ChooseBankMoneyhubPage paymentIntent={paymentIntent} />} />
+      <Route path="payment" element={<PaymentPageMoneyhub paymentIntent={paymentIntent} />} />
 
       <Route path="mobile-handover" element={<MobileHandoverPage paymentIntent={paymentIntent} />} />
       <Route path="mobile-finished" element={<MobileFinishedPage />} />

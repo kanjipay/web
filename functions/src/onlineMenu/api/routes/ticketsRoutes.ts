@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticate } from "../../../shared/middleware/auth";
+import { authenticate } from "../../../shared/middleware/authenticate";
 import TicketsController from "../controllers/TicketsController";
 
 const ticketsController = new TicketsController();
