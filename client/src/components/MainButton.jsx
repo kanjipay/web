@@ -2,9 +2,10 @@ import { useState } from "react";
 import Spinner from "../assets/Spinner";
 import { ButtonTheme } from "./CircleButton";
 import "./MainButton.css";
+import { Colors } from "./CircleButton"
 
 export default function MainButton({
-  buttonTheme = ButtonTheme.PRIMARY,
+  buttonTheme = ButtonTheme.MONOCHROME,
   title,
   sideMessage,
   style,
@@ -32,14 +33,15 @@ export default function MainButton({
     backgroundColor,
     height: "48px",
     width: "100%",
-    borderRadius: "16px",
-    border: 0,
+    border: `1px solid ${buttonTheme.borderColor}`,
     display: "flex",
     outline: "none",
+    boxSizing: "border-box",
     alignItems: "center",
     justifyContent: "center",
     color: foregroundColor,
     cursor: "pointer",
+    font: "500 1em Oswald, Roboto, sans-serif",
     ...style,
   };
 
@@ -63,7 +65,18 @@ export default function MainButton({
       )}
 
       {sideMessage && (
-        <div className="MainButton__sideMessage header-xs">{sideMessage}</div>
+        <div style={{
+          position: "absolute",
+          height: "100%",
+          padding: "0px 16px",
+          display: "flex",
+          alignItems: "center",
+          top: 0,
+          right: 0,
+          fontWeight: 500,
+          color: Colors.WHITE,
+          backgroundColor: Colors.OFF_BLACK_LIGHT,
+        }}>{sideMessage}</div>
       )}
     </div>
   );

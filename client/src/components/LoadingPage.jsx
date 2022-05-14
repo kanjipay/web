@@ -5,7 +5,7 @@ export default function LoadingPage({ message }) {
   return (
     <div className="container">
       <div className="centred">
-        <Spinner />
+        <Spinner length={64} />
         <Spacer y={2} />
         {message && (
           <div className="header-xs" style={{ textAlign: "center" }}>

@@ -3,7 +3,7 @@ import Spinner from "../assets/Spinner";
 import { ButtonTheme } from "./CircleButton";
 
 export default function SmallButton({
-  buttonTheme = ButtonTheme.PRIMARY,
+  buttonTheme = ButtonTheme.MONOCHROME,
   title,
   style,
   isLoading = false,
@@ -15,7 +15,6 @@ export default function SmallButton({
   let backgroundColor;
 
   if (props.disabled) {
-    console.log("disabled")
     backgroundColor = buttonTheme.disabledBackgroundColor;
   } else if (isPressed) {
     backgroundColor = buttonTheme.pressedBackgroundColor;
@@ -29,15 +28,16 @@ export default function SmallButton({
 
   const buttonStyle = {
     backgroundColor,
-    padding: "8px 12px",
-    borderRadius: "1000px",
-    border: 0,
+    padding: "8px 16px",
     display: "flex",
     outline: "none",
     alignItems: "center",
     justifyContent: "center",
+    border: `1px solid ${buttonTheme.borderColor}`,
+    boxSizing: "border-box",
     color: foregroundColor,
-    cursor: "pointer",
+    cursor: props.disabled ? "mouse" : "pointer",
+    font: "500 1em Oswald, Roboto, sans-serif",
     ...style,
   };
 

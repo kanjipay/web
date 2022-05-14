@@ -39,7 +39,7 @@ export default function IconActionPage({
             style={{ boxSizing: "borderBox" }}
             isLoading={primaryIsLoading}
             onClick={primaryAction}
-            buttonTheme={ButtonTheme.PRIMARY}
+            buttonTheme={ButtonTheme.MONOCHROME}
           />
 
           {secondaryActionTitle && secondaryAction && (
@@ -50,7 +50,7 @@ export default function IconActionPage({
                 style={{ boxSizing: "borderBox" }}
                 isLoading={secondaryIsLoading}
                 onClick={secondaryAction}
-                buttonTheme={ButtonTheme.SECONDARY}
+                buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
               />
             </div>
           )}

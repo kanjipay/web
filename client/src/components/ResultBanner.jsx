@@ -5,9 +5,9 @@ import { Colors } from "./CircleButton";
 import CircleIcon from "./CircleIcon";
 
 export class ResultType {
-  static SUCCESS = new ResultType(Colors.PRIMARY_LIGHT, Colors.PRIMARY, Tick);
+  static SUCCESS = new ResultType(Colors.OFF_WHITE_LIGHT, Colors.BLACK, Tick);
   static ERROR = new ResultType(Colors.RED_LIGHT, Colors.RED, Cross);
-  static INFO = new ResultType(Colors.OFF_WHITE, Colors.GRAY, Details);
+  static INFO = new ResultType(Colors.OFF_WHITE_LIGHT, Colors.BLACK, Details);
 
   constructor(
     backgroundColor,
@@ -25,7 +25,6 @@ export class ResultType {
 export default function ResultBanner({ resultType, message }) {
   const bannerStyle = {
     backgroundColor: resultType.backgroundColor,
-    borderRadius: 16,
     padding: "12px 16px",
   };
 

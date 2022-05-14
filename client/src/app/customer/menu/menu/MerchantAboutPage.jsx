@@ -11,6 +11,7 @@ import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { PageName, viewPage } from "../../../../utils/AnalyticsManager";
+import { Colors } from "../../../../components/CircleButton";
 
 export default function MerchantAboutPage({ merchant, openHourRanges }) {
   const weekdays = getWeekdays("en-GB");
@@ -69,7 +70,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         <Spacer y={3} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Location} style={{ marginRight: 8 }} />
+          <CircleIcon Icon={Location} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
           <div className="header-s">Address</div>
         </div>
         <Spacer y={2} />
@@ -77,7 +78,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         <Spacer y={3} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Clock} style={{ marginRight: 8 }} />
+          <CircleIcon Icon={Clock} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
           <div className="header-s">Opening hours</div>
         </div>
         <Spacer y={2} />
