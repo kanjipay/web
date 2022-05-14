@@ -130,7 +130,7 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
           <Spacer y={2} />
           <h3 className="header-s">We're redirecting you to your bank</h3>
           <Spacer y={2} />
-          <p className="text-body-faded">You'll be sent back here after you confirm your payment of <span style={{ fontWeight: 800 }}>{formatCurrency(paymentIntent.amount)}</span></p>
+          <p className="text-body-faded">We'll use our trusted partner Crezco to do this. You'll be sent back here after you confirm your payment of <span style={{ fontWeight: 800 }}>{formatCurrency(paymentIntent.amount)}</span></p>
         </div>
       </div>
 
@@ -169,15 +169,15 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
         <MainButton
           title="Choose another bank"
           onClick={handleChooseAnotherBank}
-          buttonTheme={ButtonTheme.SECONDARY}
+          buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
         />
-        {/* <Spacer y={2} />
+        <Spacer y={2} />
         <p className="text-caption">
           By continuing you are permitting Crezco to initiate a payment from your bank account. You also agree to Crezco's
           <a href="https://www.crezco.com/terms" target="_blank" rel="noreferrer"> Terms of Use </a>
           and
           <a href="https://www.crezco.com/privacy-policy" target="_blank" rel="noreferrer"> Privacy Policy</a>.
-        </p> */}
+        </p>
         <Spacer y={3} />
       </div>
     </div>
@@ -196,14 +196,13 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
           <div style={{
             display: "flex",
             alignItems: "center",
-            borderRadius: 16,
             height: 48,
             padding: "0 16px 0 8px",
             backgroundColor: Colors.OFF_WHITE_LIGHT,
             overflow: "hidden",
             columnGap: 8
           }}>
-            <Discover length={32} color={Colors.GRAY_LIGHT} />
+            <Discover length={32} color={Colors.BLACK} />
             <input
               value={bankName}
               onChange={handleBankNameChange}
@@ -226,8 +225,6 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
                 Icon={Discover}
                 style={{ margin: "auto" }}
                 length={120}
-                backgroundColor={Colors.PRIMARY_LIGHT}
-                foregroundColor={Colors.PRIMARY}
               />
               <Spacer y={2} />
               <h3 className="header-s">We couldn't find that bank</h3>

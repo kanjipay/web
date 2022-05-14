@@ -11,8 +11,8 @@ export default function ProductListing({ product, linkPath = product.id }) {
   const releaseDate = dateFromTimestamp(product.releasesAt)
   const isReleased = releaseDate < new Date()
   const isAvailable = product.isAvailable && product.soldCount + product.reservedCount < product.capacity && isReleased
-  const backgroundColor = isAvailable ? Colors.PRIMARY_LIGHT : Colors.OFF_WHITE_LIGHT
-  const textColor = isAvailable ? Colors.BLACK : Colors.GRAY_LIGHT
+  const backgroundColor = isAvailable ? Colors.BLACK : Colors.OFF_WHITE
+  const textColor = isAvailable ? Colors.WHITE : Colors.BLACK
 
   let message
 
@@ -26,15 +26,15 @@ export default function ProductListing({ product, linkPath = product.id }) {
     message = "Unavailable"
   }
 
-  const productListing = <div style={{ borderRadius: 16, backgroundColor, padding: "16px", display: "flex", alignItems: "center" }}>
+  const productListing = <div style={{ backgroundColor, padding: "16px", display: "flex", alignItems: "center" }}>
     <div>
-      <p className="header-xs" style={{ color: textColor }}>{product.title}</p>
+      <p className="header-xs" style={{ color: textColor, textDecoration: isAvailable ? "none" : "line-through" }}>{product.title}</p>
       <Spacer y={1} />
       <p className="text-caption" style={{ color: textColor }}>{message}</p>
     </div>
     <div className="flex-spacer" />
     {
-      isAvailable && <Forward length={20} color={Colors.PRIMARY} />
+      isAvailable && <Forward length={20} color={Colors.WHITE} />
     }
   </div>
 

@@ -2,10 +2,10 @@ import { Colors } from "./CircleButton";
 
 export default function Input({ placeholder, style, ...props }) {
   const inputStyle = {
-    backgroundColor: Colors.OFF_WHITE,
-    border: 0,
+    backgroundColor: Colors.OFF_WHITE_LIGHT,
     height: 48,
-    borderRadius: 16,
+    color: Colors.BLACK,
+    boxSizing: "border-box",
     textAlign: "center",
     display: "flex",
     width: "100%",

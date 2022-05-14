@@ -295,4 +295,27 @@ export default class PaymentAttemptsController extends BaseController {
       console.log(err)
     }
   }
+
+  // checkPaymentCrezco = async (req, res, next) => {
+  //   try {
+  //     const logger = new LoggingController("Check payment")
+  //     const { paymentAttemptId } = req.params
+
+  //     const { paymentAttempt, paymentAttemptError } = await fetchDocument(Collection.PAYMENT_ATTEMPT, paymentAttemptId)
+
+  //     if (paymentAttemptError) {
+  //       next(paymentAttemptError)
+  //       return
+  //     }
+
+  //     // If status has already been updated, return early
+  //     if (paymentAttempt.status !== PaymentAttemptStatus.PENDING) {
+  //       res.status(200).json({ paymentAttemptStatus: paymentAttempt.status })
+  //     }
+
+  //     const crezcoId = paymentAttempt.crezco.paymentDemandId
+  //   } catch (err) {
+  //     res.status(200).json({ redirectUrl, paymentAttemptStatus, paymentIntentId })
+  //   }
+  // }
 }

@@ -12,11 +12,13 @@ export class Colors {
   static GRAY_LIGHT = "#888";
   static WHITE = "#ffffff";
   static BLACK = "#000000";
+  static OFF_BLACK = "#181818";
+  static OFF_BLACK_LIGHT = "#333333";
   static RED = "#ff0000";
   static RED_LIGHT = "#FFE6E6";
   static GREEN = "#008000";
   static LIGHT_GREEN = "#E6F3E6";
-  static CLEAR = "#FFFFFFFFF"
+  static CLEAR = "#FFFFFF00"
 }
 
 export class ButtonTheme {
@@ -33,14 +35,29 @@ export class ButtonTheme {
   static NAVBAR = new ButtonTheme(
     Colors.WHITE,
     Colors.OFF_WHITE_LIGHT,
-    Colors.PRIMARY
+    Colors.BLACK
   );
+
+  static MONOCHROME = new ButtonTheme(
+    Colors.BLACK,
+    Colors.OFF_BLACK,
+    Colors.WHITE
+  )
+
+  static MONOCHROME_OUTLINED = new ButtonTheme(
+    Colors.WHITE,
+    Colors.OFF_WHITE_LIGHT,
+    Colors.BLACK,
+    Colors.BLACK
+  )
+  
   static DESTRUCTIVE = new ButtonTheme(Colors.RED, Colors.RED, Colors.WHITE);
 
-  constructor(backgroundColor, pressedBackgroundColor, foregroundColor) {
+  constructor(backgroundColor, pressedBackgroundColor, foregroundColor, borderColor = Colors.CLEAR) {
     this.backgroundColor = backgroundColor;
     this.pressedBackgroundColor = pressedBackgroundColor;
     this.foregroundColor = foregroundColor;
+    this.borderColor = borderColor
   }
 
   disabledBackgroundColor = Colors.GRAY_LIGHT;
@@ -75,8 +92,7 @@ export default function CircleButton({
     backgroundColor,
     height: length,
     width: length,
-    borderRadius: length / 2,
-    border: 0,
+    borderRadius: 1000,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

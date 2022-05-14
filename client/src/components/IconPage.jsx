@@ -1,12 +1,12 @@
 import CircleIcon from "./CircleIcon";
 import MainButton from "./MainButton";
 import Spacer from "./Spacer";
-import { ButtonTheme } from "./CircleButton";
+import { ButtonTheme, Colors } from "./CircleButton";
 
 export default function IconPage({
   Icon,
-  iconBackgroundColor,
-  iconForegroundColor,
+  iconBackgroundColor = Colors.OFF_WHITE_LIGHT,
+  iconForegroundColor = Colors.BLACK,
   title,
   body,
 }) {

@@ -2,7 +2,7 @@ import { Router } from "express";
 import OrdersController from "../controllers/OrdersController";
 import { validate } from "../../../shared/utils/validate";
 import { AllowedSchema } from "express-json-validator-middleware";
-import { authenticate } from "../../../shared/middleware/auth";
+import { authenticate } from "../../../shared/middleware/authenticate";
 
 const controller = new OrdersController();
 const routes = Router();

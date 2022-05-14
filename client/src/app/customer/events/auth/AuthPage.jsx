@@ -148,7 +148,6 @@ function SignInWithGoogeButton({ style, ...props }) {
     height: 48, 
     borderWidth: 2,
     borderColor: Colors.OFF_WHITE,
-    borderRadius: 16,
     width: "100%",
     borderStyle: "solid",
     backgroundColor: Colors.WHITE,

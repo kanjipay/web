@@ -30,7 +30,7 @@ export const handleMoneyhubPaymentUpdate = async (req, res, next) => {
     return res.sendStatus(200)
   } catch (err) {
     console.log(err)
-    res.sendStatus(500)
+    res.sendStatus(200)
   }
 }
 

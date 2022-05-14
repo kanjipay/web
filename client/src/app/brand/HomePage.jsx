@@ -1,212 +1,248 @@
-import "./HomePage.css";
-import useWindowSize from "../../utils/helpers/useWindowSize";
-import Spacer from "../../components/Spacer";
 import { useEffect, useState } from "react";
-import MainButton from "../../components/MainButton";
-import { Colors } from "../../components/CircleButton";
-import { Link } from "react-router-dom";
-import { transactionFee } from "../../utils/variables";
+import { Helmet } from "react-helmet-async";
+import { Link, useParams } from "react-router-dom";
+import { Colors } from "../../components/CircleButton"
+import Spacer from "../../components/Spacer"
+import useWindowSize from "../../utils/helpers/useWindowSize";
+import NotFound from "../shared/NotFoundPage";
+import BlockButton from "./BlockButton";
+import * as pluralize from "pluralize"
 
-function Benefit({ title, body }) {
-  return <div style={{ textAlign: "center" }}>
-    <h3 className="Home__headingSmall">{title}</h3>
-    <Spacer y={3} />
-    <p>{body}</p>
-  </div>
-}
+class CustomerSegment {
+  constructor(id, displayName, headerPhoto, screenshotPhoto, photo1, photo2) {
+    this.id = id
+    this.displayName = displayName
+    this.headerPhoto = headerPhoto
+    this.screenshotPhoto = screenshotPhoto
+    this.photo1 = photo1
+    this.photo2 = photo2
+  }
 
-function Accordion({ title, body }) {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const caratRotationAngle = isExpanded ? 180 : 0
+  static GENERAL = new CustomerSegment(
+    "general",
+    null,
+    "club_floor.jpg",
+    "festival_event_mockup.png",
+    "women_talking.jpg",
+    "festival_crowd.jpg"
+  )
 
-  return <div className="Home__accordion" onClick={() => setIsExpanded(!isExpanded)} >
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <p style={{ fontSize: 20, fontWeight: 800 }}>{title}</p>
-      <div className="flex-spacer"></div>
-      <img 
-        alt=""
-        src="/img/carat.png" 
-        style={{ 
-          width: 24, 
-          height: 24, 
-          objectFit: "contain",
-          transform: `rotate(${caratRotationAngle}deg)`
-        }}
-      />
-    </div>
+  static NIGHTLIFE = new CustomerSegment(
+    "nightlife", 
+    "nightlife event", 
+    "club_floor.jpg",
+    "club_event_mockup.png",
+    "women_talking.jpg",
+    "dj_deck.jpg"
+  )
 
-    {
-      isExpanded && <div>
-        <Spacer y={3} />
-        <p>{body}</p>
-      </div>
-    }
-  </div>
-}
+  static STUDENTS = new CustomerSegment(
+    "students", 
+    "student event", 
+    "student_crowd.jpg",
+    "student_event_mockup.png",
+    "student_woman.jpg",
+    "dj_deck.jpg"
+  )
 
-function Testimonial({ name, company, body }) {
-  return <div className="Home__testimonialBox">
-    <p style={{ color: Colors.PRIMARY, fontWeight: 800, height: 30, fontSize: 50 }}>"</p>
-    <Spacer y={3} />
-    <p>{body}</p>
-    <Spacer y={3} />
-    <div style={{ display: "flex", alignItems: "center", columnGap: 8 }}>
-      <img className="Home__testimonialImage" style={{ backgroundColor: "gray" }} alt="" />
-      <p>
-        <span style={{ fontWeight: 800 }}>{name}</span> from <span style={{ fontWeight: 800 }}>{company}</span>
-      </p>
-    </div>
+  static FESTIVALS = new CustomerSegment(
+    "festivals", 
+    "festival", 
+    "festival_stage.jpg",
+    "festival_event_mockup.png",
+    "festival_woman.jpg",
+    "color_festival.jpg"
+  )
 
-  </div>
+  static INTEREST = new CustomerSegment(
+    "interest",
+    "interest group", 
+    "conference_crowd.jpg",
+    "club_event_mockup.png",
+    "conference_woman.jpg",
+    "conference_hall.jpg"
+  )
+
+  static CONFERENCE = new CustomerSegment(
+    "conferences",
+    "conference",
+    "conference_crowd.jpg",
+    "conference_event_mockup.png",
+    "conference_woman.jpg",
+    "conference_hall.jpg"
+  )
+
+  static all() {
+    return [
+      CustomerSegment.GENERAL,
+      CustomerSegment.NIGHTLIFE,
+      CustomerSegment.STUDENTS,
+      CustomerSegment.FESTIVALS,
+      CustomerSegment.INTEREST,
+      CustomerSegment.CONFERENCE,
+    ]
+  }
 }
 
 export default function HomePage() {
   const { width } = useWindowSize();
   const isMobile = width < 750
 
-  useEffect(() => {
-    var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-    s1.async = true;
-    s1.src = 'https://embed.tawk.to/62457ae70bfe3f4a8770acd2/1fvfmg6kk';
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin', '*');
-    s0.parentNode.insertBefore(s1, s0);
-  }, [])
+  const { customerSegmentId } = useParams()
 
-  return <div style={{
-    display: "grid",
-    gridTemplateColumns: "1fr",
-    rowGap: isMobile ? 64 : 120,
-  }}>
+  const [customerSegment, setCustomerSegment] = useState(CustomerSegment.GENERAL)
+
+  useEffect(() => {
+    if (customerSegmentId) {
+      const segment = CustomerSegment.all().find(s => s.id === customerSegmentId)
+      setCustomerSegment(segment)
+    }
+  }, [customerSegmentId])
+
+  if (!customerSegment) {
+    return <NotFound />
+  }
+
+  let headline = "The smart events management platform"
+
+  if (customerSegment.displayName) {
+    headline += ` for ${pluralize(customerSegment.displayName)}`
+  }
+
+  const secondSectionImage = <SquareImage src={`/img/${customerSegment.photo1}`} />
+
+  const secondSectionCopy = <SquareTitleBody
+    title="Flat 2% processing fee"
+    body="Our industry-leading low fee means you can spend more of your budget on making your event great. And unlike other platforms, you'll get revenue from ticket sales upfront."
+  />
+
+  return <div>
+    <Helmet>
+      <title>The smart events management platform | Mercado</title>
+    </Helmet>
     <div style={{
-      display: "grid",
-      gridTemplateColumns: isMobile ? "300px 1fr" : "1fr 1fr",
-      columnGap: 16,
-      height: isMobile ? "auto" : 500,
+      width: "100vw",
+      height: "100vh",
+      position: "relative",
     }}>
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div>
-          <h2 className="Home__headingLarge" style={{
-            fontSize: isMobile ? "3rem" : "5rem"
-          }}>Bring your menu online</h2>
-          <Spacer y={4} />
-          <p style={{ fontSize: 20 }}>Mercado is an online menu for food stalls. No set up fees. No subscription. All you need is a QR code.</p>
-          <Spacer y={4} />
-          <Link to="book-demo">
-            <MainButton style={{ display: "inline", width: 140 }} title="Book a demo" />
-          </Link>
-        </div>
-      </div>
+      <img alt="" src={`/img/${customerSegment.headerPhoto}`} style={{ backgroundColor: Colors.BLACK, width: "100%", height: "100%", position: "absolute", objectFit: "cover" }} />
       <div style={{
-        textAlign: "right",
+        position: "absolute",
+        backgroundColor: "#00000080",
+        width: "100%",
+        height: "100%",
         display: "flex",
         alignItems: "center",
-        justifyContent: isMobile ? "left" : "right",
-        marginRight: isMobile ? -16 : 0,
-        overflow: "hidden",
+        justifyContent: "center",
+        padding: "0px 32px",
+        boxSizing: "border-box"
       }}>
-        <img alt="food stall" src="/img/food-stall.jpg" style={{ 
-          height: isMobile ? 400 : 500, 
-          objectFit: "contain",
-          borderRadius: 16 
-        }}/>
+        <h1 style={{
+          color: Colors.WHITE,
+          fontFamily: "Rubik, Roboto, sans-serif",
+          fontWeight: 700,
+          maxWidth: 800,
+          fontSize: isMobile ? "3em" : "4em",
+          textAlign: "center",
+          width: "100%",
+
+        }}>{headline}</h1>
       </div>
 
     </div>
-
-    {/* <div style={{ backgroundColor: "red", height: 20 }}>
-      Video
-    </div> */}
-
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr",
-      columnGap: 32,
-      rowGap: 32
-    }}>
-      <Benefit
-        title="Competitive pricing. No hidden fees."
-        body={`Our technology allows you to take payments with a direct bank transfer, instead of paying hefty card fees. This allows us to offer a market leading price of ${(transactionFee * 100).toFixed(1)}% of each transaction, with no subscriptions, monthly minimums or setup costs.`}
-      />
-      <Benefit
-        title="Customers can pay in 10 seconds."
-        body="They don’t need to download an app, create an account or enter their card details. This frees up your staff from handling repetitive ordering and payment tasks, so they can focus on providing great customer service."
-      />
-      <Benefit
-        title="A simple but powerful system."
-        body="Mercado is easy for staff to pick up and start using. It works alongside your existing systems, with no extra equipment needed. And it gives you better control of your menu, allowing you to mark items as unavailable the second you run out of stock."
-      />
-    </div>
-
-    {/* <div>
-      <h2 className="Home__headingMedium" style={{ textAlign: "center" }}>Here's what our customers think</h2>
-      <Spacer y={6} />
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-        columnGap: 32,
-        rowGap: 32
-      }}>
-        <Testimonial
-          name="Ed"
-          company="Sapling Spirits"
-          body="This is an example testimonial text that will span multiple lines."
-        />
-        <Testimonial
-          name="Ed"
-          company="Sapling Spirits"
-          body="This is an example testimonial text that will span multiple lines."
-        />
-
-      </div>
-    </div> */}
-
-
     <div style={{
       display: "grid",
       gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-      columnGap: 32,
-      padding: isMobile ? "0 16px" : 0
     }}>
-      <div>
-        <h2
-          className="Home__headingMedium"
-          style={{ textAlign: isMobile ? "center" : "left" }}
-        >
-          FAQs
-        </h2>
-        <Spacer y={3} />
+      <div style={{
+        aspectRatio: isMobile ? "auto" : "1/1",
+        overflow: "hidden",
+        backgroundColor: Colors.BLACK,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 32
+      }}>
+        <img src={`/img/${customerSegment.screenshotPhoto}`} alt="" style={{ width: isMobile ? "100%" : "50%" }} />
       </div>
-      <div style={{ display: "grid", rowGap: 16 }}>
-        <Accordion
-          title="Can I customise my menu?"
-          body="When you sign up to Mercado, you get a menu that's fully customisable. You can add images of meals, specify whether food is vegan, gluten free etc, and turn items off when you run out of stock."
-        />
-        <Accordion
-          title="Is it easy to get set up?"
-          body="Getting your online menu up and running couldn't be simpler. You'll need to create an account with us, and then we'll create your restaurant's menu according to your requirements, help train your staff, and mail you the QR codes you need."
-        />
-        <Accordion
-          title="How does pricing work?"
-          body={`We charge a ${(transactionFee * 100).toFixed(1)}% fee on transactions processed through Mercado. There are no other fees. We can offer a 1 month free trial if your company meets certain criteria - contact us to find out more.`}
-        />
-      </div>
+      <SquareTitleBody
+        title="Create. Sell. Manage."
+        body="An easy, customisable events platform, fully integrated with social media. Create events, share the link with customers, accept payments, and manage QR code tickets, all from your dashboard."
+      />
+
+      {
+        isMobile ? secondSectionImage : secondSectionCopy
+      }
+
+      {
+        isMobile ? secondSectionCopy : secondSectionImage
+      }
+
+      <SquareImage src={`/img/${customerSegment.photo2}`} />
+      <SquareTitleBody
+        title="Advanced marketing analytics"
+        body="View your ticket sales by event, promoter, ticket type, social media post and more. Pinpoint and expand your customer base with our AI marketing tool."
+      />
     </div>
 
     <div style={{
-      textAlign: "center"
+      textAlign: "center",
+      backgroundColor: Colors.OFF_BLACK,
+      padding: "128px 0px"
     }}>
-      <h2 className="Home__headingMedium" style={{
-        width: isMobile ? "auto" : 500,
+      <h2 style={{
+        width: isMobile ? "auto" : "60%",
+        color: Colors.WHITE,
+        fontFamily: "Rubik, Roboto, sans-serif",
+        fontWeight: 700,
+        fontSize: isMobile ? "3em" : "4em",
         margin: "auto"
       }}>
         Learn more about our product
       </h2>
       <Spacer y={4} />
-      <Link to="book-demo">
-        <MainButton title="Book a demo" style={{ display: "inline-block", width: 140 }} />
+      <Link to="/book-demo">
+        <BlockButton title="Book a demo" style={{ display: "inline-block", width: 140 }} />
       </Link>
-      
+
+    </div>
+  </div>
+}
+
+function SquareImage({ src, alt = "" }) {
+  return <div style={{ aspectRatio: "1/1", overflow: "hidden" }}>
+    <img alt={alt} src={src} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+  </div>
+}
+
+function SquareTitleBody({ title, body }) {
+  const { width } = useWindowSize();
+  const isMobile = width < 750
+
+  return <div style={{ 
+    aspectRatio: "1/1", 
+    overflow: "hidden", 
+    display: "flex", 
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    padding: 32
+  }}>
+    <div style={{ maxWidth: 400, }}>
+      <h2 style={{
+        fontFamily: "Rubik, Roboto, sans-serif",
+        fontWeight: 700,
+        fontSize: isMobile ? "2em" : "3em",
+        margin: "auto",
+        color: Colors.BLACK
+      }}>{title}</h2>
+      <Spacer y={4} />
+      <p style={{
+        fontFamily: "Roboto, sans-serif",
+        fontSize: isMobile ? "1.1em" : "1.25em",
+        margin: "auto",
+        color: Colors.GRAY_LIGHT
+      }}>{body}</p>
     </div>
   </div>
 }

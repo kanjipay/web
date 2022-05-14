@@ -168,7 +168,7 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
         <MainButton
           title="Choose another bank"
           onClick={handleChooseAnotherBank}
-          buttonTheme={ButtonTheme.SECONDARY}
+          buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
         />
         <Spacer y={2} />
         <p className="text-caption">
@@ -189,20 +189,19 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
 
       <div className="content">
         <Spacer y={9} />
-        <div style={{ padding: "0 16px", textAlign: "center" }}>
+        <div style={{ textAlign: "center" }}>
           <p className="text-body-faded">Securely connect to your bank account and pay by bank transfer.</p>
           <Spacer y={3} />
           <div style={{
             display: "flex",
             alignItems: "center",
-            borderRadius: 16,
             height: 48,
             padding: "0 16px 0 8px",
             backgroundColor: Colors.OFF_WHITE_LIGHT,
             overflow: "hidden",
             columnGap: 8
           }}>
-            <Discover length={32} color={Colors.GRAY_LIGHT} />
+            <Discover length={32} color={Colors.BLACK} />
             <input
               value={bankName}
               onChange={handleBankNameChange}
@@ -225,8 +224,6 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
                 Icon={Discover}
                 style={{ margin: "auto" }}
                 length={120}
-                backgroundColor={Colors.PRIMARY_LIGHT}
-                foregroundColor={Colors.PRIMARY}
               />
               <Spacer y={2} />
               <h3 className="header-s">We couldn't find that bank</h3>

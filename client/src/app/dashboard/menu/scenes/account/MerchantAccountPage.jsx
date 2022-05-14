@@ -67,7 +67,7 @@ function MerchantAccountPage(props) {
         <Spacer y={2} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Details} style={{ marginRight: 8 }} />
+          <CircleIcon Icon={Details} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
           <div className="header-s">Details</div>
         </div>
         <Spacer y={2} />
@@ -95,7 +95,7 @@ function MerchantAccountPage(props) {
         <Spacer y={1} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Location} style={{ marginRight: 8 }} />
+          <CircleIcon Icon={Location} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
           <div className="header-s">Address</div>
         </div>
         <Spacer y={2} />
@@ -103,7 +103,7 @@ function MerchantAccountPage(props) {
         <Spacer y={3} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Clock} style={{ marginRight: 8 }} />
+          <CircleIcon Icon={Clock} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
           <div className="header-s">Opening hours</div>
         </div>
         <Spacer y={2} />

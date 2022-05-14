@@ -90,7 +90,7 @@ export default function ProductPage({ merchant, event, product }) {
           <CircleButton
             Icon={Minus}
             length={32}
-            buttonTheme={ButtonTheme.PRIMARY}
+            buttonTheme={ButtonTheme.MONOCHROME}
             onClick={decrementQuantity}
             disabled={quantity <= minQuantity}
           />
@@ -106,7 +106,7 @@ export default function ProductPage({ merchant, event, product }) {
           <CircleButton
             Icon={Plus}
             length={32}
-            buttonTheme={ButtonTheme.PRIMARY}
+            buttonTheme={ButtonTheme.MONOCHROME}
             onClick={incrementQuantity}
             disabled={quantity >= maxQuantity}
           />
@@ -115,7 +115,7 @@ export default function ProductPage({ merchant, event, product }) {
         <Spacer y={4} />
 
         {
-          user && <div>
+          user?.email && <div>
             <h3 className="header-s">Email address</h3>
             <Spacer y={2} />
 
@@ -126,7 +126,7 @@ export default function ProductPage({ merchant, event, product }) {
                 .
               </p>
               <div className="flex-spacer"/>
-              <SmallButton title="Change" buttonTheme={ButtonTheme.SECONDARY} onClick={handleChangeEmail} />
+              <SmallButton title="Change" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={handleChangeEmail} />
 
             </div>
             

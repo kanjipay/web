@@ -1,5 +1,4 @@
 import { Divider } from "@mui/material"
-import { getAuth } from "firebase/auth"
 import { onSnapshot } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
