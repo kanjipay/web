@@ -18,8 +18,6 @@ export default function EmailSubmittedPage({ order }) {
   return (
     <IconActionPage
       Icon={Tick}
-      iconBackgroundColor={Colors.PRIMARY_LIGHT}
-      iconForegroundColor={Colors.PRIMARY}
       title="Emailed submitted"
       body="We'll email your receipt shortly"
       primaryActionTitle="Done"

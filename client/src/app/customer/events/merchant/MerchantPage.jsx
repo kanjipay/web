@@ -1,9 +1,11 @@
+import { signOut } from "firebase/auth";
 import { onSnapshot, orderBy, query, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import AsyncImage from "../../../../components/AsyncImage";
 import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
 import Collection from "../../../../enums/Collection";
+import { auth } from "../../../../utils/FirebaseUtils";
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
 import EventListing from "../event/EventListing";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
@@ -11,6 +13,16 @@ import EventsAppNavBar from "../secure/EventsAppNavBar";
 export default function MerchantPage({ merchant }) {
   const merchantId = merchant.id
   const [events, setEvents] = useState([])
+
+  // useEffect(() => {
+  //   localStorage.removeItem("crezcoBankCode")
+  //   localStorage.removeItem("moneyhubBankId")
+  //   if (auth.currentUser) {
+  //     signOut(auth).then(() => {
+  //       console.log("signed out")
+  //     })
+  //   }
+  // })
 
   useEffect(() => {
     const eventsQuery = query(

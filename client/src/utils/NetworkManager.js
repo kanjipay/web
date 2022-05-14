@@ -1,5 +1,6 @@
 import axios from "axios"
 import { auth } from "./FirebaseUtils"
+import { isExpired } from "./helpers/decodeJwt"
 
 export class ApiName {
   static INTERNAL = "internal"
@@ -8,6 +9,8 @@ export class ApiName {
 }
 
 export class NetworkManager {
+  static cachedIdToken = null
+
   static apiUrl(apiName) {
     return `${process.env.REACT_APP_BASE_SERVER_URL}/${apiName}`
   }
@@ -19,6 +22,7 @@ export class NetworkManager {
     data = {},
     headers = {}
   ) {
+    console.log(path)
     const requestConfig = {
       url: `${process.env.REACT_APP_BASE_SERVER_URL}/${apiName}/api/v1${path}`,
       method,
@@ -27,10 +31,23 @@ export class NetworkManager {
     }
 
     const currUser = auth.currentUser
-    console.log(currUser.uid)
 
     if (currUser) {
-      const idToken = await currUser.getIdToken()
+      // Need to add the idToken
+      let idToken
+
+      
+
+      if (this.cachedIdToken && !isExpired(this.cachedIdToken)) {
+        console.log("using cached id token")
+        idToken = this.cachedIdToken
+      } else {
+        console.log("using fresh id token")
+        const freshIdToken = await currUser.getIdToken()
+        this.cachedIdToken = freshIdToken
+        idToken = freshIdToken
+      }
+      
       requestConfig.headers["Authorization"] = `Bearer ${idToken}`
     }
 

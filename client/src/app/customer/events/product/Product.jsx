@@ -11,9 +11,11 @@ export default function Product({ merchant, event }) {
   const [product, setProduct] = useState(location.state?.product)
 
   useEffect(() => {
-    onSnapshot(Collection.PRODUCT.docRef(productId), doc => {
+    const unsub = onSnapshot(Collection.PRODUCT.docRef(productId), doc => {
       setProduct({ id: doc.id, ...doc.data() })
     })
+
+    return unsub
   }, [productId])
 
   return product ? 

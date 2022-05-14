@@ -16,12 +16,9 @@ export default function Secure() {
     const unsub = onAuthStateChanged(auth, user => {
       setUser(user)
 
-      console.log("successPath", location.pathname)
-
-      if (!user) {
+      if (!user || !user.email) {
         const backPath = location.state?.backPath ?? "/"
 
-        console.log("backpath", backPath)
         openAuthPage(window.location.pathname, location.state ?? {}, true, backPath)
       }
     })

@@ -16,6 +16,8 @@ export default function SignInWithGooglePage() {
   const successPath = base64.decode(searchParams.get("success"))
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
 
+  console.log(successPath)
+
   const isAuthInProgressKey = "isGoogleAuthInProgress"
   const [error, setError] = useState(null)
 
@@ -28,6 +30,7 @@ export default function SignInWithGooglePage() {
       getRedirectResult(auth)
         .then(result => {
           if (result) {
+            console.log(successPath)
             navigate(successPath, { state: successState })
             localStorage.setItem(isAuthInProgressKey, "false")
           } else {

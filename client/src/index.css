@@ -3,11 +3,16 @@
   padding: 0;
   font: var(--font-body);
   text-decoration: none;
-  color: #333333;
+  color: black;
 }
 
 body {
   background-color: var(--color-off-white-light);
+}
+
+::selection {
+  background: black;
+  color: white;
 }
 
 input:focus,
@@ -20,10 +25,13 @@ img,
 button,
 input {
   border: 0;
+  padding: 0;
+  margin: 0;
 }
 
 a {
-  color: var(--color-primary);
+  color: black;
+  font-weight: 700;
 }
 
 :root {
@@ -34,16 +42,18 @@ a {
   --color-primary-dark: #051320;
   --color-off-white: #ebebeb;
   --color-off-white-light: #f8f8f8;
+  --color-off-black: #181818;
+  --color-off-black-light: #333333;
   --color-text-header: black;
-  --color-text-body: #444;
-  --color-text-caption: #888;
-  --color-text-body-faded: #888;
+  --color-text-body: #111;
+  --color-text-caption: #444;
+  --color-text-body-faded: #444;
   --color-clear: #ffffff00;
 
-  --font-brand-title: 600 "Rubik", sans-serif;
-  --font-header-l: 800 2em "Nunito", sans-serif;
-  --font-header-m: 800 1.5em "Nunito", sans-serif;
-  --font-header-s: 500 1.25em "Roboto", sans-serif;
+  --font-brand-title: 600 "Rubik", "Roboto",sans-serif;
+  --font-header-l: 700 2em "Oswald", "Roboto",sans-serif;
+  --font-header-m: 700 1.5em "Oswald", "Roboto",sans-serif;
+  --font-header-s: 500 1.25em "Oswald", "Roboto",sans-serif;
   --font-header-xs: 500 1em "Roboto", sans-serif;
   --font-body: 400 1em "Roboto", sans-serif;
   --font-caption: 0.88em "Roboto", sans-serif;
@@ -121,7 +131,7 @@ a {
 
 .centred-top {
   position: absolute;
-  top: 64px;
+  top: 120px;
   left: 50%;
   transform: translate(-50%, 0);
   text-align: center;
@@ -153,26 +163,19 @@ a {
 
 .header-l {
   font: var(--font-header-l);
-  color: var(--color-text-header);
-  line-height: 1;
 }
 
 .header-m {
   font: var(--font-header-m);
-  color: var(--color-text-header);
-  line-height: 1;
 }
 
 .header-s {
   font: var(--font-header-s);
-  color: var(--color-text-header);
-  line-height: 1;
 }
 
 .header-xs {
   font: var(--font-header-xs);
   color: var(--color-text-header);
-  line-height: 1;
 }
 
 .text-body {

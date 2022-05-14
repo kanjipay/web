@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
+import Clock from "../../../../../assets/icons/Clock";
+import Location from "../../../../../assets/icons/Location";
+import User from "../../../../../assets/icons/User";
 import AsyncImage from "../../../../../components/AsyncImage";
+import { Colors } from "../../../../../components/CircleButton";
+import CircleIcon from "../../../../../components/CircleIcon";
 import LoadingPage from "../../../../../components/LoadingPage";
 import Spacer from "../../../../../components/Spacer";
 import { getEventStorageRef } from "../../../../../utils/helpers/storage";
+import { eventTimeString, generateGoogleMapsLink } from "../../event/eventHelpers";
 import EventsAppNavBar from "../EventsAppNavBar";
 import Ticket from "./Ticket";
 
@@ -31,17 +37,39 @@ export default function CustomerEventPage({ events }) {
 
       <div className="content">
         <h1 className="header-l">{event.title}</h1>
+        <Spacer y={2} />
+        <div style={{ columnGap: 8, display: "flex" }}>
+          <CircleIcon Icon={Clock} length={20} backgroundColor={Colors.CLEAR} />
+          <p className="text-body">{eventTimeString(event)}</p>
+        </div>
+        <Spacer y={1} />
+        <div style={{ columnGap: 8, display: "flex" }}>
+          <CircleIcon Icon={Location} length={20} backgroundColor={Colors.CLEAR} />
+          <p className="text-body">
+            {`${event.address} · `}
+            <a href={generateGoogleMapsLink(event)} target="_blank" rel="noreferrer">Get directions</a>
+          </p>
+        </div>
+        <Spacer y={1} />
+        <div style={{ columnGap: 8, display: "flex" }}>
+          <CircleIcon Icon={User} length={20} backgroundColor={Colors.CLEAR} />
+          <p className="text-body"><Link to={`/events/${event.merchantId}`}>View organiser</Link></p>
+        </div>
+        <Spacer y={4} />
+        <p className="text-body-faded">{event.description}</p>
+
+        <Spacer y={4} />
+
+        <h1 className="header-m">Your tickets</h1>
+        <Spacer y={2} />
         
         {
           event.products.map(product => {
             return <div key={product.id}>
-              <Spacer y={4} />
-              <h3 className="header-s">{product.title}</h3>
-              <Spacer y={2} />
               {
-                product.tickets.map(ticket => {
+                product.tickets.map((ticket, index) => {
                   return <div key={ticket.id}>
-                    <Ticket ticket={ticket}/>
+                    <Ticket ticket={ticket} product={product} index={index + 1} />
                     <Spacer y={2} />
                   </div>
                 })

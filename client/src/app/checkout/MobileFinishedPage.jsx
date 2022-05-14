@@ -11,8 +11,6 @@ export default function MobileFinishedPage() {
         <CircleIcon
           Icon={Tick}
           length={120}
-          backgroundColor={Colors.PRIMARY_LIGHT}
-          foregroundColor={Colors.PRIMARY}
           style={{ margin: "auto" }}
         />
         <Spacer y={2} />

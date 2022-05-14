@@ -38,8 +38,6 @@ export default function MobileHandoverPage() {
         <CircleIcon 
           Icon={Tick} 
           length={120} 
-          backgroundColor={Colors.PRIMARY_LIGHT} 
-          foregroundColor={Colors.PRIMARY}
           style={{ margin: "auto" }}
         />
         <Spacer y={2} />
