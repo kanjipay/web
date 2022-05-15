@@ -6,7 +6,7 @@ import MainButton from "../../components/MainButton";
 import Spacer from "../../components/Spacer";
 
 import { storage } from "../../utils/FirebaseUtils";
-import { ref } from "firebase/storage";
+import { ref, uploadBytes } from "firebase/storage";
 
 
 import {
@@ -45,13 +45,13 @@ export default function CreateOrganisation() {
       merchantBody
     );
     const merchantId = response.data.merchantId;
-    console.log(merchantId);
-    /*
-        todo create link between user and merchant
-        */
     const crezcoRegisteredUrl =
       process.env.REACT_APP_CREZCO_REDIRECT + "?merchant-id=" + merchantId;
-    const uploadTask = ref(storage,`/images/${imageAsFile.name}`).put(imageAsFile);
+    const storageRef = ref(storage,`/images/${imageAsFile.name}`);
+    /*
+    doesn't work :( 
+    uploadBytes(storageRef, imageAsFile);
+    */
     window.location.replace(crezcoRegisteredUrl);
   }
 
