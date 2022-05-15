@@ -21,8 +21,6 @@ export async function createPaymentDemand(
   paymentIntentId: string,
   payeeName: string,
   reference: string,
-  sortCode: string,
-  accountNumber: string,
   amount: number
 ) {
   try {
@@ -40,10 +38,6 @@ export async function createPaymentDemand(
     const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands`, {
       request: {
         payeeName,
-        bban: {
-          sortCode: sortCode,
-          accountNumber: accountNumber
-        },
         reference,
         currency: "GBP",
         amount: `${amount / 100}`,
