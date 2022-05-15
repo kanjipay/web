@@ -8,7 +8,7 @@ const merchantsController = new MerchantsController();
 const merchantRoutes = Router();
 const createMerchantSchema: AllowedSchema = {
     type: "object",
-    required: ["accountNumber", "address", "companyName", "displayName", "sortCode", "description"],
+    required: ["accountNumber", "address", "companyName", "displayName", "sortCode", "description", "imageAsFile"],
     properties: {
       accountNumber: {
         type: "string"
@@ -27,7 +27,11 @@ const createMerchantSchema: AllowedSchema = {
       },
       description: {
         type: "string"
+      },
+      imageAsFile: {
+        type: "object"
       }
+
     }
   }
 

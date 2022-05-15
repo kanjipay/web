@@ -2,6 +2,7 @@ import BaseController from "../../../shared/BaseController";
 import { db } from "../../../shared/utils/admin";
 import Collection from "../../../shared/enums/Collection";
 import LoggingController from "../../../shared/utils/loggingClient";
+
 import { firestore } from "firebase-admin";
 import { v4 } from "uuid";
 
@@ -18,7 +19,7 @@ export default class MerchantsController extends BaseController {
         },
         req.body
       );
-      const { accountNumber, address, companyName, displayName, sortCode, description } =
+      const { accountNumber, address, companyName, displayName, sortCode, description, imageAsFile } =
         req.body;
       const payeeId = v4();
       await db().collection(Collection.PAYEE).doc(payeeId).set({
@@ -30,9 +31,11 @@ export default class MerchantsController extends BaseController {
         approvalStatus: "PENDING",
       });
       const merchantId = v4();
+      const photoPath =`/${merchantId}/${imageAsFile.name}`;
       await db().collection(Collection.MERCHANT).doc(merchantId).set({
         address,
         companyName,
+        photo:photoPath,
         displayName,
         description,
         payeeId,
@@ -46,7 +49,11 @@ export default class MerchantsController extends BaseController {
         role: "ADMIN",
         userId
       });
-
+      /*
+      const storageIntance = storage();
+      storageIntance.bucket().file(photoPath).save(imageAsFile);
+      */
+      
       loggingClient.log(
         "Merchant document creation complete",
         {},
