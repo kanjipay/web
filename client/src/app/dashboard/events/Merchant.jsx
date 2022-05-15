@@ -6,6 +6,7 @@ import Spinner from "../../../assets/Spinner";
 import { Colors } from "../../../components/CircleButton";
 import Spacer from "../../../components/Spacer";
 import Collection from "../../../enums/Collection";
+import RegisteredConfirm from "../RegisteredConfirm";
 
 export default function Merchant() {
   const { merchantId } = useParams()
@@ -34,13 +35,10 @@ export default function Merchant() {
       </div>
       <div className="flex-spacer" style={{ padding: "0 24px"}}>
         <Spacer y={12} />
-        <h1 className="header-l">
-          <Routes>
-            
-            <Route path="events" element={"Events"}/>
-            <Route path="*" element={"Home"} />
-          </Routes>
-        </h1>
+        <Routes>
+          <Route path="confirm-crezco" element={<RegisteredConfirm />} />
+        </Routes>
+        
 
       </div>
     </div>

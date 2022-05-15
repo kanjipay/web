@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import Tick from "../../assets/icons/Tick";
 import { Colors } from "../../components/CircleButton";
 import IconPage from "../../components/IconPage";
@@ -7,33 +8,41 @@ import { NetworkManager, ApiName } from "../../utils/NetworkManager";
 
 export default function RegisteredConfirm() {
   const [registered, setRegistered] = useState(false);
-  const queryParams = new URLSearchParams(window.location.search);
-  const merchantId = queryParams.get("merchant-id");
-  const crezcoUserId = queryParams.get("user-id");
-  const paymentRegisterBody = { merchantId, crezcoUserId };
+  const { merchantId } = useParams()
+  const [searchParams] = useSearchParams()
+  const crezcoUserId = searchParams.get("user-id")
+  
 
-  console.log("registered");
-  if (registered) {
-    return (
-      <IconPage
-        Icon={Tick}
-        iconBackgroundColor={Colors.BLACK}
-        iconForegroundColor={Colors.WHITE}
-        title="Thank you for registering!"
-        body="We have registered you as an organiser"
-      />
-    );
-  } else {
+  useEffect(() => {
+    if (registered) { return }
+
+    const paymentRegisterBody = { merchantId, crezcoUserId };
+
     NetworkManager.post(
       ApiName.INTERNAL,
       "/payees/update",
       paymentRegisterBody
-    ).then(setRegistered(true));
-    return (
-      <LoadingPage
-        iconBackgroundColor={Colors.BLACK}
-        iconForegroundColor={Colors.WHITE}
-      />
-    );
+    ).then(() => {
+      console.log("worked")
+      setRegistered(true)
+    }).catch(err => {
+      console.log(err)
+    })
+  }, [registered, merchantId, crezcoUserId])
+
+  if (registered) {
+    return <IconPage
+      Icon={Tick}
+      iconBackgroundColor={Colors.BLACK}
+      iconForegroundColor={Colors.WHITE}
+      title="Thank you for registering!"
+      body="We have registered you as an organiser"
+    />
+  } else {
+    return <LoadingPage
+      iconBackgroundColor={Colors.BLACK}
+      iconForegroundColor={Colors.WHITE}
+    />
+    
   }
 }

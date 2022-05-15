@@ -10,7 +10,6 @@ import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";
 import { auth } from "../../utils/FirebaseUtils";
 import { useOpenAuthPage } from "../auth/useOpenAuthPage";
-import CreateOrganisationPage from "./CreateOrganisationPage";
 import Merchant from "./events/Merchant";
 import MerchantDropdown from "./MerchantDropdown";
 import SelectOrganisationPage from "./SelectOrganisationPage";
@@ -105,8 +104,7 @@ export default function Dashboard() {
 
       <Routes>
         <Route path="/" element={<SelectOrganisationPage memberships={memberships} />} />
-        <Route path="/organisation/create" element={<CreateOrganisation />} />
-        <Route path="/organisation/confirm" element={<RegisteredConfirm />} />
+        <Route path="organisations/create" element={<CreateOrganisation />} />
         <Route path="o/:merchantId/*" element={<Merchant />} />
       </Routes>
     </div> :

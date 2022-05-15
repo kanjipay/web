@@ -41,14 +41,25 @@ export default function CreateOrganisation() {
       "/merchants/create",
       merchantBody
     );
+
     const merchantId = response.data.merchantId;
-    const crezcoRegisteredUrl =
-      process.env.REACT_APP_CREZCO_REDIRECT + "?merchant-id=" + merchantId;
-    window.location.replace(crezcoRegisteredUrl);
+
+    const redirectUrl = new URL(window.location.href)
+    redirectUrl.pathname = `/dashboard/o/${merchantId}/confirm-crezco`
+
+    console.log("mercado redirect url", redirectUrl.href)
+
+    const crezcoRegisteredUrl = new URL(process.env.REACT_APP_CREZCO_REDIRECT)
+    crezcoRegisteredUrl.searchParams.append("redirect_uri", redirectUrl.href)
+
+    console.log("crezco register url", crezcoRegisteredUrl.href)
+
+    window.location.replace(crezcoRegisteredUrl.href);
   }
 
   return (
-    <div className="content">
+    <div style={{ maxWidth: 900, padding: "0 24px", margin: "auto" }}>
+      <Spacer y={12} />
       <h2 className="header-l">Register Organisation</h2>
       <Spacer y={2} />
       <h3 className="header-m">Organisation Details</h3>
@@ -57,7 +68,6 @@ export default function CreateOrganisation() {
       <Spacer y={1} />
 
       <Input
-        placeholder="Display name"
         name="displayName"
         value={displayName}
         onChange={(event) => setDisplayName(event.target.value)}
@@ -66,7 +76,6 @@ export default function CreateOrganisation() {
       <p className="text-body">Description</p>
       <Spacer y={1} />
       <Input
-        placeholder="Desciption of my organisation"
         name="description"
         value={description}
         onChange={(event) => setDescription(event.target.value)}
@@ -84,7 +93,6 @@ export default function CreateOrganisation() {
       <p className="text-body">Business address</p>
       <Spacer y={1} />
       <Input
-        placeholder="business address"
         name="address"
         value={address}
         onChange={(event) => setAddress(event.target.value)}
@@ -94,7 +102,6 @@ export default function CreateOrganisation() {
       <p className="text-body">Company Name</p>
       <Spacer y={1} />
       <Input
-        placeholder="Organisation's name - must match bank details"
         name="companyName"
         value={companyName}
         onChange={(event) => setCompanyName(event.target.value)}
@@ -104,17 +111,16 @@ export default function CreateOrganisation() {
       <Spacer y={1} />
 
       <Input
-        placeholder="Bank Account Number"
         name="accountNumber"
         value={accountNumber}
         onChange={(event) => setAccountNumber(event.target.value)}
       />
       <Spacer y={2} />
-      <p className="text-body">Sort Code</p>
+      <h4 className="header-xs">Sort Code</h4>
       <Spacer y={1} />
       <Input
-        placeholder="040004"
         name="sortCode"
+        type="number"
         value={sortCode}
         onChange={(event) => setSortCode(event.target.value)}
       />
@@ -139,6 +145,7 @@ export default function CreateOrganisation() {
           )
         }
       />
+      <Spacer y={3} />
     </div>
   );
 }
