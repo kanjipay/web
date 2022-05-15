@@ -1,15 +1,16 @@
 import * as base64 from "base-64"
-import { getAuth, isSignInWithEmailLink, signInWithEmailLink, updateProfile } from "firebase/auth"
+import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import Cross from "../../../../assets/icons/Cross"
-import { Colors } from "../../../../components/CircleButton"
-import IconActionPage from "../../../../components/IconActionPage"
-import Input from "../../../../components/Input"
-import LoadingPage from "../../../../components/LoadingPage"
-import MainButton from "../../../../components/MainButton"
-import Spacer from "../../../../components/Spacer"
-import { auth } from "../../../../utils/FirebaseUtils"
+import Cross from "../../assets/icons/Cross"
+import { Colors } from "../../components/CircleButton"
+import IconActionPage from "../../components/IconActionPage"
+import Input from "../../components/Input"
+import LoadingPage from "../../components/LoadingPage"
+import MainButton from "../../components/MainButton"
+import Spacer from "../../components/Spacer"
+import { auth } from "../../utils/FirebaseUtils"
+import { processUserCredential } from "../../utils/services/UsersService"
 
 export default function EmailLinkPage() {
   const navigate = useNavigate()
@@ -25,19 +26,20 @@ export default function EmailLinkPage() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
+    if (error) { return }
+
     if (isSignInWithEmailLink(auth, window.location.href)) {
       if (!emailForSignIn) { return }
 
-      signInWithEmailLink(auth, emailForSignIn, window.location.href)
-        .then(result => {
-          localStorage.removeItem("emailForSignIn")
-          const user = result.user
-          const displayName = `${firstName} ${lastName}`
+      console.log(emailForSignIn)
 
-          updateProfile(user, { displayName }).then(() => {
+      signInWithEmailLink(auth, emailForSignIn, window.location.href)
+        .then(credential => {
+          localStorage.removeItem("emailForSignIn")
+
+          processUserCredential(credential, firstName, lastName).then(() => {
             navigate(successPath, { state: successState })
           })
-          
         })
         .catch(error => {
           setError({
@@ -51,7 +53,7 @@ export default function EmailLinkPage() {
         body: "This isn't a valid email sign in link."
       })
     }
-  }, [emailForSignIn, navigate, successPath, successState, firstName, lastName])
+  }, [emailForSignIn, navigate, successPath, successState, firstName, lastName, error])
 
   const handleEmailFieldChange = (event) => {
     setEmailFromField(event.target.value)

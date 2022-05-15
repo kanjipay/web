@@ -1,4 +1,4 @@
-import CircleButton, { ButtonTheme, Colors } from "./CircleButton";
+import IconButton, { ButtonTheme, Colors } from "./CircleButton";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Back from "../assets/icons/Back";
@@ -81,7 +81,7 @@ export default function NavBar({
     }}>
       {(backPath || backAction) && (
         <div className="NavBar__item">
-          <CircleButton
+          <IconButton
             Icon={Back}
             buttonTheme={ButtonTheme.NAVBAR}
             onClick={handleBackClick}

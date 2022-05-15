@@ -88,7 +88,6 @@ function MerchantLogin() {
         </div>
         <Spacer y={5} />
         <Input
-          placeholder="Email"
           value={email}
           onChange={handleEmailFieldChange}
           type="email"
@@ -97,7 +96,6 @@ function MerchantLogin() {
         {showPasswordInput ? (
           <div>
             <Input
-              placeholder="Password"
               value={password}
               onChange={handlePasswordFieldChange}
               type="password"

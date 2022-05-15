@@ -5,7 +5,7 @@ import LoadingPage from "../../../../components/LoadingPage";
 import Collection from "../../../../enums/Collection";
 import ProductPage from "./ProductPage";
 
-export default function Product({ merchant, event }) {
+export default function Product({ merchant, event, user }) {
   const { productId } = useParams()
   const location = useLocation()
   const [product, setProduct] = useState(location.state?.product)
@@ -20,7 +20,7 @@ export default function Product({ merchant, event }) {
 
   return product ? 
     <Routes>
-      <Route path="/" element={<ProductPage merchant={merchant} event={event} product={product} />} />
+      <Route path="/" element={<ProductPage merchant={merchant} event={event} product={product} user={user} />} />
     </Routes> : 
     <LoadingPage />
 }

@@ -1,12 +1,13 @@
-import { getAuth, getRedirectResult, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { getRedirectResult, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import LoadingPage from "../../../../components/LoadingPage";
+import LoadingPage from "../../components/LoadingPage";
 import * as base64 from "base-64"
-import IconActionPage from "../../../../components/IconActionPage";
-import Cross from "../../../../assets/icons/Cross";
-import { Colors } from "../../../../components/CircleButton";
-import { auth } from "../../../../utils/FirebaseUtils";
+import IconActionPage from "../../components/IconActionPage";
+import Cross from "../../assets/icons/Cross";
+import { Colors } from "../../components/CircleButton";
+import { auth } from "../../utils/FirebaseUtils";
+import { processUserCredential } from "../../utils/services/UsersService";
 
 export default function SignInWithGooglePage() {
   const navigate = useNavigate()
@@ -15,8 +16,6 @@ export default function SignInWithGooglePage() {
   const [searchParams] = useSearchParams()
   const successPath = base64.decode(searchParams.get("success"))
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
-
-  console.log(successPath)
 
   const isAuthInProgressKey = "isGoogleAuthInProgress"
   const [error, setError] = useState(null)
@@ -28,11 +27,29 @@ export default function SignInWithGooglePage() {
   useEffect(() => {
     if (isAuthInProgress()) {
       getRedirectResult(auth)
-        .then(result => {
-          if (result) {
-            console.log(successPath)
-            navigate(successPath, { state: successState })
-            localStorage.setItem(isAuthInProgressKey, "false")
+        .then(credential => {
+          if (credential) {
+            console.log(123)
+            console.log(credential)
+            const displayName = credential?.user?.displayName
+
+            let firstName = ""
+            let lastName = ""
+
+            if (displayName) {
+              const names = displayName.split(" ")
+
+              if (names.length >= 2) {
+                [firstName, lastName] = names
+              } else {
+                firstName = displayName ?? ""
+              }
+            }
+
+            processUserCredential(credential, firstName, lastName).then(() => {
+              navigate(successPath, { state: successState })
+              localStorage.setItem(isAuthInProgressKey, "false")
+            })
           } else {
             setError({
               title: "Something went wrong",
@@ -57,11 +74,11 @@ export default function SignInWithGooglePage() {
   }, [navigate, successPath, successState])
 
   const handleTryAnotherWay = () => {
-    navigate({ pathname: "/events/auth", search })
+    navigate({ pathname: "/auth", search })
   }
 
   if (error) {
-    <IconActionPage
+    return <IconActionPage
       Icon={Cross}
       iconBackgroundColor={Colors.RED_LIGHT}
       iconForegroundColor={Colors.RED}

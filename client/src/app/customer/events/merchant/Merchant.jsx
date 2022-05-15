@@ -6,7 +6,7 @@ import Collection from "../../../../enums/Collection"
 import Event from "../event/Event"
 import MerchantPage from "./MerchantPage"
 
-export default function Merchant() {
+export default function Merchant({ user }) {
   const { merchantId } = useParams()
   const [merchant, setMerchant] = useState(null)
 
@@ -18,7 +18,7 @@ export default function Merchant() {
 
   if (merchant) {
     return <Routes>
-      <Route path=":eventId/*" element={<Event merchant={merchant} />} />
+      <Route path=":eventId/*" element={<Event merchant={merchant} user={user} />} />
       <Route path="/" element={<MerchantPage merchant={merchant} />} />
     </Routes>
   } else {
