@@ -8,6 +8,7 @@ import { v4 } from "uuid";
 export default class MerchantsController extends BaseController {
   create = async (req, res, next) => {
     try {
+      const userId = req.user.id;
       const loggingClient = new LoggingController("Merchant Controller");
       loggingClient.log(
         "Merchant creation started",
@@ -26,7 +27,7 @@ export default class MerchantsController extends BaseController {
         companyName,
         sortCode,
         createdAt: firestore.FieldValue.serverTimestamp(),
-        status: "PENDING",
+        approvalStatus: "PENDING",
       });
       const merchantId = v4();
       await db().collection(Collection.MERCHANT).doc(merchantId).set({
@@ -38,6 +39,15 @@ export default class MerchantsController extends BaseController {
         createdAt: firestore.FieldValue.serverTimestamp(),
         status: "PENDING",
       });
+
+      await db().collection(Collection.MEMBERSHIP).add({
+        lastUsedAt: firestore.FieldValue.serverTimestamp(),
+        merchantId,
+        merchantName: displayName,
+        role: "ADMIN",
+        userId
+      });
+
       loggingClient.log(
         "Merchant document creation complete",
         {},
