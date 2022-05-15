@@ -15,34 +15,11 @@ export async function fetchBankData() {
   return data
 }
 
-export async function createUser(idempotencyId: string, companyName: string, email: string) {
-  const res = await axios.post(`${baseUrl}/v1/users`, {
-    request: {
-      firstName: companyName,
-      lastName: companyName,
-      displayName: companyName,
-      eMail: email
-    },
-    idemUserInfo: {
-      idempotencyId
-    }
-  }, {
-    headers: defaultHeaders
-  })
-
-  const userId = res.data
-
-  return userId
-}
-
 export async function createPaymentDemand(
   crezcoUserId: string, 
   paymentAttemptId: string,
   paymentIntentId: string,
-  payeeName: string,
   reference: string,
-  sortCode: string,
-  accountNumber: string,
   amount: number
 ) {
   try {
@@ -59,11 +36,6 @@ export async function createPaymentDemand(
 
     const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands`, {
       request: {
-        payeeName,
-        bban: {
-          sortCode: sortCode,
-          accountNumber: accountNumber
-        },
         reference,
         currency: "GBP",
         amount: `${amount / 100}`,

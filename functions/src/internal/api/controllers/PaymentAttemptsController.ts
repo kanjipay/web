@@ -40,7 +40,7 @@ export default class PaymentAttemptsController extends BaseController {
         return
       }
 
-      const { crezco, companyName, sortCode, accountNumber } = payee
+      const { crezco, companyName } = payee
       const crezcoUserId = crezco.userId
 
       logger.log("Got paymentIntent", {}, { paymentIntent })
@@ -54,9 +54,6 @@ export default class PaymentAttemptsController extends BaseController {
         paymentAttemptId,
         paymentIntentId,
         companyName, 
-        companyName, 
-        sortCode, 
-        accountNumber, 
         amount
       )
 
