@@ -7,7 +7,7 @@ import { onSnapshot, orderBy, query, where } from "firebase/firestore"
 import TicketReaderPage from "../../../dashboard/events/TicketReaderPage"
 import Product from "../product/Product"
 
-export default function Event({ merchant }) {
+export default function Event({ merchant, user }) {
   const { eventId } = useParams()
   const location = useLocation()
   const [event, setEvent] = useState(location.state?.event)
@@ -38,7 +38,7 @@ export default function Event({ merchant }) {
   return event ?
     <Routes>
       <Route path="/" element={<EventPage merchant={merchant} event={event} products={products} />} />
-      <Route path="/:productId/*" element={<Product merchant={merchant} event={event} />} />
+      <Route path="/:productId/*" element={<Product merchant={merchant} event={event} user={user} />} />
     </Routes> :
     <LoadingPage />
 }

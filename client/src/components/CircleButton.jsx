@@ -64,11 +64,12 @@ export class ButtonTheme {
   disabledForegroundColor = Colors.WHITE;
 }
 
-export default function CircleButton({
+export default function IconButton({
   length = 32,
+  borderRadius = 10000,
   Icon,
   imageRef,
-  buttonTheme,
+  buttonTheme = ButtonTheme.MONOCHROME,
   style,
   ...props
 }) {
@@ -92,7 +93,7 @@ export default function CircleButton({
     backgroundColor,
     height: length,
     width: length,
-    borderRadius: 1000,
+    borderRadius,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",

@@ -8,6 +8,7 @@ import OneTimeLinkPage from "./shared/OneTimeLinkPage";
 import EventsApp from "./customer/events/EventsApp";
 import Checkout from "./checkout/Checkout";
 import Dashboard from "./dashboard/Dashboard";
+import Auth from "./auth/Auth";
 
 export default function App() {
   return <BrowserRouter>
@@ -17,7 +18,7 @@ export default function App() {
       <Route path="/checkout/*" element={<Checkout />} />
       <Route path="/link/:linkId" element={<OneTimeLinkPage />} />
       <Route path="/merchant/*" element={<MerchantApp />} />
-
+      <Route path="/auth/*" element={<Auth />} />
       <Route path="/dashboard/*" element={<Dashboard />} />
       
       {/* Brand pages */}

@@ -3,6 +3,8 @@ import { db } from "../utils/FirebaseUtils";
 
 export default class Collection {
   static MERCHANT = new Collection("Merchant");
+  static MEMBERSHIP = new Collection("Membership");
+  static USER = new Collection("User");
   static PRODUCT = new Collection("Product");
   static EVENT = new Collection("Event")
   static MENU_ITEM = new Collection("MenuItem");
