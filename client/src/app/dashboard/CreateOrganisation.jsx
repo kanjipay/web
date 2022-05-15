@@ -23,6 +23,7 @@ export default function CreateOrganisation() {
       accountNumber,
       companyName,
       displayName,
+      description,
       address,
       sortCode,
     };
@@ -118,6 +119,7 @@ export default function CreateOrganisation() {
             displayName &&
             companyName &&
             address &&
+            description && 
             validateBankAccountNumber(accountNumber) &&
             validateSortCode(sortCode)
           )

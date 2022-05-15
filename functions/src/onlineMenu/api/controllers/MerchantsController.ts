@@ -18,7 +18,7 @@ export default class MerchantsController extends BaseController {
         },
         req.body
       );
-      const { accountNumber, address, companyName, displayName, sortCode } =
+      const { accountNumber, address, companyName, displayName, sortCode, description } =
         req.body;
       const payeeId = v4();
       await db().collection(Collection.PAYEE).doc(payeeId).set({
@@ -31,13 +31,12 @@ export default class MerchantsController extends BaseController {
       });
       const merchantId = v4();
       await db().collection(Collection.MERCHANT).doc(merchantId).set({
-        accountNumber,
+        address,
         companyName,
         displayName,
-        sortCode,
+        description,
         payeeId,
         createdAt: firestore.FieldValue.serverTimestamp(),
-        status: "PENDING",
       });
 
       await db().collection(Collection.MEMBERSHIP).add({
