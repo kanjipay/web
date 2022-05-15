@@ -5,6 +5,10 @@ import Input from "../../components/Input";
 import MainButton from "../../components/MainButton";
 import Spacer from "../../components/Spacer";
 
+import { storage } from "../../utils/FirebaseUtils";
+import { ref } from "firebase/storage";
+
+
 import {
   validateSortCode,
   validateBankAccountNumber,
@@ -17,6 +21,14 @@ export default function CreateOrganisation() {
   const [companyName, setCompanyName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [sortCode, setSortCode] = useState("");
+  const allInputs = {imgUrl: ''};
+  const [imageAsFile, setImageAsFile] = useState('')
+  const [imageAsUrl, setImageAsUrl] = useState(allInputs)
+
+  const handleImageAsFile = (e) => {
+    const image = e.target.files[0]
+    setImageAsFile(imageFile => (image))
+  };
 
   async function handleSubmit() {
     const merchantBody = {
@@ -39,6 +51,7 @@ export default function CreateOrganisation() {
         */
     const crezcoRegisteredUrl =
       process.env.REACT_APP_CREZCO_REDIRECT + "?merchant-id=" + merchantId;
+    const uploadTask = ref(storage,`/images/${imageAsFile.name}`).put(imageAsFile);
     window.location.replace(crezcoRegisteredUrl);
   }
 
@@ -66,6 +79,14 @@ export default function CreateOrganisation() {
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />
+      <Spacer y={2} />
+      <p className="text-body">Image</p>
+      <Spacer y={1} />
+      <input 
+          type="file"
+          onChange={handleImageAsFile}
+        />
+
 
       <Spacer y={2} />
       <p className="text-body">Business address</p>
