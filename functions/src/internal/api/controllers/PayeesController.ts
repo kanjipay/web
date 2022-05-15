@@ -14,25 +14,27 @@ export default class PayeesController extends BaseController {
       const payeeId = merchantDoc.merchant.payeeId;
       const payeeDoc = await fetchDocument(Collection.PAYEE, payeeId);
       const { accountNumber, sortCode, companyName } = payeeDoc.payee;
-      console.log({ accountNumber, sortCode, companyName, payeeId })
-      const moneyhubPayeeData = await createPayee(accountNumber, sortCode, companyName, payeeId);
+      console.log({ accountNumber, sortCode, companyName, payeeId });
+      const moneyhubPayeeData = await createPayee(
+        accountNumber,
+        sortCode,
+        companyName,
+        payeeId
+      );
       console.log(moneyhubPayeeData);
-      const update = { 
+      const update = {
         approvalStatus: PayeeApprovalStatus.APPROVED,
         reviewedAt: firestore.FieldValue.serverTimestamp(),
-        moneyhub:  { payeeId: moneyhubPayeeData.id },
-        crezco: { userId: crezcoUserId }
-      }
+        moneyhub: { payeeId: moneyhubPayeeData.id },
+        crezco: { userId: crezcoUserId },
+      };
 
-      await db()
-        .collection(Collection.PAYEE)
-        .doc(payeeId)
-        .update(update)
+      await db().collection(Collection.PAYEE).doc(payeeId).update(update);
 
-      return res.sendStatus(200)
+      return res.sendStatus(200);
     } catch (err) {
-      console.log(err)
-      res.sendStatus(500)
+      console.log(err);
+      res.sendStatus(500);
     }
-  }
+  };
 }
