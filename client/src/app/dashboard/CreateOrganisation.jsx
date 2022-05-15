@@ -5,10 +5,6 @@ import Input from "../../components/Input";
 import MainButton from "../../components/MainButton";
 import Spacer from "../../components/Spacer";
 
-import { storage } from "../../utils/FirebaseUtils";
-import { ref, uploadBytes } from "firebase/storage";
-
-
 import {
   validateSortCode,
   validateBankAccountNumber,
@@ -21,9 +17,7 @@ export default function CreateOrganisation() {
   const [companyName, setCompanyName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [sortCode, setSortCode] = useState("");
-  const allInputs = {imgUrl: ''};
   const [imageAsFile, setImageAsFile] = useState('')
-  const [imageAsUrl, setImageAsUrl] = useState(allInputs)
 
   const handleImageAsFile = (e) => {
     const image = e.target.files[0]
@@ -38,7 +32,10 @@ export default function CreateOrganisation() {
       description,
       address,
       sortCode,
+      imageAsFile,
     };
+    console.log(merchantBody);
+    
     const response = await NetworkManager.post(
       ApiName.ONLINE_MENU,
       "/merchants/create",
@@ -47,11 +44,6 @@ export default function CreateOrganisation() {
     const merchantId = response.data.merchantId;
     const crezcoRegisteredUrl =
       process.env.REACT_APP_CREZCO_REDIRECT + "?merchant-id=" + merchantId;
-    const storageRef = ref(storage,`/images/${imageAsFile.name}`);
-    /*
-    doesn't work :( 
-    uploadBytes(storageRef, imageAsFile);
-    */
     window.location.replace(crezcoRegisteredUrl);
   }
 
@@ -141,6 +133,7 @@ export default function CreateOrganisation() {
             companyName &&
             address &&
             description && 
+            imageAsFile &&
             validateBankAccountNumber(accountNumber) &&
             validateSortCode(sortCode)
           )
