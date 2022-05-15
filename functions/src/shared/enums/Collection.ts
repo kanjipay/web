@@ -19,7 +19,8 @@ enum Collection {
   TICKET = "Ticket",
   PRODUCT = "Product",
   EVENT = "Event",
-  CUSTOMER = "Customer"
+  CUSTOMER = "Customer",
+  MEMBERSHIP = "Membership"
 }
 
 export default Collection;
