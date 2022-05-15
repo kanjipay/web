@@ -1,24 +1,12 @@
-import { useEffect, useState } from "react"
-import { collection, getDocs } from "firebase/firestore"; 
-import { db } from "../../utils/FirebaseUtils";
+import { useState } from "react"
 
 import { NetworkManager, ApiName } from "../../utils/NetworkManager";
 import Input from "../../components/Input";
 import MainButton from "../../components/MainButton";
 import Spacer from "../../components/Spacer";
-import Collection from "../../enums/Collection";
 
+import { validateSortCode, validateBankAccountNumber } from "../../utils/helpers/validation";
 
-
-function verifyBankAccountNumber(bankAccountNumber){
-    const bankAccountRegex = /^(\d){7,8}$/
-    return bankAccountRegex.test(bankAccountNumber);
-}
-
-function verifySortCode(sortCode){
-    const sortCodeRegex = /^(\d){6}$/
-    return sortCodeRegex.test(sortCode);
-}
 export default function CreateOrganisation() {
     const [displayName, setDisplayName] = useState("");
     const [address, setAddress] = useState("");
@@ -109,7 +97,7 @@ export default function CreateOrganisation() {
     <Spacer y={2} />
       <p className="text-body">Continue by registering with our payment parter, Crezco</p>
        <Spacer y={1} />
-        <MainButton title="Register" onClick={handleSubmit} disabled={!(displayName && companyName && address && verifyBankAccountNumber(accountNumber) && verifySortCode(sortCode) )} />
+        <MainButton title="Register" onClick={handleSubmit} disabled={!(displayName && companyName && address && validateBankAccountNumber(accountNumber) && validateSortCode(sortCode) )} />
    </div>
 }
 
