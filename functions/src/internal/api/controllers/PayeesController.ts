@@ -5,36 +5,26 @@ import BaseController from "../../../shared/BaseController";
 import { PayeeApprovalStatus as PayeeApprovalStatus } from "../../../shared/enums/PayeeApprovalStatus";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import { firestore } from "firebase-admin";
-import { createUser } from "../../../shared/utils/crezcoClient";
 
 export default class PayeesController extends BaseController {
-  review = async (req, res, next) => {
+  update = async (req, res, next) => {
     try {
-      const { payeeId } = req.params
-      const { approvalStatus } = req.body
-
+      const { merchantId, crezcoUserId } = req.body
+      const {payeeId} = await fetchDocument(Collection.MERCHANT, merchantId)
       const { payee, payeeError } = await fetchDocument(Collection.PAYEE, payeeId, { 
         approvalStatus: PayeeApprovalStatus.PENDING
       })
-
       if (payeeError) {
         next(payeeError)
         return
       }
-
       const { accountNumber, sortCode, companyName } = payee
-
+      const moneyhubPayeeData = await createPayee(accountNumber, sortCode, companyName, payeeId)
       const update = { 
-        approvalStatus,
-        reviewedAt: firestore.FieldValue.serverTimestamp()
-      }
-
-      if (approvalStatus == PayeeApprovalStatus.APPROVED) {
-        const moneyhubPayeeData = await createPayee(accountNumber, sortCode, companyName, payeeId)
-        update["moneyhub"] = { payeeId: moneyhubPayeeData.id }
-
-        const crezcoUserId = await createUser(payeeId, companyName, "matt.e.ffrench@gmail.com")
-        update["crezco"] = { userId: crezcoUserId }
+        approvalStatus: PayeeApprovalStatus.APPROVED,
+        reviewedAt: firestore.FieldValue.serverTimestamp(),
+        moneyhub:  { payeeId: moneyhubPayeeData.id },
+        crezco: { userId: crezcoUserId }
       }
 
       await db()
