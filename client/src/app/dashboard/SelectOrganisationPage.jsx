@@ -11,7 +11,7 @@ export default function SelectOrganisationPage({ memberships }) {
   const navigate = useNavigate()
 
   const handleCreateOrganisation = () => {
-    navigate("/dashboard/create-organisation")
+    navigate("/dashboard/organisations/create")
   }
 
   return <div>
@@ -27,7 +27,7 @@ export default function SelectOrganisationPage({ memberships }) {
           maxWidth: 1080,
           padding: "0 24px"
         }}>
-          <Link to={`create-organisation`}>
+          <Link to={`organisations/create`}>
             <div style={{ padding: 16, backgroundColor: Colors.OFF_WHITE_LIGHT, height: 200 }}>
               <h3 className="header-s">Create new organisation</h3>
             </div>
