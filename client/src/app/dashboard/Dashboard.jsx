@@ -14,6 +14,8 @@ import CreateOrganisationPage from "./CreateOrganisationPage";
 import Merchant from "./events/Merchant";
 import MerchantDropdown from "./MerchantDropdown";
 import SelectOrganisationPage from "./SelectOrganisationPage";
+import CreateOrganisation from './CreateOrganisation';
+import RegisteredConfirm from './RegisteredConfirm';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -22,7 +24,6 @@ export default function Dashboard() {
   const backPath = "/"
 
   const [memberships, setMemberships] = useState(null)
-  const [membership, setMembership] = useState(null)
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, user => {
@@ -104,7 +105,8 @@ export default function Dashboard() {
 
       <Routes>
         <Route path="/" element={<SelectOrganisationPage memberships={memberships} />} />
-        <Route path="create-organisation" element={<CreateOrganisationPage />} />
+        <Route path="/organisation/create" element={<CreateOrganisation />} />
+        <Route path="/organisation/confirm" element={<RegisteredConfirm />} />
         <Route path="o/:merchantId/*" element={<Merchant />} />
       </Routes>
     </div> :
