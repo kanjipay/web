@@ -54,7 +54,6 @@ export default class PaymentAttemptsController extends BaseController {
         paymentAttemptId,
         paymentIntentId,
         companyName, 
-        companyName, 
         amount
       )
 
