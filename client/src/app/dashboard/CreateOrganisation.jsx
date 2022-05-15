@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { collection, addDoc } from "firebase/firestore"; 
+import { collection, getDocs } from "firebase/firestore"; 
+import { db } from "../../utils/FirebaseUtils";
 
 import { NetworkManager, ApiName } from "../../utils/NetworkManager";
 import Input from "../../components/Input";
@@ -7,16 +8,17 @@ import MainButton from "../../components/MainButton";
 import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";
 
+
+
 function verifyBankAccountNumber(bankAccountNumber){
-    const bankAccountRegex = /^(\d){8}$/
+    const bankAccountRegex = /^(\d){7,8}$/
     return bankAccountRegex.test(bankAccountNumber);
 }
 
 function verifySortCode(sortCode){
-    const sortCodeRegex = /^(\d){6,7}$/
+    const sortCodeRegex = /^(\d){6}$/
     return sortCodeRegex.test(sortCode);
 }
-
 export default function CreateOrganisation() {
     const [displayName, setDisplayName] = useState("");
     const [address, setAddress] = useState("");
@@ -31,13 +33,13 @@ export default function CreateOrganisation() {
                             displayName,
                             address,
                             sortCode}
-        console.log(merchantBody);
-        const merchantId = await NetworkManager.post(ApiName.ONLINE_MENU, '/merchants/create',  merchantBody)
+        const response = await NetworkManager.post(ApiName.ONLINE_MENU, '/merchants/create',  merchantBody)
+        const merchantId = response.data.merchantId
+        console.log(merchantId);
         /*
         todo create link between user and merchant
         */
         const crezcoRegisteredUrl = process.env.REACT_APP_CREZCO_REDIRECT + '?merchant-id=' + merchantId;
-        console.log(crezcoRegisteredUrl);
         window.location.replace(crezcoRegisteredUrl);
     }
 
@@ -64,6 +66,7 @@ export default function CreateOrganisation() {
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />
+
     <Spacer y={2} />
     <p className="text-body">Business address</p>
     <Spacer y={1} />
@@ -73,7 +76,6 @@ export default function CreateOrganisation() {
         value={address}
         onChange={(event) => setAddress(event.target.value)}
       />
-    
     <h3 className="header-m">Bank Details</h3>
       <Spacer y={2} />
       <p className="text-body">Company Name</p>
