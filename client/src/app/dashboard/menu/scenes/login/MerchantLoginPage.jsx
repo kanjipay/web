@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Input from "../../../../../components/Input";
+import TextField from "../../../../../components/Input";
 import NavBar from "../../../../../components/NavBar";
 import Spacer from "../../../../../components/Spacer";
 import MainButton from "../../../../../components/MainButton";
@@ -87,7 +87,7 @@ function MerchantLogin() {
           </p>
         </div>
         <Spacer y={5} />
-        <Input
+        <TextField
           value={email}
           onChange={handleEmailFieldChange}
           type="email"
@@ -95,7 +95,7 @@ function MerchantLogin() {
         <Spacer y={2} />
         {showPasswordInput ? (
           <div>
-            <Input
+            <TextField
               value={password}
               onChange={handlePasswordFieldChange}
               type="password"

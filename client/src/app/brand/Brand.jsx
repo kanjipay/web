@@ -9,7 +9,7 @@ import ContactRequestSuccessful from "./ContactRequestSuccessful";
 import HomePage from "./HomePage";
 import "./HomePageOld.css";
 
-function opacityToAlphaHex(opacity) {
+export function opacityToAlphaHex(opacity) {
   let boundedOpacity
 
   if (opacity > 1) {
@@ -40,7 +40,7 @@ export function Brand() {
   useEffect(() => {
     const handleScroll = () => {
       const opaqueDepth = 0
-      const transparentDepth = 200
+      const transparentDepth = 20
       const yOffset = window.scrollY;
       const newOpacity = Math.max(
         Math.min(

@@ -29,7 +29,15 @@ export default class PayeesController extends BaseController {
         crezco: { userId: crezcoUserId },
       };
 
-      await db().collection(Collection.PAYEE).doc(payeeId).update(update);
+      await db()
+        .collection(Collection.PAYEE)
+        .doc(payeeId)
+        .update(update);
+
+      await db()
+        .collection(Collection.MERCHANT)
+        .doc(merchantId)
+        .update({ approvalStatus: "APPROVED" })
 
       return res.sendStatus(200);
     } catch (err) {

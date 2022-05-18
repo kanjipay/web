@@ -13,23 +13,25 @@ import { useOpenAuthPage } from "../auth/useOpenAuthPage";
 import Merchant from "./events/Merchant";
 import MerchantDropdown from "./MerchantDropdown";
 import SelectOrganisationPage from "./SelectOrganisationPage";
-import CreateOrganisation from './CreateOrganisation';
-import RegisteredConfirm from './RegisteredConfirm';
+import CreateOrganisationPage from './CreateOrganisationPage';
+import BankDetailsVerifiedPage from './events/BankDetailsVerifiedPage';
+import { opacityToAlphaHex } from "../brand/Brand";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
+  const [authUser, setAuthUser] = useState(null)
   const openAuthPage = useOpenAuthPage()
   const { state } = useLocation()
   const backPath = "/"
 
   const [memberships, setMemberships] = useState(null)
+  const [opacity, setOpacity] = useState(0);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, user => {
-      setUser(user)
+    const unsub = onAuthStateChanged(auth, authUser => {
+      setAuthUser(authUser)
 
-      if (!user || !user.email || !user.emailVerified) {
-        
+      if (!authUser || !authUser.email) {
         openAuthPage({
           successPath: window.location.pathname,
           successState: state ?? {},
@@ -43,12 +45,20 @@ export default function Dashboard() {
   }, [backPath, state, openAuthPage])
 
   useEffect(() => {
-    if (!user || !user.email || !user.emailVerified) { return }
+    if (!authUser || !authUser.email) { return }
 
-    // Search for available merchants
+    onSnapshot(Collection.USER.docRef(authUser.uid), doc => {
+      const user = { id: doc.id, ...doc.data() }
+      setUser(user)
+    }) 
+  }, [authUser])
+
+  useEffect(() => {
+    if (!user) { return }
+
     const membershipsQuery = query(
       Collection.MEMBERSHIP.ref,
-      where("userId", "==", user.uid),
+      where("userId", "==", user.id),
       orderBy("lastUsedAt", "desc")
     )
 
@@ -61,14 +71,38 @@ export default function Dashboard() {
     })
   }, [user])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const opaqueDepth = 0
+      const transparentDepth = 20
+      const yOffset = window.scrollY;
+      const newOpacity = Math.max(
+        Math.min(
+          (yOffset - transparentDepth) / (opaqueDepth - transparentDepth),
+          1
+        ),
+        0
+      );
+
+      setOpacity(newOpacity)
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [])
+
   return memberships ?
-    <div style={{ position: "relative", minHeight: "100vh", backgroundColor: Colors.WHITE }}>
+    <div style={{ position: "relative", minHeight: "100vh" }}>
       <div style={{ 
         position: "fixed",
         display: "flex",
-        height: 72, 
+        height: 56, 
         width: "100%",
-        zIndex: 100
+        zIndex: 50,
+        backgroundColor: Colors.BLACK
       }}>
         <div style={{ 
           height: "100%", 
@@ -78,7 +112,7 @@ export default function Dashboard() {
           alignItems: "center", 
           padding: "0 24px"
         }}>
-          <Link to="/dashboard" className="header-l">
+          <Link to="/dashboard" className="header-m" style={{ color: Colors.WHITE }}>
             Mercado
           </Link>
         </div>
@@ -95,18 +129,23 @@ export default function Dashboard() {
           <div className="flex-spacer" />
           {
             user && <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
-              <p>{user.displayName}</p>
-              <User />
+              <p className="text-body" style={{ color: Colors.WHITE }}>{user.firstName + " " + user.lastName}</p>
+              <User color={Colors.WHITE} />
             </div>
           }
         </div>
       </div>
 
-      <Routes>
-        <Route path="/" element={<SelectOrganisationPage memberships={memberships} />} />
-        <Route path="organisations/create" element={<CreateOrganisation />} />
-        <Route path="o/:merchantId/*" element={<Merchant />} />
-      </Routes>
+      <div style={{ minHeight: "calc(100vh-56px)" }}>
+        <Spacer y={7} />
+        <Routes>
+          <Route path="/" element={<SelectOrganisationPage memberships={memberships} />} />
+          <Route path="o/create" element={<CreateOrganisationPage />} />
+          <Route path="o/:merchantId/*" element={<Merchant user={user} />} />
+        </Routes>
+      </div>
+
+      
     </div> :
     <LoadingPage />
 }

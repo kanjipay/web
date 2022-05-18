@@ -1,7 +1,7 @@
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../../components/Input";
+import TextField from "../../components/Input";
 import MainButton from "../../components/MainButton";
 import NavBar from "../../components/NavBar";
 import Spacer from "../../components/Spacer";
@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
       <Spacer y={2} />
       <h4 className="header-xs">Email address</h4>
       <Spacer y={2} />
-      <Input
+      <TextField
         name="email"
         type="email"
         value={email}

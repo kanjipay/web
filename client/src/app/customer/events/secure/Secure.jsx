@@ -10,6 +10,7 @@ export default function Secure({ user }) {
   const location = useLocation()
 
   useEffect(() => {
+    console.log(user)
     if (!user || !user.email) {
       const backPath = location.state?.backPath ?? "/"
 

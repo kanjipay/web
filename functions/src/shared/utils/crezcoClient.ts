@@ -32,13 +32,12 @@ export async function createPaymentDemand(
       return { payDemandError: signatureError }
     }
 
-    console.log("signature: ", signature)
-
     const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands`, {
       request: {
         reference,
         currency: "GBP",
         amount: `${amount / 100}`,
+        useDefaultBeneficiaryAccount: true,
         metadata: {
           signature
         }
