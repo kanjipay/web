@@ -3,7 +3,7 @@ import * as base64 from "base-64"
 import { onAuthStateChanged, sendEmailVerification, sendSignInLinkToEmail, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonTheme, Colors } from "../../components/CircleButton";
-import Input from "../../components/Input";
+import TextField from "../../components/Input";
 import MainButton from "../../components/MainButton";
 import NavBar from "../../components/NavBar";
 import OrDivider from "../../components/OrDivider";
@@ -154,7 +154,7 @@ export default function AuthPage() {
           <Spacer y={2} />
           <h4 className="header-xs">First name</h4>
           <Spacer y={1} />
-          <Input
+          <TextField
             name="firstName"
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
@@ -162,7 +162,7 @@ export default function AuthPage() {
           <Spacer y={2} />
           <h4 className="header-xs">Last name</h4>
           <Spacer y={1} />
-          <Input
+          <TextField
             name="lastName"
             value={lastName}
             onChange={(event) => setLastName(event.target.value)}
@@ -174,7 +174,7 @@ export default function AuthPage() {
           <Spacer y={2} />
           <h4 className="header-xs">Email address</h4>
           <Spacer y={1} />
-          <Input
+          <TextField
             name="email"
             type="email"
             value={email}
@@ -187,7 +187,7 @@ export default function AuthPage() {
               <Spacer y={2} />
               <p className="text-body-faded">Your password must be 8 characters or more and include at least one number, lowercase letter and uppercase letter.</p>
               <Spacer y={2} />
-              <Input
+              <TextField
                 name="password"
                 type="password"
                 value={password}

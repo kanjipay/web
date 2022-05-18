@@ -6,10 +6,6 @@
   color: black;
 }
 
-body {
-  background-color: var(--color-off-white-light);
-}
-
 ::selection {
   background: black;
   color: white;
@@ -135,7 +131,6 @@ a {
   left: 50%;
   transform: translate(-50%, 0);
   text-align: center;
-  width: 311px;
 }
 
 .anchored-bottom {

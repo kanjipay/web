@@ -3,7 +3,7 @@ import Spacer from "../../../../../components/Spacer";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { validateEmail } from "../../../../../utils/helpers/validation";
-import Input from "../../../../../components/Input";
+import TextField from "../../../../../components/Input";
 import MainButton from "../../../../../components/MainButton";
 import {
   fetchSignInMethodsForEmail,
@@ -64,7 +64,7 @@ function MerchantForgotPasswordPage() {
       <div className="content">
         <p className="text-body-faded">Please enter your email</p>
         <Spacer y={3} />
-        <Input
+        <TextField
           placeholder="Email"
           value={email}
           onChange={handleEmailFieldChange}

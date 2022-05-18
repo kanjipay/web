@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import Carat from "../../assets/icons/Carat"
+import { Colors } from "../../components/CircleButton"
 
 export default function MerchantDropdown({ memberships }) {
   const { merchantId } = useParams()
@@ -13,9 +14,9 @@ export default function MerchantDropdown({ memberships }) {
   if (membership) {
     return <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
       {
-        memberships.length > 1 && <Carat length={24} />
+        <Carat length={20} color={Colors.WHITE} />
       }
-      <h4 className="header-xs">{membership.merchantName}</h4>
+      <h4 className="header-xs" style={{ color: Colors.WHITE }}>{membership.merchantName}</h4>
     </div>
   } else {
     return null

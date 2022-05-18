@@ -40,6 +40,7 @@ export default class MerchantsController extends BaseController {
         description,
         payeeId,
         createdAt: firestore.FieldValue.serverTimestamp(),
+        approvalStatus: "PENDING"
       });
 
       await db().collection(Collection.MEMBERSHIP).add({

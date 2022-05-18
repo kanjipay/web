@@ -20,7 +20,7 @@ import { createLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
 import { cancelPaymentIntent } from "./redirects"
 import { fetchMoneyhubBankData } from "./fetchMoneyhubBankData"
-import Input from "../../components/Input"
+import TextField from "../../components/Input"
 
 export default function ChooseBankMoneyhubPage({ paymentIntent }) {
   const navigate = useNavigate()

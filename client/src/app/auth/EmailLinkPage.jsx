@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import Cross from "../../assets/icons/Cross"
 import { Colors } from "../../components/CircleButton"
 import IconActionPage from "../../components/IconActionPage"
-import Input from "../../components/Input"
+import TextField from "../../components/Input"
 import LoadingPage from "../../components/LoadingPage"
 import MainButton from "../../components/MainButton"
 import Spacer from "../../components/Spacer"
@@ -87,7 +87,7 @@ export default function EmailLinkPage() {
           It looks like you've switched devices. Please enter your email again for added security.
         </p>
         <Spacer y={4} />
-        <Input placeholder="Email" type="email" value={emailFromField} onChange={handleEmailFieldChange} />
+        <TextField placeholder="Email" type="email" value={emailFromField} onChange={handleEmailFieldChange} />
         <Spacer y={2} />
         <MainButton title="Submit" onClick={handleEmailSubmit} />
       </div>
