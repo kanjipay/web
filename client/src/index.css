@@ -6,10 +6,6 @@
   color: black;
 }
 
-body {
-  background-color: var(--color-off-white-light);
-}
-
 ::selection {
   background: black;
   color: white;
@@ -46,8 +42,8 @@ a {
   --color-off-black-light: #333333;
   --color-text-header: black;
   --color-text-body: #111;
-  --color-text-caption: #444;
-  --color-text-body-faded: #444;
+  --color-text-caption: #666;
+  --color-text-body-faded: #666;
   --color-clear: #ffffff00;
 
   --font-brand-title: 600 "Rubik", "Roboto",sans-serif;
@@ -135,7 +131,6 @@ a {
   left: 50%;
   transform: translate(-50%, 0);
   text-align: center;
-  width: 311px;
 }
 
 .anchored-bottom {

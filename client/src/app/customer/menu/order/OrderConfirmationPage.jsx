@@ -2,7 +2,7 @@ import { Divider } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ButtonTheme } from "../../../../components/CircleButton";
-import Input from "../../../../components/Input";
+import TextField from "../../../../components/Input";
 import MainButton from "../../../../components/MainButton";
 import OrDivider from "../../../../components/OrDivider";
 import Spacer from "../../../../components/Spacer";
@@ -113,7 +113,7 @@ export default function OrderConfirmationPage({ order }) {
                 Enter your email to get a receipt for your purchase
               </p>
               <Spacer y={2} />
-              <Input
+              <TextField
                 placeholder="Email"
                 type="email"
                 name="email"

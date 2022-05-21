@@ -2,7 +2,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import User from "../../../../assets/icons/User";
-import CircleButton, { ButtonTheme } from "../../../../components/CircleButton";
+import IconButton, { ButtonTheme } from "../../../../components/CircleButton";
 import NavBar from "../../../../components/NavBar";
 import { auth } from "../../../../utils/FirebaseUtils";
 
@@ -27,7 +27,7 @@ export default function SecureNavBar({
     })
   }, [])
 
-  const profileElement = (<CircleButton
+  const profileElement = (<IconButton
     length={32}
     Icon={User}
     buttonTheme={ButtonTheme.NAVBAR}

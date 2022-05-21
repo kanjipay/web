@@ -2,37 +2,26 @@ import { Router } from "express";
 import { validate } from "../../../shared/utils/validate";
 import PayeesController from "../controllers/PayeesController";
 import { AllowedSchema } from "express-json-validator-middleware";
-import { PayeeApprovalStatus } from "../../../shared/enums/PayeeApprovalStatus";
-import { enumValues } from "../../../shared/utils/enumValues";
 
 const controller = new PayeesController();
 const routes = Router();
 
-const reviewPayeeBodySchema: AllowedSchema = {
+const updatePayeeBodySchema: AllowedSchema = {
   type: "object",
-  required: ["approvalStatus"],
+  required: ["merchantId", "crezcoUserId"],
   properties: {
-    approvalStatus: {
+    merchantId: {
       type: "string",
-      enum: enumValues(PayeeApprovalStatus)
-    }
-  }
-}
-
-const reviewPayeeParamsSchema: AllowedSchema = {
-  type: "object",
-  required: ["payeeId"],
-  properties: {
-    payeeId: {
+    },
+    crezcoUserId: {
       type: "string",
-    }
+    },
   }
 }
 
 routes.post(
-  "/:payeeId/review",
-  validate({ body: reviewPayeeBodySchema, params: reviewPayeeParamsSchema }),
-  controller.review
-);
+  "/update",
+  validate({ body: updatePayeeBodySchema }),
+  controller.update)
 
 export default routes;

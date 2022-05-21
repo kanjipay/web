@@ -2,26 +2,32 @@ import { useEffect, useState } from "react";
 import Minus from "../../../../assets/icons/Minus";
 import Plus from "../../../../assets/icons/Plus";
 import AsyncImage from "../../../../components/AsyncImage";
-import CircleButton, { ButtonTheme, Colors } from "../../../../components/CircleButton";
+import IconButton, { ButtonTheme, Colors } from "../../../../components/CircleButton";
 import MainButton from "../../../../components/MainButton";
 import Spacer from "../../../../components/Spacer";
 import { formatCurrency } from "../../../../utils/helpers/money";
 import { getEventStorageRef } from "../../../../utils/helpers/storage";
 import LoadingPage from "../../../../components/LoadingPage"
-import { useOpenAuthPage } from "../auth/useOpenAuthPage";
+import { useOpenAuthPage } from "../../../auth/useOpenAuthPage";
 import { useLocation, useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
 import SmallButton from "../../../../components/SmallButton";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
+import { MarketingConsent, setMarketingConsent } from "../../../../utils/services/UsersService";
+import { Checkbox } from "@mui/material";
+import CheckBox from "../../../../components/CheckBox";
 import { auth } from "../../../../utils/FirebaseUtils";
+import Stepper from "../../../../components/Stepper";
 
-export default function ProductPage({ merchant, event, product }) {
+export default function ProductPage({ merchant, event, product, user }) {
   const [quantity, setQuantity] = useState(1)
   const productId = product.id
   const openAuthPage = useOpenAuthPage()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const [user, setUser] = useState(auth.currentUser)
+  const isMarketingConsentShowing = user && user.marketingConsentStatus === "PENDING"
+
+  const [isMarketingConsentApproved, setIsMarketingConsentApproved] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const maxQuantity = event.maxTicketsPerPerson ?? 10
   const minQuantity = 1
@@ -39,24 +45,46 @@ export default function ProductPage({ merchant, event, product }) {
   };
 
   const handleCheckout = () => {
-    const state = {
-      productId,
-      quantity,
-      backPath: pathname
-    }
+    if (user && user.email) {
+      function navigateToTicketsPage() {
+        const state = {
+          productId,
+          quantity,
+          backPath: pathname
+        }
 
-    navigate("/events/s/orders/tickets", { state })
+        navigate("/events/s/orders/tickets", { state })
+      }
+
+      if (isMarketingConsentShowing) {
+        setIsLoading(true)
+        const marketingConsentStatus = isMarketingConsentApproved ? MarketingConsent.APPROVED : MarketingConsent.DECLINED
+
+        setMarketingConsent(marketingConsentStatus).then(() => {
+          setIsLoading(false)
+          navigateToTicketsPage()
+        })
+      } else {
+        navigateToTicketsPage()
+      }
+      
+    } else {
+      openAuthPage({
+        successPath: pathname,
+        showsBack: true,
+        backPath: pathname,
+        requiresPassword: false
+      })
+    }
+    
   }
 
   const handleChangeEmail = () => {
-    openAuthPage(window.location.pathname)
-  }
-
-  useEffect(() => {
-    onAuthStateChanged(auth, user => {
-      setUser(user)
+    openAuthPage({ 
+      successPath: window.location.pathname, 
+      requiresPassword: false
     })
-  }, [])
+  }
 
   return product ?
     <div className="container">
@@ -84,34 +112,8 @@ export default function ProductPage({ merchant, event, product }) {
 
         <h3 className="header-s">Number of items</h3>
         <Spacer y={2} />
-        <div
-          style={{ display: "flex", columnGap: 8 }}
-        >
-          <CircleButton
-            Icon={Minus}
-            length={32}
-            buttonTheme={ButtonTheme.MONOCHROME}
-            onClick={decrementQuantity}
-            disabled={quantity <= minQuantity}
-          />
-          <div style={{ 
-            height: 32, 
-            width: 32, 
-            borderRadius: 16, 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center", 
-            backgroundColor: Colors.OFF_WHITE_LIGHT 
-          }}>{quantity}</div>
-          <CircleButton
-            Icon={Plus}
-            length={32}
-            buttonTheme={ButtonTheme.MONOCHROME}
-            onClick={incrementQuantity}
-            disabled={quantity >= maxQuantity}
-          />
-        </div>
-
+        <Stepper value={quantity} onChange={(value) => setQuantity(value)} minValue={minQuantity} maxValue={maxQuantity} />
+        
         <Spacer y={4} />
 
         {
@@ -132,7 +134,6 @@ export default function ProductPage({ merchant, event, product }) {
             
           </div>
         }
-        
       </div>
 
       <div className="anchored-bottom">
@@ -141,8 +142,20 @@ export default function ProductPage({ merchant, event, product }) {
             title="Checkout"
             sideMessage={formatCurrency(product.price * quantity) }
             onClick={handleCheckout}
+            isLoading={isLoading}
             style={{ boxSizing: "borderBox" }}
           />
+          
+          {
+            user && user.marketingConsentStatus === "PENDING" && <div>
+              <Spacer y={2} />
+              <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
+                <CheckBox length={20} color={Colors.GRAY_LIGHT} value={isMarketingConsentApproved} onChange={(value) => setIsMarketingConsentApproved(value)} />
+                <p className="text-caption">Get notified when this organiser has another relevant event on soon (recommended).</p>
+              </div>
+            </div>
+            
+          }
         </div>
       </div>
     </div> :

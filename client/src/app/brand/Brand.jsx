@@ -9,7 +9,7 @@ import ContactRequestSuccessful from "./ContactRequestSuccessful";
 import HomePage from "./HomePage";
 import "./HomePageOld.css";
 
-function opacityToAlphaHex(opacity) {
+export function opacityToAlphaHex(opacity) {
   let boundedOpacity
 
   if (opacity > 1) {
@@ -40,7 +40,7 @@ export function Brand() {
   useEffect(() => {
     const handleScroll = () => {
       const opaqueDepth = 0
-      const transparentDepth = 200
+      const transparentDepth = 20
       const yOffset = window.scrollY;
       const newOpacity = Math.max(
         Math.min(
@@ -69,6 +69,8 @@ export function Brand() {
   //   s0.parentNode.insertBefore(s1, s0);
   // }, [])
 
+  const calendlyLink = "https://calendly.com/matt-at-mercado/demo"
+
   return <div>
     <header style={{ 
       padding: 16, 
@@ -90,9 +92,11 @@ export function Brand() {
         
         <div className="flex-spacer"></div>
 
-        <Link to="/book-demo">
+        
+
+        <a href={calendlyLink} target="_blank" rel="noreferrer">
           <BlockButton title="Book a demo" style={{ display: "inline-block", width: 140 }} />
-        </Link>
+        </a>
         
       </div>
     </header>
