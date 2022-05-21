@@ -37,13 +37,13 @@ export default function SmallButton({
     boxSizing: "border-box",
     color: foregroundColor,
     cursor: props.disabled ? "mouse" : "pointer",
-    font: "500 1em Oswald, Roboto, sans-serif",
     ...style,
   };
 
   return <div className="relative">
     <button
       style={buttonStyle}
+      className="header-xs"
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onTouchStart={() => setIsPressed(true)}

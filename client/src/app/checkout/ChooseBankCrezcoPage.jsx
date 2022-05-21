@@ -8,6 +8,7 @@ import Discover from "../../assets/icons/Discover"
 import Spinner from "../../assets/Spinner"
 import { ButtonTheme, Colors } from "../../components/CircleButton"
 import CircleIcon from "../../components/CircleIcon"
+import TextField from "../../components/Input"
 import LoadingPage from "../../components/LoadingPage"
 import MainButton from "../../components/MainButton"
 import NavBar from "../../components/NavBar"
@@ -81,6 +82,7 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   useEffect(() => {
     NetworkManager.get(ApiName.INTERNAL, "/banks").then(res => {
       const bankData = res.data
+      console.log(bankData)
       setBankData(bankData)
       setFilteredBankData(bankData)
       setIsLoading(false)

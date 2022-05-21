@@ -40,8 +40,8 @@ export default function MainButton({
     alignItems: "center",
     justifyContent: "center",
     color: foregroundColor,
-    cursor: "pointer",
-    font: "500 1em Oswald, Roboto, sans-serif",
+    cursor: props.disabled ? "mouse" : "pointer",
+    // font: "500 1em Oswald, Roboto, sans-serif",
     ...style,
   };
 
@@ -49,6 +49,7 @@ export default function MainButton({
     <div className="MainButton relative">
       <button
         style={buttonStyle}
+        className="header-xs"
         onMouseDown={() => setIsPressed(true)}
         onMouseUp={() => setIsPressed(false)}
         onTouchStart={() => setIsPressed(true)}

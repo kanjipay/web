@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AsyncImage from "../../../../components/AsyncImage";
-import CircleButton, { ButtonTheme } from "../../../../components/CircleButton";
+import IconButton, { ButtonTheme } from "../../../../components/CircleButton";
 import Spacer from "../../../../components/Spacer";
 import "./MenuItemPage.css";
 import NavBar from "../../../../components/NavBar";
@@ -175,7 +175,7 @@ export default function MenuItemPage({ merchant }) {
           className="MenuItemPage__counter"
           style={{ display: "flex", columnGap: 8 }}
         >
-          <CircleButton
+          <IconButton
             Icon={Minus}
             length={32}
             buttonTheme={ButtonTheme.PRIMARY}
@@ -183,7 +183,7 @@ export default function MenuItemPage({ merchant }) {
             disabled={quantity <= minQuantity}
           />
           <div className="MenuItemPage__counterValue">{quantity}</div>
-          <CircleButton
+          <IconButton
             Icon={Plus}
             length={32}
             buttonTheme={ButtonTheme.PRIMARY}

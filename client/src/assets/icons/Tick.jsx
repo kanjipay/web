@@ -11,8 +11,8 @@ export default function Tick({ length = 32, color = "black" }) {
         d="M16 37.3333L26.6667 48L48 16"
         stroke={color}
         strokeWidth="8.53333"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
       />
     </svg>
   );

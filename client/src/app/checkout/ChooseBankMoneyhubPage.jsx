@@ -20,6 +20,7 @@ import { createLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
 import { cancelPaymentIntent } from "./redirects"
 import { fetchMoneyhubBankData } from "./fetchMoneyhubBankData"
+import TextField from "../../components/Input"
 
 export default function ChooseBankMoneyhubPage({ paymentIntent }) {
   const navigate = useNavigate()
@@ -38,11 +39,12 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
 
   const handleBankNameChange = (event) => {
     const enteredBankName = event.target.value
+    console.log(enteredBankName)
     setBankName(enteredBankName)
 
     if (enteredBankName.length >= 2) {
       const filteredData = bankData.filter(datum => {
-        return datum.bankName.toLowerCase().includes(enteredBankName.toLowerCase())
+        return datum.name.toLowerCase().includes(enteredBankName.toLowerCase())
       })
 
       setFilteredBankData(filteredData)
@@ -80,6 +82,7 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
 
   useEffect(() => {
     fetchMoneyhubBankData().then(bankData => {
+      console.log(bankData)
       setBankData(bankData)
       setFilteredBankData(bankData)
       setIsLoading(false)

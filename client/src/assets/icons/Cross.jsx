@@ -11,8 +11,8 @@ export default function Cross({ length = 32, color = "black" }) {
         d="M9.96611 9.96602L16.0001 16M22.0341 22.034L16.0001 16M16.0001 16L9.96611 22.034L22.0341 9.96602"
         stroke={color}
         strokeWidth="4.26667"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
       />
     </svg>
   );

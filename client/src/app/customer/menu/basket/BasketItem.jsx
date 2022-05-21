@@ -1,6 +1,6 @@
 import { formatCurrency } from "../../../../utils/helpers/money";
 import "./BasketItem.css";
-import CircleButton, { ButtonTheme } from "../../../../components/CircleButton";
+import IconButton, { ButtonTheme } from "../../../../components/CircleButton";
 import Minus from "../../../../assets/icons/Minus";
 import Plus from "../../../../assets/icons/Plus";
 import Cross from "../../../../assets/icons/Cross";
@@ -41,7 +41,7 @@ export default function BasketItem({ item, isEditing = false }) {
   return (
     <div className="BasketItem flex-container">
       {isEditing && (
-        <CircleButton
+        <IconButton
           length={28}
           Icon={Cross}
           buttonTheme={ButtonTheme.DESTRUCTIVE}
@@ -50,7 +50,7 @@ export default function BasketItem({ item, isEditing = false }) {
         />
       )}
       {isEditing && (
-        <CircleButton
+        <IconButton
           length={28}
           Icon={Minus}
           buttonTheme={ButtonTheme.PRIMARY}
@@ -65,7 +65,7 @@ export default function BasketItem({ item, isEditing = false }) {
         {item.quantity}
       </div>
       {isEditing && (
-        <CircleButton
+        <IconButton
           length={28}
           Icon={Plus}
           buttonTheme={ButtonTheme.PRIMARY}
