@@ -69,6 +69,8 @@ export function Brand() {
   //   s0.parentNode.insertBefore(s1, s0);
   // }, [])
 
+  const calendlyLink = "https://calendly.com/matt-at-mercado/demo"
+
   return <div>
     <header style={{ 
       padding: 16, 
@@ -90,9 +92,11 @@ export function Brand() {
         
         <div className="flex-spacer"></div>
 
-        <Link to="/book-demo">
+        
+
+        <a href={calendlyLink} target="_blank" rel="noreferrer">
           <BlockButton title="Book a demo" style={{ display: "inline-block", width: 140 }} />
-        </Link>
+        </a>
         
       </div>
     </header>
