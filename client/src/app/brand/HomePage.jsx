@@ -116,6 +116,8 @@ export default function HomePage() {
     body="Our industry-leading low fee means you can spend more of your budget on making your event great. And unlike other platforms, you'll get revenue from ticket sales upfront."
   />
 
+  const calendlyLink = "https://calendly.com/matt-at-mercado/demo"
+
   return <div>
     <Helmet>
       <title>The smart events management platform | Mercado</title>
@@ -201,9 +203,9 @@ export default function HomePage() {
         Learn more about our product
       </h2>
       <Spacer y={4} />
-      <Link to="/book-demo">
+      <a href={calendlyLink} target="_blank" rel="noreferrer">
         <BlockButton title="Book a demo" style={{ display: "inline-block", width: 140 }} />
-      </Link>
+      </a>
 
     </div>
   </div>
