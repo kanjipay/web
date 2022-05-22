@@ -30,7 +30,7 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   const bankCodeFromStorage = localStorage.getItem("crezcoBankCode")
   const initialBankCode = bankCodeFromQuery ?? bankCodeFromStorage
   const [isLoading, setIsLoading] = useState(true)
-  const [bankCode, setBankCode] = useState(initialBankCode)
+  const [bankCode, setBankCode] = useState(null)
   const [bankData, setBankData] = useState([])
   const [bankName, setBankName] = useState("")
   const [filteredBankData, setFilteredBankData] = useState([])
@@ -90,14 +90,25 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   useEffect(() => {
     NetworkManager.get(ApiName.INTERNAL, "/banks").then(res => {
       const bankData = res.data
-      console.log(bankData)
-      removeBankIfInvalid(bankData)
       setBankData(bankData)
+
+      const bankCodes = bankData.map(bankDatum => bankDatum.bankCode)
+
+      if (!bankCodes.includes(bankCodeFromStorage)) {
+        localStorage.removeItem("crezcoBankCode")
+      }
+
+      const initialBankCode = bankCodeFromQuery ?? bankCodeFromStorage
+
+      if (bankCodes.includes(initialBankCode)) {
+        setBankCode(initialBankCode)
+      }
+
       setFilteredBankData(bankData)
       setIsLoading(false)
 
     })
-  }, [])
+  }, [bankCodeFromQuery, bankCodeFromStorage])
 
   useEffect(() => {
     if (bankCode && !isMobile) {
@@ -144,9 +155,8 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
           <Spacer y={2} />
           <p className="text-body-faded">We'll use our trusted partner Crezco to do this. You'll be sent back here after you confirm your payment of <span style={{ fontWeight: 800 }}>{formatCurrency(paymentIntent.amount)}</span></p>
         </div>
-      </div>
 
-      <div style={{ position: "absolute", bottom: 0, padding: "0 16px", textAlign: "center" }}>
+        <Spacer y={6} />
         {!isMobile && <div>
 
           <div>
@@ -191,6 +201,12 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
           <a href="https://www.crezco.com/privacy-policy" target="_blank" rel="noreferrer"> Privacy Policy</a>.
         </p>
         <Spacer y={3} />
+
+
+      </div>
+
+      <div style={{ position: "absolute", bottom: 0, padding: "0 16px", textAlign: "center" }}>
+        
       </div>
     </div>
   } else {
