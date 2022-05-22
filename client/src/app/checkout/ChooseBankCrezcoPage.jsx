@@ -29,13 +29,21 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   const bankCodeFromQuery = searchParams.get("bank")
   const bankCodeFromStorage = localStorage.getItem("crezcoBankCode")
   const initialBankCode = bankCodeFromQuery ?? bankCodeFromStorage
-
   const [isLoading, setIsLoading] = useState(true)
   const [bankCode, setBankCode] = useState(initialBankCode)
   const [bankData, setBankData] = useState([])
   const [bankName, setBankName] = useState("")
   const [filteredBankData, setFilteredBankData] = useState([])
   const [linkId, setLinkId] = useState(null)
+
+  const removeBankIfInvalid = (bankData) => {
+    const bankDatum = bankData.find(d => d.bankCode === bankCode);
+    if (!bankDatum) {
+      setBankData([]);
+      setBankCode(null);
+      localStorage.removeItem("crezcoBankCode");
+    } 
+  }
 
   const handleBankNameChange = (event) => {
     const enteredBankName = event.target.value
@@ -83,9 +91,11 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
     NetworkManager.get(ApiName.INTERNAL, "/banks").then(res => {
       const bankData = res.data
       console.log(bankData)
+      removeBankIfInvalid(bankData)
       setBankData(bankData)
       setFilteredBankData(bankData)
       setIsLoading(false)
+
     })
   }, [])
 
