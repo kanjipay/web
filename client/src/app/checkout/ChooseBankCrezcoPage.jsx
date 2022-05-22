@@ -36,15 +36,6 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   const [filteredBankData, setFilteredBankData] = useState([])
   const [linkId, setLinkId] = useState(null)
 
-  const removeBankIfInvalid = (bankData) => {
-    const bankDatum = bankData.find(d => d.bankCode === bankCode);
-    if (!bankDatum) {
-      setBankData([]);
-      setBankCode(null);
-      localStorage.removeItem("crezcoBankCode");
-    } 
-  }
-
   const handleBankNameChange = (event) => {
     const enteredBankName = event.target.value
     setBankName(enteredBankName)
@@ -89,7 +80,9 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
 
   useEffect(() => {
     NetworkManager.get(ApiName.INTERNAL, "/banks").then(res => {
-      const bankData = res.data
+      const bankData = res.data.sort((bankDatum1, bankDatum2) => {
+        return bankDatum1.bankName > bankDatum2.bankName ? 1 : -1
+      })
       setBankData(bankData)
 
       const bankCodes = bankData.map(bankDatum => bankDatum.bankCode)
@@ -210,6 +203,15 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
       </div>
     </div>
   } else {
+    function isBusinessBankAccount(bankDatum) {
+      const businessKeywords = ["business", "corporate", "bankline", "tide"]
+
+      return businessKeywords.some(k => bankDatum.bankName.toLowerCase().includes(k))
+    }
+
+    const businessBankData = filteredBankData.filter(d => isBusinessBankAccount(d))
+    const personalBankData = filteredBankData.filter(d => !isBusinessBankAccount(d))
+
     return <div className="container">
       <Helmet>
         <title>Choose your bank | Mercado</title>
@@ -243,10 +245,22 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
 
         {
           filteredBankData.length > 0 ?
-            <div style={{ display: 'grid', gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 16 }}>
-              {
-                filteredBankData.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => handleChooseBank(datum)} />)
-              }
+            <div>
+              <h2 className="header-m">Personal banks</h2>
+              <Spacer y={3} />
+              <div style={{ display: 'grid', gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 16 }}>
+                {
+                  personalBankData.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => handleChooseBank(datum)} />)
+                }
+              </div>
+              <Spacer y={6} />
+              <h2 className="header-m">Business banks</h2>
+              <Spacer y={3} />
+              <div style={{ display: 'grid', gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 16 }}>
+                {
+                  businessBankData.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => handleChooseBank(datum)} />)
+                }
+              </div>
             </div> :
             <div style={{ textAlign: "center" }}>
               <CircleIcon
