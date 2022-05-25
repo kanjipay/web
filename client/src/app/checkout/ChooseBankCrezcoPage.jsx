@@ -1,4 +1,3 @@
-import { onSnapshot } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { isMobile } from "react-device-detect"
 import { Helmet } from "react-helmet-async"
@@ -8,7 +7,6 @@ import Discover from "../../assets/icons/Discover"
 import Spinner from "../../assets/Spinner"
 import { ButtonTheme, Colors } from "../../components/CircleButton"
 import CircleIcon from "../../components/CircleIcon"
-import TextField from "../../components/Input"
 import LoadingPage from "../../components/LoadingPage"
 import MainButton from "../../components/MainButton"
 import NavBar from "../../components/NavBar"
@@ -28,7 +26,6 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   const referringDeviceId = searchParams.get("referringDeviceId")
   const bankCodeFromQuery = searchParams.get("bank")
   const bankCodeFromStorage = localStorage.getItem("crezcoBankCode")
-  const initialBankCode = bankCodeFromQuery ?? bankCodeFromStorage
   const [isLoading, setIsLoading] = useState(true)
   const [bankCode, setBankCode] = useState(null)
   const [bankData, setBankData] = useState([])
@@ -117,15 +114,11 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   useEffect(() => {
     if (!linkId) { return }
 
-    const unsub = onSnapshot(Collection.LINK.docRef(linkId), doc => {
-      const { wasUsed } = doc.data()
-
-      if (wasUsed) {
+    return Collection.LINK.onChange(linkId, link => {
+      if (link.wasUsed) {
         navigate("../mobile-handover")
       }
     })
-
-    return unsub
   }, [linkId, navigate])
 
   if (isLoading) {

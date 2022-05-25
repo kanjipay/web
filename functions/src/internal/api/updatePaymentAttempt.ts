@@ -31,21 +31,33 @@ export async function updatePaymentAttemptIfNeededCrezco(paymentAttemptId: strin
 
   const redirectUrl = paymentIntent.successUrl
 
+  const updatePaymentAttempt = db()
+    .collection(Collection.PAYMENT_ATTEMPT)
+    .doc(paymentAttemptId)
+    .update({
+      status: paymentAttemptStatus,
+    })
+
+  const promises: Promise<any>[] = [updatePaymentAttempt]
+
   if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
-    await db()
+    const updatePaymentIntent = db()
       .collection(Collection.PAYMENT_INTENT)
       .doc(paymentIntentId)
-      .set({
+      .update({
         status: PaymentIntentStatus.SUCCESSFUL,
         paidAt: firestore.FieldValue.serverTimestamp(),
         paymentAttemptId,
-        crezco: {
-          
-        },
-      }, { merge: true })
+      })
 
     const { clientId, payeeId } = paymentIntent
-    const { client, clientError } = await fetchDocument(Collection.CLIENT, clientId)
+
+    const [
+      { client, clientError }
+    ] = await Promise.all([
+      fetchDocument(Collection.CLIENT, clientId),
+      updatePaymentIntent
+    ])
 
     if (clientError) {
       return { error: clientError }
@@ -53,8 +65,7 @@ export async function updatePaymentAttemptIfNeededCrezco(paymentAttemptId: strin
 
     const { webhookUrl } = client
 
-    // TODO: implement retries
-    await sendWebhook(webhookUrl, {
+    const sendWebhookPromise = sendWebhook(webhookUrl, {
       webhookCode: WebhookCode.PAYMENT_INTENT_UPDATE,
       paymentAttemptId,
       paymentIntentId,
@@ -62,14 +73,12 @@ export async function updatePaymentAttemptIfNeededCrezco(paymentAttemptId: strin
       timestamp: new Date(),
       paymentIntentStatus: PaymentIntentStatus.SUCCESSFUL
     })
+
+    // TODO: implement retries
+    promises.push(sendWebhookPromise)
   }
 
-  await db()
-    .collection(Collection.PAYMENT_ATTEMPT)
-    .doc(paymentAttemptId)
-    .update({
-      status: paymentAttemptStatus,
-    })
+  await Promise.all(promises)
 
   return { redirectUrl, paymentIntentId }
 }

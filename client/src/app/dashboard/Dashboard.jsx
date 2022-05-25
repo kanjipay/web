@@ -1,8 +1,7 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getDocs, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { orderBy, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Link, Route, Routes, useLocation, useParams } from "react-router-dom";
-import Carat from "../../assets/icons/Carat";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
 import User from "../../assets/icons/User";
 import { Colors } from "../../components/CircleButton";
 import LoadingPage from "../../components/LoadingPage";
@@ -14,8 +13,6 @@ import Merchant from "./events/Merchant";
 import MerchantDropdown from "./MerchantDropdown";
 import SelectOrganisationPage from "./SelectOrganisationPage";
 import CreateOrganisationPage from './CreateOrganisationPage';
-import BankDetailsVerifiedPage from './events/BankDetailsVerifiedPage';
-import { opacityToAlphaHex } from "../brand/Brand";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -28,7 +25,7 @@ export default function Dashboard() {
   const [opacity, setOpacity] = useState(0);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, authUser => {
+    return onAuthStateChanged(auth, authUser => {
       setAuthUser(authUser)
 
       if (!authUser || !authUser.email) {
@@ -40,35 +37,22 @@ export default function Dashboard() {
         })
       }
     })
-
-    return unsub
   }, [backPath, state, openAuthPage])
 
   useEffect(() => {
     if (!authUser || !authUser.email) { return }
 
-    onSnapshot(Collection.USER.docRef(authUser.uid), doc => {
-      const user = { id: doc.id, ...doc.data() }
-      setUser(user)
-    }) 
+    return Collection.USER.onChange(authUser.uid, setUser)
   }, [authUser])
 
   useEffect(() => {
     if (!user) { return }
 
-    const membershipsQuery = query(
-      Collection.MEMBERSHIP.ref,
+    return Collection.MEMBERSHIP.queryOnChange(
+      setMemberships,
       where("userId", "==", user.id),
       orderBy("lastUsedAt", "desc")
     )
-
-    onSnapshot(membershipsQuery, snapshot => {
-      const memberships = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
-      setMemberships(memberships)
-    })
   }, [user])
 
   useEffect(() => {

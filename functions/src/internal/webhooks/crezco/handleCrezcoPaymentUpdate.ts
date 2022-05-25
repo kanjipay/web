@@ -13,8 +13,7 @@ export const handleCrezcoPaymentUpdate = async (req, res, next) => {
   try {
     const loggingClient = new LoggingController("Crezco Webhook");
 
-    loggingClient.log("Handing crezco payment update")
-    console.log(req.body)
+    loggingClient.log("Handing crezco payment update", { payload: req.body[0] })
     const { eventType, metadata } = req.body[0]
     const { payDemandId } = metadata
 

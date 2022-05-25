@@ -5,7 +5,8 @@ const defaultHeaders = {
   "X-Crezco-Key": process.env.CREZCO_API_KEY
 }
 
-const baseUrl = process.env.CREZCO_URL
+const subdomain = ["PROD", "STAGING"].includes(process.env.ENVIRONMENT) ? "api" : "api.sandbox"
+const baseUrl = `https://${subdomain}.crezco.com`
 
 export async function fetchBankData() {
   const { data } = await axios.get(`${baseUrl}/v1/banks/GB/DomesticInstantPayment`, {

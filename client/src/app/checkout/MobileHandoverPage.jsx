@@ -1,8 +1,6 @@
-import { onSnapshot } from "firebase/firestore";
 import { useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Tick from "../../assets/icons/Tick";
-import { Colors } from "../../components/CircleButton";
 import CircleIcon from "../../components/CircleIcon";
 import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";
@@ -17,18 +15,14 @@ export default function MobileHandoverPage() {
   const { clearBasket } = useBasket()
 
   useEffect(() => {
-    return onSnapshot(Collection.PAYMENT_INTENT.docRef(paymentIntentId), doc => {
-      const paymentIntent = { id: doc.id, ...doc.data() }
+    return Collection.PAYMENT_INTENT.onChange(paymentIntentId, paymentIntent => {
       const { status } = paymentIntent
-
-      console.log(`paymentIntent: ${JSON.stringify(paymentIntent)}`)
-
       if (status !== PaymentIntentStatus.PENDING) {
         const redirectUrl = generateRedirectUrl(status, paymentIntent)
         console.log(`redirectUrl: ${redirectUrl}`)
         window.location.href = redirectUrl
       }
-    });
+    })
   }, [paymentIntentId, navigate, clearBasket])
 
   return <div className="container">

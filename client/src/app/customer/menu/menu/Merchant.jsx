@@ -1,7 +1,9 @@
+import { orderBy, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Route, Routes, useParams } from "react-router-dom";
-import { fetchMenuItems, fetchMenuSections, fetchMerchant, fetchOpeningHours } from "../../../../utils/services/MenuService";
-import { fetchOrders } from "../../../../utils/services/OrdersService";
+import Collection from "../../../../enums/Collection";
+import OrderStatus from "../../../../enums/OrderStatus";
+import { IdentityManager } from "../../../../utils/IdentityManager";
 import BasketPage from "../basket/BasketPage";
 import useBasket from "../basket/useBasket";
 import MenuItemPage from "./MenuItemPage";
@@ -24,38 +26,34 @@ export default function Merchant() {
       clearBasket()
     }
 
-    const merchantUnsub = fetchMerchant(merchantId, (doc) => {
-      setMerchant({ id: doc.id, ...doc.data() });
-    });
+    const merchantUnsub = Collection.MERCHANT.onChange(merchantId, setMerchant)
 
-    const menuSectionUnsub = fetchMenuSections(merchantId, (snapshot) => {
-      const sections = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMenuSections(sections);
-    });
+    const menuSectionUnsub = Collection.MENU_SECTION.queryOnChange(
+      setMenuSections,
+      where("merchantId", "==", merchantId),
+      orderBy("sortOrder", "asc")
+    )
 
-    const hourRangeUnsub = fetchOpeningHours(merchantId, (snapshot) => {
-      const hourRanges = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setOpenHourRanges(hourRanges);
-    });
+    const menuItemUnsub = Collection.MENU_ITEM.queryOnChange(
+      setMenuItems,
+      where("merchantId", "==", merchantId),
+      orderBy("sortOrder", "asc")
+    )
 
-    const menuItemUnsub = fetchMenuItems(merchantId, (snapshot) => {
-      const items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setMenuItems(items);
-    });
+    const userId = IdentityManager.main.getPseudoUserId()
 
-    const orderUnsub = fetchOrders(merchantId, (snapshot) => {
-      const orders = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setOrders(orders);
-    });
+    const orderUnsub = Collection.ORDER.queryOnChange(
+      setOrders,
+      where("merchantId", "==", merchantId),
+      where("userId", "==", userId),
+      where("status", "==", OrderStatus.PAID),
+      orderBy("createdAt", "desc")
+    )
+
+    const hourRangeUnsub = Collection.OPENING_HOUR_RANGE.queryOnChange(
+      setOpenHourRanges,
+      where("merchantId", "==", merchantId)
+    )
 
     return () => {
       merchantUnsub();

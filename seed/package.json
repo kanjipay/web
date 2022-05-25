@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "seed": "node scripts/seed.js"
+    "seed-staging": "ENV=STAGING node scripts/run.js"
   },
   "keywords": [],
   "author": "",

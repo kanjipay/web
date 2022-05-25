@@ -4,7 +4,8 @@ import Collection from "../../../shared/enums/Collection";
 import LoggingController from "../../../shared/utils/loggingClient";
 
 import { firestore } from "firebase-admin";
-import { v4 } from "uuid";
+import { v4 as uuid } from "uuid";
+import { PayeeApprovalStatus } from "../../../shared/enums/PayeeApprovalStatus";
 
 export default class MerchantsController extends BaseController {
   create = async (req, res, next) => {
@@ -19,37 +20,54 @@ export default class MerchantsController extends BaseController {
         },
         req.body
       );
-      const { accountNumber, address, companyName, displayName, sortCode, description, imageAsFile } =
-        req.body;
-      const payeeId = v4();
-      await db().collection(Collection.PAYEE).doc(payeeId).set({
-        accountNumber,
-        address,
-        companyName,
-        sortCode,
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        approvalStatus: "PENDING",
-      });
-      const merchantId = v4();
-      const photoPath =`/${merchantId}/${imageAsFile.name}`;
-      await db().collection(Collection.MERCHANT).doc(merchantId).set({
-        address,
-        companyName,
-        photo:photoPath,
-        displayName,
-        description,
-        payeeId,
-        createdAt: firestore.FieldValue.serverTimestamp(),
-        approvalStatus: "PENDING"
-      });
 
-      await db().collection(Collection.MEMBERSHIP).add({
-        lastUsedAt: firestore.FieldValue.serverTimestamp(),
-        merchantId,
-        merchantName: displayName,
-        role: "ADMIN",
-        userId
-      });
+      const { accountNumber, address, companyName, displayName, sortCode, description, imageAsFile } = req.body;
+
+      const payeeId = uuid();
+      const merchantId = uuid();
+      const photoPath = `/${merchantId}/${imageAsFile.name}`;
+
+      const createPayee = db()
+        .collection(Collection.PAYEE)
+        .doc(payeeId)
+        .set({
+          accountNumber,
+          address,
+          companyName,
+          sortCode,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          approvalStatus: PayeeApprovalStatus.PENDING,
+        });
+      
+      const createMerchant = db()
+        .collection(Collection.MERCHANT)
+        .doc(merchantId)
+        .set({
+          address,
+          companyName,
+          photo: photoPath,
+          displayName,
+          description,
+          payeeId,
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          approvalStatus: "PENDING"
+        });
+
+      const createMembership = db()
+        .collection(Collection.MEMBERSHIP)
+        .add({
+          lastUsedAt: firestore.FieldValue.serverTimestamp(),
+          merchantId,
+          merchantName: displayName,
+          role: "ADMIN",
+          userId
+        });
+
+      await Promise.all([
+        createPayee,
+        createMerchant,
+        createMembership
+      ])
       /*
       const storageIntance = storage();
       storageIntance.bucket().file(photoPath).save(imageAsFile);

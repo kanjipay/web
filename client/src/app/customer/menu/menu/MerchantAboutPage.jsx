@@ -66,7 +66,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
 
         <h1 className="header-l">{merchant.displayName}</h1>
         <Spacer y={1} />
-        <p className="text-body">{merchant.tags.join(" · ")}</p>
+        <p className="text-body">{merchant.tags?.join(" · ")}</p>
         <Spacer y={3} />
 
         <div style={{ display: "flex", alignItems: "center" }}>

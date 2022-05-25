@@ -51,6 +51,8 @@ export default function SignInWithGooglePage() {
               localStorage.setItem(isAuthInProgressKey, "false")
             })
           } else {
+            localStorage.setItem(isAuthInProgressKey, "false")
+            
             setError({
               title: "Something went wrong",
               body: "We're sorry, but we couldn't log you in. Try checking back later."

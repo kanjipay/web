@@ -7,8 +7,6 @@ import BasketContextProvider from "./app/customer/menu/basket/BasketContext";
 // import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 console.log("environment: ", process.env.REACT_APP_ENV_NAME);
-console.log("isLocal: ", process.env.REACT_APP_IS_LOCAL)
-console.log("audit_version", 3);
 
 ReactDOM.render(
   <React.StrictMode>

@@ -1,4 +1,3 @@
-import { onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Route, Routes, useLocation, useParams } from "react-router-dom";
 import LoadingPage from "../../../../components/LoadingPage";
@@ -11,11 +10,7 @@ export default function Product({ merchant, event, user }) {
   const [product, setProduct] = useState(location.state?.product)
 
   useEffect(() => {
-    const unsub = onSnapshot(Collection.PRODUCT.docRef(productId), doc => {
-      setProduct({ id: doc.id, ...doc.data() })
-    })
-
-    return unsub
+    return Collection.PRODUCT.onChange(productId, setProduct)
   }, [productId])
 
   return product ? 

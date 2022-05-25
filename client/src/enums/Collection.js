@@ -1,4 +1,4 @@
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, query } from "firebase/firestore";
 import { db } from "../utils/FirebaseUtils";
 
 export default class Collection {
@@ -24,8 +24,33 @@ export default class Collection {
 
     this.onChange = (docId, callback) => {
       return onSnapshot(this.docRef(docId), doc => {
-        callback({ id: doc.id, ...doc.data() })
+        if (doc.exists) {
+          callback({ id: doc.id, ...doc.data() })
+        } else {
+          callback(null)
+        }
       })
+    }
+
+    this.queryOnChange = (callback, ...queryConstraints) => {
+      const q = query(
+        this.ref,
+        ...queryConstraints
+      )
+
+      return onSnapshot(q, snapshot => {
+        const docs = snapshot.docs.map(doc => {
+          return { id: doc.id, ...doc.data() }
+        })
+
+        callback(docs)
+      })
+    }
+
+    this.queryOnChangeGetOne = (callback, ...queryConstraints) => {
+      return this.queryOnChange(docs => {
+        docs.length === 0 ? callback(null) : callback(docs[0])
+      }, ...queryConstraints)
     }
   }
 }

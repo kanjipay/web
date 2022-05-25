@@ -2,6 +2,7 @@ import { Router } from "express";
 import { validate } from "../../../shared/utils/validate";
 import PaymentAttemptsController from "../controllers/PaymentAttemptsController";
 import { AllowedSchema } from "express-json-validator-middleware";
+import Environment from "../../../shared/enums/Environment";
 
 const controller = new PaymentAttemptsController();
 const routes = Router();
@@ -56,7 +57,7 @@ routes.post(
   controller.createCrezco
 )
 
-const isLocal = process.env.IS_LOCAL === "TRUE"
+const isLocal = process.env.ENVIRONMENT === Environment.DEV_LOCAL
 const confirmPaymentAttemptRequiredFields = ["code", "state"]
 const confirmPaymentAttemptProperties = {
   code: {

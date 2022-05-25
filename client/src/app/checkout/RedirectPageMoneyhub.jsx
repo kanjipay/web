@@ -6,10 +6,9 @@ import { confirmPayment } from "../../utils/services/PaymentsService";
 import { parseHashParams } from "../../utils/helpers/parseHashParams";
 import { generateRedirectUrl } from "./redirects";
 import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
-import { getDoc, onSnapshot } from "firebase/firestore";
+import { getDoc } from "firebase/firestore";
 import Collection from "../../enums/Collection";
 import { restoreState } from "../../utils/services/StateService";
-import axios from "axios";
 import { IdentityManager } from "../../utils/IdentityManager";
 import { ApiName, NetworkManager } from "../../utils/NetworkManager";
 
@@ -54,8 +53,8 @@ export default function RedirectPageMoneyhub() {
   useEffect(() => {
     if (!hasRestoredState) { return }
 
-    const unsub = onSnapshot(Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId), doc => {
-      const { status, paymentIntentId, deviceId } = doc.data()
+    return Collection.PAYMENT_ATTEMPT.onChange(paymentAttemptId, paymentAttempt => {
+      const { status, paymentIntentId, deviceId } = paymentAttempt
       const basePath = `/checkout/pi/${paymentIntentId}`;
 
       if (error) {
@@ -96,10 +95,6 @@ export default function RedirectPageMoneyhub() {
         }
       }
     })
-
-    return () => {
-      unsub()
-    }
   }, [error, paymentAttemptId, navigate, hasRestoredState, hasRedirected])
 
 

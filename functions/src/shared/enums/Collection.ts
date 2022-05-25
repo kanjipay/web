@@ -19,7 +19,7 @@ enum Collection {
   TICKET = "Ticket",
   PRODUCT = "Product",
   EVENT = "Event",
-  CUSTOMER = "Customer",
+  USER = "User",
   MEMBERSHIP = "Membership"
 }
 

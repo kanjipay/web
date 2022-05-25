@@ -9,16 +9,11 @@ import { getEventStorageRef } from "../../../../utils/helpers/storage";
 
 import { Link } from "react-router-dom";
 import ProductListing from "../product/ProductListing";
-import { dateFromTimestamp } from "../../../../utils/helpers/time";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
 import { eventTimeString, generateGoogleMapsLink } from "./eventHelpers";
 import { Colors } from "../../../../components/CircleButton";
 
-
-
 export default function EventPage({ merchant, event, products }) {
-  
-  
   return <div className="container">
     <EventsAppNavBar
       title={event.title}

@@ -51,14 +51,32 @@ export function FileUploadGroup({ name, label, onChange, file }) {
   </label>
 }
 
-export default function TextField({ placeholder, style, ...props }) {
+export default function TextField({ placeholder, style, prefix = "", suffix = "", onChange, value, ...props }) {
   const inputStyle = {
     height: 48,
     ...textInputStyle,
     ...style,
+    flexGrow: 100
   };
 
-  return <input placeholder={placeholder} style={inputStyle} {...props} />
+  const endingsStyle = {
+    padding: "0 16px", 
+    display: "flex", 
+    alignItems: "center", 
+    color: Colors.GRAY_LIGHT, 
+    backgroundColor: Colors.OFF_WHITE
+  }
+
+  return <div style={{ display: "flex" }}>
+    { prefix && <div style={endingsStyle}>{prefix}</div> }
+    <input 
+      placeholder={placeholder} 
+      style={inputStyle} {...props} 
+      value={value.slice(prefix.length, value.length - suffix.length)}
+      onChange={(event) => onChange(prefix + event.target.value + suffix)} 
+    />
+    { suffix && <div style={endingsStyle}>{suffix}</div> }
+  </div>
 }
 
 export function TextArea({ placeholder, style, ...props}) {

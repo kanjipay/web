@@ -101,7 +101,7 @@ export default function MenuPage({
         <h1 className="header-l">{merchant.displayName}</h1>
         <Spacer y={1} />
         <Link to="about" state={{ merchant, openHourRanges }}>
-          <p className="text-body">{merchant.tags.join(" · ")}</p>
+          <p className="text-body">{merchant.tags?.join(" · ")}</p>
           <Spacer y={1} />
           <p className="text-body-faded">{generateOpenHourText()}</p>
         </Link>

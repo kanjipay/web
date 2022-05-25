@@ -1,13 +1,3 @@
-import {
-  onSnapshot,
-  orderBy,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import axios from "axios";
-import OrderStatus from "../../enums/OrderStatus";
-import Collection from "../../enums/Collection";
 import { IdentityManager } from "../IdentityManager";
 import { ApiName, NetworkManager } from "../NetworkManager";
 
@@ -44,34 +34,9 @@ export async function createTicketOrder(productId, quantity) {
     deviceId
   })
 
-  const { checkoutUrl, orderId } = res.data
+  const { redirectUrl, orderId } = res.data
 
-  return { checkoutUrl, orderId }
-}
-
-export async function fetchOrder(orderId, onComplete) {
-  return onSnapshot(
-    Collection.ORDER.docRef(orderId), 
-    onComplete
-  );
-}
-
-export function fetchOrders(merchantId, onComplete) {
-  const userId = IdentityManager.main.getPseudoUserId()
-  
-  const ordersQuery = query(
-    Collection.ORDER.ref,
-    where("merchantId", "==", merchantId),
-    where("userId", "==", userId),
-    where("status", "==", OrderStatus.PAID),
-    orderBy("createdAt", "desc")
-  );
-
-  return onSnapshot(ordersQuery, onComplete);
-}
-
-export function setOrderStatus(orderId, status) {
-  return updateDoc(Collection.ORDER.docRef(orderId), { status });
+  return { redirectUrl, orderId }
 }
 
 export function sendOrderReceipt(orderId, email) {
