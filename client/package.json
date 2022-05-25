@@ -38,8 +38,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "npx prettier --write .",
-    "build:prod": "env-cmd -f ./.env.production npm run-script build",
-    "build:stage": "env-cmd -f ./.stage.env npm run-script build"
+    "build:dev": "env-cmd -f ./.env.dev npm run-script build",
+    "build:staging": "env-cmd -f ./.env.staging npm run-script build",
+    "build:prod": "env-cmd -f ./.env.prod npm run-script build"
   },
   "eslintConfig": {
     "extends": [

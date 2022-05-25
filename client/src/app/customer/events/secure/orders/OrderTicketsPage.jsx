@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom"
 import Cross from "../../../../../assets/icons/Cross"
 import { Colors } from "../../../../../components/CircleButton"
 import IconActionPage from "../../../../../components/IconActionPage"
-import IconPage from "../../../../../components/IconPage"
 import LoadingPage from "../../../../../components/LoadingPage"
 import OrderType from "../../../../../enums/OrderType"
 import { AnalyticsEvent, AnalyticsManager } from "../../../../../utils/AnalyticsManager"
@@ -28,9 +27,9 @@ export default function OrderTicketsPage() {
 
     createTicketOrder(productId, quantity)
       .then(data => {
-        const { checkoutUrl, orderId } = data
+        const { redirectUrl, orderId } = data
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId, orderType: OrderType.TICKETS });
-        window.location.href = checkoutUrl
+        window.location.href = redirectUrl
       })
       .catch(error => {
         setError({

@@ -1,16 +1,13 @@
 import * as express from "express";
-import * as cors from "cors";
 import ordersRoutes from "./routes/ordersRoutes";
 import ticketsRoutes from "./routes/ticketsRoutes";
 import authRoutes from "./routes/authRoutes";
 import merchantRoutes from "./routes/merchantsRoutes";
+import { setCors } from "../../shared/utils/setCors";
 
 const apiApp = express();
 
-const origin = process.env.ENVIRONMENT === "DEV" ? "*" : process.env.CLIENT_URL;
-const corsInstanceApi = cors({ origin });
-apiApp.use(corsInstanceApi);
-apiApp.options("*", corsInstanceApi);
+setCors(apiApp)
 
 apiApp.use("/orders", ordersRoutes);
 apiApp.use("/tickets", ticketsRoutes);

@@ -7,11 +7,11 @@ import { dateFromTimestamp } from "../../../shared/utils/time";
 export default class TicketsController extends BaseController {
   index = async (req, res, next) => {
     try {
-      const customerId = req.user.id
+      const userId = req.user.id
 
       const ticketSnapshot = await db()
         .collection(Collection.TICKET)
-        .where("customerId", "==", customerId)
+        .where("userId", "==", userId)
         .limit(1000)
         .get()
 

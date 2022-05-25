@@ -1,4 +1,3 @@
-import { onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import Tick from "../../../assets/icons/Tick";
@@ -38,15 +37,9 @@ export default function Merchant({ user }) {
   const [merchant, setMerchant] = useState(null)
 
   useEffect(() => {
-    onSnapshot(Collection.MERCHANT.docRef(merchantId), doc => {
+    return Collection.MERCHANT.onChange(merchantId, merchant => {
+      setMerchant(merchant)
       setIsLoading(false)
-      if (doc.exists()) {
-        const merchant = { id: doc.id, ...doc.data() }
-        setMerchant(merchant)
-      } else {
-        setMerchant(null)
-      }
-      
     })
   }, [merchantId])
 

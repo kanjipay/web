@@ -13,12 +13,9 @@ import {
   fetchMerchantByUserId,
   fetchMerchantOrders,
 } from "../../../utils/services/MerchantService";
-import {
-  fetchMenuItems,
-  fetchMenuSections,
-  fetchOpeningHours,
-} from "../../../utils/services/MenuService";
 import { auth } from "../../../utils/FirebaseUtils";
+import Collection from "../../../enums/Collection";
+import { orderBy, where } from "firebase/firestore";
 
 function MerchantApp() {
   const [merchantId, setMerchantId] = useState("");
@@ -44,15 +41,6 @@ function MerchantApp() {
       }
     });
 
-    // Link user account to merchant account
-    const merchantUnsub = fetchMerchantByUserId(userId, (snapshot) => {
-      if (snapshot.docs.length > 0) {
-        const doc = snapshot.docs[0];
-        setMerchantData({ id: doc.id, ...doc.data() });
-        setMerchantId(doc.id);
-      }
-    });
-
     //Fetch Orders
     const orderUnsub = fetchMerchantOrders(merchantId, (snapshot) => {
       if (snapshot) {
@@ -64,34 +52,25 @@ function MerchantApp() {
     });
 
     //Fetch Menu Items
-    const menuItemUnsub = fetchMenuItems(merchantId, (snapshot) => {
-      if (snapshot) {
-        const items = snapshot.docs.map((doc) => {
-          return { id: doc.id, ...doc.data() };
-        });
-        setMenuItems(items);
-      }
-    });
 
-    //Fetch Menu Sections
-    const menuSectionUnsub = fetchMenuSections(merchantId, (snapshot) => {
-      if (snapshot) {
-        const items = snapshot.docs.map((doc) => {
-          return { id: doc.id, ...doc.data() };
-        });
-        setMerchantMenuSections(items);
-      }
-    });
+    const merchantUnsub = Collection.MERCHANT.onChange(merchantId, setMerchantData)
 
-    //Fetch Opening Hours
-    const openingHoursUnsub = fetchOpeningHours(merchantId, (snapshot) => {
-      if (snapshot) {
-        const items = snapshot.docs.map((doc) => {
-          return { id: doc.id, ...doc.data() };
-        });
-        setOpeningHours(items);
-      }
-    });
+    const menuSectionUnsub = Collection.MENU_SECTION.queryOnChange(
+      setMerchantMenuSections,
+      where("merchantId", "==", merchantId),
+      orderBy("sortOrder", "asc")
+    )
+
+    const menuItemUnsub = Collection.MENU_ITEM.queryOnChange(
+      setMenuItems,
+      where("merchantId", "==", merchantId),
+      orderBy("sortOrder", "asc")
+    )
+
+    const openingHoursUnsub = Collection.OPENING_HOUR_RANGE.queryOnChange(
+      setOpeningHours,
+      where("merchantId", "==", merchantId)
+    )
 
     return () => {
       authUnsub();

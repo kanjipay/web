@@ -10,6 +10,8 @@ import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import { createMercadoPaymentIntent } from "../../utils/mercadoClient";
 import { firestore } from "firebase-admin";
 import { OrderType } from "../../../shared/enums/OrderType";
+import { processSuccessfulTicketsOrder } from "../../utils/processSuccessfulTicketsOrder";
+import { v4 as uuid } from "uuid"
 
 export default class OrdersController extends BaseController {
   private async fetchMenuItems(requestedItems: { id: string, quantity: number, title: string }[], merchantId: string) {
@@ -229,8 +231,17 @@ export default class OrdersController extends BaseController {
 
   createWithTickets = async (req, res, next) => {
     try {
-      const customerId = req.user.id
+      const logger = new LoggingController("Create ticket order")
+
+      const userId = req.user.id
       const { productId, quantity, deviceId } = req.body
+
+      logger.log("Read initial variables", {}, {
+        userId,
+        productId,
+        quantity,
+        deviceId
+      })
 
       const { product, productError } = await fetchDocument(Collection.PRODUCT, productId)
 
@@ -241,91 +252,175 @@ export default class OrdersController extends BaseController {
 
       const { soldCount, reservedCount, capacity, eventId, merchantId, price, title } = product
 
+      logger.log("Got product", {
+        product
+      }, {
+        eventId,
+        merchantId,
+        price
+      })
+
       if (soldCount + reservedCount + quantity >= capacity) {
         const errorMessage = "This ticket is sold out."
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return
       }
 
-      const { event, eventError } = await fetchDocument(Collection.EVENT, eventId)
+      const fetchExistingTickets = db()
+        .collection(Collection.TICKET)
+        .where("userId", "==", userId)
+        .where("eventId", "==", eventId)
+        .get()
 
-      if (eventError) {
-        next(eventError)
-        return
+      const [
+        { event, eventError },
+        { merchant, merchantError },
+        existingTicketDocs
+      ] = await Promise.all([
+        fetchDocument(Collection.EVENT, eventId),
+        fetchDocument(Collection.MERCHANT, merchantId),
+        fetchExistingTickets
+      ])
+
+      for (const error of [eventError, merchantError]) {
+        if (error) {
+          next(eventError)
+          return
+        }
       }
 
       const { maxTicketsPerPerson, endsAt } = event
 
-      const existingTicketDocs = await db()
-        .collection(Collection.TICKET)
-        .where("customerId", "==", customerId)
-        .where("eventId", "==", eventId)
-        .get()
-
       const currentTicketCount = existingTicketDocs.docs.length
 
+      logger.log("Got event, merchant and existing tickets", {
+        event,
+        merchant,
+        currentTicketCount,
+        maxTicketsPerPerson
+      })
+
       if (currentTicketCount + quantity > maxTicketsPerPerson) {
-        let errorMessage
+        let errorMessage: string
 
         if (currentTicketCount > 0) {
           errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person. You currently have ${currentTicketCount} and tried to order ${quantity}.`
         } else {
           errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person.`
         }
+
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return
       }
 
-      const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
+      const emailDomain = merchant.emailDomain ?? event.emailDomain ?? product.emailDomain
+      
+      if (emailDomain) {
+        const { email } = req.user
 
-      if (merchantError) {
-        next(merchantError)
-        return
+        logger.log("Checking email domain", {
+          emailDomain,
+          email
+        })
+
+        if (email.slice(email.length - emailDomain.length) !== emailDomain) {
+          const errorMessage = `Your email must end in ${emailDomain}.`
+          next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+          return
+        }
       }
 
       const { payeeId } = merchant
 
       const total = price * quantity
 
-      const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId, OrderType.TICKETS)
+      let redirectUrl: string
 
-      const orderItems = [{
-        productId,
+      const orderId = uuid()
+
+      const orderData = {
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        status: OrderStatus.PENDING,
+        type: OrderType.TICKETS,
+        total,
+        deviceId,
+        userId,
         eventId,
-        title,
-        price,
-        eventEndsAt: endsAt,
-        quantity
-      }]
-
-      const orderRef = await db()
-        .collection(Collection.ORDER)
-        .add({
-          createdAt: firestore.FieldValue.serverTimestamp(),
-          status: OrderStatus.PENDING,
-          type: OrderType.TICKETS,
-          mercado: {
-            paymentIntentId
-          },
-          total,
-          deviceId,
-          customerId,
+        merchantId,
+        orderItems:  [{
+          productId,
           eventId,
-          merchantId,
-          orderItems,
-          wereTicketsCreated: false
-        });
+          eventTitle: event.title,
+          title,
+          price,
+          eventEndsAt: endsAt,
+          quantity
+        }],
+        wereTicketsCreated: false
+      }
 
-      await db()
+      const promises: Promise<any>[] = []
+
+      if (total > 0) {
+        logger.log("Event is paid, creating payment intent")
+        const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId, OrderType.TICKETS)
+
+        logger.log("Created payment intent", {
+          paymentIntentId,
+          checkoutUrl
+        })
+
+        orderData["mercado"] = {
+          paymentIntentId
+        }
+
+        redirectUrl = checkoutUrl
+      } else {
+        logger.log("Event is free, processing successful order")
+
+        promises.push(
+          processSuccessfulTicketsOrder(
+            merchantId, 
+            eventId, 
+            event.title,
+            productId,
+            product.title,
+            product.price, 
+            orderId,
+            userId,
+            endsAt, 
+            quantity
+          )
+        )
+
+        redirectUrl = `${process.env.CLIENT_URL}/events/s/orders/${orderId}/confirmation`
+      }
+
+      const createOrder = db()
+        .collection(Collection.ORDER)
+        .doc(orderId)
+        .set(orderData);
+
+      const updateProduct = db()
         .collection(Collection.PRODUCT)
         .doc(productId)
         .update({
           reservedCount: firestore.FieldValue.increment(quantity)
         })
 
-      const orderId = orderRef.id;
+      promises.push(createOrder)
+      promises.push(updateProduct)
 
-      res.status(200).json({ checkoutUrl, orderId })
+      logger.log("Formulated order data to save", { orderData })
+
+      await Promise.all(promises)
+
+      logger.log("Function successful", {
+        redirectUrl,
+        orderId
+      })
+
+      res.status(200).json({ redirectUrl, orderId })
     } catch (err) {
       next(err)
     }

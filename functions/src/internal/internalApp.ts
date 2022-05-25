@@ -14,6 +14,9 @@ main.use(bodyParser.raw({ type: "application/jwt" }))
 
 main.use("/api/v1", verifyDomain, apiApp);
 main.use("/webhooks/v1", webhooksApp)
+main.get("/status", (req, res) => {
+  res.sendStatus(200)
+})
 
 main.use(errorHandler);
 

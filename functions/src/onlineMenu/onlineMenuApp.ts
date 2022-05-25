@@ -10,6 +10,9 @@ main.use(express.urlencoded({ extended: true }));
 
 main.use("/api/v1", apiApp)
 main.use("/webhooks/v1", webhooksApp)
+main.get("/status", (req, res) => {
+  res.sendStatus(200)
+})
 
 main.use(errorHandler)
 

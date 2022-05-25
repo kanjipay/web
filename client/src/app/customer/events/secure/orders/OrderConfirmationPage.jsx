@@ -1,5 +1,4 @@
 import { Divider } from "@mui/material"
-import { onSnapshot } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import LoadingPage from "../../../../../components/LoadingPage"
@@ -17,12 +16,7 @@ export default function OrderConfirmationPage() {
   const [order, setOrder] = useState(null)
 
   useEffect(() => {
-    const unsub = onSnapshot(Collection.ORDER.docRef(orderId), doc => {
-      const order = { id: doc.id, ...doc.data() }
-      setOrder(order)
-    })
-
-    return unsub
+    return Collection.ORDER.onChange(orderId, setOrder)
   }, [orderId])
 
   const currUser = auth.currentUser

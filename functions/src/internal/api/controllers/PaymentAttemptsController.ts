@@ -12,6 +12,7 @@ import { firestore } from "firebase-admin";
 import { PaymentIntentStatus } from "../../../shared/enums/PaymentIntentStatus";
 import { updatePaymentAttemptIfNeededMoneyhub } from "../updatePaymentAttempt";
 import { createPayment, createPaymentDemand } from "../../../shared/utils/crezcoClient";
+import { shouldInitiateRealPayment } from "../../../shared/utils/shouldInitiatieRealPayment";
 
 export default class PaymentAttemptsController extends BaseController {
   createCrezco = async (req, res, next) => {
@@ -147,7 +148,7 @@ export default class PaymentAttemptsController extends BaseController {
       );
 
       const paymentAttemptId = uuid()
-      const bankId = process.env.ENVIRONMENT !== "PROD" ? "1ffe704d39629a929c8e293880fb449a" : moneyhubBankId
+      const bankId = shouldInitiateRealPayment() ? moneyhubBankId : "1ffe704d39629a929c8e293880fb449a"
       // const bankId = moneyhubBankId
       
       const authUrl = await generateMoneyhubPaymentAuthUrl(

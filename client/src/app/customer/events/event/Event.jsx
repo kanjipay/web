@@ -3,8 +3,7 @@ import { Route, Routes, useLocation, useParams } from "react-router-dom"
 import Collection from "../../../../enums/Collection"
 import LoadingPage from "../../../../components/LoadingPage"
 import EventPage from "./EventPage"
-import { onSnapshot, orderBy, query, where } from "firebase/firestore"
-import TicketReaderPage from "../../../dashboard/events/TicketReaderPage"
+import { orderBy, where } from "firebase/firestore"
 import Product from "../product/Product"
 
 export default function Event({ merchant, user }) {
@@ -14,25 +13,15 @@ export default function Event({ merchant, user }) {
   const [products, setProducts] = useState([])
 
   useEffect(() => {
-    const productsQuery = query(
-      Collection.PRODUCT.ref,
+    return Collection.PRODUCT.queryOnChange(
+      setProducts,
       where("eventId", "==", eventId),
       orderBy("sortOrder", "asc")
-    );
-
-    onSnapshot(productsQuery, snapshot => {
-      const p = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
-      setProducts(p)
-    })
+    )
   }, [eventId])
 
   useEffect(() => {
-    Collection.EVENT.onChange(eventId, e => {
-      setEvent(e)
-    })
+    return Collection.EVENT.onChange(eventId, setEvent)
   }, [eventId])
 
   return event ?

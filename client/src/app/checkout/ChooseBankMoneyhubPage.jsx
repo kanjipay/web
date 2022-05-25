@@ -1,4 +1,3 @@
-import { onSnapshot } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { isMobile } from "react-device-detect"
 import { Helmet } from "react-helmet-async"
@@ -103,15 +102,11 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
   useEffect(() => {
     if (!linkId) { return }
 
-    const unsub = onSnapshot(Collection.LINK.docRef(linkId), doc => {
-      const { wasUsed } = doc.data()
-
-      if (wasUsed) {
+    return Collection.LINK.onChange(linkId, link => {
+      if (link.wasUsed) {
         navigate("../mobile-handover")
       }
     })
-
-    return unsub
   }, [linkId, navigate])
 
   if (isLoading) {

@@ -1,11 +1,8 @@
-import { signOut } from "firebase/auth";
-import { onSnapshot, orderBy, query, where } from "firebase/firestore"
+import { orderBy, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import AsyncImage from "../../../../components/AsyncImage";
-import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
 import Collection from "../../../../enums/Collection";
-import { auth } from "../../../../utils/FirebaseUtils";
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
 import EventListing from "../event/EventListing";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
@@ -14,34 +11,12 @@ export default function MerchantPage({ merchant }) {
   const merchantId = merchant.id
   const [events, setEvents] = useState([])
 
-  // useEffect(() => {
-  //   localStorage.removeItem("crezcoBankCode")
-  //   localStorage.removeItem("moneyhubBankId")
-  //   if (auth.currentUser) {
-  //     signOut(auth).then(() => {
-  //       console.log("signed out")
-  //     })
-  //   }
-  // })
-
   useEffect(() => {
-    const eventsQuery = query(
-      Collection.EVENT.ref,
+    return Collection.EVENT.queryOnChange(
+      setEvents,
       where("merchantId", "==", merchantId),
       orderBy("startsAt", "desc")
-    );
-
-    const unsub = onSnapshot(eventsQuery, snapshot => {
-      const e = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
-      setEvents(e)
-    })
-
-    return () => {
-      unsub()
-    }
+    )
   }, [merchantId])
 
   return <div className="container">
@@ -61,8 +36,12 @@ export default function MerchantPage({ merchant }) {
 
     <div className="content">
       <h1 className="header-l">{merchant.displayName}</h1>
-      <Spacer y={1} />
-      <p className="text-body">{merchant.tags.join(" · ")}</p>
+      {
+        merchant.tags && merchant.tags.length > 0 && <div>
+          <Spacer y={2} />
+          <p className="text-body">{merchant.tags.join(" · ")}</p>
+        </div>
+      }
 
       <Spacer y={4}/>
 

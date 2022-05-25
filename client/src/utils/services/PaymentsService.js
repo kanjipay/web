@@ -1,11 +1,3 @@
-import {
-  getDocs,
-  onSnapshot,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import Collection from "../../enums/Collection";
 import { saveState } from "./StateService";
 import { v4 as uuid } from "uuid"
 import { ApiName, NetworkManager } from "../NetworkManager";
@@ -53,32 +45,4 @@ export async function confirmPayment(code, state, idToken) {
   } catch (err) {
     console.log(err)
   }
-}
-
-export function fetchPaymentAttempt(paymentAttemptId, onComplete) {
-  return onSnapshot(
-    Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId),
-    onComplete
-  );
-}
-
-export async function fetchProviderPaymentAttempt(paymentId, provider) {
-  const q = query(
-    Collection.PAYMENT_ATTEMPT.ref,
-    where(`${provider.toLowerCase()}.paymentId`, "==", paymentId)
-  );
-  const snapshot = await getDocs(q);
-
-  if (snapshot.docs.length > 0) {
-    const doc = snapshot.docs[0];
-    return { id: doc.id, ...doc.data() };
-  }
-
-  return null;
-}
-
-export function setPaymentAttemptStatus(paymentAttemptId, status) {
-  return updateDoc(Collection.PAYMENT_ATTTEMPT.docRef(paymentAttemptId), {
-    status,
-  });
 }

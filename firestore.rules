@@ -1,0 +1,198 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	function incomingData() { 
+    	return request.resource.data
+    }
+    
+    function existingData() {
+    	return resource.data
+    }
+    
+    function userMatchesUserId(userId) {
+    	return request.auth != null && request.auth.uid == userId
+    }
+    
+    function colPath(collection, merchantId) {
+    	return /databases/$(database)/documents/$(collection)/$(merchantId)
+    }
+    
+    function userMatchesMerchantId(merchantId) {
+    	return (
+      	exists(colPath("Merchant", merchantId)) &&
+        userMatchesUserId(get(colPath("Merchant", merchantId)).data.userId)
+      )
+    }
+    
+    function changeMap() {
+    	return incomingData().diff(existingData())
+    }
+    
+    function hasAffectedKeys(keys) {
+    	return changeMap().affectedKeys().hasAny(keys)
+    }
+    
+    function hasOnlyChangedKeys(keys) {
+    	return changeMap().changedKeys().hasOnly(keys)
+    }
+    
+    function hasRequiredKeysForCollection(collection) {
+    	let requiredKeys = {
+      	"Merchant": [
+          "sortCode",
+          "accountNumber",
+          "paymentName",
+          "displayName",
+          "companyName",
+          "address",
+          "userId"
+        ],
+        "MenuItem": ["title", "description", "merchantId", "sectionId", "sortOrder", "price", "isAvailable"],
+        "MenuSection": ["name", "sortOrder", "merchantId"],
+        "OpeningHourRange": ["dayOfWeek", "openTime", "closeTime", "merchantId"],
+        "Order": ["status", "orderItems", "merchantId"]
+      };
+      
+      return incomingData().keys().hasAll(requiredKeys[collection])
+    }
+    
+    match /Merchant/{merchantId} {
+    	// we should ideally have a private details doc nested here
+      // it should contain bank details, company name and user_id
+    	allow read
+      
+    	allow create: if (
+      	hasRequiredKeysForCollection("Merchant") &&
+        userMatchesUserId(incomingData().userId)
+      )
+      
+      allow update: if (
+      	hasRequiredKeysForCollection("Merchant") &&
+      	userMatchesUserId(existingData().userId) &&
+        !hasAffectedKeys(["userId"])
+      )
+      
+      allow delete: if userMatchesUserId(existingData().userId)
+    }
+    
+    match /MenuItem/{resourceId} {
+    	allow read
+      
+    	allow create: if (
+      	hasRequiredKeysForCollection("MenuItem") && 
+        userMatchesMerchantId(incomingData().merchantId)
+      )
+      
+      allow update: if (
+      	hasRequiredKeysForCollection("MenuItem") &&
+      	userMatchesMerchantId(existingData().merchantId) &&
+        !hasAffectedKeys(["merchantId"])
+      );
+      
+      allow delete: if userMatchesMerchantId(existingData().merchantId)
+    }
+    
+    match /MenuSection/{resourceId} {
+    	allow read
+      
+    	allow create: if (
+      	hasRequiredKeysForCollection("MenuSection") && 
+        userMatchesMerchantId(incomingData().merchantId)
+      )
+      
+      allow update: if (
+      	hasRequiredKeysForCollection("MenuSection") &&
+      	userMatchesMerchantId(existingData().merchantId) &&
+        !hasAffectedKeys(["merchantId"])
+      )
+      
+      allow delete: if userMatchesMerchantId(existingData().merchantId)
+    }
+    
+    match /OpeningHourRange/{resourceId} {
+    	allow read
+      
+    	allow create: if (
+      	hasRequiredKeysForCollection("OpeningHourRange") && 
+        userMatchesMerchantId(incomingData().merchantId)
+      )
+      
+      allow update: if (
+      	hasRequiredKeysForCollection("OpeningHourRange") &&
+      	userMatchesMerchantId(existingData().merchantId) &&
+        !hasAffectedKeys(["merchantId"])
+      )
+      
+      allow delete: if userMatchesMerchantId(existingData().merchantId)
+    }
+    
+    match /Order/{orderId} {
+    	allow read;
+      
+      allow update: if (
+      	// Only allow modification of status field
+      	hasOnlyChangedKeys(["status"]) && (
+        	// Rules for the customer
+          (incomingData().status == 'ABANDONED' && existingData().status == 'PENDING') ||
+          (
+            userMatchesMerchantId(existingData().merchantId) &&
+              // Rules for the merchant
+              (incomingData().status == 'CANCELLED' && existingData().status == 'PENDING') ||
+              (incomingData().status == 'FULFILLED' && existingData().status == 'PAID')
+          )
+        )
+      )
+    }
+    
+    match /PaymentIntent/{paymentIntentId} {
+    	allow read;
+      
+      allow update: if (
+      	hasOnlyChangedKeys(["status"]) && 
+      	incomingData().status == 'CANCELLED' && existingData().status == 'PENDING'
+      )
+    }
+    
+    match /PaymentAttempt/{resourceId} {
+    	allow read
+    }
+    
+    match /ContactRequest/{resourceId} {
+    	allow create
+    }
+    
+    match /Link/{resourceId} {
+    	allow read;
+      allow update: if (
+      	hasOnlyChangedKeys(["wasUsed"]) && (
+        	incomingData().wasUsed == true &&
+          existingData().wasUsed == false
+        )
+      )
+    }
+    
+    match /State/{resourceId} {
+    	allow read, create, delete;
+    }
+    
+    match /Event/{resourceId} {
+    	allow read;
+    }
+    
+    match /Product/{resourceId} {
+    	allow read;
+    }
+    
+    match /User/{resourceId} {
+    	allow read, write: if userMatchesUserId(resourceId)
+    }
+    
+    match /Membership/{resourceId} {
+    	allow read: if userMatchesUserId(existingData().userId);
+    }
+    
+    match /Payee/{resourceId} {
+    	allow read;
+    }
+  }
+}

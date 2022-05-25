@@ -1,35 +1,23 @@
-import { onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { orderBy, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import Discover from "../../../assets/icons/Discover";
 import IconActionPage from "../../../components/IconActionPage";
-import IconPage from "../../../components/IconPage";
 import LoadingPage from "../../../components/LoadingPage";
 import Spacer from "../../../components/Spacer";
 import Collection from "../../../enums/Collection";
 
 export default function EventsPage() {
-  const navigate = useNavigate()
   const { merchantId } = useParams()
   const [events, setEvents] = useState(null)
 
   useEffect(() => {
-    const eventsQuery = query(
-      Collection.EVENT.ref,
+    return Collection.EVENT.queryOnChange(
+      setEvents,
       where("merchantId", "==", merchantId),
       orderBy("startsAt", "desc")
     )
-
-    const unsub = onSnapshot(eventsQuery, snapshot => {
-      const events = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
-      setEvents(events)
-    })
-
-    return unsub
-  })
+  }, [merchantId])
 
   let contents
 

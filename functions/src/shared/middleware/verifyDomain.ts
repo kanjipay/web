@@ -1,7 +1,11 @@
+import Environment from "../enums/Environment";
+
 export const verifyDomain = (req, res, next) => {
   const { origin } = req.headers;
 
-  if (process.env.ENVIRONMENT === "PROD" && origin !== process.env.CLIENT_URL) {
+  const strictEnvironments: string[] = [Environment.PROD, Environment.STAGING]
+
+  if (strictEnvironments.includes(process.env.ENVIRONMENT) && origin !== process.env.CLIENT_URL) {
     res.status(403).send("Unauthorized");
   } else {
     next();

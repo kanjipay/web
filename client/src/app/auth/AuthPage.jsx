@@ -21,6 +21,9 @@ export default function AuthPage() {
   const { search } = useLocation()
 
   const requiresPassword = location.state?.requiresPassword ?? true
+  const requiredEmailDomain = location.state?.requiredEmailDomain
+
+  let emailSuffix = requiredEmailDomain ? `@${requiredEmailDomain}` : ""
 
   const [searchParams] = useSearchParams()
   const [backPath, successPath] = ["back", "success"].map(e => base64.decode(searchParams.get(e)))
@@ -35,12 +38,10 @@ export default function AuthPage() {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, user => {
+    return onAuthStateChanged(auth, user => {
       setIsLoading(false)
       setUser(user)
     })
-
-    return unsub
   }, [])
 
   const handleSignInWithGoogle = () => {
@@ -122,6 +123,8 @@ export default function AuthPage() {
   const formOnSubmit = requiresPassword ? handleSignInWithPassword : handleSendEmailLink
   const submitTitle = requiresPassword ? "Sign in" : "Send email link"
 
+  console.log(email)
+
   if (error) {
     <IconActionPage
       Icon={Cross}
@@ -145,11 +148,15 @@ export default function AuthPage() {
         <Spacer y={9} />
 
         <div>
-          <SignInWithGoogeButton onClick={handleSignInWithGoogle} />
-          <Spacer y={4} />
-          <OrDivider />
-          <Spacer y={4} />
-
+          {
+            !requiredEmailDomain && <div>
+              <SignInWithGoogeButton onClick={handleSignInWithGoogle} />
+              <Spacer y={4} />
+              <OrDivider />
+              <Spacer y={4} />
+            </div>
+          }
+          
           <h3 className="header-s">Name</h3>
           <Spacer y={2} />
           <h4 className="header-xs">First name</h4>
@@ -157,7 +164,7 @@ export default function AuthPage() {
           <TextField
             name="firstName"
             value={firstName}
-            onChange={(event) => setFirstName(event.target.value)}
+            onChange={setFirstName}
           />
           <Spacer y={2} />
           <h4 className="header-xs">Last name</h4>
@@ -165,7 +172,7 @@ export default function AuthPage() {
           <TextField
             name="lastName"
             value={lastName}
-            onChange={(event) => setLastName(event.target.value)}
+            onChange={setLastName}
           />
 
           <Spacer y={4} />
@@ -178,7 +185,8 @@ export default function AuthPage() {
             name="email"
             type="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            suffix={emailSuffix}
+            onChange={setEmail}
           />
           {
             requiresPassword && <div>
@@ -191,7 +199,7 @@ export default function AuthPage() {
                 name="password"
                 type="password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={setPassword}
               />
             </div>
           }

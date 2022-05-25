@@ -1,0 +1,43 @@
+const products = [
+  {
+    id: "trinityFirstRelease",
+    eventId: "mayBall",
+    merchantId: "trinity",
+    title: "General Admission (1st release)",
+    reservedCount: 0,
+    capacity: 500,
+    isAvailable: true,
+    releasesAt: new Date(2022, 5 - 1, 1, 12),
+    soldCount: 500,
+    sortOrder: 3,
+    price: 1,
+  },
+  {
+    id: "trinitySecondRelease",
+    eventId: "mayBall",
+    merchantId: "trinity",
+    title: "General Admission (2nd release)",
+    reservedCount: 0,
+    capacity: 200,
+    isAvailable: true,
+    releasesAt: new Date(2022, 5 - 1, 4, 12),
+    soldCount: 200,
+    sortOrder: 2,
+    price: 1,
+  },
+  {
+    id: "trinityThirdRelease",
+    eventId: "mayBall",
+    merchantId: "trinity",
+    title: "General Admission (3rd release)",
+    reservedCount: 0,
+    capacity: 500,
+    isAvailable: true,
+    releasesAt: new Date(2022, 6 - 1, 24),
+    soldCount: 0,
+    sortOrder: 1,
+    price: 1,
+  },
+]
+
+module.exports = products

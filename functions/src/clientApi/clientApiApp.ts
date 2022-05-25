@@ -11,6 +11,9 @@ main.use(express.urlencoded({ extended: true }));
 
 main.use("/v1", checkClientCredentials, v1App)
 main.use("/.well-known", wellKnown)
+main.get("/status", (req, res) => {
+  res.sendStatus(200)
+})
 
 main.use(errorHandler)
 

@@ -1,16 +1,14 @@
 import * as express from "express";
-import * as cors from "cors";
 import { checkMoneyhubIp } from "./moneyhub/checkMoneyhubIp";
 import { handleMoneyhubPaymentUpdate } from "./moneyhub/handleMoneyhubPaymentUpdate";
 import { verifyMoneyhub } from "./moneyhub/verifyMoneyhub";
 import { handleCrezcoPaymentUpdate } from "./crezco/handleCrezcoPaymentUpdate";
 import { verifyCrezco } from "./crezco/verifyCrezco";
+import { setCors } from "../../shared/utils/setCors";
 
 const webhooksApp = express();
 
-const corsInstance = cors({ origin: "*" });
-webhooksApp.use(corsInstance);
-webhooksApp.options("*", corsInstance);
+setCors(webhooksApp, true)
 
 webhooksApp.post(
   "/moneyhub", 

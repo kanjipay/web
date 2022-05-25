@@ -62,7 +62,7 @@ function MerchantAccountPage(props) {
       />
       <div className="content">
         <h1 className="header-l">{merchantData.displayName}</h1>
-        <p className="text-body">{merchantData.tags.join(" · ")}</p>
+        <p className="text-body">{merchantData.tags?.join(" · ")}</p>
 
         <Spacer y={2} />
 

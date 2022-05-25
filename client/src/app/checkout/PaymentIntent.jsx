@@ -3,26 +3,20 @@ import { Route, Routes, useParams } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 import PaymentCancelledPage from "./PaymentCancelledPage";
 import PaymentFailurePage from "./PaymentFailurePage";
-import PaymentPageMoneyhub from "./PaymentPageMoneyhub";
 import MobileHandoverPage from "./MobileHandoverPage";
-import { onSnapshot } from "firebase/firestore";
 import Collection from "../../enums/Collection";
 import MobileFinishedPage from "./MobileFinishedPage";
 import ChooseBankCrezcoPage from "./ChooseBankCrezcoPage";
 import PaymentPageCrezco from "./PaymentPageCrezco";
 import ChooseBankMoneyhubPage from "./ChooseBankMoneyhubPage";
+import PaymentPageMoneyhub from "./PaymentPageMoneyhub";
 
 export default function PaymentIntent() {
   const [paymentIntent, setPaymentIntent] = useState(null);
   const { paymentIntentId } = useParams()
 
   useEffect(() => {
-    const unsub = onSnapshot(Collection.PAYMENT_INTENT.docRef(paymentIntentId), doc => {
-      const paymentIntent = { id: doc.id, ...doc.data() }
-      setPaymentIntent(paymentIntent);
-    })
-
-    return unsub
+    return Collection.PAYMENT_INTENT.onChange(paymentIntentId, setPaymentIntent)
   }, [paymentIntentId]);
 
   return paymentIntent ? 

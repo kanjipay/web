@@ -5,10 +5,9 @@ import { PaymentIntentStatus } from "../../shared/enums/PaymentIntentStatus";
 import { WebhookCode } from "../../shared/enums/WebhookCode";
 import { db } from "../../shared/utils/admin";
 import LoggingController from "../../shared/utils/loggingClient";
-import { v4 as uuid } from "uuid"
-import sha256 = require("sha256");
 import { OrderType } from "../../shared/enums/OrderType";
 import { PaymentIntentCancelReason } from "../../shared/enums/PaymentIntentCancelReason";
+import { processSuccessfulTicketsOrder } from "../utils/processSuccessfulTicketsOrder";
 
 export const handleMercadoPaymentUpdate = async (req, res, next) => {
   try {
@@ -59,7 +58,7 @@ export const handleMercadoPaymentUpdate = async (req, res, next) => {
       orderItems,
       type,
       merchantId,
-      customerId,
+      userId,
       wereTicketsCreated
     } = orderDoc.data()
 
@@ -90,72 +89,50 @@ export const handleMercadoPaymentUpdate = async (req, res, next) => {
       status: orderStatus
     }
 
+    const promises = []
+
     if (type === OrderType.TICKETS) {
       const { productId, eventId, eventEndsAt, quantity } = orderItems[0]
 
-      await db()
-        .collection(Collection.PRODUCT)
-        .doc(productId)
-        .update({
-          reservedCount: firestore.FieldValue.increment(-quantity)
-        })
+      promises.push(
+        db()
+          .collection(Collection.PRODUCT)
+          .doc(productId)
+          .update({
+            reservedCount: firestore.FieldValue.increment(-quantity)
+          })
+      )
 
       if (orderStatus === OrderStatus.PAID && !wereTicketsCreated) {
         orderUpdate["wereTicketsCreated"] = true
 
-        const addTicketPromises: Promise<firestore.WriteResult>[] = []
-        const qrCodeSecret = process.env.QR_CODE_SECRET
+        const orderItem = orderItems[0]
 
-        logger.log("Creating tickets", { quantity })
-
-        for (let i = 0; i < quantity; i++) {
-
-          const ticketId = uuid()
-          const hash = sha256(ticketId + qrCodeSecret)
-
-          logger.log("creating ticket with id " + ticketId)
-
-          const ticketPromise = db()
-            .collection(Collection.TICKET)
-            .doc(ticketId)
-            .set({
-              createdAt: firestore.FieldValue.serverTimestamp(),
-              productId,
-              eventId,
-              eventEndsAt,
-              merchantId,
-              customerId,
-              orderId,
-              hash
-            })
-
-          addTicketPromises.push(ticketPromise)
-        }
-
-        await Promise.all(addTicketPromises)
-
-        const soldCountUpdate = {
-          soldCount: firestore.FieldValue.increment(quantity)
-        }
-
-        await db()
-          .collection(Collection.EVENT)
-          .doc(eventId)
-          .update(soldCountUpdate)
-
-        await db()
-          .collection(Collection.PRODUCT)
-          .doc(productId)
-          .update(soldCountUpdate)
+        promises.push(processSuccessfulTicketsOrder(
+          merchantId,
+          eventId,
+          orderItem.eventTitle,
+          productId,
+          orderItem.title,
+          orderItem.price,
+          orderId,
+          userId,
+          eventEndsAt,
+          quantity
+        ))
       }
     }
 
     orderUpdate["updatedAt"] = firestore.FieldValue.serverTimestamp()
 
-    await db()
-      .collection(Collection.ORDER)
-      .doc(orderId)
-      .update(orderUpdate)
+    promises.push(
+      db()
+        .collection(Collection.ORDER)
+        .doc(orderId)
+        .update(orderUpdate)
+    )
+
+    await Promise.all(promises)
 
     logger.log("Updated order", { orderStatus })
     

@@ -17,6 +17,21 @@ import { Checkbox } from "@mui/material";
 import CheckBox from "../../../../components/CheckBox";
 import { auth } from "../../../../utils/FirebaseUtils";
 import Stepper from "../../../../components/Stepper";
+import { validateEmail } from "../../../../utils/helpers/validation";
+
+function combineIntoUniqueArray(...arrays) {
+  if (arrays.length < 2) { return arrays }
+
+  return [...new Set(arrays[0].concat(...arrays.slice(1)))]
+}
+
+function getAttestations(merchant, event, product) {
+  const merchantAttestations = merchant.attestations ?? []
+  const eventAttestations = event.attestations ?? []
+  const productAttestations = product.attestations ?? []
+
+  return combineIntoUniqueArray(merchantAttestations, eventAttestations, productAttestations)
+}
 
 export default function ProductPage({ merchant, event, product, user }) {
   const [quantity, setQuantity] = useState(1)
@@ -26,23 +41,29 @@ export default function ProductPage({ merchant, event, product, user }) {
   const { pathname } = useLocation()
   const isMarketingConsentShowing = user && user.marketingConsentStatus === "PENDING"
 
+  
+
   const [isMarketingConsentApproved, setIsMarketingConsentApproved] = useState(true)
+  const [attestationData, setAttestationData] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+
+  console.log(attestationData)
+
+  useEffect(() => {
+    const attestations = getAttestations(merchant, event, product)
+
+    console.log(attestations)
+
+    const attestationData = attestations.reduce((attestationData, attestation) => {
+      attestationData[attestation] = false
+      return attestationData
+    }, {})
+
+    setAttestationData(attestationData)
+  }, [merchant, event, product])
 
   const maxQuantity = event.maxTicketsPerPerson ?? 10
   const minQuantity = 1
-
-  const incrementQuantity = () => {
-    if (quantity < maxQuantity) {
-      setQuantity(quantity + 1);
-    }
-  };
-
-  const decrementQuantity = () => {
-    if (quantity > minQuantity) {
-      setQuantity(quantity - 1);
-    }
-  };
 
   const handleCheckout = () => {
     if (user && user.email) {
@@ -67,23 +88,41 @@ export default function ProductPage({ merchant, event, product, user }) {
       } else {
         navigateToTicketsPage()
       }
-      
     } else {
       openAuthPage({
         successPath: pathname,
         showsBack: true,
         backPath: pathname,
-        requiresPassword: false
+        requiresPassword: false,
+        requiredEmailDomain: getEmailDomain()
       })
     }
-    
   }
 
   const handleChangeEmail = () => {
     openAuthPage({ 
-      successPath: window.location.pathname, 
-      requiresPassword: false
+      successPath: pathname, 
+      requiresPassword: false,
+      requiredEmailDomain: getEmailDomain()
     })
+  }
+
+  function getEmailDomain() {
+    return product.emailDomain ?? event.emailDomain ?? merchant.emailDomain
+  }
+
+  function isValidEmail() {
+    const email = user?.email ?? ""
+    return validateEmail(email, getEmailDomain())
+  }
+
+  function canBuyProduct() {
+    const hasAgreedToAttestations = Object.values(attestationData).every(x => x)
+    return hasAgreedToAttestations && isValidEmail()
+  }
+
+  function isEnabled() {
+    return !user?.email || canBuyProduct()
   }
 
   return product ?
@@ -104,13 +143,13 @@ export default function ProductPage({ merchant, event, product, user }) {
       <Spacer y={4} />
 
       <div className="content">
-        <h1 className="header-l">{event.title}</h1>
-        <Spacer y={1} />
-        <p className="text-body">{product.title}</p>
+        <h1 className="header-l">{product.title}</h1>
 
+        <Spacer y={3} />
+        <p className="text-body-faded">{product.description}</p>
         <Spacer y={4} />
 
-        <h3 className="header-s">Number of items</h3>
+        <h3 className="header-s">Number of tickets</h3>
         <Spacer y={2} />
         <Stepper value={quantity} onChange={(value) => setQuantity(value)} minValue={minQuantity} maxValue={maxQuantity} />
         
@@ -122,11 +161,22 @@ export default function ProductPage({ merchant, event, product, user }) {
             <Spacer y={2} />
 
             <div className="flex-container" style={{ columnGap: 8, justifyContent: "left" }}>
-              <p className="text-body-faded">
-                {"Your tickets will be emailed to "}
-                <span className="text-body-faded" style={{ fontWeight: 500 }}>{user.email}</span>
-                .
-              </p>
+              {
+                getEmailDomain() && !validateEmail(user.email, getEmailDomain()) ?
+                  <p className="text-body-faded" >
+                    {"You need an email address ending in "}
+                    <span className="text-body" style={{ fontWeight: 500 }}>{"@" + getEmailDomain()}</span>
+                    {" to buy tickets to this event, but you're currently logged in as "}
+                    <span className="text-body" style={{ fontWeight: 500 }}>{user.email}</span>
+                    .
+                  </p> :
+                  <p className="text-body-faded" >
+                    {"Your tickets will be emailed to "}
+                    <span className="text-body" style={{ fontWeight: 500 }}>{user.email}</span>
+                    .
+                  </p>
+
+              }
               <div className="flex-spacer"/>
               <SmallButton title="Change" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={handleChangeEmail} />
 
@@ -134,29 +184,52 @@ export default function ProductPage({ merchant, event, product, user }) {
             
           </div>
         }
-      </div>
 
-      <div className="anchored-bottom">
-        <div style={{ margin: 16 }}>
-          <MainButton
-            title="Checkout"
-            sideMessage={formatCurrency(product.price * quantity) }
-            onClick={handleCheckout}
-            isLoading={isLoading}
-            style={{ boxSizing: "borderBox" }}
-          />
-          
-          {
-            user && user.marketingConsentStatus === "PENDING" && <div>
-              <Spacer y={2} />
-              <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
-                <CheckBox length={20} color={Colors.GRAY_LIGHT} value={isMarketingConsentApproved} onChange={(value) => setIsMarketingConsentApproved(value)} />
-                <p className="text-caption">Get notified when this organiser has another relevant event on soon (recommended).</p>
+        <Spacer y={6} />
+
+        {
+          user?.email && validateEmail(user.email, getEmailDomain()) &&
+          Object.keys(attestationData).map(attestation => {
+            return <div>
+              <div style={{ display: "flex", columnGap: 16, alignItems: "center" }}>
+                <CheckBox length={20} color={Colors.GRAY_LIGHT} value={attestationData[attestation]} onChange={(value) => setAttestationData({ ...attestationData, [attestation]: value })} />
+                <p className="text-body">{attestation}</p>
               </div>
+              <Spacer y={3} />
             </div>
-            
-          }
-        </div>
+          })
+        }
+        
+        {
+          !user?.email && getEmailDomain() && <div>
+            <p className="text-body-faded">
+              {"You'll need an email ending in "}
+              <span className="text-body" style={{ fontWeight: 500 }}>{"@" + getEmailDomain()}</span>
+              {" to buy tickets to this event."}
+            </p>
+            <Spacer y={3} />
+          </div>
+        }
+        <MainButton
+          title={user?.email ? "Checkout" : "Log in to continue"}
+          sideMessage={formatCurrency(product.price * quantity)}
+          onClick={handleCheckout}
+          isLoading={isLoading}
+          disabled={!isEnabled()}
+          style={{ boxSizing: "borderBox" }}
+        />
+
+        {
+          user && user.marketingConsentStatus === "PENDING" && <div>
+            <Spacer y={2} />
+            <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
+              <CheckBox length={20} color={Colors.GRAY_LIGHT} value={isMarketingConsentApproved} onChange={setIsMarketingConsentApproved} />
+              <p className="text-caption">Get notified when this organiser has another relevant event on soon (recommended).</p>
+            </div>
+          </div>
+
+        }
+        <Spacer y={3} />
       </div>
     </div> :
     <LoadingPage />
