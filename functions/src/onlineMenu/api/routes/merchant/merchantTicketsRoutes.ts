@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { authenticate } from "../../../../shared/middleware/authenticate";
 import { validate } from "../../../../shared/utils/validate";
 import { AllowedSchema } from "express-json-validator-middleware";
 import MerchantTicketsController from "../../controllers/merchant/MerchantTicketsController";
@@ -20,8 +19,12 @@ const checkTicketBodySchema: AllowedSchema = {
 merchantTicketsRoutes.post(
   "/:ticketId/check", 
   validate({ body: checkTicketBodySchema }),
-  authenticate, 
   merchantTicketsController.check
+)
+
+merchantTicketsRoutes.get(
+  "/sales-data",
+  merchantTicketsController.salesData
 )
 
 export default merchantTicketsRoutes;

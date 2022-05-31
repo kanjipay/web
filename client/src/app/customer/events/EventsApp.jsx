@@ -8,6 +8,7 @@ import { auth } from "../../../utils/FirebaseUtils";
 import Collection from "../../../enums/Collection";
 import { Colors } from "../../../components/CircleButton";
 import LoadingPage from "../../../components/LoadingPage";
+import ArtistPage from "../ArtistPage";
 
 export default function EventsApp() {
   const [authUser, setAuthUser] = useState(null)
@@ -43,8 +44,8 @@ export default function EventsApp() {
     <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT }}>
       <Routes>
         <Route path="s/*" element={<Secure user={user} />} />
+        <Route path="artists/:artistId" element={<ArtistPage />} />
         <Route path=":merchantId/*" element={<Merchant user={user} />} />
-
         <Route path="mcp-redirect" element={<RedirectPageMercado />} />
       </Routes>
     </div>

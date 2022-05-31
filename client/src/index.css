@@ -11,6 +11,15 @@
   color: white;
 }
 
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
 input:focus,
 textarea:focus,
 select:focus {
@@ -68,7 +77,6 @@ a {
   width: 100%;
   object-fit: cover;
   height: 120px;
-  filter: blur(0px);
 }
 
 .btn {

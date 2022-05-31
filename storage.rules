@@ -1,0 +1,13 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /merchants/{merchantId}/{allPaths=**} {
+      allow read;
+      allow write: if request.auth.token[merchantId] == "ADMIN"
+    }
+
+    match /artists/{artistId}/{allPaths=**} {
+      allow read;
+    }
+  }
+}

@@ -18,3 +18,10 @@ export function getEventStorageRef(merchantId, eventId, filename) {
     `merchants/${merchantId}/events/${eventId}/${filename}`
   );
 }
+
+export function getArtistStorageRef(artistId, filename) {
+  return ref(
+    storage,
+    `artists/${artistId}/${filename}`
+  )
+}

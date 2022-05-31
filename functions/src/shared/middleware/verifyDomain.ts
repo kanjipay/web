@@ -1,11 +1,11 @@
-import Environment from "../enums/Environment";
+import { isStrictEnvironment } from "../utils/isStrictEnvironment";
 
 export const verifyDomain = (req, res, next) => {
   const { origin } = req.headers;
 
-  const strictEnvironments: string[] = [Environment.PROD, Environment.STAGING]
+  console.log("verifying origin: ", origin)
 
-  if (strictEnvironments.includes(process.env.ENVIRONMENT) && origin !== process.env.CLIENT_URL) {
+  if (isStrictEnvironment(process.env.ENVIRONMENT) && origin !== process.env.CLIENT_URL) {
     res.status(403).send("Unauthorized");
   } else {
     next();

@@ -36,8 +36,6 @@ export class NetworkManager {
       // Need to add the idToken
       let idToken
 
-      
-
       if (this.cachedIdToken && !isExpired(this.cachedIdToken)) {
         console.log("using cached id token")
         idToken = this.cachedIdToken
@@ -55,18 +53,18 @@ export class NetworkManager {
   }
 
   static async get(apiName, path, data, headers = {}) {
-    return this.call(apiName, "get", path, data, headers)
+    return this.call(apiName, "GET", path, data, headers)
   }
 
   static async post(apiName, path, data, headers = {}) {
-    return this.call(apiName, "post", path, data, headers)
+    return this.call(apiName, "POST", path, data, headers)
   }
 
   static async put(apiName, path, data, headers = {}) {
-    return this.call(apiName, "put", path, data, headers)
+    return this.call(apiName, "PUT", path, data, headers)
   }
 
   static async delete(apiName, path, data, headers = {}) {
-    return this.call(apiName, "delete", path, data, headers)
+    return this.call(apiName, "DELETE", path, data, headers)
   }
 }

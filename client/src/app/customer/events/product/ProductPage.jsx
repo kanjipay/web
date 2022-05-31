@@ -18,6 +18,9 @@ import CheckBox from "../../../../components/CheckBox";
 import { auth } from "../../../../utils/FirebaseUtils";
 import Stepper from "../../../../components/Stepper";
 import { validateEmail } from "../../../../utils/helpers/validation";
+import { eventTimeString } from "../event/eventHelpers";
+import { format } from "date-fns";
+import { dateFromTimestamp } from "../../../../utils/helpers/time";
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length < 2) { return arrays }
@@ -147,7 +150,27 @@ export default function ProductPage({ merchant, event, product, user }) {
 
         <Spacer y={3} />
         <p className="text-body-faded">{product.description}</p>
-        <Spacer y={4} />
+        {
+          product.earliestEntryAt && <div>
+            <Spacer y={3} />
+            <div style={{ display: "flex", columnGap: 8 }}>
+              <h4 className="header-xs">Earliest entry:</h4>
+              <p>{format(dateFromTimestamp(product.earliestEntryAt), "do MMM at HH:mm")}</p>
+            </div>
+            
+          </div>
+        }
+        {
+          product.latestEntryAt && <div>
+            <Spacer y={3} />
+            <div style={{ display: "flex", columnGap: 8 }}>
+              <h4 className="header-xs">Latest entry:</h4>
+              <p>{format(dateFromTimestamp(product.latestEntryAt), "do MMM") + " at " + format(dateFromTimestamp(product.latestEntryAt), "HH:mm")}</p>
+            </div>
+            
+          </div>
+        }
+        <Spacer y={3} />
 
         <h3 className="header-s">Number of tickets</h3>
         <Spacer y={2} />

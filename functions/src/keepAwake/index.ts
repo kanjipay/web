@@ -24,6 +24,6 @@ export const handleKeepAwake = async context => {
 
     return null
   } catch (err) {
-    console.log(err)
+    console.log(JSON.stringify(err))
   }
 }

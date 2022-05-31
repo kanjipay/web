@@ -1,4 +1,4 @@
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { orderBy, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
@@ -25,6 +25,9 @@ export default function Dashboard() {
   const [opacity, setOpacity] = useState(0);
 
   useEffect(() => {
+    // signOut(auth).then(() => {
+    //   console.log("Signed out")
+    // })
     return onAuthStateChanged(auth, authUser => {
       setAuthUser(authUser)
 
@@ -33,7 +36,6 @@ export default function Dashboard() {
           successPath: window.location.pathname,
           successState: state ?? {},
           backPath,
-          requiresPassword: true
         })
       }
     })
@@ -124,7 +126,7 @@ export default function Dashboard() {
         <Spacer y={7} />
         <Routes>
           <Route path="/" element={<SelectOrganisationPage memberships={memberships} />} />
-          <Route path="o/create" element={<CreateOrganisationPage />} />
+          <Route path="o/create" element={<CreateOrganisationPage authUser={authUser} />} />
           <Route path="o/:merchantId/*" element={<Merchant user={user} />} />
         </Routes>
       </div>

@@ -15,6 +15,7 @@ export default function MerchantPage({ merchant }) {
     return Collection.EVENT.queryOnChange(
       setEvents,
       where("merchantId", "==", merchantId),
+      where("isPublished", "==", true),
       orderBy("startsAt", "desc")
     )
   }, [merchantId])
@@ -36,12 +37,6 @@ export default function MerchantPage({ merchant }) {
 
     <div className="content">
       <h1 className="header-l">{merchant.displayName}</h1>
-      {
-        merchant.tags && merchant.tags.length > 0 && <div>
-          <Spacer y={2} />
-          <p className="text-body">{merchant.tags.join(" · ")}</p>
-        </div>
-      }
 
       <Spacer y={4}/>
 
@@ -52,12 +47,13 @@ export default function MerchantPage({ merchant }) {
       <h2 className="header-m">Upcoming events</h2>
       <Spacer y={2} />
       {
-        events.map(event => {
-          return <div key={event.id}>
-            <EventListing event={event}  />
-            <Spacer y={3} />
-          </div>
-        })
+        events
+          .map(event => {
+            return <div key={event.id}>
+              <EventListing event={event}  />
+              <Spacer y={3} />
+            </div>
+          })
       }
     </div>
     

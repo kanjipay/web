@@ -7,6 +7,8 @@ import IconActionPage from "../../../components/IconActionPage";
 import Collection from "../../../enums/Collection";
 import AnalyticsPage from "./AnalyticsPage";
 import BankDetailsVerifiedPage from "./BankDetailsVerifiedPage";
+import CreateEventPage from "./CreateEventPage";
+import Events from "./Events";
 import EventsPage from "./EventsPage";
 import SettingsPage from "./SettingsPage";
 import VerifyBankDetailsPage from "./VerifyBankDetailsPage";
@@ -51,12 +53,12 @@ export default function Merchant({ user }) {
     </div>
   } else if (merchant) {
     return <div style={{ height: "calc(100vh - 56px)", position: "relative", display: "flex" }}>
-      <div style={{ width: 256, backgroundColor: Colors.OFF_BLACK }}>
+      <div style={{ width: 256, backgroundColor: Colors.OFF_BLACK, position: "fixed", height: "100vh" }}>
         <SidebarHeader title="Manage" />
         <Link to="events">
           <SidebarItem title="Events" Icon={Tick} />
         </Link>
-        <Link to="analytics">
+        <Link to="">
           <SidebarItem title="Analytics" Icon={Tick} />
         </Link>
         <SidebarHeader title="Organisation" />
@@ -64,13 +66,14 @@ export default function Merchant({ user }) {
           <SidebarItem title="Settings" Icon={Tick} />
         </Link>
       </div>
-      <div className="flex-spacer" style={{ padding: "0 24px"}}>
+      <div className="flex-spacer" style={{ padding: "0 24px", position: "absolute", left: 256, right: 0 }}>
         {
+          
           merchant.approvalStatus === "APPROVED" ?
             <Routes>
-              <Route path="/" element={<EventsPage />} />
-              <Route path="events" element={<EventsPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
+              
+              <Route path="events/*" element={<Events />} />
+              <Route path="/" element={<AnalyticsPage />} />
               <Route path="settings" element={<SettingsPage merchant={merchant} />} />
               <Route path="details-verified" element={
                 <IconActionPage

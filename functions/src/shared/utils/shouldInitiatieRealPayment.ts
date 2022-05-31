@@ -1,6 +1,5 @@
-import Environment from "../enums/Environment";
+import { isStrictEnvironment } from "./isStrictEnvironment";
 
 export function shouldInitiateRealPayment() {
-  const acceptedEnvironments: string[] = [Environment.PROD, Environment.STAGING]
-  return acceptedEnvironments.includes(process.env.ENVIRONMENT)
+  return isStrictEnvironment(process.env.ENVIRONMENT)
 }
