@@ -1,7 +1,7 @@
 import * as express from "express";
 import { handleMercadoPaymentUpdate } from "./handleMercadoPaymentUpdate";
 import { verifyMercado } from "./verifyMercado";
-import { setCors } from "../../shared/utils/setCors";
+import { setCors } from "../../shared/utils/express";
 
 const webhooksApp = express()
 

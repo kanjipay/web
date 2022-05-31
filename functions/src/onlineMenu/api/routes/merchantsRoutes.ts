@@ -4,12 +4,13 @@ import MerchantsController from "../controllers/MerchantsController";
 import { validate } from "../../../shared/utils/validate";
 import { AllowedSchema } from "express-json-validator-middleware";
 import merchantRoutes from "./merchant/merchantRoutes";
+import { authenticateMerchant } from "../../middleware/authenticateMerchant";
 
 const merchantsController = new MerchantsController();
 const merchantsRoutes = Router({ mergeParams: true });
 const createMerchantSchema: AllowedSchema = {
     type: "object",
-    required: ["accountNumber", "address", "companyName", "displayName", "sortCode", "description", "imageAsFile"],
+    required: ["accountNumber", "address", "companyName", "displayName", "sortCode", "description", "photo"],
     properties: {
       accountNumber: {
         type: "string"
@@ -29,8 +30,8 @@ const createMerchantSchema: AllowedSchema = {
       description: {
         type: "string"
       },
-      imageAsFile: {
-        type: "object"
+      photo: {
+        type: "string",
       }
 
     }
@@ -43,6 +44,6 @@ merchantsRoutes.post(
   merchantsController.create
 );
 
-merchantsRoutes.use("/m/:merchantId", authenticate, merchantRoutes)
+merchantsRoutes.use("/m/:merchantId", authenticate, authenticateMerchant, merchantRoutes)
 
 export default merchantsRoutes;

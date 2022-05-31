@@ -16,7 +16,7 @@ export default function AsyncImage({ imageRef, alt = "", ...props }) {
   }, [imageRef]);
 
   return url ? (
-    <img src={url} alt={alt} {...props} />
+    <img src={url} alt={alt} {...props} style={{ objectFit: "cover", ...props.style }} />
   ) : (
     <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT }} {...props} />
   );

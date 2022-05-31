@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import * as base64 from "base-64"
-import { onAuthStateChanged, sendEmailVerification, sendSignInLinkToEmail, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { onAuthStateChanged, sendEmailVerification, sendSignInLinkToEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ButtonTheme, Colors } from "../../components/CircleButton";
-import TextField from "../../components/Input";
 import MainButton from "../../components/MainButton";
 import NavBar from "../../components/NavBar";
 import OrDivider from "../../components/OrDivider";
@@ -14,13 +13,15 @@ import IconActionPage from "../../components/IconActionPage";
 import Cross from "../../assets/icons/Cross";
 import { auth } from "../../utils/FirebaseUtils";
 import { processUserCredential } from "../../utils/services/UsersService";
+import Form, { generateValidator } from "../../components/Form";
+import { Field, FieldDecorator } from "../../components/input/IntField";
 
 export default function AuthPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { search } = useLocation()
 
-  const requiresPassword = location.state?.requiresPassword ?? true
+  const requiresPassword = location.state?.requiresPassword ?? false
   const requiredEmailDomain = location.state?.requiredEmailDomain
 
   let emailSuffix = requiredEmailDomain ? `@${requiredEmailDomain}` : ""
@@ -29,10 +30,6 @@ export default function AuthPage() {
   const [backPath, successPath] = ["back", "success"].map(e => base64.decode(searchParams.get(e)))
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
 
-  const [email, setEmail] = useState("")
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [user, setUser] = useState(null)
@@ -50,8 +47,8 @@ export default function AuthPage() {
 
   const handleTryAnotherWay = () => setError(null)
 
-  const handleSignInWithPassword = async () => {
-    setIsLoading(true)
+  const handleSignInWithPassword = async (data) => {
+    const { firstName, lastName, email, password } = data
 
     const redirectUrl = new URL(window.location.href)
     redirectUrl.pathname = "/auth/redirect"
@@ -79,8 +76,8 @@ export default function AuthPage() {
       navigate("email-verification-sent")
   }
 
-  const handleSendEmailLink = () => {
-    setIsLoading(true)
+  const handleSendEmailLink = async (data) => {
+    const { firstName, lastName, email } = data
 
     const redirectUrl = new URL(window.location.href)
     redirectUrl.pathname = "/auth/email-link"
@@ -93,14 +90,12 @@ export default function AuthPage() {
     })
       .then(() => {
         localStorage.setItem("emailForSignIn", email)
-        setIsLoading(false)
         navigate("email-link-sent")
       })
       .catch(error => {
         const errorCode = error.code;
         const errorMessage = error.message;
 
-        setIsLoading(false)
         setError({
           title: "Something went wrong",
           body: "We're sorry, but we couldn't send you an email link. Try logging in a different way, or checking back later."
@@ -112,18 +107,8 @@ export default function AuthPage() {
     navigate({ pathname: "forgot-password", search })
   }
 
-  const isFormValid = (
-    firstName &&
-    lastName &&
-    validateEmail(email) && (
-      !requiresPassword || validatePassword(password)
-    )
-  )
-
-  const formOnSubmit = requiresPassword ? handleSignInWithPassword : handleSendEmailLink
+  const onSubmit = requiresPassword ? handleSignInWithPassword : handleSendEmailLink
   const submitTitle = requiresPassword ? "Sign in" : "Send email link"
-
-  console.log(email)
 
   if (error) {
     <IconActionPage
@@ -138,6 +123,25 @@ export default function AuthPage() {
   } else if (isLoading) {
     return <LoadingPage />
   } else {
+    const formFields = [
+      { name: "firstName" },
+      { name: "lastName" },
+      {
+        name: "email",
+        validators: [generateValidator(validateEmail, "Invalid email")],
+        decorator: <FieldDecorator suffix={emailSuffix} />,
+        input: <Field type="email" />
+      },
+    ]
+
+    if (requiresPassword) {
+      formFields.push({
+        name: "password",
+        validators: [generateValidator(validatePassword, "Your password must be 8 characters or more and include an uppercase letter, lowercase letter and number.")],
+        explanation: "Your password must be 8 characters or more and include an uppercase letter, lowercase letter and number.",
+        input: <Field type="password" />
+      })
+    }
     return <div className="container">
       <NavBar
         title="Sign in"
@@ -156,57 +160,16 @@ export default function AuthPage() {
               <Spacer y={4} />
             </div>
           }
-          
-          <h3 className="header-s">Name</h3>
-          <Spacer y={2} />
-          <h4 className="header-xs">First name</h4>
-          <Spacer y={1} />
-          <TextField
-            name="firstName"
-            value={firstName}
-            onChange={setFirstName}
+
+          <Form
+            formGroupData={[
+              {
+                items: formFields
+              }
+            ]}
+            onSubmit={onSubmit}
+            submitTitle={submitTitle}
           />
-          <Spacer y={2} />
-          <h4 className="header-xs">Last name</h4>
-          <Spacer y={1} />
-          <TextField
-            name="lastName"
-            value={lastName}
-            onChange={setLastName}
-          />
-
-          <Spacer y={4} />
-
-          <h3 className="header-s">Login details</h3>
-          <Spacer y={2} />
-          <h4 className="header-xs">Email address</h4>
-          <Spacer y={1} />
-          <TextField
-            name="email"
-            type="email"
-            value={email}
-            suffix={emailSuffix}
-            onChange={setEmail}
-          />
-          {
-            requiresPassword && <div>
-              <Spacer y={2} />
-              <h4 className="header-xs">Password</h4>
-              <Spacer y={2} />
-              <p className="text-body-faded">Your password must be 8 characters or more and include at least one number, lowercase letter and uppercase letter.</p>
-              <Spacer y={2} />
-              <TextField
-                name="password"
-                type="password"
-                value={password}
-                onChange={setPassword}
-              />
-            </div>
-          }
-
-          <Spacer y={2} />
-
-          <MainButton title={submitTitle} onClick={formOnSubmit} disabled={!isFormValid} />
 
           {
             requiresPassword && <div>
@@ -214,6 +177,7 @@ export default function AuthPage() {
               <MainButton title="Forgot password" onClick={handleForgotPassword} buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} />
             </div>
           }
+          <Spacer y={6} />
         </div>
       </div>
     </div>

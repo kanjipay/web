@@ -1,26 +1,21 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-  	function incomingData() { 
-    	return request.resource.data
+  	// utils
+  	function incomingData() { return request.resource.data }
+    function existingData() { return resource.data }
+    function userId() { return request.auth.uid }
+    function hasAffectedKeys(keys) { return changeMap().affectedKeys().hasAny(keys) }
+    function hasOnlyChangedKeys(keys) { return changeMap().changedKeys().hasOnly(keys) }
+    
+    function membershipColPath(merchantId) {
+    	return /databases/$(database)/documents/Membership/$(merchantId + ":" + userId())
     }
     
-    function existingData() {
-    	return resource.data
-    }
-    
-    function userMatchesUserId(userId) {
-    	return request.auth != null && request.auth.uid == userId
-    }
-    
-    function colPath(collection, merchantId) {
-    	return /databases/$(database)/documents/$(collection)/$(merchantId)
-    }
-    
-    function userMatchesMerchantId(merchantId) {
+    function isAdminForMerchant(merchantId) {
     	return (
-      	exists(colPath("Merchant", merchantId)) &&
-        userMatchesUserId(get(colPath("Merchant", merchantId)).data.userId)
+      	exists(membershipColPath(merchantId)) &&
+        get(membershipColPath(merchantId)).data.role == "ADMIN"
       )
     }
     
@@ -28,25 +23,16 @@ service cloud.firestore {
     	return incomingData().diff(existingData())
     }
     
-    function hasAffectedKeys(keys) {
-    	return changeMap().affectedKeys().hasAny(keys)
-    }
-    
-    function hasOnlyChangedKeys(keys) {
-    	return changeMap().changedKeys().hasOnly(keys)
-    }
-    
     function hasRequiredKeysForCollection(collection) {
     	let requiredKeys = {
       	"Merchant": [
-          "sortCode",
-          "accountNumber",
-          "paymentName",
+          "payeeId",
           "displayName",
           "companyName",
-          "address",
-          "userId"
+          "address"
         ],
+        "Event": ["merchantId", "title", "description", "address", "startsAt", "endsAt", "maxTicketsPerPerson"],
+        "Product": ["merchantId", "eventId", "title", "description", "capacity", "price", "sortOrder", "soldCount", "reservedCount"],
         "MenuItem": ["title", "description", "merchantId", "sectionId", "sortOrder", "price", "isAvailable"],
         "MenuSection": ["name", "sortOrder", "merchantId"],
         "OpeningHourRange": ["dayOfWeek", "openTime", "closeTime", "merchantId"],
@@ -56,23 +42,54 @@ service cloud.firestore {
       return incomingData().keys().hasAll(requiredKeys[collection])
     }
     
+    // rules
+    
     match /Merchant/{merchantId} {
     	// we should ideally have a private details doc nested here
       // it should contain bank details, company name and user_id
     	allow read
       
-    	allow create: if (
-      	hasRequiredKeysForCollection("Merchant") &&
-        userMatchesUserId(incomingData().userId)
-      )
-      
       allow update: if (
       	hasRequiredKeysForCollection("Merchant") &&
-      	userMatchesUserId(existingData().userId) &&
-        !hasAffectedKeys(["userId"])
+        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo"]) &&
+      	isAdminForMerchant(merchantId)
       )
-      
-      allow delete: if userMatchesUserId(existingData().userId)
+    }
+    
+    match /Event/{resourceId} {
+    	allow read;
+      allow create: if isAdminForMerchant(incomingData().merchantId)
+      allow update: if (
+      	isAdminForMerchant(existingData().merchantId) && 
+        (
+          hasOnlyChangedKeys(["title", "description", "photo", "maxTicketsPerPerson"]) ||
+          (!existingData().isPublished && !hasAffectedKeys(["merchantId"]))
+        )
+      )
+      allow delete: if (
+        isAdminForMerchant(existingData().merchantId) &&
+        !existingData().isPublished
+      )
+    }
+
+    match /Artist/{resourceId} {
+      allow read;
+    }
+    
+    match /Product/{resourceId} {
+    	allow read;
+      allow create: if isAdminForMerchant(incomingData().merchantId)
+      allow update: if (
+      	isAdminForMerchant(existingData().merchantId) && 
+        (
+          hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity"]) ||
+          (!existingData().isPublished && !hasAffectedKeys(["merchantId", "eventId", "reservedCount", "soldCount"]))
+        )
+      )
+      allow delete: if (
+        isAdminForMerchant(existingData().merchantId) &&
+        !existingData().isPublished
+      )
     }
     
     match /MenuItem/{resourceId} {
@@ -80,16 +97,16 @@ service cloud.firestore {
       
     	allow create: if (
       	hasRequiredKeysForCollection("MenuItem") && 
-        userMatchesMerchantId(incomingData().merchantId)
+        isAdminForMerchant(incomingData().merchantId)
       )
       
       allow update: if (
       	hasRequiredKeysForCollection("MenuItem") &&
-      	userMatchesMerchantId(existingData().merchantId) &&
+      	isAdminForMerchant(existingData().merchantId) &&
         !hasAffectedKeys(["merchantId"])
       );
       
-      allow delete: if userMatchesMerchantId(existingData().merchantId)
+      allow delete: if isAdminForMerchant(existingData().merchantId)
     }
     
     match /MenuSection/{resourceId} {
@@ -97,16 +114,16 @@ service cloud.firestore {
       
     	allow create: if (
       	hasRequiredKeysForCollection("MenuSection") && 
-        userMatchesMerchantId(incomingData().merchantId)
+        isAdminForMerchant(incomingData().merchantId)
       )
       
       allow update: if (
       	hasRequiredKeysForCollection("MenuSection") &&
-      	userMatchesMerchantId(existingData().merchantId) &&
+      	isAdminForMerchant(existingData().merchantId) &&
         !hasAffectedKeys(["merchantId"])
       )
       
-      allow delete: if userMatchesMerchantId(existingData().merchantId)
+      allow delete: if isAdminForMerchant(existingData().merchantId)
     }
     
     match /OpeningHourRange/{resourceId} {
@@ -114,16 +131,16 @@ service cloud.firestore {
       
     	allow create: if (
       	hasRequiredKeysForCollection("OpeningHourRange") && 
-        userMatchesMerchantId(incomingData().merchantId)
+        isAdminForMerchant(incomingData().merchantId)
       )
       
       allow update: if (
       	hasRequiredKeysForCollection("OpeningHourRange") &&
-      	userMatchesMerchantId(existingData().merchantId) &&
+      	isAdminForMerchant(existingData().merchantId) &&
         !hasAffectedKeys(["merchantId"])
       )
       
-      allow delete: if userMatchesMerchantId(existingData().merchantId)
+      allow delete: if isAdminForMerchant(existingData().merchantId)
     }
     
     match /Order/{orderId} {
@@ -135,7 +152,7 @@ service cloud.firestore {
         	// Rules for the customer
           (incomingData().status == 'ABANDONED' && existingData().status == 'PENDING') ||
           (
-            userMatchesMerchantId(existingData().merchantId) &&
+            isAdminForMerchant(existingData().merchantId) &&
               // Rules for the merchant
               (incomingData().status == 'CANCELLED' && existingData().status == 'PENDING') ||
               (incomingData().status == 'FULFILLED' && existingData().status == 'PAID')
@@ -175,24 +192,16 @@ service cloud.firestore {
     	allow read, create, delete;
     }
     
-    match /Event/{resourceId} {
-    	allow read;
-    }
-    
-    match /Product/{resourceId} {
-    	allow read;
-    }
-    
     match /User/{resourceId} {
-    	allow read, write: if userMatchesUserId(resourceId)
+    	allow read, write: if userId() == resourceId
     }
     
     match /Membership/{resourceId} {
-    	allow read: if userMatchesUserId(existingData().userId);
+    	allow read: if userId() == existingData().userId
     }
     
     match /Payee/{resourceId} {
-    	allow read;
+    	allow read: if isAdminForMerchant(existingData().merchantId);
     }
   }
 }

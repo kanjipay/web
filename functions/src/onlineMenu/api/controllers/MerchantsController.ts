@@ -2,10 +2,10 @@ import BaseController from "../../../shared/BaseController";
 import { db } from "../../../shared/utils/admin";
 import Collection from "../../../shared/enums/Collection";
 import LoggingController from "../../../shared/utils/loggingClient";
-
 import { firestore } from "firebase-admin";
 import { v4 as uuid } from "uuid";
 import { PayeeApprovalStatus } from "../../../shared/enums/PayeeApprovalStatus";
+import { createMembership, OrganisationRole } from "../../utils/membership";
 
 export default class MerchantsController extends BaseController {
   create = async (req, res, next) => {
@@ -21,11 +21,10 @@ export default class MerchantsController extends BaseController {
         req.body
       );
 
-      const { accountNumber, address, companyName, displayName, sortCode, description, imageAsFile } = req.body;
+      const { accountNumber, address, companyName, displayName, sortCode, description, photo } = req.body;
 
       const payeeId = uuid();
       const merchantId = uuid();
-      const photoPath = `/${merchantId}/${imageAsFile.name}`;
 
       const createPayee = db()
         .collection(Collection.PAYEE)
@@ -45,33 +44,19 @@ export default class MerchantsController extends BaseController {
         .set({
           address,
           companyName,
-          photo: photoPath,
+          photo,
           displayName,
           description,
           payeeId,
           createdAt: firestore.FieldValue.serverTimestamp(),
           approvalStatus: "PENDING"
-        });
-
-      const createMembership = db()
-        .collection(Collection.MEMBERSHIP)
-        .add({
-          lastUsedAt: firestore.FieldValue.serverTimestamp(),
-          merchantId,
-          merchantName: displayName,
-          role: "ADMIN",
-          userId
-        });
+        }); 
 
       await Promise.all([
         createPayee,
         createMerchant,
-        createMembership
+        createMembership(userId, merchantId, displayName, OrganisationRole.ADMIN)
       ])
-      /*
-      const storageIntance = storage();
-      storageIntance.bucket().file(photoPath).save(imageAsFile);
-      */
       
       loggingClient.log(
         "Merchant document creation complete",

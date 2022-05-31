@@ -50,8 +50,14 @@ export class ButtonTheme {
     Colors.BLACK,
     Colors.BLACK
   )
+
+  static CLEAN = new ButtonTheme(
+    Colors.WHITE,
+    Colors.OFF_WHITE_LIGHT,
+    Colors.BLACK
+  )
   
-  static DESTRUCTIVE = new ButtonTheme(Colors.RED, Colors.RED, Colors.WHITE);
+  static DESTRUCTIVE = new ButtonTheme(Colors.RED_LIGHT, Colors.RED_LIGHT, Colors.RED);
 
   constructor(backgroundColor, pressedBackgroundColor, foregroundColor, borderColor = Colors.CLEAR) {
     this.backgroundColor = backgroundColor;
@@ -97,7 +103,7 @@ export default function IconButton({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    cursor: "pointer",
+    cursor: props.disabled ? "mouse" : "pointer",
     ...style,
   };
 

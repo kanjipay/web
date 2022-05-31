@@ -5,6 +5,8 @@ import LoadingPage from "../../../../components/LoadingPage"
 import EventPage from "./EventPage"
 import { orderBy, where } from "firebase/firestore"
 import Product from "../product/Product"
+import IconPage from "../../../../components/IconPage"
+import Discover from "../../../../assets/icons/Discover"
 
 export default function Event({ merchant, user }) {
   const { eventId } = useParams()
@@ -16,6 +18,7 @@ export default function Event({ merchant, user }) {
     return Collection.PRODUCT.queryOnChange(
       setProducts,
       where("eventId", "==", eventId),
+      where("isPublished", "==", true),
       orderBy("sortOrder", "asc")
     )
   }, [eventId])
@@ -24,10 +27,18 @@ export default function Event({ merchant, user }) {
     return Collection.EVENT.onChange(eventId, setEvent)
   }, [eventId])
 
-  return event ?
-    <Routes>
+  if (!event) {
+    return <LoadingPage />
+  } else if (!event.isPublished) {
+    return <IconPage
+      Icon={Discover}
+      title="Coming soon"
+      body="The event organiser hasn't published this event yet. Try checking back later."
+    />
+  } else {
+    return <Routes>
       <Route path="/" element={<EventPage merchant={merchant} event={event} products={products} />} />
       <Route path="/:productId/*" element={<Product merchant={merchant} event={event} user={user} />} />
-    </Routes> :
-    <LoadingPage />
+    </Routes>
+  }
 }

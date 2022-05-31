@@ -2,6 +2,7 @@ import { collection, doc, onSnapshot, query } from "firebase/firestore";
 import { db } from "../utils/FirebaseUtils";
 
 export default class Collection {
+  static ARTIST = new Collection("Artist");
   static MERCHANT = new Collection("Merchant");
   static MEMBERSHIP = new Collection("Membership");
   static USER = new Collection("User");

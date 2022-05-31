@@ -1,11 +1,12 @@
 import axios from "axios"
 import { createSignature } from "../../internal/webhooks/sendWebhook"
+import { isStrictEnvironment } from "./isStrictEnvironment"
 
 const defaultHeaders = {
   "X-Crezco-Key": process.env.CREZCO_API_KEY
 }
 
-const subdomain = ["PROD", "STAGING"].includes(process.env.ENVIRONMENT) ? "api" : "api.sandbox"
+const subdomain = isStrictEnvironment(process.env.ENVIRONMENT) ? "api" : "api.sandbox"
 const baseUrl = `https://${subdomain}.crezco.com`
 
 export async function fetchBankData() {

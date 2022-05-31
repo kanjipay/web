@@ -4,9 +4,9 @@ import { handleMoneyhubPaymentUpdate } from "./moneyhub/handleMoneyhubPaymentUpd
 import { verifyMoneyhub } from "./moneyhub/verifyMoneyhub";
 import { handleCrezcoPaymentUpdate } from "./crezco/handleCrezcoPaymentUpdate";
 import { verifyCrezco } from "./crezco/verifyCrezco";
-import { setCors } from "../../shared/utils/setCors";
+import { setCors } from "../../shared/utils/express";
 
-const webhooksApp = express();
+const webhooksApp = express()
 
 setCors(webhooksApp, true)
 

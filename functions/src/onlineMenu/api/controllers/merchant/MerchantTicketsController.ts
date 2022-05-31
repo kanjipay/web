@@ -7,12 +7,48 @@ import { fetchDocument } from "../../../../shared/utils/fetchDocument";
 import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors";
 
 export default class MerchantTicketsController extends BaseController {
+  salesData = async (req, res, next) => {
+    try {
+      const { merchantId } = req.params
+
+      const getEvents = db()
+        .collection(Collection.EVENT)
+        .where("merchantId", "==", merchantId)
+        .where("isPublished", "==", true)
+        .get()
+
+      const getProducts = db()
+        .collection(Collection.PRODUCT)
+        .where("merchantId", "==", merchantId)
+        .where("isPublished", "==", true)
+        .get()
+
+      const [
+        eventSnapshot,
+        productSnapshot
+      ] = await Promise.all([
+        getEvents,
+        getProducts
+      ])
+
+      const events = eventSnapshot.docs.map(doc => {
+        return { id: doc.id, ...doc.data() }
+      })
+
+      const products = productSnapshot.docs.map(doc => {
+        return { id: doc.id, ...doc.data() }
+      })
+
+      res.status(200).json({ events, products })
+    } catch (err) {
+      next(err)
+    }
+  }
+
   check = async (req, res, next) => {
     try {
       const { ticketId, merchantId } = req.params
       const checkedEventId = req.body.eventId
-
-      // first need to retrieve the ticket
 
       const { ticket, ticketError } = await fetchDocument(Collection.TICKET, ticketId)
 

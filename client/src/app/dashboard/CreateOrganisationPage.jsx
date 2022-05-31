@@ -1,83 +1,57 @@
-import { useState } from "react";
 import { NetworkManager, ApiName } from "../../utils/NetworkManager";
-import TextField, { FileUploadGroup, InputGroup, TextArea } from "../../components/Input";
-import MainButton from "../../components/MainButton";
+import { TextArea } from "../../components/Input";
 import Spacer from "../../components/Spacer";
 import { useNavigate } from "react-router-dom";
-
 import {
   validateSortCode,
   validateBankAccountNumber,
 } from "../../utils/helpers/validation";
 import { Colors } from "../../components/CircleButton";
+import Form, { generateValidator } from "../../components/Form";
+import { IntField } from "../../components/input/IntField";
+import { ResultType } from "../../components/ResultBanner";
+import ImagePicker from "../../components/ImagePicker";
+import { getMerchantStorageRef } from "../../utils/helpers/storage";
+import { uploadBytes } from "firebase/storage";
+import { auth } from "../../utils/FirebaseUtils";
+import { onIdTokenChanged } from "firebase/auth";
 
-export default function CreateOrganisationPage() {
+export default function CreateOrganisationPage({ authUser }) {
   const navigate = useNavigate()
-  const [imageAsFile, setImageAsFile] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [values, setValues] = useState({
-    displayName: "",
-    description: "",
-    address: "",
-    companyName: "Test Ltd",
-    sortCode: "000000",
-    accountNumber: "12341234"
+
+  onIdTokenChanged(auth, user => {
+    console.log("id token changed")
   })
 
-  const handleImageAsFile = (e) => {
-    const file = e.target.files[0]
-    setImageAsFile(file)
-  };
+  const handleCreateMerchant = async (data) => {
+    const photoFile = data.photo
 
-  async function handleSubmit() {
-    setIsLoading(true)
+    const body = {
+      ...data,
+      photo: photoFile.name,
+    }
 
-    const merchantBody = {
-      ...values,
-      imageAsFile,
-    };
-    console.log(merchantBody);
-    
     const response = await NetworkManager.post(
       ApiName.ONLINE_MENU,
       "/merchants/create",
-      merchantBody
+      body
     );
-
-    setIsLoading(false);
 
     const { merchantId } = response.data
 
+    await authUser.reload()
+    await authUser.getIdTokenResult(true)
+
+    const ref = getMerchantStorageRef(merchantId, photoFile.name)
+
+    console.log("uploading to storage")
+    await uploadBytes(ref, photoFile, {
+      cacheControl: "public,max-age=3600000"
+    })
+
     navigate(`/dashboard/o/${merchantId}`)
-  }
 
-  const handleInputChange = (event) => {
-    const { target } = event
-    const { name, value } = target
-
-    if (["sortCode", "accountNumber"].includes(name)) {
-      if (!/^[0-9]*$/.test(value)) { return }
-      const charLimit = name === "sortCode" ? 6 : 8
-      if (value.length > charLimit) { return } 
-    }
-
-    setValues({ ...values, [name]: value })
-  }
-
-  const canSubmitForm = () => {
-    const requiredFields = [
-      "sortCode",
-      "accountNumber",
-      "displayName",
-      "address",
-      "companyName",
-      "description"
-    ]
-
-    return requiredFields.every(field => field in values && values[field].length > 0) && 
-      imageAsFile && 
-      validateBankAccountNumber(values.accountNumber) &&
-      validateSortCode(values.sortCode)
+    return { resultType: ResultType.SUCCESS }
   }
 
   return <div style={{ position: "relative", height: "100%" }}>
@@ -99,78 +73,59 @@ export default function CreateOrganisationPage() {
       backgroundColor: Colors.WHITE,
     }}>
       <h2 className="header-l">Create an organisation</h2>
-      {/* <Spacer y={2} />
-      <h3 className="header-s">Basic information</h3> */}
       <Spacer y={3} />
-      <InputGroup 
-        name="displayName"
-        label="Display name"
-        explanation="Event goers will see this when visiting your event pages."
-        Input={TextField}
-        value={values.displayName}
-        onChange={handleInputChange}
+      <Form
+        formGroupData={[
+          {
+            title: "Basic information",
+            items: [
+              {
+                name: "displayName",
+                explanation: "Event goers will see this when visiting your event pages.",
+              },
+              {
+                name: "description",
+                input: <TextArea />
+              },
+              {
+                name: "photo",
+                explanation: "This will appear on your organisation's page for event goers to see.",
+                input: <ImagePicker />
+              },
+              {
+                name: "address",
+                label: "Business address",
+              },
+            ]
+          },
+          {
+            title: "Bank details",
+            explanation: "Enter the bank details for the bank you want your ticket sales to be paid into. It must be a valid UK or Irish bank account",
+            items: [
+              {
+                name: "companyName",
+              },
+              {
+                name: "sortCode",
+                validators: [
+                  generateValidator(validateSortCode, "Your sort code needs to be 6 characters")
+                ],
+                input: <IntField maxChars={6} />,
+              },
+              {
+                name: "accountNumber",
+                validators: [
+                  generateValidator(validateBankAccountNumber, "Your account number needs to be 7-8 characters")
+                ],
+                input: <IntField maxChars={8} />,
+              }
+            ]
+          }
+        ]}
+        onSubmit={handleCreateMerchant}
+        submitTitle="Create organisation"
       />
-      <Spacer y={3} />
-      <InputGroup
-        name="description"
-        label="Description"
-        Input={TextArea}
-        value={values.description}
-        onChange={handleInputChange}
-      />
-      <Spacer y={3} />
-      <FileUploadGroup
-        name="image"
-        label="Image"
-        file={imageAsFile}
-        onChange={handleImageAsFile}
-      />
-
-      <Spacer y={3} />
-      <InputGroup
-        name="address"
-        label="Business address"
-        Input={TextField}
-        value={values.address}
-        onChange={handleInputChange}
-      />
-      {/* <Spacer y={6} />
-      <h3 className="header-s">Bank details</h3>
-      <Spacer y={3} />
-      <p className="text-body">Specify the account that ticket sales will be paid into. It needs to be a valid UK bank account.</p>
-      <Spacer y={3} />
-      <InputGroup
-        name="companyName"
-        label="Payment name"
-        explanation="This name must exactly match the one on your bank account."
-        Input={TextField}
-        value={values.companyName}
-        onChange={handleInputChange}
-      />
-      <Spacer y={3} />
-      <InputGroup
-        name="sortCode"
-        label="Sort code"
-        Input={TextField}
-        value={values.sortCode}
-        onChange={handleInputChange}
-      />
-      <Spacer y={3} />
-      <InputGroup
-        name="accountNumber"
-        label="Account number"
-        Input={TextField}
-        value={values.accountNumber}
-        onChange={handleInputChange}
-      /> */}
-      <Spacer y={3} />
-      <MainButton
-        title="Create organisation"
-        onClick={handleSubmit}
-        disabled={!canSubmitForm()}
-        isLoading={isLoading}
-      />
-      <Spacer y={3} />
+      <Spacer y={6} />
     </div>
   </div>
 }

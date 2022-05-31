@@ -1,22 +1,18 @@
 import * as express from "express";
-import * as bodyParser from "body-parser"
 import { errorHandler } from "../shared/middleware/errorHandler";
 import webhooksApp from "./webhooks/webhooksApp";
 import apiApp from "./api/apiApp";
 import { verifyDomain } from "../shared/middleware/verifyDomain";
+import { setBodyParser } from "../shared/utils/express";
+import { statusHandler } from "../shared/middleware/statusHandler";
 
 const main = express();
 
-// Needed for reading request body
-main.use(express.json());
-main.use(express.urlencoded({ extended: true }));
-main.use(bodyParser.raw({ type: "application/jwt" }))
+setBodyParser(main)
 
 main.use("/api/v1", verifyDomain, apiApp);
 main.use("/webhooks/v1", webhooksApp)
-main.get("/status", (req, res) => {
-  res.sendStatus(200)
-})
+main.get("/status", statusHandler)
 
 main.use(errorHandler);
 

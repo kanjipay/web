@@ -4,12 +4,15 @@ import { useEffect, useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import Cross from "../../assets/icons/Cross"
 import { Colors } from "../../components/CircleButton"
+import Form, { generateValidator } from "../../components/Form"
 import IconActionPage from "../../components/IconActionPage"
 import TextField from "../../components/Input"
+import { Field } from "../../components/input/IntField"
 import LoadingPage from "../../components/LoadingPage"
 import MainButton from "../../components/MainButton"
 import Spacer from "../../components/Spacer"
 import { auth } from "../../utils/FirebaseUtils"
+import { validateEmail } from "../../utils/helpers/validation"
 import { processUserCredential } from "../../utils/services/UsersService"
 
 export default function EmailLinkPage() {
@@ -22,7 +25,6 @@ export default function EmailLinkPage() {
 
   const emailFromLocalStorage = localStorage.getItem("emailForSignIn")
   const [emailForSignIn, setEmailForSignIn] = useState(emailFromLocalStorage)
-  const [emailFromField, setEmailFromField] = useState("")
   const [error, setError] = useState(null)
 
   useEffect(() => {
@@ -30,8 +32,6 @@ export default function EmailLinkPage() {
 
     if (isSignInWithEmailLink(auth, window.location.href)) {
       if (!emailForSignIn) { return }
-
-      console.log(emailForSignIn)
 
       signInWithEmailLink(auth, emailForSignIn, window.location.href)
         .then(credential => {
@@ -55,12 +55,9 @@ export default function EmailLinkPage() {
     }
   }, [emailForSignIn, navigate, successPath, successState, firstName, lastName, error])
 
-  const handleEmailFieldChange = (event) => {
-    setEmailFromField(event.target.value)
-  }
-
-  const handleEmailSubmit = () => {
-    setEmailForSignIn(emailFromField)
+  const handleEmailSubmit = async data => {
+    const { email } = data
+    setEmailForSignIn(email)
   }
 
   const handleError = () => {
@@ -83,13 +80,23 @@ export default function EmailLinkPage() {
     <div className="container">
       <div className="content">
         <Spacer y={4} />
-        <p className="text-body-faded">
-          It looks like you've switched devices. Please enter your email again for added security.
-        </p>
-        <Spacer y={4} />
-        <TextField placeholder="Email" type="email" value={emailFromField} onChange={handleEmailFieldChange} />
-        <Spacer y={2} />
-        <MainButton title="Submit" onClick={handleEmailSubmit} />
+        <Form
+          formGroupData={[
+            {
+              explanation: "It looks like you've switched devices. Please enter your email again for added security.",
+              items: [
+                {
+                  name: "email",
+                  validators: [generateValidator(validateEmail, "Invalid email")],
+                  input: <Field type="email" placeholder="Email" />
+                }
+              ]
+            }
+          ]}
+          onSubmit={handleEmailSubmit}
+          submitTitle="Submit"
+        />
+        <Spacer y={6} />
       </div>
     </div>
   }

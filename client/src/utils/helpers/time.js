@@ -13,6 +13,7 @@ export function formatMinutes(mins) {
 }
 
 export function dateFromTimestamp(timestamp) {
+  if (!timestamp) { return null }
   const seconds = timestamp.seconds ?? timestamp._seconds
   return new Date(seconds * 1000)
 }
