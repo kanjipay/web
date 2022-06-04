@@ -41,7 +41,6 @@ describe("Payees Tests", function() {
             expect(err).to.be.null;
             expect(res).to.have.status(200);
             const {payeeId} = res.body;
-            console.log(payeeId);
          });
       });
     });
