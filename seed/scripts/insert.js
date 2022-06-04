@@ -4,7 +4,7 @@ const uuid = v4;
 
 // CHANGE THESE TWO VALUES
 
-const collectionName = "Merchant";
+const collectionName = "Payee";
 
 // data should be of type Object[]
 // If you want to specify an id, include it as id: "custom id", else uuid() will be used

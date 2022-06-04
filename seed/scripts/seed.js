@@ -5,16 +5,17 @@ const menuSections = require("../seedData/menuSections");
 const openingHourRanges = require("../seedData/openingHourRanges");
 const orders = require("../seedData/orders");
 const paymentAttempts = require("../seedData/paymentAttempts");
-
+const payees = require("../seedData/payees");
 // Load all the data into an object {CollectionName: items}
 // Note out collections you don't want to seed
 const collectionMap = {
-  Merchant: merchants,
+  /*Merchant: merchants,
   MenuSection: menuSections,
   MenuItem: menuItems,
   OpeningHourRange: openingHourRanges,
   Order: orders,
-  PaymentAttempt: paymentAttempts,
+  PaymentAttempt: paymentAttempts,*/
+  Payee:payees
 };
 
 let argv = require("minimist")(process.argv.slice(2));

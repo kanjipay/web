@@ -1,34 +1,18 @@
 const payees = [
   {
-    id: "silvas",
-    data: {
-      displayName: "Silva's",
-      companyName: "Silva's Ltd",
-      paymentName: "MercadoPay Ltd",
-      sortCode: "040075",
-      accountNumber: "72698578",
-      address: "Borough High Street",
-      tags: ["Chicken", "Rice", "Wraps"],
-      photo: "silvas.jpg",
-      status: "OPEN",
-      userId: "DEYuX60lDUQAQ9OkBWXzYKZu0dF3",
-    },
-  },
-  {
-    id: "sapling",
-    data: {
-      displayName: "Sapling",
-      companyName: "Sapling Spirits",
-      paymentName: "MercadoPay Ltd",
-      sortCode: "040075",
-      accountNumber: "72698578",
-      address: "Borough High Street",
-      tags: ["Vodka", "Cocktails"],
-      photo: "sapling.jpg",
-      status: "OPEN",
-      userId: "DEYuX60lDUQAQ9OkBWXzYKZu0dF3",
-    },
-  },
+    id: "TEST",
+    data: {accountNumber:"12341234",
+            address:"test",
+            approvalStatus:"APPROVED",
+            companyName:"Test Ltd",
+      crezco:{
+        userId:"6c8a6c40-b2eb-4538-b833-8d24a86208ff"
+      },
+      moneyhub:{
+        payeeId:"3b204e1b-4b59-4b19-ba50-eb2f1a7c2a5e"
+      },
+      sortCode:"000000"}
+  }
 ];
 
 module.exports = payees;

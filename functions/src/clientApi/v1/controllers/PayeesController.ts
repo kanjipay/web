@@ -77,6 +77,7 @@ export default class PayeesController extends BaseController {
   index = async (req, res, next) => {
     try {
       const { clientId } = req
+      console.log(clientId);
       const limitFromQuery = req.query.limit ?? "10"
       const limit = parseInt(limitFromQuery, 10)
 
