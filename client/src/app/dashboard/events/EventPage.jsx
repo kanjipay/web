@@ -65,7 +65,6 @@ export default function EventPage({ event, products }) {
   const docRef = Collection.EVENT.docRef(event.id)
 
   const handleUpdateEvent = async (data) => {
-    console.log(data)
 
     const promises = []
 
@@ -82,13 +81,12 @@ export default function EventPage({ event, products }) {
       promises.push(
         deleteObject(getEventStorageRef(event.merchantId, event.id, event.photo))
       )
-    } else {
-      delete data.photo
     }
 
     promises.push(
       updateDoc(docRef, {
         ...data,
+        photo: event.photo,
         maxTicketsPerPerson: parseInt(data.maxTicketsPerPerson, 10),
       })
     )
@@ -112,6 +110,8 @@ export default function EventPage({ event, products }) {
   const eventLink = new URL(window.location.href)
   eventLink.pathname = `/events/${event.merchantId}/${event.id}`
   const eventLinkString = eventLink.href
+
+  const hasPublishedProducts = products.filter(p => p.isPublished).length > 0
 
   return <div>
     <Spacer y={2} />
@@ -160,7 +160,8 @@ export default function EventPage({ event, products }) {
                 },
                 {
                   name: "tags",
-                  input: <ArrayInput maxItemCount={3} input={<Field />}/>
+                  input: <ArrayInput maxItemCount={3} input={<Field />}/>,
+                  required: false
                 },
                 {
                   name: "photo",
@@ -198,18 +199,27 @@ export default function EventPage({ event, products }) {
               modal
             >
               {
-                close => <Modal>
-                  <h2 className="header-m">Are you sure?</h2>
-                  <Spacer y={2} />
-                  <p className="text-body-faded">Once you publish an event, it'll become visible to customers, and you won't be able to edit the start and end date or address.</p>
-                  <Spacer y={4} />
-                  <MainButton title="Publish event" onClick={() => {
-                    handlePublishEvent()
-                    close()
-                  }} />
-                  <Spacer y={2} />
-                  <MainButton title="Cancel" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={close} />
-                </Modal>
+                close => hasPublishedProducts ?
+                  <Modal>
+                  
+                    <h2 className="header-m">Are you sure?</h2>
+                    <Spacer y={2} />
+                    <p className="text-body-faded">Once you publish an event, it'll become visible to customers, and you won't be able to edit the start and end date or address.</p>
+                    <Spacer y={4} />
+                    <MainButton title="Publish event" onClick={() => {
+                      handlePublishEvent()
+                      close()
+                    }} />
+                    <Spacer y={2} />
+                    <MainButton title="Cancel" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={close} />
+                  </Modal> :
+                  <Modal>
+                    <h2 className="header-m">Can't publish event</h2>
+                    <Spacer y={2} />
+                    <p className="text-body-faded">You need to create and publish at least one product for this event before you can publish the event itself.</p>
+                    <Spacer y={4} />
+                    <MainButton title="OK" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={close} />
+                  </Modal>
               }
             </Popup>
             

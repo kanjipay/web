@@ -3,7 +3,6 @@ import User from "../../../../assets/icons/User";
 import Location from "../../../../assets/icons/Location";
 import AsyncImage from "../../../../components/AsyncImage";
 import CircleIcon from "../../../../components/CircleIcon";
-import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
 import { getEventStorageRef } from "../../../../utils/helpers/storage";
 import { Link } from "react-router-dom";
@@ -12,6 +11,7 @@ import EventsAppNavBar from "../secure/EventsAppNavBar";
 import { eventTimeString, generateGoogleMapsLink } from "./eventHelpers";
 import { Colors } from "../../../../components/CircleButton";
 import ShowMoreText from "react-show-more-text";
+import { dateFromTimestamp } from "../../../../utils/helpers/time";
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return <div>
@@ -33,13 +33,21 @@ export function EventDetails({ event, merchant, artists = [] }) {
         <div style={{ columnGap: 8, display: "flex" }}>
           <CircleIcon Icon={User} length={20} backgroundColor={Colors.CLEAR} />
           <p className="text-body">
-            Artists: {
-              artists.map(artist => {
-                return <span>
-                  <Link to={`/events/artists/${artist.id}`}>{artist.name}</Link>
-                  {", "}
-                </span>
-              })
+            {
+              artists.length > 0 &&
+                <span>
+                  {"Artists: "}
+                  {
+                    artists.map((artist, index) => {
+                      return <span>
+                        {index > 0 ? ", " : ""}
+                        <Link to={`/events/artists/${artist.id}`} target="_blank" rel="noreferrer">{artist.name}</Link>
+                        
+                      </span>
+                    })
+                  }
+                  {". "}
+                </span>     
             }
             Organised by <Link to="../..">{merchant.displayName}</Link>
           </p>
@@ -49,7 +57,7 @@ export function EventDetails({ event, merchant, artists = [] }) {
   </div>
 }
 
-export default function EventPage({ merchant, event, products }) {
+export default function EventPage({ merchant, event, products, artists }) {
   return <div className="container">
     <EventsAppNavBar
       title={event.title}
@@ -89,7 +97,7 @@ export default function EventPage({ merchant, event, products }) {
       }
       <Spacer y={2} />
 
-      <EventDetails event={event} merchant={merchant} />
+      <EventDetails event={event} merchant={merchant} artists={artists} />
       <Spacer y={4} />
       <ShowMoreText
         lines={3}
@@ -97,23 +105,24 @@ export default function EventPage({ merchant, event, products }) {
       >
         {event.description}
       </ShowMoreText>
-      
 
-      <Spacer y={4} />
-
-      <h1 className="header-m">Get tickets</h1>
-      <Spacer y={2} />
       {
-        products
-          .filter(product => product.isPublished)
-          .map(product => {
-            return <div key={product.id}>
-              <ProductListing product={product} />
-              <Spacer y={1} />
-            </div>
-          })
+        dateFromTimestamp(event.startsAt) > new Date() && <div>
+          <Spacer y={4} />
+          <h1 className="header-m">Get tickets</h1>
+          <Spacer y={2} />
+          {
+            products
+              .filter(product => product.isPublished)
+              .map(product => {
+                return <div key={product.id}>
+                  <ProductListing product={product} />
+                  <Spacer y={1} />
+                </div>
+              })
+          }
+        </div>
       }
-
       <Spacer y={8} />
     </div>
   </div>

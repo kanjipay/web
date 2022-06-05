@@ -28,7 +28,6 @@ export default function DatePicker({
   }
 
   function dateToValues(date) {
-    console.log(date)
     return {
       minute: prependZeros(date.getMinutes().toString()),
       hour: prependZeros(date.getHours().toString()),
@@ -222,8 +221,6 @@ export default function DatePicker({
 
     setValues(dateToValues(new Date()))
   }
-
-  console.log(value)
 
   if (required) {
     return contents

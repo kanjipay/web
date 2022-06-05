@@ -12,7 +12,7 @@ export default function CreateProductPage({ event, products }) {
   const { merchantId } = useParams()
   const navigate = useNavigate()
   const handleCreateProduct = async (data) => {
-    const { title, description, releasesAt } = data
+    const { title, description, releasesAt, earliestEntryAt, lastestEntryAt } = data
 
     const price = parseFloat(data.price) * 100
     const capacity = parseInt(data.capacity, 10)
@@ -22,13 +22,15 @@ export default function CreateProductPage({ event, products }) {
     const productRef = await addDoc(Collection.PRODUCT.ref, {
       eventId: event.id,
       merchantId,
-      isAvailable: false,
+      isAvailable: true,
       isPublished: false,
       title,
       description,
       price,
       capacity,
       releasesAt,
+      earliestEntryAt: earliestEntryAt ?? null,
+      lastestEntryAt: lastestEntryAt ?? null,
       sortOrder: currLargestSortOrder + 1,
       soldCount: 0,
       reservedCount: 0
@@ -53,8 +55,7 @@ export default function CreateProductPage({ event, products }) {
       <div>
         <Form
           initialDataSource={{
-            earliestEntryAt: null,
-            latestEntryAt: null
+            releasesAt: new Date()
           }}
           formGroupData={[
             {
@@ -85,14 +86,14 @@ export default function CreateProductPage({ event, products }) {
                   name: "earliestEntryAt",
                   label: "Earliest entry",
                   explanation: "Optionally set the earliest time event goers will be admitted with this ticket.",
-                  input: <DatePicker />,
+                  input: <DatePicker required={false} />,
                   required: false
                 },
                 {
                   name: "latestEntryAt",
                   label: "Latest entry",
                   explanation: "Optionally set the latest time event goers will be admitted with this ticket.",
-                  input: <DatePicker />,
+                  input: <DatePicker required={false} />,
                   required: false
                 },
               ]

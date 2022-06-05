@@ -20,7 +20,7 @@ export default function Auth() {
       <Route path="email-link-sent" element={<IconPage
         Icon={Tick}
         title="Email link sent"
-        body="We sent you an email link for you to sign in. It may take a moment to arrive."
+        body="We sent you an email link for you to sign in. It may take a moment to arrive and make sure to check your spam folder."
       />} />
       <Route path="verification-link-sent" element={<IconPage
         Icon={Tick}

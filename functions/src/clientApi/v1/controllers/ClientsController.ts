@@ -1,10 +1,11 @@
 import Collection from "../../../shared/enums/Collection";
 import BaseController from "../../../shared/BaseController";
-import * as crypto from "crypto"
 import { v4 as uuid } from "uuid"
 import { db } from "../../../shared/utils/admin";
 import { firestore } from "firebase-admin";
 import sha256 = require("sha256");
+
+const generateRandomHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
 
 export default class ClientsController extends BaseController {
   create = async (req, res, next) => {
@@ -12,7 +13,7 @@ export default class ClientsController extends BaseController {
       const { companyName } = req.body
 
       const clientId = uuid()
-      const clientSecret = crypto.randomBytes(32).toString("hex")
+      const clientSecret = generateRandomHex(32)
       const clientSecretHash = sha256(clientSecret)
 
       await db()

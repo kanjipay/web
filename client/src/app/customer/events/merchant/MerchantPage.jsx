@@ -15,6 +15,7 @@ export default function MerchantPage({ merchant }) {
     return Collection.EVENT.queryOnChange(
       setEvents,
       where("merchantId", "==", merchantId),
+      where("startsAt", ">", new Date()),
       where("isPublished", "==", true),
       orderBy("startsAt", "desc")
     )

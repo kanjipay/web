@@ -12,7 +12,8 @@ export default class PaymentIntentsController extends BaseController {
     const { clientId } = req
 
     const { payeeError } = await fetchDocument(Collection.PAYEE, payeeId, { 
-      approvalStatus: PayeeApprovalStatus.APPROVED
+      approvalStatus: PayeeApprovalStatus.APPROVED,
+      clientId
     })
 
     if (payeeError) {

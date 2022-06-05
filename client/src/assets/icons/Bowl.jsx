@@ -33,20 +33,20 @@ export default function Bowl({ length = 32, color = "black" }) {
       <path
         d="M66.3562 63.6663C57.0372 52.9045 75.6765 42.1427 66.3562 31.3809"
         stroke={color}
-        stroke-width="5.3809"
-        stroke-linecap="round"
+        strokeWidth="5.3809"
+        strokeLinecap="round"
       />
       <path
         d="M82.4988 63.6663C73.1798 52.9045 91.8191 42.1427 82.4988 31.3809"
         stroke={color}
-        stroke-width="5.3809"
-        stroke-linecap="round"
+        strokeWidth="5.3809"
+        strokeLinecap="round"
       />
       <path
         d="M50.2134 63.6663C40.8944 52.9045 59.5337 42.1427 50.2134 31.3809"
         stroke={color}
-        stroke-width="5.3809"
-        stroke-linecap="round"
+        strokeWidth="5.3809"
+        strokeLinecap="round"
       />
     </svg>
   );

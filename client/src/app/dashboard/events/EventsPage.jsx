@@ -51,17 +51,22 @@ export default function EventsPage() {
           <h3 className="header-m">Upcoming</h3>
           <Spacer y={3} />
           {
-            upcomingEvents.map(event => <EventListing event={event} />)
+            upcomingEvents.map(event => <div key={event.id}>
+              <EventListing event={event} />
+              <Spacer y={3} />
+            </div>)
           }
         </div>
       }
-      { upcomingEvents.length > 0 && pastEvents.length > 0 && <Spacer y={3} />}
       {
         pastEvents.length > 0 && <div>
           <h3 className="header-m">Past</h3>
           <Spacer y={3} />
           {
-            pastEvents.map(event => <EventListing event={event} />)
+            pastEvents.map(event => <div key={event.id}>
+              <EventListing event={event} />
+              <Spacer y={3} />
+            </div>)
           }
         </div>
       }

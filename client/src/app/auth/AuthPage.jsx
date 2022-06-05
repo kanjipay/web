@@ -42,6 +42,7 @@ export default function AuthPage() {
   }, [])
 
   const handleSignInWithGoogle = () => {
+    console.log("handleSignInWithGoogle")
     navigate({ pathname: "google", search })
   }
 

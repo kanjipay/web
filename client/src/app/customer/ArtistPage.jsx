@@ -49,10 +49,11 @@ export default function ArtistPage() {
         <h1 className="header-l">{artist.name}</h1>
         <Spacer y={3} />
         <a href={artist.spotifyLink} target="_blank" rel="noreferrer">Spotify</a>
-
+        <Spacer y={3} />
         {
           events.length > 0 && <div>
             <h2 className="header-m">Upcoming events</h2>
+            <Spacer y={2} />
             {
               events.map(event => {
                 return <div key={event.id}>
