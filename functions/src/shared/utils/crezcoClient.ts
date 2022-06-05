@@ -8,6 +8,8 @@ const defaultHeaders = {
 const baseUrl = process.env.CREZCO_URL
 
 export async function fetchBankData() {
+  console.log(defaultHeaders);
+  console.log(baseUrl)
   const { data } = await axios.get(`${baseUrl}/v1/banks/GB/DomesticInstantPayment`, {
     headers: defaultHeaders
   })

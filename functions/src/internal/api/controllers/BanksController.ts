@@ -4,6 +4,7 @@ import { fetchBankData } from "../../../shared/utils/crezcoClient";
 
 export default class BanksController extends BaseController {
   index = async (req, res, next) => {
+    console.log('here')
     try {
       const bankData = await fetchBankData()
       

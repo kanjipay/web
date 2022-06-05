@@ -14,7 +14,6 @@ const PAYMENT_INTENT_DATA = {
   "amount": 100, 
             "successUrl": "https://google.com", 
             "cancelledUrl": "https://google.com",
-  
   "payeeId": "TEST"
 }
 
@@ -28,7 +27,6 @@ describe("Payment Tests", function() {
           .set('mcp-client-secret', clientSecret)
           .send(PAYMENT_INTENT_DATA)
           .end(function (err, res) {
-            expect(err).to.be.null;
             expect(res).to.have.status(200);
          });
       });
@@ -42,7 +40,6 @@ describe("Payment Tests", function() {
           .set('mcp-client-secret', clientSecret)
           .send(PAYMENT_INTENT_DATA)
           .end(function (err, res) {
-            expect(err).to.be.null;
             expect(res).to.have.status(200);
             const {paymentIntentId} = res.body;
             chai
@@ -56,7 +53,6 @@ describe("Payment Tests", function() {
               }
             )
             .end(function (err, res) {
-              expect(err).to.be.null;
               expect(res).to.have.status(200);
             })
          });

@@ -38,7 +38,6 @@ describe("Payees Tests", function() {
           .set('mcp-client-secret', clientSecret)
           .send(PAYEE_DATA)
           .end(function (err, res) {
-            expect(err).to.be.null;
             expect(res).to.have.status(200);
             const {payeeId} = res.body;
          });
