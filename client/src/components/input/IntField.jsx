@@ -1,6 +1,6 @@
 import { Colors } from "../CircleButton"
 
-export function Field({ value, onChange, regex = /.*/, maxChars = 140, disregardInCharCountRegex = null, ...props }) {
+export function Field({ value, onChange, regex = /.*/, maxChars = 140, disregardInCharCountRegex = null, onSubmit, ...props }) {
   const validateKey = event => {
     const currentValue = event.target.value ?? ""
     const currPosition = event.target.selectionStart
@@ -8,6 +8,10 @@ export function Field({ value, onChange, regex = /.*/, maxChars = 140, disregard
     const proposedValue = currentValue.slice(0, currPosition) + event.key + currentValue.slice(currPosition)
 
     let charsToCount = disregardInCharCountRegex ? proposedValue.replace(disregardInCharCountRegex, "") : proposedValue
+
+    if (event.key === "Enter") {
+      onSubmit(event)
+    }
 
     if (!regex.test(proposedValue) || charsToCount.length > maxChars) {
       event.preventDefault()
@@ -76,7 +80,9 @@ export function FloatField({
   maxDecimalPlaces = 2,
   ...props
 }) {
-  const regex = new RegExp(`^${allowsNegative ? "\\-{0,1}" : ""}([0-9]*|[0-9]+\\.[0-9]{0,${maxDecimalPlaces}})$`, "g")
+  const regex = new RegExp(`^${allowsNegative ? "\\-{0,1}" : ""}([0-9]*\\.{0,1}[0-9]{0,${maxDecimalPlaces}})$`)
+
+  console.log(regex)
 
   return <Field
     value={value}

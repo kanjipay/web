@@ -13,6 +13,49 @@ import Merchant from "./events/Merchant";
 import MerchantDropdown from "./MerchantDropdown";
 import SelectOrganisationPage from "./SelectOrganisationPage";
 import CreateOrganisationPage from './CreateOrganisationPage';
+import Popup from "reactjs-popup";
+import { MenuItem } from "./events/AnalyticsPage";
+
+function UserNavBarItem({ user }) {
+  const handleSignOut = () => {
+    signOut(auth, () => {
+      console.log("Signed out")
+    })
+  }
+
+  const [isHovering, setIsHovering] = useState(false)
+
+  const navbarItem = <div 
+    style={{ 
+      display: "flex", 
+      columnGap: 8, 
+      alignItems: "center",
+      padding: "0 16px",
+      boxSizing: "border-box",
+      cursor: "pointer",
+      height: "100%",
+      backgroundColor: isHovering ? Colors.OFF_BLACK_LIGHT : Colors.CLEAR
+    }}
+    onMouseEnter={() => setIsHovering(true)}
+    onMouseLeave={() => setIsHovering(false)}
+  >
+    <p className="text-body" style={{ color: Colors.WHITE }}>{user.firstName + " " + user.lastName}</p>
+    <User color={Colors.WHITE} />
+  </div>
+  return <Popup
+    trigger={navbarItem}
+    closeOnDocumentClick
+    arrow={false}
+    contentStyle={{
+      backgroundColor: Colors.WHITE,
+      border: `1px solid ${Colors.OFF_WHITE}`,
+      borderBottom: 0,
+      width: 160
+    }}
+  >
+    <MenuItem title="Sign out" onClick={handleSignOut} />
+  </Popup>
+}
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
@@ -22,16 +65,22 @@ export default function Dashboard() {
   const backPath = "/"
 
   const [memberships, setMemberships] = useState(null)
-  const [opacity, setOpacity] = useState(0);
 
   useEffect(() => {
-    // signOut(auth).then(() => {
-    //   console.log("Signed out")
-    // })
-    return onAuthStateChanged(auth, authUser => {
-      setAuthUser(authUser)
+    return onAuthStateChanged(auth, newAuthUser => {
+      // Check if it's a pointless update
+      console.log(authUser)
+      console.log(newAuthUser)
+      if (
+        (!authUser && !newAuthUser) ||
+        (authUser && newAuthUser && authUser.uid === newAuthUser.uid)
+      ) { return }
 
-      if (!authUser || !authUser.email) {
+      console.log("onAuthStateChanged")
+
+      setAuthUser(newAuthUser)
+
+      if (!newAuthUser || !newAuthUser.email) {
         openAuthPage({
           successPath: window.location.pathname,
           successState: state ?? {},
@@ -39,7 +88,7 @@ export default function Dashboard() {
         })
       }
     })
-  }, [backPath, state, openAuthPage])
+  }, [backPath, state, openAuthPage, authUser])
 
   useEffect(() => {
     if (!authUser || !authUser.email) { return }
@@ -56,29 +105,6 @@ export default function Dashboard() {
       orderBy("lastUsedAt", "desc")
     )
   }, [user])
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const opaqueDepth = 0
-      const transparentDepth = 20
-      const yOffset = window.scrollY;
-      const newOpacity = Math.max(
-        Math.min(
-          (yOffset - transparentDepth) / (opaqueDepth - transparentDepth),
-          1
-        ),
-        0
-      );
-
-      setOpacity(newOpacity)
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [])
 
   return memberships ?
     <div style={{ position: "relative", minHeight: "100vh" }}>
@@ -106,7 +132,7 @@ export default function Dashboard() {
           display: "flex",
           columnGap: 24,
           alignItems: "center", 
-          padding: "0 24px",
+          // padding: "0 24px",
           flexGrow: 100,
         }}>
           <Routes>
@@ -114,10 +140,7 @@ export default function Dashboard() {
           </Routes>
           <div className="flex-spacer" />
           {
-            user && <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
-              <p className="text-body" style={{ color: Colors.WHITE }}>{user.firstName + " " + user.lastName}</p>
-              <User color={Colors.WHITE} />
-            </div>
+            user && <UserNavBarItem user={user}/>
           }
         </div>
       </div>

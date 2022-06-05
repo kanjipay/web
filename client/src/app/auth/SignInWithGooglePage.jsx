@@ -25,12 +25,12 @@ export default function SignInWithGooglePage() {
   }
 
   useEffect(() => {
+    console.log("google page useEffect. isAuthInProgess: ", isAuthInProgress())
     if (isAuthInProgress()) {
+
       getRedirectResult(auth)
         .then(credential => {
           if (credential) {
-            console.log(123)
-            console.log(credential)
             const displayName = credential?.user?.displayName
 
             let firstName = ""

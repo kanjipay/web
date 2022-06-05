@@ -35,6 +35,7 @@ export default class MerchantsController extends BaseController {
           companyName,
           sortCode,
           createdAt: firestore.FieldValue.serverTimestamp(),
+          clientId: process.env.MERCADO_CLIENT_ID,
           approvalStatus: PayeeApprovalStatus.PENDING,
         });
       

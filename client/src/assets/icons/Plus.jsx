@@ -9,9 +9,9 @@ export default function Plus({ length = 32, color = "black" }) {
     <path 
       d="M16 8V16M16 24V16M16 16H6H24" 
       stroke={color}
-      stroke-width="4" 
-      stroke-linecap="square" 
-      stroke-linejoin="mitre"
+      strokeWidth="4" 
+      strokeLinecap="square" 
+      strokeLinejoin="mitre"
     />
   </svg>
 }

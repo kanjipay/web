@@ -2,13 +2,17 @@ import * as functions from "firebase-functions";
 import internalApp from "./internal/internalApp";
 import clientApiApp from "./clientApi/clientApiApp";
 import onlineMenuApp from "./onlineMenu/onlineMenuApp";
-import { handleKeepAwake } from "./keepAwake";
 import { Express } from "express"
 
+const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
+console.log(envProjectId)
 function getHttpFunction(app: Express, secrets: string[]) {
   return functions
     .region("europe-west2")
-    .runWith({ secrets })
+    .runWith({ 
+      secrets,
+      minInstances: envProjectId === "mercadopay" ? 1 : 0
+    })
     .https.onRequest(app)
 }
 
@@ -34,8 +38,3 @@ export const onlineMenu = getHttpFunction(onlineMenuApp, [
   "MERCADO_CLIENT_SECRET",
   "SENDGRID_API_KEY",
 ])
-
-export const keepAwake = functions
-  .region("europe-west2")
-  .pubsub.schedule("every 20 minutes")
-  .onRun(handleKeepAwake)

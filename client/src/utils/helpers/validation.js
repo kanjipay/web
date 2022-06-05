@@ -1,7 +1,7 @@
 export function validateEmail(email, requiredDomain = null) {
   // from https://en.wikipedia.org/wiki/Email_address
   
-  const charsInLocalPart = "[a-zA-Z0-9!#$%&'*\+\-/=?^_`{|}~]"
+  const charsInLocalPart = "[a-zA-Z0-9!#$%&'*\+\-/=?^_\`{|}~]"
   const charsInDomain = "[a-z0-9\-]"
   const defaultDomainRegex = `(${charsInDomain}{1,63}\.){1,}(${charsInDomain}{1,63}){1}`
   const domainRegex = requiredDomain ? requiredDomain : defaultDomainRegex

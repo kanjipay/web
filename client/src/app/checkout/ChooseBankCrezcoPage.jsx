@@ -204,6 +204,13 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
 
     const businessBankData = filteredBankData.filter(d => isBusinessBankAccount(d))
     const personalBankData = filteredBankData.filter(d => !isBusinessBankAccount(d))
+    const commonBankData = personalBankData.filter(d => ["monzo", "starling", "revolut", "mock"].some(name => d.bankName.toLowerCase().includes(name)))
+
+    const sections = [
+      { title: "Most used", data: commonBankData },
+      { title: "Personal banks", data: personalBankData },
+      { title: "Business banks", data: businessBankData },
+    ]
 
     return <div className="container">
       <Helmet>
@@ -239,21 +246,18 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
         {
           filteredBankData.length > 0 ?
             <div>
-              <h2 className="header-m">Personal banks</h2>
-              <Spacer y={3} />
-              <div style={{ display: 'grid', gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 16 }}>
-                {
-                  personalBankData.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => handleChooseBank(datum)} />)
-                }
-              </div>
-              <Spacer y={6} />
-              <h2 className="header-m">Business banks</h2>
-              <Spacer y={3} />
-              <div style={{ display: 'grid', gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 16 }}>
-                {
-                  businessBankData.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => handleChooseBank(datum)} />)
-                }
-              </div>
+              {
+                sections.map(section => section.data.length > 0 && <div>
+                  <h2 className="header-m">{section.title}</h2>
+                  <Spacer y={3} />
+                  <div style={{ display: 'grid', gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 16 }}>
+                    {
+                      section.data.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => handleChooseBank(datum)} />)
+                    }
+                  </div>
+                  <Spacer y={6} />
+                </div>)
+              }
             </div> :
             <div style={{ textAlign: "center" }}>
               <CircleIcon

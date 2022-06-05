@@ -61,7 +61,7 @@ function GroupingControl({ value, onChange, groupingsListData }) {
         close => {
           return groupingsListData.map(groupingsListDatum => {
             const { name, isSelected } = groupingsListDatum
-            return <MenuArrowItem key={name} title={name} onClick={isSelected ? null : () => {
+            return <MenuItem key={name} title={name} onClick={isSelected ? null : () => {
               onChange(name)
               close()
             }} />
@@ -143,7 +143,7 @@ function FilterControl({ filterDatum, onChange, filtersListData }) {
         close => {
           return filtersListData.map(filtersListDatum => {
             const { name, isSelected } = filtersListDatum
-            return <MenuArrowItem key={name} title={name} onClick={isSelected ? null : () => handleClickFilter(filtersListDatum, close)} />
+            return <MenuItem key={name} title={name} onClick={isSelected ? null : () => handleClickFilter(filtersListDatum, close)} />
           })
         }
       }
@@ -153,7 +153,7 @@ function FilterControl({ filterDatum, onChange, filtersListData }) {
     {
       shouldShowValue && <Popup
         trigger={
-          <button className="text-caption" style={labelStyle}>
+          <button className="text-caption" style={{ ...labelStyle, flexShrink: 100 }}>
             {values.length > 0 ? values.map(v => v.title).join(", ") : "Select value(s)"}
           </button>
         }
@@ -171,7 +171,7 @@ function FilterControl({ filterDatum, onChange, filtersListData }) {
                 height: 48,
                 borderBottom: `1px solid ${Colors.OFF_WHITE}`,
               }}>
-                <CheckBox length={24} color={Colors.BLACK} value={valueDatum.isSelected} onChange={() => handleClickFilterValue(valueDatum)} />
+                <CheckBox length={24} style={{ flexShrink: 100 }} color={Colors.BLACK} value={valueDatum.isSelected} onChange={() => handleClickFilterValue(valueDatum)} />
                 <p>{valueDatum.title}</p>
               </div>
             })
@@ -196,8 +196,6 @@ function FilterControl({ filterDatum, onChange, filtersListData }) {
     >
       <Cross length={16} color={Colors.GRAY} />
     </div>
-
-
   </div>
 }
 
@@ -225,27 +223,38 @@ function MenuCloseItem({ title, handleClose }) {
   </div>
 }
 
-function MenuArrowItem({ title, onClick }) {
-  return <div onClick={onClick} style={{
-    height: 48,
-    display: "flex",
-    padding: 16,
-    cursor: onClick ? "pointer" : "mouse",
-    color: onClick ? Colors.BLACK : Colors.GRAY_LIGHT,
-    alignItems: "center",
-    boxSizing: "border-box",
-    borderBottom: `1px solid ${Colors.OFF_WHITE}`
-  }}>
+export function MenuItem({ title, onClick, style, showsSeparator = true, showsArrow = false, ...props }) {
+  const [isHovering, setIsHovering] = useState(false)
+  return <div 
+    onClick={onClick} 
+    onMouseEnter={() => setIsHovering(true)}
+    onMouseLeave={() => setIsHovering(false)}
+    style={{
+      height: 48,
+      display: "flex",
+      padding: 16,
+      cursor: onClick ? "pointer" : "mouse",
+      color: onClick ? Colors.BLACK : Colors.GRAY_LIGHT,
+      backgroundColor: isHovering ? Colors.OFF_WHITE_LIGHT : Colors.CLEAR,
+      alignItems: "center",
+      boxSizing: "border-box",
+      borderBottom: showsSeparator ? `1px solid ${Colors.OFF_WHITE}` : 0,
+      ...style
+    }}
+  >
     {title}
     <div className="flex-spacer"></div>
-    <div style={{ 
-      height: "100%", 
-      display: "flex", 
-      alignItems: "center", 
-      justifyContent: "center" 
-    }}>
-      <Forward length={16} color={Colors.GRAY} />
-    </div>
+    {
+      showsArrow && <div style={{
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}>
+        <Forward length={16} color={Colors.GRAY} />
+      </div>
+    }
+    
     
   </div>
 }

@@ -11,12 +11,13 @@ export default function SmallButton({
   ...props
 }) {
   const [isPressed, setIsPressed] = useState(false);
+  const [isHovering, setIsHovering] = useState(false)
 
   let backgroundColor;
 
   if (props.disabled) {
     backgroundColor = buttonTheme.disabledBackgroundColor;
-  } else if (isPressed) {
+  } else if (isPressed || isHovering) {
     backgroundColor = buttonTheme.pressedBackgroundColor;
   } else {
     backgroundColor = buttonTheme.backgroundColor;
@@ -44,6 +45,8 @@ export default function SmallButton({
     <button
       style={buttonStyle}
       className="header-xs"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onTouchStart={() => setIsPressed(true)}

@@ -21,9 +21,10 @@ export function InputGroup({
   validators,
   decorator, 
   required,
-  disabled
+  disabled,
+  onSubmit
 }) {
-  const Input = React.cloneElement(input, { name, value, onChange, disabled, required })
+  const Input = React.cloneElement(input, { name, value, onChange, disabled, required, onSubmit })
 
   let inputArea
 

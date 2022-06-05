@@ -47,6 +47,8 @@ export default function Form({
   const [result, setResult] = useState(null)
   const [isShowingValidationErrors, setIsShowingValidationErrors] = useState(false)
 
+  console.log(data)
+
   useEffect(() => {
     const formMessage = validators.reduce((formMessage, validator) => {
       const { isValid, message } = validator(data)
@@ -88,7 +90,10 @@ export default function Form({
     setTimeout(() => setResult(null), 5000)
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    console.log(data)
+    if (!areAllRequiredFieldsPopulated()) { return }
+
     if (areValidationErrors()) {
       console.log("are validation errors")
       setIsShowingValidationErrors(true)
@@ -117,7 +122,7 @@ export default function Form({
   return <div>
     {
       formGroupData.map((formGroupDatum, i) => {
-        return <FormGroup key={i} formGroupDatum={formGroupDatum} data={data} isShowingValidationErrors={isShowingValidationErrors} onChange={onChange} />
+        return <FormGroup key={i} formGroupDatum={formGroupDatum} onSubmit={(event) => handleSubmit(data)} data={data} isShowingValidationErrors={isShowingValidationErrors} onChange={onChange} />
       })
     }
     <MainButton
@@ -125,6 +130,7 @@ export default function Form({
       onClick={handleSubmit}
       disabled={!areAllRequiredFieldsPopulated()}
       isLoading={isLoading}
+      type="submit"
     />
     { 
       result && <div>
@@ -141,7 +147,7 @@ export default function Form({
   </div>
 }
 
-function FormGroup({ formGroupDatum, data, isShowingValidationErrors, onChange }) {
+function FormGroup({ formGroupDatum, data, isShowingValidationErrors, onChange, onSubmit }) {
   const { title, explanation, items } = formGroupDatum
 
   return <div>
@@ -172,7 +178,9 @@ function FormGroup({ formGroupDatum, data, isShowingValidationErrors, onChange }
           disabled
         } = item
 
-        return <InputGroup 
+        return <InputGroup
+          key={item.name}
+          onSubmit={onSubmit}
           name={name}
           label={label ?? camelCaseToWords(name)}
           validators={validators ?? []}

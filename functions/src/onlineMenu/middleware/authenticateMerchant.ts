@@ -1,4 +1,4 @@
-import differenceInHours from "date-fns/differenceInHours"
+import { differenceInMinutes } from "date-fns"
 import Collection from "../../shared/enums/Collection"
 import { db } from "../../shared/utils/admin"
 
@@ -14,7 +14,7 @@ export async function authenticateMerchant(req, res, next) {
     const data = membershipCache.get(cacheKey)
     const { isValid, cachedAt } = data
 
-    if (isValid && differenceInHours(cachedAt, new Date()) < 1) {
+    if (isValid && differenceInMinutes(cachedAt, new Date()) < 60) {
       next()
       return
     }

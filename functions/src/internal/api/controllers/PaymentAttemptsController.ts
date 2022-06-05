@@ -54,7 +54,7 @@ export default class PaymentAttemptsController extends BaseController {
         crezcoUserId, 
         paymentAttemptId,
         paymentIntentId,
-        companyName, 
+        companyName.replace(/[^a-zA-Z0-9 \.\-]/, ""), 
         amount
       )
 

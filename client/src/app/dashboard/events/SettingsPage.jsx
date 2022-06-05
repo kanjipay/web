@@ -28,13 +28,12 @@ export default function SettingsPage({ merchant }) {
       promises.push(
         deleteObject(getMerchantStorageRef(merchantId, merchant.photo))
       )
-    } else {
-      delete data.photo
     }
 
     promises.push(
       updateDoc(Collection.MERCHANT.docRef(merchantId), {
         ...data,
+        photo: merchant.photo
       })
     )
   }

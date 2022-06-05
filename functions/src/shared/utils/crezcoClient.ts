@@ -44,7 +44,8 @@ export async function createPaymentDemand(
           signature
         }
       },
-      idempotencyId: paymentAttemptId
+      idempotencyId: paymentAttemptId,
+      idemPayDemand: paymentAttemptId
     }, {
       headers: defaultHeaders
     })

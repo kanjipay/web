@@ -23,8 +23,7 @@ export default function VerifyBankDetailsPage({ user }) {
     iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
     iconForegroundColor={Colors.BLACK}
     title={`One more step, ${user.firstName}`}
-    // body="Before your organisation can accept payments, you'll need to verify you own the account you've provided. You can do this by using our trusted partner Crezco."
-    body="Before your organisation can accept payments, you need to specify a bank account for your ticket sales to be paid into, and verify you own it. You can do this by using our trusted partner, Crezco."
+    body="Before your organisation can accept payments, you'll need to verify you own the account you've provided. You can do this by using our trusted partner Crezco."
     primaryAction={handleVerifyDetails}
     primaryActionTitle="Continue to Crezco"
   />

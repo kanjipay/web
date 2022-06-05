@@ -13,7 +13,6 @@ export default function ImagePicker({ height = 200, aspectRatio = 2, name, value
 
   useEffect(() => {
     if (value) { 
-      console.log(value)
       if (value instanceof File) {
         const objectUrl = URL.createObjectURL(value)
         setPreview(objectUrl)
@@ -31,6 +30,7 @@ export default function ImagePicker({ height = 200, aspectRatio = 2, name, value
   }, [value])
 
   const onChangeFile = event => {
+    event.preventDefault()
     const fileUploaded = event.target.files[0]
     onChange({ target: { name, value: fileUploaded }})
   }
