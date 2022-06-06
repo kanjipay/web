@@ -21,6 +21,10 @@ const createMerchantSchema: AllowedSchema = {
       companyName: {
         type: "string"
       },
+      currency: {
+        type: "string",
+        enum: ["GBP", "EUR"]
+      },
       displayName: {
         type: "string"
       },

@@ -62,7 +62,7 @@ export default function OrderConfirmationPage() {
                 </div>
                 <div className="BasketItem__spacer" />
                 <div className="text-body-faded">
-                  {formatCurrency(item.price * item.quantity)}
+                  {formatCurrency(item.price * item.quantity, order.currency)}
                 </div>
               </div>
               <Spacer y={2} />
@@ -74,7 +74,7 @@ export default function OrderConfirmationPage() {
         <div className="flex-container">
           <div className="header-xs">Total</div>
           <div className="flex-spacer" />
-          <div className="header-xs">{formatCurrency(order.total)}</div>
+          <div className="header-xs">{formatCurrency(order.total, order.currency)}</div>
         </div>
       </div>
 

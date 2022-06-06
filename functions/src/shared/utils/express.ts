@@ -5,9 +5,9 @@ import * as bodyParser from "body-parser"
 import { isStrictEnvironment } from "./isStrictEnvironment";
 
 export function setCors(app: Express, allowAll: boolean = !isStrictEnvironment(process.env.ENVIRONMENT)) {
-  const origin = allowAll ? true : process.env.CLIENT_URL
+  // const origin = allowAll ? "*" : process.env.CLIENT_URL
   
-  const corsInstance = cors({ origin })
+  const corsInstance = cors({ origin: "*" })
 
   app.use(corsInstance);
   app.options("*", corsInstance);

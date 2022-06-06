@@ -94,7 +94,7 @@ function MerchantOrderPage({ orderList, menuItems }) {
         <div className="MerchantOrderPage__totalFlexContainer">
           <h3 className="header-s">Total</h3>
           <div className="flex-spacer" />
-          <h3 className="header-s">{formatCurrency(totalCost)}</h3>
+          <h3 className="header-s">{formatCurrency(totalCost, order.currency)}</h3>
         </div>
 
         <Spacer y={2} />

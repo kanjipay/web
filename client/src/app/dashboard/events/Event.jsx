@@ -7,7 +7,7 @@ import CreateProductPage from "./CreateProductPage";
 import EventPage from "./EventPage";
 import ProductPage from "./ProductPage";
 
-export default function Event({ events }) {
+export default function Event({ events, merchant }) {
   const { eventId } = useParams()
   const event = events.find(e => e.id === eventId)
   const [products, setProducts] = useState(null)
@@ -22,10 +22,9 @@ export default function Event({ events }) {
 
   return products ?
     <Routes>
-      <Route path="/" element={<EventPage event={event} products={products} />} />
-      <Route path="/p/create" element={<CreateProductPage event={event} products={products} />} />
-      <Route path="/p/:productId" element={<ProductPage event={event} products={products} />} />
+      <Route path="/" element={<EventPage event={event} products={products} merchant={merchant} />} />
+      <Route path="/p/create" element={<CreateProductPage event={event} products={products} merchant={merchant} />} />
+      <Route path="/p/:productId" element={<ProductPage event={event} products={products} merchant={merchant} />} />
     </Routes> :
     <LoadingPage />
-
 }

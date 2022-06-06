@@ -36,6 +36,7 @@ export async function sendTicketReceipt(
   productPrice: number, 
   quantity: number,
   boughtAt: Date,
+  currency: string,
   ticketIds: string[]
 ) {
   const logger = new LoggingController("sendTicketReceipt")
@@ -51,7 +52,7 @@ export async function sendTicketReceipt(
     ticketIds
   })
 
-  const total = formatCurrency(productPrice * quantity)
+  const total = formatCurrency(productPrice * quantity, currency)
 
   const tickets = ticketIds.map(ticketId => {
     return {
@@ -67,7 +68,7 @@ export async function sendTicketReceipt(
     lineItems: [
       {
         productTitle,
-        price: formatCurrency(productPrice),
+        price: formatCurrency(productPrice, currency),
         quantity
       }
     ],

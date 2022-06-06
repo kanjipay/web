@@ -76,7 +76,7 @@ export default function Merchant({ user }) {
           merchant.approvalStatus === "APPROVED" ?
             <Routes>
               
-              <Route path="events/*" element={<Events />} />
+              <Route path="events/*" element={<Events merchant={merchant} />} />
               <Route path="/" element={<AnalyticsPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="settings" element={<SettingsPage merchant={merchant} />} />

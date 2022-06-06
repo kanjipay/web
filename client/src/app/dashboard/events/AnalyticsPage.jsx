@@ -223,7 +223,7 @@ function MenuCloseItem({ title, handleClose }) {
   </div>
 }
 
-export function MenuItem({ title, onClick, style, showsSeparator = true, showsArrow = false, ...props }) {
+export function MenuItem({ title, onClick, style, showsSeparator = true, showsArrow = false, isSelected = false, ...props }) {
   const [isHovering, setIsHovering] = useState(false)
   return <div 
     onClick={onClick} 
@@ -235,10 +235,11 @@ export function MenuItem({ title, onClick, style, showsSeparator = true, showsAr
       padding: 16,
       cursor: onClick ? "pointer" : "mouse",
       color: onClick ? Colors.BLACK : Colors.GRAY_LIGHT,
-      backgroundColor: isHovering ? Colors.OFF_WHITE_LIGHT : Colors.CLEAR,
+      backgroundColor: (isHovering || isSelected) ? Colors.OFF_WHITE_LIGHT : Colors.CLEAR,
       alignItems: "center",
       boxSizing: "border-box",
       borderBottom: showsSeparator ? `1px solid ${Colors.OFF_WHITE}` : 0,
+      fontWeight: isSelected ? 500 : 400,
       ...style
     }}
   >

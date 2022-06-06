@@ -59,6 +59,7 @@ export const handleMercadoPaymentUpdate = async (req, res, next) => {
       type,
       merchantId,
       userId,
+      currency,
       wereTicketsCreated
     } = orderDoc.data()
 
@@ -82,7 +83,6 @@ export const handleMercadoPaymentUpdate = async (req, res, next) => {
         break;
       case PaymentIntentStatus.PENDING:
         return res.sendStatus(200)
-        break;
     }
 
     const orderUpdate = {
@@ -118,6 +118,7 @@ export const handleMercadoPaymentUpdate = async (req, res, next) => {
           orderId,
           userId,
           eventEndsAt,
+          currency,
           quantity
         ))
       }

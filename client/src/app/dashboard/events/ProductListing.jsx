@@ -6,7 +6,7 @@ import { Colors } from "../../../components/CircleButton"
 import Spacer from "../../../components/Spacer"
 import { Link } from "react-router-dom"
 
-export default function ProductListing({ product }) {
+export default function ProductListing({ product, currency }) {
   const { title, releasesAt, soldCount, capacity, price } = product
   const releaseDate = dateFromTimestamp(releasesAt)
   const hasReleased = releaseDate < new Date()
@@ -23,7 +23,7 @@ export default function ProductListing({ product }) {
         {` / ${capacity} tickets sold`}
       </p>
       <Spacer y={2} />
-      <SquareLabel>{formatCurrency(price)}</SquareLabel>
+      <SquareLabel>{formatCurrency(price, currency)}</SquareLabel>
     </div>
   </Link>
 }

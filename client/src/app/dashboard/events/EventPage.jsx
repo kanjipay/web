@@ -60,7 +60,7 @@ export function CopyToClipboardButton({ text }) {
   />
 }
 
-export default function EventPage({ event, products }) {
+export default function EventPage({ merchant, event, products }) {
   const navigate = useNavigate()
   const docRef = Collection.EVENT.docRef(event.id)
 
@@ -267,7 +267,7 @@ export default function EventPage({ event, products }) {
         {
           products.map(product => {
             return <div key={product.id}>
-              <ProductListing product={product} />
+              <ProductListing product={product} currency={merchant.currency} />
               <Spacer y={2} />
             </div>
           })

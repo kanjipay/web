@@ -9,8 +9,8 @@ const defaultHeaders = {
 const subdomain = isStrictEnvironment(process.env.ENVIRONMENT) ? "api" : "api.sandbox"
 const baseUrl = `https://${subdomain}.crezco.com`
 
-export async function fetchBankData() {
-  const { data } = await axios.get(`${baseUrl}/v1/banks/GB/DomesticInstantPayment`, {
+export async function fetchBankData(countryCode: string) {
+  const { data } = await axios.get(`${baseUrl}/v1/banks/${countryCode}/DomesticInstantPayment`, {
     headers: defaultHeaders
   })
 
@@ -22,7 +22,8 @@ export async function createPaymentDemand(
   paymentAttemptId: string,
   paymentIntentId: string,
   reference: string,
-  amount: number
+  amount: number,
+  currency: string
 ) {
   try {
     const { signature, signatureError } = createSignature({
@@ -37,7 +38,7 @@ export async function createPaymentDemand(
     const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands`, {
       request: {
         reference,
-        currency: "GBP",
+        currency,
         amount: `${amount / 100}`,
         useDefaultBeneficiaryAccount: true,
         metadata: {

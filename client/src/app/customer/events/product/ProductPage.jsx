@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import Minus from "../../../../assets/icons/Minus";
-import Plus from "../../../../assets/icons/Plus";
 import AsyncImage from "../../../../components/AsyncImage";
-import IconButton, { ButtonTheme, Colors } from "../../../../components/CircleButton";
+import { ButtonTheme, Colors } from "../../../../components/CircleButton";
 import MainButton from "../../../../components/MainButton";
 import Spacer from "../../../../components/Spacer";
 import { formatCurrency } from "../../../../utils/helpers/money";
@@ -13,12 +11,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SmallButton from "../../../../components/SmallButton";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
 import { MarketingConsent, setMarketingConsent } from "../../../../utils/services/UsersService";
-import { Checkbox } from "@mui/material";
 import CheckBox from "../../../../components/CheckBox";
-import { auth } from "../../../../utils/FirebaseUtils";
 import Stepper from "../../../../components/Stepper";
 import { validateEmail } from "../../../../utils/helpers/validation";
-import { eventTimeString } from "../event/eventHelpers";
 import { format } from "date-fns";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
 
@@ -43,19 +38,12 @@ export default function ProductPage({ merchant, event, product, user }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isMarketingConsentShowing = user && user.marketingConsentStatus === "PENDING"
-
-  
-
   const [isMarketingConsentApproved, setIsMarketingConsentApproved] = useState(true)
   const [attestationData, setAttestationData] = useState({})
   const [isLoading, setIsLoading] = useState(false)
 
-  console.log(attestationData)
-
   useEffect(() => {
     const attestations = getAttestations(merchant, event, product)
-
-    console.log(attestations)
 
     const attestationData = attestations.reduce((attestationData, attestation) => {
       attestationData[attestation] = false
@@ -235,7 +223,7 @@ export default function ProductPage({ merchant, event, product, user }) {
         }
         <MainButton
           title={user?.email ? "Checkout" : "Log in to continue"}
-          sideMessage={formatCurrency(product.price * quantity)}
+          sideMessage={formatCurrency(product.price * quantity, merchant.currency)}
           onClick={handleCheckout}
           isLoading={isLoading}
           disabled={!isEnabled()}

@@ -116,7 +116,7 @@ export default function EventPage({ merchant, event, products, artists }) {
               .filter(product => product.isPublished)
               .map(product => {
                 return <div key={product.id}>
-                  <ProductListing product={product} />
+                  <ProductListing product={product} currency={merchant.currency} />
                   <Spacer y={1} />
                 </div>
               })

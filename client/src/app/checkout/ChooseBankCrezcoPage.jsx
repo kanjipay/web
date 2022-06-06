@@ -5,7 +5,7 @@ import QRCode from "react-qr-code"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import Discover from "../../assets/icons/Discover"
 import Spinner from "../../assets/Spinner"
-import { ButtonTheme, Colors } from "../../components/CircleButton"
+import { Colors } from "../../components/CircleButton"
 import CircleIcon from "../../components/CircleIcon"
 import LoadingPage from "../../components/LoadingPage"
 import MainButton from "../../components/MainButton"
@@ -13,25 +13,37 @@ import NavBar from "../../components/NavBar"
 import OrDivider from "../../components/OrDivider"
 import Spacer from "../../components/Spacer"
 import Collection from "../../enums/Collection"
-import { formatCurrency } from "../../utils/helpers/money"
 import { IdentityManager } from "../../utils/IdentityManager"
 import { ApiName, NetworkManager } from "../../utils/NetworkManager"
 import { createLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
 import { cancelPaymentIntent } from "./redirects"
+import { useIntl } from "react-intl"
+import { getCountryCode } from "../../utils/helpers/money"
+import Dropdown from "../../components/input/Dropdown"
 
 export default function ChooseBankCrezcoPage({ paymentIntent }) {
   const navigate = useNavigate()
+  const intl = useIntl()
   const [searchParams] = useSearchParams()
   const referringDeviceId = searchParams.get("referringDeviceId")
   const bankCodeFromQuery = searchParams.get("bank")
   const bankCodeFromStorage = localStorage.getItem("crezcoBankCode")
   const [isLoading, setIsLoading] = useState(true)
+  const countryCodeFromStorage = localStorage.getItem("countryCode")
+
+  const [countryCode, setCountryCode] = useState(countryCodeFromStorage ?? getCountryCode(intl.locale))
   const [bankCode, setBankCode] = useState(null)
   const [bankData, setBankData] = useState([])
   const [bankName, setBankName] = useState("")
   const [filteredBankData, setFilteredBankData] = useState([])
   const [linkId, setLinkId] = useState(null)
+
+  const handleCountryCodeChange = (event) => {
+    const countryCode = event.target.value
+    localStorage.setItem("countryCode", countryCode)
+    setCountryCode(countryCode)
+  }
 
   const handleBankNameChange = (event) => {
     const enteredBankName = event.target.value
@@ -76,10 +88,13 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   }
 
   useEffect(() => {
-    NetworkManager.get(ApiName.INTERNAL, "/banks").then(res => {
+    setIsLoading(true)
+
+    NetworkManager.get(ApiName.INTERNAL, `/banks/${countryCode}`).then(res => {
       const bankData = res.data.sort((bankDatum1, bankDatum2) => {
         return bankDatum1.bankName > bankDatum2.bankName ? 1 : -1
       })
+      
       setBankData(bankData)
 
       const bankCodes = bankData.map(bankDatum => bankDatum.bankCode)
@@ -98,7 +113,7 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
       setIsLoading(false)
 
     })
-  }, [bankCodeFromQuery, bankCodeFromStorage])
+  }, [bankCodeFromQuery, bankCodeFromStorage, countryCode])
 
   useEffect(() => {
     if (bankCode && !isMobile) {
@@ -135,64 +150,59 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
 
       <div className="content">
         <div style={{ padding: "0 16px", textAlign: "center", margin: "auto", maxWidth: 311 }}>
-          <BankTile name={bankName} imageRef={logoUrl} style={{ width: 160, margin: "auto" }} />
-          <Spacer y={2} />
-          <h3 className="header-s">We're redirecting you to your bank</h3>
-          <Spacer y={2} />
-          <p className="text-body-faded">We'll use our trusted partner Crezco to do this. You'll be sent back here after you confirm your payment of <span style={{ fontWeight: 800 }}>{formatCurrency(paymentIntent.amount)}</span></p>
+          <img alt={bankName} src={logoUrl} style={{ width: 80, height: 80, margin: "auto" }} />
+          <Spacer y={1} />
+          <p className="text-body">We're redirecting you to {bankName} using Crezco to complete your payment.</p>
         </div>
+      </div>
 
-        <Spacer y={6} />
-        {!isMobile && <div>
+      <div className="anchored-bottom">
+        <div style={{ margin: 16 }}>
+          {!isMobile && <div>
 
-          <div>
-            <div style={{ display: "flex", columnGap: 32 }}>
-              <div style={{ flexGrow: 10, textAlign: "left" }}>
-                <h3 className="header-s">Continue on mobile (recommended)</h3>
-                <Spacer y={2} />
-                <p className="text-body-faded">If you have your bank’s mobile app installed, scan the QR code with your phone to confirm your payment there.</p>
+            <div>
+              <div style={{ display: "flex", columnGap: 32 }}>
+                <div style={{ flexGrow: 10, textAlign: "left" }}>
+                  <h3 className="header-s">Continue on mobile (recommended)</h3>
+                  <Spacer y={2} />
+                  <p className="text-body-faded">If you have your bank’s mobile app installed, scan the QR code with your phone to confirm your payment there.</p>
+                </div>
+                <div style={{ flexShrink: 10 }}>
+                  {
+                    linkId ?
+                      <QRCode size={160} value={generateLink(linkId)} /> :
+                      <div style={{ width: 160, height: 160, position: "relative" }}>
+                        <Spinner length={32} style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, 50%)" }} />
+                      </div>
+                  }
+                </div>
               </div>
-              <div style={{ flexShrink: 10 }}>
-                {
-                  linkId ?
-                    <QRCode size={160} value={generateLink(linkId)} /> :
-                    <div style={{ width: 160, height: 160, position: "relative" }}>
-                      <Spinner length={32} style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, 50%)" }} />
-                    </div>
-                }
-              </div>
+              <Spacer y={3} />
+              <OrDivider />
+              <Spacer y={3} />
+
             </div>
-            <Spacer y={3} />
-            <OrDivider />
-            <Spacer y={3} />
+          </div>}
 
-          </div>
-        </div>}
-
-        <MainButton
-          title={isMobile ? "Continue to my bank" : "Continue on desktop"}
-          onClick={handleContinueToBank}
-        />
-        <Spacer y={1} />
+          <MainButton
+            title={isMobile ? "Continue to my bank" : "Continue on desktop"}
+            onClick={handleContinueToBank}
+          />
+          {/* <Spacer y={1} />
         <MainButton
           title="Choose another bank"
           onClick={handleChooseAnotherBank}
           buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-        />
-        <Spacer y={2} />
+        /> */}
+          {/* <Spacer y={2} />
         <p className="text-caption">
           By continuing you are permitting Crezco to initiate a payment from your bank account. You also agree to Crezco's
           <a href="https://www.crezco.com/terms" target="_blank" rel="noreferrer"> Terms of Use </a>
           and
           <a href="https://www.crezco.com/privacy-policy" target="_blank" rel="noreferrer"> Privacy Policy</a>.
         </p>
-        <Spacer y={3} />
-
-
-      </div>
-
-      <div style={{ position: "absolute", bottom: 0, padding: "0 16px", textAlign: "center" }}>
-        
+        <Spacer y={3} /> */}
+        </div>
       </div>
     </div>
   } else {
@@ -204,11 +214,13 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
 
     const businessBankData = filteredBankData.filter(d => isBusinessBankAccount(d))
     const personalBankData = filteredBankData.filter(d => !isBusinessBankAccount(d))
-    const commonBankData = personalBankData.filter(d => ["monzo", "starling", "revolut", "mock"].some(name => d.bankName.toLowerCase().includes(name)))
+    const commonBankNames = ["monzo", "starling", "revolut", "mock"]
+    const commonBankData = personalBankData.filter(d => commonBankNames.some(name => d.bankName.toLowerCase().includes(name)))
+    const uncommonBankData = personalBankData.filter(d => !commonBankNames.some(name => d.bankName.toLowerCase().includes(name)))
 
     const sections = [
       { title: "Most used", data: commonBankData },
-      { title: "Personal banks", data: personalBankData },
+      { title: "Personal banks", data: uncommonBankData },
       { title: "Business banks", data: businessBankData },
     ]
 
@@ -220,9 +232,9 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
 
       <div className="content">
         <Spacer y={9} />
-        <div style={{ padding: "0 16px", textAlign: "center" }}>
-          <p className="text-body-faded">Securely connect to your bank account and pay by bank transfer.</p>
-          <Spacer y={3} />
+        <p className="text-body-faded" style={{ textAlign: "center" }}>Securely connect to your bank account and pay by bank transfer.</p>
+        <Spacer y={3} />
+        <div style={{ display: "flex", columnGap: 16 }}>
           <div style={{
             display: "flex",
             alignItems: "center",
@@ -230,16 +242,30 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
             padding: "0 16px 0 8px",
             backgroundColor: Colors.OFF_WHITE_LIGHT,
             overflow: "hidden",
-            columnGap: 8
+            columnGap: 8,
+            flexGrow: 100,
           }}>
-            <Discover length={32} color={Colors.BLACK} />
+            <Discover length={32} color={Colors.GRAY_LIGHT} />
             <input
               value={bankName}
               onChange={handleBankNameChange}
               placeholder="Search"
               style={{ flexGrow: 10, height: "100%", backgroundColor: Colors.OFF_WHITE_LIGHT }} />
           </div>
+
+          <Dropdown 
+            width="auto"
+            position="bottom right"
+            optionList={[
+              { label: "British banks", value: "GB" },
+              { label: "Irish banks", value: "IE" }
+            ]}
+            name="bankCountrySelect"
+            value={countryCode}
+            onChange={handleCountryCodeChange}
+          />
         </div>
+        
 
         <Spacer y={3} />
 
@@ -247,15 +273,22 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
           filteredBankData.length > 0 ?
             <div>
               {
-                sections.map(section => section.data.length > 0 && <div>
-                  <h2 className="header-m">{section.title}</h2>
+                sections.map((section, index) => section.data.length > 0 && <div key={index}>
+                  <h2 className="header-s">{section.title}</h2>
                   <Spacer y={3} />
-                  <div style={{ display: 'grid', gridTemplateColumns: "1fr 1fr", columnGap: 16, rowGap: 16 }}>
-                    {
-                      section.data.map(datum => <BankTile key={datum.bankCode} name={datum.bankName} imageRef={datum.logoUrl} onClick={() => handleChooseBank(datum)} />)
-                    }
-                  </div>
-                  <Spacer y={6} />
+                  {
+                    section.data.map(datum => {
+                      return <div key={datum.bankCode}>
+                        <BankTile
+                           name={datum.bankName} 
+                           imageRef={datum.logoUrl} 
+                           onClick={() => handleChooseBank(datum)}
+                        />
+                        <Spacer y={2} />
+                      </div>
+                    })
+                  }
+                  <Spacer y={2} />
                 </div>)
               }
             </div> :

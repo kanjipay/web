@@ -11,10 +11,13 @@ import { sendWebhook } from "../webhooks/sendWebhook";
 
 export async function updatePaymentAttemptIfNeededCrezco(paymentAttemptId: string, paymentAttemptStatus: PaymentAttemptStatus) {
   const logger = new LoggingController("Update payment attempt if needed crezco")
+
   logger.log("Got variables", {}, {
     paymentAttemptId,
     paymentAttemptStatus
   })
+
+  if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) { return }
 
   const { paymentAttempt, paymentAttemptError } = await fetchDocument(Collection.PAYMENT_ATTEMPT, paymentAttemptId)
 
@@ -29,8 +32,6 @@ export async function updatePaymentAttemptIfNeededCrezco(paymentAttemptId: strin
     return { error: paymentIntentError }
   }
 
-  const redirectUrl = paymentIntent.successUrl
-
   const updatePaymentAttempt = db()
     .collection(Collection.PAYMENT_ATTEMPT)
     .doc(paymentAttemptId)
@@ -40,47 +41,51 @@ export async function updatePaymentAttemptIfNeededCrezco(paymentAttemptId: strin
 
   const promises: Promise<any>[] = [updatePaymentAttempt]
 
-  if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
-    const updatePaymentIntent = db()
-      .collection(Collection.PAYMENT_INTENT)
-      .doc(paymentIntentId)
-      .update({
-        status: PaymentIntentStatus.SUCCESSFUL,
-        paidAt: firestore.FieldValue.serverTimestamp(),
-        paymentAttemptId,
-      })
+  const paymentIntentStatus = paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL ? PaymentIntentStatus.SUCCESSFUL : PaymentIntentStatus.CANCELLED
 
-    const { clientId, payeeId } = paymentIntent
-
-    const [
-      { client, clientError }
-    ] = await Promise.all([
-      fetchDocument(Collection.CLIENT, clientId),
-      updatePaymentIntent
-    ])
-
-    if (clientError) {
-      return { error: clientError }
-    }
-
-    const { webhookUrl } = client
-
-    const sendWebhookPromise = sendWebhook(webhookUrl, {
-      webhookCode: WebhookCode.PAYMENT_INTENT_UPDATE,
-      paymentAttemptId,
-      paymentIntentId,
-      payeeId,
-      timestamp: new Date(),
-      paymentIntentStatus: PaymentIntentStatus.SUCCESSFUL
-    })
-
-    // TODO: implement retries
-    promises.push(sendWebhookPromise)
+  const paymentIntentUpdate = {
+    status: paymentIntentStatus,
+    paymentAttemptId,
   }
+
+  if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
+    paymentIntentUpdate["paidAt"] = firestore.FieldValue.serverTimestamp()
+  }
+
+  const updatePaymentIntent = db()
+    .collection(Collection.PAYMENT_INTENT)
+    .doc(paymentIntentId)
+    .update(paymentIntentUpdate)
+
+  const { clientId, payeeId } = paymentIntent
+
+  const [
+    { client, clientError }
+  ] = await Promise.all([
+    fetchDocument(Collection.CLIENT, clientId),
+    updatePaymentIntent
+  ])
+
+  if (clientError) {
+    return { error: clientError }
+  }
+
+  const { webhookUrl } = client
+
+  const sendWebhookPromise = sendWebhook(webhookUrl, {
+    webhookCode: WebhookCode.PAYMENT_INTENT_UPDATE,
+    paymentAttemptId,
+    paymentIntentId,
+    payeeId,
+    timestamp: new Date(),
+    paymentIntentStatus
+  })
+
+  promises.push(sendWebhookPromise)
 
   await Promise.all(promises)
 
-  return { redirectUrl, paymentIntentId }
+  return
 }
 
 export async function updatePaymentAttemptIfNeededMoneyhub(

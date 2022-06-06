@@ -33,12 +33,14 @@ export default class PayeesController extends BaseController {
         companyNumber,
         sortCode,
         accountNumber,
-        address
+        address,
+        currency
       } = req.body
 
       const { payeeId } = await addDocument(Collection.PAYEE, {
         companyName,
         companyNumber,
+        currency,
         sortCode,
         accountNumber,
         address,
