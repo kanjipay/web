@@ -180,7 +180,7 @@ export default class OrdersController extends BaseController {
     );
 
     const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId, { status: MerchantStatus.OPEN})
-    const { payeeId } = merchant
+    const { payeeId, currency } = merchant
 
     if (merchantError) {
       next(merchantError)
@@ -198,7 +198,7 @@ export default class OrdersController extends BaseController {
     const total = this.calculateOrderTotal(requestedItems, menuItems)
     const orderItems = this.generateOrderItems(requestedItems, menuItems)
     const orderNumber = await this.generateOrderNumber(merchantId, loggingClient)
-    const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId, OrderType.MENU)
+    const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId, currency, OrderType.MENU)
 
     const orderRef = await db()
       .collection(Collection.ORDER)
@@ -210,6 +210,7 @@ export default class OrdersController extends BaseController {
           paymentIntentId
         },
         total,
+        currency,
         deviceId,
         userId,
         merchantId,
@@ -342,7 +343,7 @@ export default class OrdersController extends BaseController {
         }
       }
 
-      const { payeeId } = merchant
+      const { payeeId, currency } = merchant
 
       const total = price * quantity
 
@@ -355,6 +356,7 @@ export default class OrdersController extends BaseController {
         status: OrderStatus.PENDING,
         type: OrderType.TICKETS,
         total,
+        currency,
         deviceId,
         userId,
         eventId,
@@ -375,7 +377,7 @@ export default class OrdersController extends BaseController {
 
       if (total > 0) {
         logger.log("Event is paid, creating payment intent")
-        const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId, OrderType.TICKETS)
+        const { paymentIntentId, checkoutUrl } = await createMercadoPaymentIntent(total, payeeId, currency, OrderType.TICKETS)
 
         logger.log("Created payment intent", {
           paymentIntentId,
@@ -400,7 +402,8 @@ export default class OrdersController extends BaseController {
             product.price, 
             orderId,
             userId,
-            endsAt, 
+            endsAt,
+            merchant.currency,
             quantity
           )
         )

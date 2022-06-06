@@ -8,11 +8,12 @@ import { PaymentIntentStatus } from "../../../shared/enums/PaymentIntentStatus";
 
 export default class PaymentIntentsController extends BaseController {
   createPaymentIntent = async (req, res, next) => {
-    const { amount, successUrl, cancelledUrl, payeeId } = req.body
+    const { amount, currency, successUrl, cancelledUrl, payeeId } = req.body
     const { clientId } = req
 
     const { payeeError } = await fetchDocument(Collection.PAYEE, payeeId, { 
       approvalStatus: PayeeApprovalStatus.APPROVED,
+      currency,
       clientId
     })
 
@@ -23,6 +24,7 @@ export default class PaymentIntentsController extends BaseController {
 
     const { paymentIntentId } = await addDocument(Collection.PAYMENT_INTENT, {
       amount,
+      currency,
       successUrl,
       cancelledUrl,
       clientId,

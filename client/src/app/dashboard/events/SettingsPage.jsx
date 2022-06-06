@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import Form from "../../../components/Form";
 import ImagePicker from "../../../components/ImagePicker";
 import { TextArea } from "../../../components/Input";
+import Dropdown from "../../../components/input/Dropdown";
 import { Field, IntField } from "../../../components/input/IntField";
 import ResultBanner, { ResultType } from "../../../components/ResultBanner";
 import Spacer from "../../../components/Spacer";
@@ -39,7 +40,7 @@ export default function SettingsPage({ merchant }) {
   }
 
   const handleChangeBankDetails = async (data) => {
-
+    window.open('mailto:team@mercadopay.co')
   }
 
   return <div>
@@ -80,34 +81,46 @@ export default function SettingsPage({ merchant }) {
           submitTitle="Save"
         />
         <Spacer y={6} />
-        {/* <Form
+        <Form
           initialDataSource={merchant}
           formGroupData={[
             {
               title: "Bank details",
+              explanation: "Contact us to change these details",
               items: [
+                {
+                  name: "currency",
+                  input: <Dropdown optionList={[
+                    { label: "Pounds", value: "GBP" },
+                    { label: "Euros", value: "EUR" }
+                  ]} />,
+                  disabled: true
+                },
                 {
                   name: "companyName",
                   explanation: "This name must exactly match the one on your bank account.",
-                  input: <Field disabled={true} />
+                  input: <Field />,
+                  disabled: true
                 },
                 {
                   name: "sortCode",
                   validations: [],
-                  input: <IntField disabled={true} maxChars={6} />
+                  input: <IntField disabled={true} maxChars={6} />,
+                  disabled: true
                 },
                 {
                   name: "accountNumber",
                   validations: [],
-                  input: <IntField disabled={true} maxChars={8} />
+                  input: <IntField disabled={true} maxChars={8} />,
+                  disabled: true
                 }
               ]
             }
           ]}
-          submitTitle="Change"
+          submitTitle="Contact us to change"
           onSubmit={handleChangeBankDetails}
         />
-        <Spacer y={6} /> */}
+        <Spacer y={6} />
         
       </div>
 

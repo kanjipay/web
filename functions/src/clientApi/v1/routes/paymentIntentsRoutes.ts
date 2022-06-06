@@ -15,6 +15,10 @@ const createPaymentIntentSchema: AllowedSchema = {
       minimum: 1,
       maximum: 100 * 1000
     },
+    currency: {
+      type: "string",
+      enum: ["GBP", "EUR"]
+    },
     successUrl: {
       type: "string",
       format: "uri"

@@ -15,9 +15,13 @@ import { getMerchantStorageRef } from "../../utils/helpers/storage";
 import { uploadBytes } from "firebase/storage";
 import { auth } from "../../utils/FirebaseUtils";
 import { onIdTokenChanged } from "firebase/auth";
+import Dropdown from "../../components/input/Dropdown";
+import { useIntl } from "react-intl"
+import { getCurrencyCode } from "../../utils/helpers/money";
 
 export default function CreateOrganisationPage({ authUser }) {
   const navigate = useNavigate()
+  const intl = useIntl()
 
   onIdTokenChanged(auth, user => {
     console.log("id token changed")
@@ -75,6 +79,9 @@ export default function CreateOrganisationPage({ authUser }) {
       <h2 className="header-l">Create an organisation</h2>
       <Spacer y={3} />
       <Form
+        initialDataSource={{
+          currency: getCurrencyCode(intl.locale)
+        }}
         formGroupData={[
           {
             title: "Basic information",
@@ -102,6 +109,14 @@ export default function CreateOrganisationPage({ authUser }) {
             title: "Bank details",
             explanation: "Enter the bank details for the bank you want your ticket sales to be paid into. It must be a valid UK or Irish bank account",
             items: [
+              {
+                name: "currency",
+                explanation: "This wil be the currency you'll accept payments in.",
+                input: <Dropdown optionList={[
+                  { value: "GBP", label: "Pounds" }, 
+                  { value: "EUR", label: "Euros" }
+                ]} />,
+              },
               {
                 name: "companyName",
               },

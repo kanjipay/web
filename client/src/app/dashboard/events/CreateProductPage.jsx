@@ -7,8 +7,9 @@ import { TextArea } from "../../../components/Input";
 import { FieldDecorator, FloatField, IntField } from "../../../components/input/IntField";
 import Spacer from "../../../components/Spacer";
 import Collection from "../../../enums/Collection";
+import { getCurrencySymbol } from "../../../utils/helpers/money";
 
-export default function CreateProductPage({ event, products }) {
+export default function CreateProductPage({ event, products, merchant }) {
   const { merchantId } = useParams()
   const navigate = useNavigate()
   const handleCreateProduct = async (data) => {
@@ -71,7 +72,7 @@ export default function CreateProductPage({ event, products }) {
                 {
                   name: "price",
                   input: <FloatField />,
-                  decorator: <FieldDecorator prefix="£" />,
+                  decorator: <FieldDecorator prefix={getCurrencySymbol(merchant.currency)} />,
                 },
                 {
                   name: "capacity",

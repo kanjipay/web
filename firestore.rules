@@ -29,7 +29,8 @@ service cloud.firestore {
           "payeeId",
           "displayName",
           "companyName",
-          "address"
+          "address",
+          "currency"
         ],
         "Event": ["merchantId", "title", "description", "address", "startsAt", "endsAt", "maxTicketsPerPerson"],
         "Product": ["merchantId", "eventId", "title", "description", "capacity", "price", "sortOrder", "soldCount", "reservedCount"],
@@ -51,7 +52,7 @@ service cloud.firestore {
       
       allow update: if (
       	hasRequiredKeysForCollection("Merchant") &&
-        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo"]) &&
+        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency"]) &&
       	isAdminForMerchant(merchantId)
       )
     }

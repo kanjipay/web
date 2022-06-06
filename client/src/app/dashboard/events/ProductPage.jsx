@@ -12,8 +12,9 @@ import Popup from 'reactjs-popup';
 import MainButton from "../../../components/MainButton"
 import { ButtonTheme } from "../../../components/CircleButton"
 import { Modal } from "./EventPage"
+import { getCurrencySymbol } from "../../../utils/helpers/money"
 
-export default function ProductPage({ event, products }) {
+export default function ProductPage({ event, products, merchant }) {
   const { productId } = useParams()
   const navigate = useNavigate()
   const product = products.find(p => p.id === productId)
@@ -73,7 +74,7 @@ export default function ProductPage({ event, products }) {
               {
                 name: "price",
                 input: <FloatField maxChars={8} />,
-                decorator: <FieldDecorator prefix="£" />,
+                decorator: <FieldDecorator prefix={getCurrencySymbol(merchant.currency)} />,
                 disabled: !!product.isPublished,
               },
               {

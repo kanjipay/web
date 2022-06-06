@@ -42,7 +42,6 @@ export default function MainButton({
     justifyContent: "center",
     color: foregroundColor,
     cursor: props.disabled ? "mouse" : "pointer",
-    // font: "500 1em Oswald, Roboto, sans-serif",
     ...style,
   };
 

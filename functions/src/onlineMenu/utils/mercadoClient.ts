@@ -8,7 +8,7 @@ const defaultHeaders = {
   "mcp-client-secret": process.env.MERCADO_CLIENT_SECRET
 }
 
-export async function createMercadoPaymentIntent(amount: number, payeeId: string, orderType: OrderType) {
+export async function createMercadoPaymentIntent(amount: number, payeeId: string, currency: string, orderType: OrderType) {
   let subPath: string
 
   switch (orderType) {
@@ -26,6 +26,7 @@ export async function createMercadoPaymentIntent(amount: number, payeeId: string
   const res = await axios.post(`${mercadoBaseUrl}/payment-intents`, {
     amount,
     payeeId,
+    currency,
     successUrl,
     cancelledUrl
   }, {

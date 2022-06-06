@@ -88,7 +88,7 @@ export default function BasketPage({ merchant }) {
         {merchantBasketItems().map((item) => {
           return (
             <div key={item.id}>
-              <BasketItem item={item} isEditing={isEditing} />
+              <BasketItem item={item} currency={merchant.currency} isEditing={isEditing} />
               <Spacer y={2} />
             </div>
           );
@@ -98,7 +98,7 @@ export default function BasketPage({ merchant }) {
         <div className="flex-container">
           <div className="header-xs">Total</div>
           <div className="flex-spacer" />
-          <div className="header-xs">{formatCurrency(total)}</div>
+          <div className="header-xs">{formatCurrency(total, merchant.currency)}</div>
         </div>
       </div>
 

@@ -62,14 +62,11 @@ export default function MerchantDropdown({ memberships }) {
         <h4 className="text-body-faded" style={{ padding: 16 }}>Your projects</h4>
         {
           memberships.map(m => {
-            const isCurrentMembership = membership.id === m.id
             return <MenuItem
               showsSeparator={false}
               key={m.id}
               title={m.merchantName}
-              style={{
-                fontWeight: isCurrentMembership ? 600 : 400,
-              }}
+              isSelected={membership.id === m.id}
               onClick={() => handleSwitchMerchant(m.merchantId, close)}
             />
           })

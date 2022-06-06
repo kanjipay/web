@@ -32,7 +32,7 @@ export default class PaymentAttemptsController extends BaseController {
         return
       }
 
-      const { amount, payeeId } = paymentIntent
+      const { amount, currency, payeeId } = paymentIntent
 
       const { payee, payeeError } = await fetchDocument(Collection.PAYEE, payeeId)
 
@@ -55,7 +55,8 @@ export default class PaymentAttemptsController extends BaseController {
         paymentAttemptId,
         paymentIntentId,
         companyName.replace(/[^a-zA-Z0-9 \.\-]/, ""), 
-        amount
+        amount,
+        currency
       )
 
       if (payDemandError) {
@@ -90,6 +91,7 @@ export default class PaymentAttemptsController extends BaseController {
         createdAt: firestore.FieldValue.serverTimestamp(),
         deviceId,
         amount,
+        currency,
       };
 
       await db()

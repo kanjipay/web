@@ -6,7 +6,7 @@ import { formatCurrency } from "../../../../utils/helpers/money"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { format } from "date-fns"
 
-export default function ProductListing({ product, linkPath = product.id }) {
+export default function ProductListing({ product, currency, linkPath = product.id }) {
   const isSoldOut = product.soldCount >= product.capacity
   const releaseDate = dateFromTimestamp(product.releasesAt)
   const isReleased = releaseDate < new Date()
@@ -17,7 +17,7 @@ export default function ProductListing({ product, linkPath = product.id }) {
   let message
 
   if (isAvailable) {
-    message = formatCurrency(product.price)
+    message = formatCurrency(product.price, currency)
   } else if (!isReleased) {
     message = `Releases ${format(releaseDate, "MMM do")} at ${format(releaseDate, "H:mm")}`
   } else if (isSoldOut) {

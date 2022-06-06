@@ -21,7 +21,7 @@ export default class MerchantsController extends BaseController {
         req.body
       );
 
-      const { accountNumber, address, companyName, displayName, sortCode, description, photo } = req.body;
+      const { accountNumber, address, companyName, displayName, sortCode, description, currency, photo } = req.body;
 
       const payeeId = uuid();
       const merchantId = uuid();
@@ -34,6 +34,7 @@ export default class MerchantsController extends BaseController {
           address,
           companyName,
           sortCode,
+          currency,
           createdAt: firestore.FieldValue.serverTimestamp(),
           clientId: process.env.MERCADO_CLIENT_ID,
           approvalStatus: PayeeApprovalStatus.PENDING,
@@ -48,7 +49,10 @@ export default class MerchantsController extends BaseController {
           photo,
           displayName,
           description,
+          currency,
           payeeId,
+          sortCode,
+          accountNumber,
           createdAt: firestore.FieldValue.serverTimestamp(),
           approvalStatus: "PENDING"
         }); 

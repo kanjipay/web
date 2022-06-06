@@ -17,6 +17,7 @@ export async function processSuccessfulTicketsOrder(
   orderId: string,
   userId: string,
   eventEndsAt,
+  currency: string,
   quantity: number
 ) {
   const logger = new LoggingController("processSuccessfulTicketsOrder")
@@ -79,7 +80,7 @@ export async function processSuccessfulTicketsOrder(
   const { email, firstName } = user
   const boughtAt = new Date()
 
-  await sendTicketReceipt(email, firstName, eventTitle, productTitle, productPrice, quantity, boughtAt, ticketIds)
+  await sendTicketReceipt(email, firstName, eventTitle, productTitle, productPrice, quantity, boughtAt, currency, ticketIds)
 
   return
 }
