@@ -31,4 +31,23 @@ paymentAttemptsRoutes.post(
   paymentAttemptsController.createCrezco
 )
 
+const createStripePaymentAttemptSchema: AllowedSchema = {
+  type: "object",
+  required: ["orderId", "deviceId"],
+  properties: {
+    orderId: {
+      type: "string"
+    },
+    deviceId: {
+      type: "string"
+    }
+  }
+}
+
+paymentAttemptsRoutes.post(
+  "/stripe",
+  validate({ body: createStripePaymentAttemptSchema }),
+  paymentAttemptsController.createStripe
+)
+
 export default paymentAttemptsRoutes;

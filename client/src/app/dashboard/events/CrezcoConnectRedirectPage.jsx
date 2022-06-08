@@ -6,7 +6,7 @@ import IconActionPage from "../../../components/IconActionPage";
 import LoadingPage from "../../../components/LoadingPage";
 import { NetworkManager } from "../../../utils/NetworkManager";
 
-export default function BankDetailsVerifiedPage() {
+export default function CrezcoConnectRedirectPage() {
   const [registered, setRegistered] = useState(false);
   const { merchantId } = useParams()
   const [searchParams] = useSearchParams()

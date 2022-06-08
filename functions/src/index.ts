@@ -32,6 +32,7 @@ export const main = getHttpFunction(mainApp, [
   "JWKS_PRIVATE_KEY",
   "SENDGRID_API_KEY",
   "CREZCO_API_KEY",
+  "STRIPE_CLIENT_SECRET"
 ])
 
 export const internal = getHttpFunction(internalApp, [

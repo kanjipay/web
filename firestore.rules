@@ -52,7 +52,7 @@ service cloud.firestore {
       
       allow update: if (
       	hasRequiredKeysForCollection("Merchant") &&
-        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency"]) &&
+        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe.wasSkipped"]) &&
       	isAdminForMerchant(merchantId)
       )
     }
