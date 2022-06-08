@@ -10,6 +10,10 @@ const LINK_DATA = {
     stateId: "123"
 };
 
+const CLIENT_DATA = {
+    companyName:'MY_COMPANY'
+};
+
 describe("Internal Get requests", function() {
     it("testing 200 response from get status", function() {
     chai
@@ -36,4 +40,13 @@ describe("Internal Get requests", function() {
                 expect(res).to.have.status(200);
                 });
             });
+            it("testing 200 response from create client", function() {
+                chai
+                    .request(internalUrl)
+                    .post('/clients')
+                    .send(CLIENT_DATA)
+                    .end(function (err, res) {
+                    expect(res).to.have.status(200);
+                    });
+                });
 });

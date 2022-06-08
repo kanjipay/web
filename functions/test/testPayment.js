@@ -17,20 +17,8 @@ const PAYMENT_INTENT_DATA = {
   "payeeId": "TEST"
 }
 
+
 describe("Payment Tests", function() {
-    describe("Create Payment Intent", function() {
-      it("testing 200 response", function() {
-        chai
-          .request(clientUrl)
-          .post('/payment-intents')
-          .set('mcp-client-id', clientId)
-          .set('mcp-client-secret', clientSecret)
-          .send(PAYMENT_INTENT_DATA)
-          .end(function (err, res) {
-            expect(res).to.have.status(200);
-         });
-      });
-    });
     describe("Create Payment Intent then Crezco Payment Attempt", function() {
       it("testing 200 response", function() {
         chai

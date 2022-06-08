@@ -5,6 +5,7 @@ chai.use(chaiHttp);
 require('dotenv').config();
 
 const clientUrl = process.env.BASE_URL + '/clientApi/v1';
+const internalUrl = process.env.BASE_URL + '/internal/api/v1';
 const clientId = process.env.CLIENT_ID;
 const clientSecret = process.env.CLIENT_SECRET;
 
@@ -13,6 +14,7 @@ companyNumber: '12345678',
 sortCode: '000000',
 accountNumber: '12345678',
 address: 'flat 2, 20 lamb street'}
+
 
 describe("Payees Tests", function() {
     describe("Get Payees", function() {
@@ -29,7 +31,7 @@ describe("Payees Tests", function() {
       });
     });
   
-    describe("Create Payee", function() {
+    describe("Create Payee and Update with Crezco Id", function() {
       it("testing 200 response", function() {
         chai
           .request(clientUrl)
