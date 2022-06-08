@@ -9,10 +9,13 @@ import { Colors } from "../../../components/CircleButton";
 import IconActionPage from "../../../components/IconActionPage";
 import Collection from "../../../enums/Collection";
 import AnalyticsPage from "./AnalyticsPage";
-import BankDetailsVerifiedPage from "./BankDetailsVerifiedPage";
+import CrezcoConnectRedirectPage from "./CrezcoConnectRedirectPage";
 import Events from "./Events";
 import SettingsPage from "./SettingsPage";
-import VerifyBankDetailsPage from "./VerifyBankDetailsPage";
+import ConnectCrezcoPage from "./ConnectCrezcoPage";
+import ConnectStripePage from "./ConnectStripePage";
+import StripeConnectRedirectPage from "./StripeConnectRedirectPage";
+import Discover from "../../../assets/icons/Discover";
 
 function SidebarItem({ title, Icon, ...props }) {
   const [isHovering, setIsHovering] = useState(false)
@@ -62,6 +65,54 @@ export default function Merchant({ user }) {
       </div>
     </div>
   } else if (merchant) {
+    let routes = []
+
+    if (merchant.crezco) {
+      routes.push(
+        <Route path="crezco-connected" element={
+          <IconActionPage
+            Icon={Tick}
+            iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+            iconForegroundColor={Colors.BLACK}
+            title="Bank details added"
+            body="You're now all set up to receive payments by bank transfer!"
+            primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
+            primaryActionTitle="Continue"
+          />
+        } />
+      )
+
+      if (merchant.stripe?.areChargesEnabled || merchant.stripe?.wasSkipped) {
+        routes.push(
+          <Route path="events/*" element={<Events merchant={merchant} />} />,
+          <Route path="/" element={<AnalyticsPage />} />,
+          <Route path="analytics" element={<AnalyticsPage />} />,
+          <Route path="settings" element={<SettingsPage merchant={merchant} />} />,
+          <Route path="stripe-connected" element={
+          <IconActionPage
+            Icon={Tick}
+            iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+            iconForegroundColor={Colors.BLACK}
+            title="Card payments enabled"
+            body="You're now all set up to receive card payments!"
+            primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
+            primaryActionTitle="Continue"
+          />
+        } />
+        )
+      } else {
+        routes.push(
+          <Route path="stripe-connected" element={<StripeConnectRedirectPage />} />,
+          <Route path="*" element={<ConnectStripePage />} />
+        )
+      }
+    } else {
+      routes.push(
+        <Route path="crezco-connected" element={<CrezcoConnectRedirectPage />} />,
+        <Route path="*" element={<ConnectCrezcoPage user={user} />} />
+      )
+    }
+
     return <div style={{ height: "calc(100vh - 56px)", position: "relative", display: "flex" }}>
       <nav style={{ width: 256, backgroundColor: Colors.OFF_BLACK, position: "fixed", height: "100vh" }}>
         <SidebarHeader title="Manage" />
@@ -71,36 +122,20 @@ export default function Merchant({ user }) {
         <SidebarItem to="settings" title="Settings" Icon={Settings} />
       </nav>
       <div className="flex-spacer" style={{ padding: "0 24px", position: "absolute", left: 256, right: 0 }}>
-        {
-          merchant.crezco ?
-            <Routes>
-              
-              <Route path="events/*" element={<Events merchant={merchant} />} />
-              <Route path="/" element={<AnalyticsPage />} />
-              <Route path="analytics" element={<AnalyticsPage />} />
-              <Route path="settings" element={<SettingsPage merchant={merchant} />} />
-              <Route path="details-verified" element={
-                <IconActionPage
-                  Icon={Tick}
-                  iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
-                  iconForegroundColor={Colors.BLACK}
-                  title="Bank details added"
-                  body="You're now all set up to receive payments! Now let's go to your events page to create your first event."
-                  primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
-                  primaryActionTitle="Go to events page"
-                />
-              } />
-            </Routes> :
-            <Routes>
-              <Route path="details-verified" element={<BankDetailsVerifiedPage />} />
-              <Route path="*" element={<VerifyBankDetailsPage user={user} />} />
-            </Routes>
-            
-            
-        }
+        <Routes>{routes}</Routes>
       </div>
     </div>
   } else {
-    return <div>That merchant doesn't exist</div>
+    const handleGoBack = () => {
+      navigate("/dashboard")
+    }
+
+    return <IconActionPage
+      Icon={Discover}
+      title="Organisation not found"
+      body="We couldn't find the organisation you specified"
+      primaryActionTitle="Go back"
+      primaryAction={handleGoBack}
+    />
   }
 }

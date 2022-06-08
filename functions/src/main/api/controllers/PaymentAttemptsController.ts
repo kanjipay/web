@@ -8,9 +8,83 @@ import { createPayment, createPaymentDemand } from "../../../shared/utils/crezco
 import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus";
 import { firestore } from "firebase-admin";
 import { db } from "../../../shared/utils/admin";
-import { ErrorHandler, HttpStatusCode } from "../../../shared/utils/errors";
+import { ErrorHandler, HttpError, HttpStatusCode } from "../../../shared/utils/errors";
+import stripe from "../../../shared/utils/stripeClient";
 
 export class PaymentAttemptsController extends BaseController {
+  createStripe = async (req, res, next) => {
+    try {
+      const logger = new LoggingController("Create payment attempt with stripe")
+      const { orderId, deviceId } = req.body;
+
+      const { order, orderError } = await fetchDocument(Collection.ORDER, orderId, {
+        status: OrderStatus.PENDING
+      })
+
+      if (orderError) {
+        next(orderError)
+        return
+      }
+
+      const { total, currency, merchantId } = order
+
+      const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
+
+      if (merchantError) {
+        next(merchantError)
+        return
+      }
+
+      const stripeAccountId = merchant.stripe?.accountId
+
+
+      if (!stripeAccountId || !merchant.stripe.areChargesEnabled) {
+        const errorMessage = "Merchant is not set up for Stripe"
+        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        return
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: total,
+        currency: currency.toLowerCase(),
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      }, {
+        stripeAccount: stripeAccountId,
+      })
+
+      const paymentAttemptId = uuid()
+
+      const clientSecret = paymentIntent.client_secret
+
+      const paymentAttemptData = {
+        orderId,
+        stripe: {
+          paymentIntentId: paymentIntent.id,
+        },
+        merchantId,
+        status: PaymentAttemptStatus.PENDING,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        deviceId,
+        amount: total,
+        currency,
+      }
+
+      await db()
+        .collection(Collection.PAYMENT_ATTEMPT)
+        .doc(paymentAttemptId)
+        .set(paymentAttemptData)
+
+      logger.log("Payment attempt doc added", { paymentAttemptData });
+
+      return res.status(200).json({ clientSecret })
+
+    } catch (err) {
+      next(err)
+    }
+  }
+
   createCrezco = async (req, res, next) => {
     try {
       const logger = new LoggingController("Create payment attempt with crezco")

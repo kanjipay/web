@@ -3,12 +3,12 @@ import Forward from "../../../assets/icons/Forward"
 import { Colors } from "../../../components/CircleButton"
 import IconActionPage from "../../../components/IconActionPage"
 
-export default function VerifyBankDetailsPage({ user }) {
+export default function ConnectCrezcoPage({ user }) {
   const { merchantId } = useParams()
   
   const handleVerifyDetails = () => {
     const redirectUrl = new URL(window.location.href)
-    redirectUrl.pathname = `/dashboard/o/${merchantId}/details-verified`
+    redirectUrl.pathname = `/dashboard/o/${merchantId}/crezco-connected`
 
     const crezcoRegisteredUrl = new URL(process.env.REACT_APP_CREZCO_REDIRECT)
     crezcoRegisteredUrl.searchParams.append("redirect_uri", redirectUrl.href)
