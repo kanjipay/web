@@ -1,5 +1,4 @@
 import Tick from "../../assets/icons/Tick";
-import { Colors } from "../../components/CircleButton";
 import CircleIcon from "../../components/CircleIcon";
 import Spacer from "../../components/Spacer";
 

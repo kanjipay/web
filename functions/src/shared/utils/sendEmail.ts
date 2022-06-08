@@ -28,6 +28,34 @@ async function sendEmail(toEmail: string, templateId: TemplateId, data: unknown)
   })
 }
 
+export async function sendMenuReceiptEmail(
+  toEmail: string,
+  merchantName: string,
+  orderNumber: number,
+  orderItems: any[],
+  total: number,
+  currency: string
+) {
+  const logger = new LoggingController("sendMenuReceipt")
+
+  const data = {
+    merchantName,
+    orderNumber,
+    orderItems: orderItems.map(item => {
+      item.price = formatCurrency(item.price, currency)
+      return item
+    }),
+    total: formatCurrency(total, currency)
+  }
+
+  logger.log("Sending menu receipt", {
+    toEmail,
+    data
+  })
+
+  return sendEmail(toEmail, TemplateId.MENU_RECEIPT, data)
+}
+
 export async function sendTicketReceipt(
   toEmail: string, 
   firstName: string,
@@ -54,11 +82,18 @@ export async function sendTicketReceipt(
 
   const total = formatCurrency(productPrice * quantity, currency)
 
-  const tickets = ticketIds.map(ticketId => {
+  const tickets = ticketIds.map((ticketId, index) => {
+    let ticketNumber = (index + 1).toString()
+
+    while (ticketNumber.length < 3) {
+      ticketNumber = "0" + ticketNumber
+    }
+
     return {
       id: ticketId,
       productTitle,
-      boughtAt: format(boughtAt, "HH:mm dd-MM-yy")
+      boughtAt: format(boughtAt, "HH:mm dd-MM-yy"),
+      number: ticketNumber
     }
   })
 

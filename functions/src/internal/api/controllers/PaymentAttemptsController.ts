@@ -19,7 +19,7 @@ export default class PaymentAttemptsController extends BaseController {
     try {
       const logger = new LoggingController("Create payment attempt with crezco")
 
-      const { paymentIntentId, crezcoBankCode, deviceId } = req.body;
+      const { paymentIntentId, crezcoBankCode, countryCode, deviceId } = req.body;
 
       logger.log("Got body vars", {}, { paymentIntentId, crezcoBankCode, deviceId })
 
@@ -70,7 +70,8 @@ export default class PaymentAttemptsController extends BaseController {
         crezcoUserId, 
         paymentDemandId,
         paymentAttemptId,
-        crezcoBankCode
+        crezcoBankCode,
+        countryCode
       )
 
       if (paymentError) {

@@ -45,6 +45,9 @@ const createCrezcoPaymentAttemptSchema: AllowedSchema = {
     crezcoBankCode: {
       type: "string"
     },
+    countryCode: {
+      type: "string"
+    },
     deviceId: {
       type: "string"
     },

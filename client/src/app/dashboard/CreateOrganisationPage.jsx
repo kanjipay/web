@@ -1,4 +1,4 @@
-import { NetworkManager, ApiName } from "../../utils/NetworkManager";
+import { NetworkManager } from "../../utils/NetworkManager";
 import { TextArea } from "../../components/Input";
 import Spacer from "../../components/Spacer";
 import { useNavigate } from "react-router-dom";
@@ -35,11 +35,7 @@ export default function CreateOrganisationPage({ authUser }) {
       photo: photoFile.name,
     }
 
-    const response = await NetworkManager.post(
-      ApiName.ONLINE_MENU,
-      "/merchants/create",
-      body
-    );
+    const response = await NetworkManager.post("/merchants/create", body);
 
     const { merchantId } = response.data
 

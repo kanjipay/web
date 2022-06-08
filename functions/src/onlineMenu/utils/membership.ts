@@ -1,7 +1,6 @@
 import { firestore } from "firebase-admin";
 import Collection from "../../shared/enums/Collection";
-import { db } from "../../shared/utils/admin";
-import { addCustomClaims } from "../../shared/utils/auth";
+import { auth, db } from "../../shared/utils/admin";
 
 export enum OrganisationRole {
   ADMIN = "ADMIN",
@@ -11,7 +10,7 @@ export enum OrganisationRole {
 }
 
 export async function createMembership(userId: string, merchantId: string, merchantName: string, role: OrganisationRole) {
-  const createMembershipObject = db()
+  await db()
     .collection(Collection.MEMBERSHIP)
     .doc(`${merchantId}:${userId}`)
     .set({
@@ -22,8 +21,18 @@ export async function createMembership(userId: string, merchantId: string, merch
       role
     })
 
-  await Promise.all([
-    createMembershipObject,
-    addCustomClaims(userId, { [merchantId]: role })
-  ])
+  const membershipSnapshot = await db()
+    .collection(Collection.MEMBERSHIP)
+    .where("userId", "==", userId)
+    .get()
+
+  const memberships: any[] = membershipSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+
+  const claims = memberships.reduce((claims, membership) => {
+    const { role, merchantId } = membership
+    claims[merchantId] = role
+    return claims
+  }, {})
+
+  await auth().setCustomUserClaims(userId, claims)
 }

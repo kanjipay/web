@@ -59,6 +59,7 @@ function UserNavBarItem({ user }) {
 
 export default function Dashboard() {
   const [user, setUser] = useState(null)
+  const [hasLoadedUser, setHasLoadedUser] = useState(false)
   const [authUser, setAuthUser] = useState(null)
   const openAuthPage = useOpenAuthPage()
   const { state } = useLocation()
@@ -68,13 +69,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     return onAuthStateChanged(auth, newAuthUser => {
-      // Check if it's a pointless update
-      console.log(authUser)
-      console.log(newAuthUser)
-      if (
+      setHasLoadedUser(true)
+      
+      if (hasLoadedUser && (
         (!authUser && !newAuthUser) ||
         (authUser && newAuthUser && authUser.uid === newAuthUser.uid)
-      ) { return }
+      )) { return }
 
       console.log("onAuthStateChanged")
 
@@ -88,7 +88,7 @@ export default function Dashboard() {
         })
       }
     })
-  }, [backPath, state, openAuthPage, authUser])
+  }, [backPath, state, openAuthPage, authUser, hasLoadedUser])
 
   useEffect(() => {
     if (!authUser || !authUser.email) { return }

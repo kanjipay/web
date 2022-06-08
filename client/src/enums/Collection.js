@@ -1,4 +1,4 @@
-import { collection, doc, onSnapshot, query } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
 import { db } from "../utils/FirebaseUtils";
 
 export default class Collection {
@@ -22,6 +22,16 @@ export default class Collection {
     this.name = name;
     this.ref = collection(db, this.name);
     this.docRef = (docId) => doc(db, this.name, docId);
+
+    this.get = async (docId) => {
+      const doc = await getDoc(this.docRef(docId))
+
+      if (doc.exists()) {
+        return { id: doc.id, ...doc.data() }
+      } else {
+        return null
+      }
+    }
 
     this.onChange = (docId, callback) => {
       return onSnapshot(this.docRef(docId), doc => {

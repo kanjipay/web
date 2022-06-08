@@ -12,17 +12,17 @@ import MainButton from "../../components/MainButton"
 import NavBar from "../../components/NavBar"
 import OrDivider from "../../components/OrDivider"
 import Spacer from "../../components/Spacer"
-import Collection from "../../enums/Collection"
 import { IdentityManager } from "../../utils/IdentityManager"
-import { ApiName, NetworkManager } from "../../utils/NetworkManager"
-import { createLink } from "../../utils/services/LinksService"
+import { NetworkManager } from "../../utils/NetworkManager"
+import { createLink, fetchLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
-import { cancelPaymentIntent } from "./redirects"
 import { useIntl } from "react-intl"
 import { getCountryCode } from "../../utils/helpers/money"
 import Dropdown from "../../components/input/Dropdown"
+import { cancelOrder } from "./cancelOrder"
+import Collection from "../../enums/Collection"
 
-export default function ChooseBankCrezcoPage({ paymentIntent }) {
+export default function ChooseBankCrezcoPage({ order }) {
   const navigate = useNavigate()
   const intl = useIntl()
   const [searchParams] = useSearchParams()
@@ -61,11 +61,7 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   }
 
   const handleClickBack = () => {
-    setIsLoading(true)
-
-    cancelPaymentIntent(paymentIntent).then(redirectUrl => {
-      window.location.href = redirectUrl
-    })
+    cancelOrder(order, navigate)
   }
 
   const handleChooseBank = (bankDatum) => {
@@ -74,7 +70,7 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
 
   const handleContinueToBank = () => {
     localStorage.setItem("crezcoBankCode", bankCode)
-    navigate("../payment", { state: { bankCode, referringDeviceId } })
+    navigate("../payment", { state: { bankCode, countryCode, referringDeviceId } })
   }
 
   const handleChooseAnotherBank = () => {
@@ -90,7 +86,7 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   useEffect(() => {
     setIsLoading(true)
 
-    NetworkManager.get(ApiName.INTERNAL, `/banks/${countryCode}`).then(res => {
+    NetworkManager.get(`/banks/${countryCode}`).then(res => {
       const bankData = res.data.sort((bankDatum1, bankDatum2) => {
         return bankDatum1.bankName > bankDatum2.bankName ? 1 : -1
       })
@@ -118,18 +114,19 @@ export default function ChooseBankCrezcoPage({ paymentIntent }) {
   useEffect(() => {
     if (bankCode && !isMobile) {
       const deviceId = IdentityManager.main.getDeviceId()
-      createLink(`/checkout/pi/${paymentIntent.id}/choose-bank?referringDeviceId=${deviceId}&bank=${bankCode}`).then(linkId => {
+      createLink(`/checkout/o/${order.id}/choose-bank?referringDeviceId=${deviceId}&bank=${bankCode}`).then(linkId => {
         setLinkId(linkId)
       })
     } else {
       setLinkId(null)
     }
-  }, [paymentIntent, bankCode])
+  }, [order, bankCode])
 
   useEffect(() => {
     if (!linkId) { return }
 
     return Collection.LINK.onChange(linkId, link => {
+      console.log(link)
       if (link.wasUsed) {
         navigate("../mobile-handover")
       }

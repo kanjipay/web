@@ -26,10 +26,16 @@ export default function OrderTicketsPage() {
     const { productId, quantity } = state
 
     createTicketOrder(productId, quantity)
-      .then(data => {
-        const { redirectUrl, orderId } = data
+      .then(({ orderId, isFree }) => {
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId, orderType: OrderType.TICKETS });
-        window.location.href = redirectUrl
+
+        console.log("isFree: ", isFree)
+
+        if (isFree) {
+          navigate(`/events/s/orders/${orderId}/confirmation`)
+        } else {
+          navigate(`/checkout/o/${orderId}/choose-bank`)
+        }
       })
       .catch(error => {
         setError({
@@ -37,7 +43,7 @@ export default function OrderTicketsPage() {
           description: error?.response?.data?.error
         })
       })
-  }, [state])
+  }, [state, navigate])
 
   const handleError = () => {
     navigate(backPath)

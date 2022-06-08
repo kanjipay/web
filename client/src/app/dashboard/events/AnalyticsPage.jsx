@@ -1,11 +1,11 @@
 import Spacer from "../../../components/Spacer";
 import MainButton from "../../../components/MainButton";
 import { Colors } from "../../../components/CircleButton";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import SegmentedControl from "../../../components/SegmentedControl";
-import { ApiName, NetworkManager } from "../../../utils/NetworkManager";
+import { NetworkManager } from "../../../utils/NetworkManager";
 import { useParams } from "react-router-dom";
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import LoadingPage from "../../../components/LoadingPage";
 import Popup from 'reactjs-popup';
 import Forward from "../../../assets/icons/Forward";
@@ -269,7 +269,7 @@ export default function AnalyticsPage() {
   const [salesData, setSalesData] = useState(null)
 
   useEffect(() => {
-    NetworkManager.get(ApiName.ONLINE_MENU, `/merchants/m/${merchantId}/tickets/sales-data`).then(res => {
+    NetworkManager.get(`/merchants/m/${merchantId}/tickets/sales-data`).then(res => {
       console.log(res.data)
       setSalesData(res.data)
     })

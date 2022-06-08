@@ -1,5 +1,5 @@
 import { IdentityManager } from "../IdentityManager";
-import { ApiName, NetworkManager } from "../NetworkManager";
+import { NetworkManager } from "../NetworkManager";
 
 export async function createMenuOrder(merchantId, basketItems) {
   const deviceId = IdentityManager.main.getDeviceId();
@@ -13,34 +13,34 @@ export async function createMenuOrder(merchantId, basketItems) {
       title: item.title,
     }))
 
-  const res = await NetworkManager.post(ApiName.ONLINE_MENU, "/orders/menu", {
+  const res = await NetworkManager.post("/orders/menu", {
     merchantId,
     deviceId,
     userId,
     requestedItems
   })
 
-  const { checkoutUrl, orderId } = res.data
+  const { orderId } = res.data
 
-  return { checkoutUrl, orderId };
+  return { orderId };
 }
 
 export async function createTicketOrder(productId, quantity) {
   const deviceId = IdentityManager.main.getDeviceId()
 
-  const res = await NetworkManager.post(ApiName.ONLINE_MENU, "/orders/tickets", {
+  const res = await NetworkManager.post("/orders/tickets", {
     productId,
     quantity,
     deviceId
   })
 
-  const { redirectUrl, orderId } = res.data
+  const { orderId, isFree } = res.data
 
-  return { redirectUrl, orderId }
+  return { orderId, isFree }
 }
 
 export function sendOrderReceipt(orderId, email) {
-  return NetworkManager.post(ApiName.ONLINE_MENU, "/orders/email-receipt", {
+  return NetworkManager.post("/orders/email-receipt", {
     orderId,
     email,
   })

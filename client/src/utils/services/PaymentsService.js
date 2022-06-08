@@ -1,11 +1,10 @@
-import { saveState } from "./StateService";
-import { v4 as uuid } from "uuid"
-import { ApiName, NetworkManager } from "../NetworkManager";
+import { NetworkManager } from "../NetworkManager";
 
-export async function createPaymentAttemptCrezco(paymentIntentId, bankCode, deviceId) {
-  const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts/crezco", {
-    paymentIntentId,
+export async function createPaymentAttemptCrezco(orderId, bankCode, countryCode, deviceId) {
+  const res = await NetworkManager.post("/payment-attempts/crezco", {
+    orderId,
     deviceId,
+    countryCode,
     crezcoBankCode: bankCode
   })
 
@@ -14,35 +13,35 @@ export async function createPaymentAttemptCrezco(paymentIntentId, bankCode, devi
   return redirectUrl
 }
 
-export async function createPaymentAttemptMoneyhub(paymentIntentId, bankId, deviceId) {
-  const clientState = uuid()
-  const stateId = await saveState({ clientState })
+// export async function createPaymentAttemptMoneyhub(paymentIntentId, bankId, deviceId) {
+//   const clientState = uuid()
+//   const stateId = await saveState({ clientState })
 
-  const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts", {
-    paymentIntentId,
-    deviceId,
-    stateId,
-    clientState,
-    moneyhubBankId: bankId
-  })
+//   const res = await NetworkManager.post("/payment-attempts", {
+//     paymentIntentId,
+//     deviceId,
+//     stateId,
+//     clientState,
+//     moneyhubBankId: bankId
+//   })
 
-  const { authUrl } = res.data
+//   const { authUrl } = res.data
 
-  return authUrl
-}
+//   return authUrl
+// }
 
-export async function confirmPayment(code, state, idToken) {
-  try {
-    const res = await NetworkManager.post(ApiName.INTERNAL, "/payment-attempts/confirm", {
-      code,
-      state,
-      idToken,
-    })
+// export async function confirmPayment(code, state, idToken) {
+//   try {
+//     const res = await NetworkManager.post("/payment-attempts/confirm", {
+//       code,
+//       state,
+//       idToken,
+//     })
 
-    const { paymentAttemptId } = res.data
+//     const { paymentAttemptId } = res.data
 
-    return paymentAttemptId
-  } catch (err) {
-    console.log(err)
-  }
-}
+//     return paymentAttemptId
+//   } catch (err) {
+//     console.log(err)
+//   }
+// }

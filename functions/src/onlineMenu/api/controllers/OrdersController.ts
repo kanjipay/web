@@ -1,6 +1,5 @@
 import BaseController from "../../../shared/BaseController";
-import { ErrorHandler, HttpError, HttpStatusCode } from "../../../shared/utils/errors";
-import { sendEmail } from "../../../internal/emails";
+import { HttpError, HttpStatusCode } from "../../../shared/utils/errors";
 import { db } from "../../../shared/utils/admin";
 import Collection from "../../../shared/enums/Collection";
 import OrderStatus from "../../../shared/enums/OrderStatus";
@@ -12,6 +11,7 @@ import { firestore } from "firebase-admin";
 import { OrderType } from "../../../shared/enums/OrderType";
 import { processSuccessfulTicketsOrder } from "../../utils/processSuccessfulTicketsOrder";
 import { v4 as uuid } from "uuid"
+import { sendMenuReceiptEmail } from "../../../shared/utils/sendEmail";
 
 export default class OrdersController extends BaseController {
   private async fetchMenuItems(requestedItems: { id: string, quantity: number, title: string }[], merchantId: string) {
@@ -444,24 +444,35 @@ export default class OrdersController extends BaseController {
   sendEmailReceipt = async (req, res, next) => {
     const { email, orderId } = req.body;
 
-    const { orderError } = await fetchDocument(Collection.ORDER, orderId, { receiptSent: false })
+    const { order, orderError } = await fetchDocument(Collection.ORDER, orderId, { receiptSent: false })
 
     if (orderError) {
       next(orderError)
       return
     }
 
-    await sendEmail(email, orderId).catch(
-      new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
-    );
+    const { merchantId, orderNumber, orderItems, total } = order
 
-    await db()
+    const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
+
+    if (merchantError) {
+      next(merchantError)
+      return
+    }
+
+    const { displayName, currency } = merchant
+
+    const sendEmail = sendMenuReceiptEmail(email, displayName, orderNumber, orderItems, total, currency)
+
+    const updateOrder = db()
       .collection(Collection.ORDER)
       .doc(orderId)
       .update({ receiptSent: true })
-      .catch(
-        new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
-      );
+
+    await Promise.all([
+      sendEmail,
+      updateOrder
+    ])
 
     return res.sendStatus(200);
   };

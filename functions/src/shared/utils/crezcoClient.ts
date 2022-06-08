@@ -37,7 +37,7 @@ export async function createPaymentDemand(
 
     const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands`, {
       request: {
-        reference,
+        reference: reference.length >= 18 ? "Mercado" : reference,
         currency,
         amount: `${amount / 100}`,
         useDefaultBeneficiaryAccount: true,
@@ -65,13 +65,14 @@ export async function createPayment(
   crezcoPayDemandId: string,
   paymentAttemptId: string,
   bankId: string,
+  countryCode: string
 ) {
   try {
     const mercadoRedirectUrl = `${process.env.CLIENT_URL}/checkout/cr-redirect?paymentAttemptId=${paymentAttemptId}`
 
     const params = {
       bankId,
-      countryIso2Code: "GB",
+      countryIso2Code: countryCode,
       successCallbackUri: mercadoRedirectUrl,
       failureRedirectUri: mercadoRedirectUrl,
       initialScreen: "ContinueToBank",
