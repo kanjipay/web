@@ -1,7 +1,5 @@
 import { useParams } from "react-router-dom"
-import Details from "../../../assets/icons/Details"
 import Forward from "../../../assets/icons/Forward"
-import Tick from "../../../assets/icons/Tick"
 import { Colors } from "../../../components/CircleButton"
 import IconActionPage from "../../../components/IconActionPage"
 

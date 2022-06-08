@@ -15,13 +15,14 @@ import Spacer from "../../components/Spacer"
 import Collection from "../../enums/Collection"
 import { formatCurrency } from "../../utils/helpers/money"
 import { IdentityManager } from "../../utils/IdentityManager"
-import { createLink } from "../../utils/services/LinksService"
+import { createLink, fetchLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
 import { cancelPaymentIntent } from "./redirects"
 import { fetchMoneyhubBankData } from "./fetchMoneyhubBankData"
 import TextField from "../../components/Input"
+import { cancelOrder } from "./cancelOrder"
 
-export default function ChooseBankMoneyhubPage({ paymentIntent }) {
+export default function ChooseBankMoneyhubPage({ order }) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const referringDeviceId = searchParams.get("referringDeviceId")
@@ -53,11 +54,7 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
   }
 
   const handleClickBack = () => {
-    setIsLoading(true)
-
-    cancelPaymentIntent(paymentIntent).then(redirectUrl => {
-      window.location.href = redirectUrl
-    })
+    cancelOrder(order, navigate)
   }
 
   const handleChooseBank = (bankDatum) => {
@@ -91,13 +88,13 @@ export default function ChooseBankMoneyhubPage({ paymentIntent }) {
   useEffect(() => {
     if (bankId && !isMobile) {
       const deviceId = IdentityManager.main.getDeviceId()
-      createLink(`/checkout/pi/${paymentIntent.id}/choose-bank?referringDeviceId=${deviceId}&bank=${bankId}`).then(linkId => {
+      createLink(`/checkout/o/${order.id}/choose-bank?referringDeviceId=${deviceId}&bank=${bankId}`).then(linkId => {
         setLinkId(linkId)
       })
     } else {
       setLinkId(null)
     }
-  }, [paymentIntent, bankId])
+  }, [order, bankId])
 
   useEffect(() => {
     if (!linkId) { return }

@@ -48,7 +48,7 @@ service cloud.firestore {
     match /Merchant/{merchantId} {
     	// we should ideally have a private details doc nested here
       // it should contain bank details, company name and user_id
-    	allow read
+    	allow read;
       
       allow update: if (
       	hasRequiredKeysForCollection("Merchant") &&
@@ -90,11 +90,11 @@ service cloud.firestore {
       allow delete: if (
         isAdminForMerchant(existingData().merchantId) &&
         !existingData().isPublished
-      )
+      );
     }
     
     match /MenuItem/{resourceId} {
-    	allow read
+    	allow read;
       
     	allow create: if (
       	hasRequiredKeysForCollection("MenuItem") && 
@@ -111,7 +111,7 @@ service cloud.firestore {
     }
     
     match /MenuSection/{resourceId} {
-    	allow read
+    	allow read;
       
     	allow create: if (
       	hasRequiredKeysForCollection("MenuSection") && 
@@ -128,7 +128,7 @@ service cloud.firestore {
     }
     
     match /OpeningHourRange/{resourceId} {
-    	allow read
+    	allow read;
       
     	allow create: if (
       	hasRequiredKeysForCollection("OpeningHourRange") && 
@@ -168,29 +168,23 @@ service cloud.firestore {
       allow update: if (
       	hasOnlyChangedKeys(["status"]) && 
       	incomingData().status == 'CANCELLED' && existingData().status == 'PENDING'
-      )
+      );
     }
     
     match /PaymentAttempt/{resourceId} {
-    	allow read
+    	allow read;
     }
     
     match /ContactRequest/{resourceId} {
-    	allow create
-    }
-    
-    match /Link/{resourceId} {
-    	allow read;
-      allow update: if (
-      	hasOnlyChangedKeys(["wasUsed"]) && (
-        	incomingData().wasUsed == true &&
-          existingData().wasUsed == false
-        )
-      )
+    	allow create;
     }
     
     match /State/{resourceId} {
     	allow read, create, delete;
+    }
+
+    match /Link/{resourceId} {
+      allow read;
     }
     
     match /User/{resourceId} {

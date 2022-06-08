@@ -72,8 +72,7 @@ export default function Merchant({ user }) {
       </nav>
       <div className="flex-spacer" style={{ padding: "0 24px", position: "absolute", left: 256, right: 0 }}>
         {
-          
-          merchant.approvalStatus === "APPROVED" ?
+          merchant.crezco ?
             <Routes>
               
               <Route path="events/*" element={<Events merchant={merchant} />} />

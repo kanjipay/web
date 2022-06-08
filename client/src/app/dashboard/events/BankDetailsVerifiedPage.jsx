@@ -3,9 +3,8 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Tick from "../../../assets/icons/Tick";
 import { Colors } from "../../../components/CircleButton";
 import IconActionPage from "../../../components/IconActionPage";
-import IconPage from "../../../components/IconPage";
 import LoadingPage from "../../../components/LoadingPage";
-import { NetworkManager, ApiName } from "../../../utils/NetworkManager";
+import { NetworkManager } from "../../../utils/NetworkManager";
 
 export default function BankDetailsVerifiedPage() {
   const [registered, setRegistered] = useState(false);
@@ -17,13 +16,7 @@ export default function BankDetailsVerifiedPage() {
   useEffect(() => {
     if (registered) { return }
 
-    const paymentRegisterBody = { merchantId, crezcoUserId };
-
-    NetworkManager.post(
-      ApiName.INTERNAL,
-      "/payees/update",
-      paymentRegisterBody
-    ).then(() => {
+    NetworkManager.put(`/merchants/m/${merchantId}/crezco`, { crezcoUserId }).then(() => {
       console.log("worked")
       setRegistered(true)
     }).catch(err => {

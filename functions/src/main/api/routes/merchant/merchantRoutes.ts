@@ -1,0 +1,28 @@
+import { Router } from "express";
+import { MerchantController } from "../../controllers/merchant/MerchantController";
+import merchantTicketsRoutes from "./merchantTicketsRoutes";
+import { AllowedSchema } from "express-json-validator-middleware";
+import { validate } from "../../../../shared/utils/validate";
+
+const merchantController = new MerchantController()
+const merchantRoutes = Router({ mergeParams: true });
+
+merchantRoutes.use("/tickets", merchantTicketsRoutes)
+
+const addCrezcoUserIdSchema: AllowedSchema = {
+  type: "object",
+  required: ["crezcoUserId"],
+  properties: {
+    crezcoUserId: {
+      type: "string"
+    }
+  }
+}
+
+merchantRoutes.put(
+  "/crezco",
+  validate({ body: addCrezcoUserIdSchema }),
+  merchantController.addCrezcoUserId
+)
+
+export default merchantRoutes;

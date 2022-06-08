@@ -4,17 +4,17 @@ import LoadingPage from "../../components/LoadingPage";
 import { IdentityManager } from "../../utils/IdentityManager";
 import { createPaymentAttemptCrezco } from "../../utils/services/PaymentsService";
 
-export default function PaymentPageCrezco({ paymentIntent }) {
+export default function PaymentPageCrezco({ order }) {
   const location = useLocation();
-  const { bankCode, referringDeviceId } = location.state
-  const paymentIntentId = paymentIntent.id
+  const { bankCode, countryCode, referringDeviceId } = location.state
+  const orderId = order.id
 
   useEffect(() => {
     const deviceId = referringDeviceId ?? IdentityManager.main.getDeviceId()
-    createPaymentAttemptCrezco(paymentIntentId, bankCode, deviceId).then(redirectUrl => {
+    createPaymentAttemptCrezco(orderId, bankCode, countryCode, deviceId).then(redirectUrl => {
       window.location.href = redirectUrl
     })
-  }, [bankCode, paymentIntentId, referringDeviceId])
+  }, [bankCode, countryCode, orderId, referringDeviceId])
 
   return <LoadingPage message="Sending you to your bank" />
 }

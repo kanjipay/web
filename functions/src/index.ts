@@ -10,6 +10,7 @@ import { OrderType } from "./shared/enums/OrderType";
 import { firestore } from "firebase-admin";
 import LoggingController from "./shared/utils/loggingClient";
 import { addMinutes } from "date-fns";
+import mainApp from "./main/mainApp";
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 
@@ -22,6 +23,16 @@ function getHttpFunction(app: Express, secrets: string[]) {
     })
     .https.onRequest(app)
 }
+
+export const main = getHttpFunction(mainApp, [
+  "SERVICE_ACCOUNT",
+  "MONEYHUB_CLIENT_ID",
+  "MONEYHUB_CLIENT_SECRET",
+  "MONEYHUB_PRIVATE_JWKS",
+  "JWKS_PRIVATE_KEY",
+  "SENDGRID_API_KEY",
+  "CREZCO_API_KEY",
+])
 
 export const internal = getHttpFunction(internalApp, [
   "SERVICE_ACCOUNT",

@@ -4,26 +4,20 @@ import Tick from "../../assets/icons/Tick";
 import CircleIcon from "../../components/CircleIcon";
 import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";
-import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
 import useBasket from "../customer/menu/basket/useBasket";
-import { generateRedirectUrl } from "./redirects";
+import { redirectOrderIfNeeded } from "./cancelOrder";
 
 export default function MobileHandoverPage() {
   // Should be polling order for status paid
-  const { paymentIntentId } = useParams()
+  const { orderId } = useParams()
   const navigate = useNavigate()
   const { clearBasket } = useBasket()
 
   useEffect(() => {
-    return Collection.PAYMENT_INTENT.onChange(paymentIntentId, paymentIntent => {
-      const { status } = paymentIntent
-      if (status !== PaymentIntentStatus.PENDING) {
-        const redirectUrl = generateRedirectUrl(status, paymentIntent)
-        console.log(`redirectUrl: ${redirectUrl}`)
-        window.location.href = redirectUrl
-      }
+    return Collection.ORDER.onChange(orderId, order => {
+      redirectOrderIfNeeded(order, navigate, clearBasket)
     })
-  }, [paymentIntentId, navigate, clearBasket])
+  }, [orderId, navigate, clearBasket])
 
   return <div className="container">
     <div className="content">
