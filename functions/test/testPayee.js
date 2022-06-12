@@ -1,3 +1,4 @@
+
 var chai = require("chai");
 var chaiHttp = require("chai-http");
 var expect = chai.expect;
@@ -18,30 +19,34 @@ address: 'flat 2, 20 lamb street'}
 
 describe("Payees Tests", function() {
     describe("Get Payees", function() {
-      it("testing 200 response", function() {
+      it("testing 200 response",  (done) =>  {
         chai
           .request(clientUrl)
-          .get('/payees')
+          .get('/payees/')
           .set('mcp-client-id', clientId)
           .set('mcp-client-secret', clientSecret)
-          .end(function (err, res) {
-            expect(err).to.be.null;
+          .end((err, res) => {
             expect(res).to.have.status(200);
+            expect(err).to.be.null;
+            done();            
+
          });
       });
     });
   
-    describe("Create Payee and Update with Crezco Id", function() {
-      it("testing 200 response", function() {
+    describe("Create Payee",  function(done) {
+      it("testing 200 response", (done) => {
         chai
           .request(clientUrl)
           .post('/payees')
           .set('mcp-client-id', clientId)
           .set('mcp-client-secret', clientSecret)
           .send(PAYEE_DATA)
-          .end(function (err, res) {
+          .end((err, res) => {
             expect(res).to.have.status(200);
-            const {payeeId} = res.body;
+            expect(err).to.be.null;
+            done();            
+
          });
       });
     });

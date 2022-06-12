@@ -1,3 +1,4 @@
+/*
 var chai = require("chai");
 var chaiHttp = require("chai-http");
 var expect = chai.expect;
@@ -9,8 +10,6 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const onlineMenuUrl = process.env.BASE_URL + '/onlineMenu/v1';
 
-const firebaseApiKey = 'AIzaSyD-5C67WE0VcPB-xQYiBdSYVFPd5OL3qTs';
-/*process.env.FIREBASE_API_KEY;*/
 
 const createIdTokenfromCustomToken = async uid => {
   try {
@@ -67,3 +66,4 @@ describe("Internal Get requests", function() {
             });
         });
 });
+*/
