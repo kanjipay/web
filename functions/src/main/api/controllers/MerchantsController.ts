@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid"
 import { db } from "../../../shared/utils/admin";
 import Collection from "../../../shared/enums/Collection";
 import { firestore } from "firebase-admin";
-import { createMembership, OrganisationRole } from "../../../onlineMenu/utils/membership";
+import { createMembership, OrganisationRole } from "../../../shared/utils/membership";
 
 export class MerchantsController extends BaseController {
   create = async (req, res, next) => {
@@ -36,6 +36,7 @@ export class MerchantsController extends BaseController {
           currency,
           sortCode,
           accountNumber,
+          customerFee: 0.1,
           createdAt: firestore.FieldValue.serverTimestamp(),
           approvalStatus: "PENDING",
         });

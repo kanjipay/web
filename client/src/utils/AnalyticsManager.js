@@ -36,8 +36,8 @@ export class AnalyticsManager {
     const options = { transport: "beacon" };
     const analytics = amplitude.getInstance();
 
-    // // Initialise without a user id. user id should only be used when under strong auth I think
-    analytics.init(process.env.REACT_APP_AMPLITUDE_API_KEY, null, options);
+    
+    analytics.init(process.env.REACT_APP_AMPLITUDE_API_KEY, IdentityManager.main.getPseudoUserId(), options);
 
     // /*
     // I don't believe we want to use the default device id, it's just a uuid in cookies,
@@ -48,25 +48,25 @@ export class AnalyticsManager {
     this.analytics = analytics;
   }
 
-  setMerchant(userId, merchantId) {
-    this.analytics.setUserId(userId);
-    this.analytics.setUserProperties({
-      merchantId,
-    });
-  }
-
   setUserGroup(groupName, groupValue) {
     this.analytics.setGroup(groupName, groupValue);
   }
 
-  logEvent(name, properties) {
+  logEvent(name, properties = {}) {
     this.analytics.logEvent(name, properties);
   }
-}
 
-export function viewPage(page, properties) {
-  AnalyticsManager.main.logEvent(AnalyticsEvent.VIEW_PAGE, {
-    page,
-    ...properties,
-  });
+  viewPage(page, properties = {}) {
+    this.analytics.logEvent(AnalyticsEvent.VIEW_PAGE, {
+      page,
+      ...properties
+    })
+  }
+
+  pressButton(button, properties = {}) {
+    this.analytics.logEvent(AnalyticsEvent.PRESS_BUTTON, {
+      button,
+      ...properties
+    })
+  }
 }

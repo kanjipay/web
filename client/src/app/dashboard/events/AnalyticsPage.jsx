@@ -11,6 +11,8 @@ import Popup from 'reactjs-popup';
 import Forward from "../../../assets/icons/Forward";
 import Cross from "../../../assets/icons/Cross";
 import CheckBox from "../../../components/CheckBox";
+import IconPage from "../../../components/IconPage";
+import Discover from "../../../assets/icons/Discover";
 
 class AnalyticsValue {
   static SALES_NUMBERS = "Sales numbers"
@@ -281,6 +283,16 @@ export default function AnalyticsPage() {
   }
 
   if (salesData) {
+    if (salesData.events.length === 0 || salesData.products.length === 0) {
+      return <IconPage
+        Icon={Discover}
+        iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+        iconForegroundColor={Colors.BLACK}
+        title="No sales data yet"
+        body="Once you start selling tickets, you'll be able to view the data here."
+      />
+    }
+    
     const handleFilterChange = (filterDatum, index) => {
       let newData = filterData
 
@@ -382,6 +394,8 @@ export default function AnalyticsPage() {
         [AnalyticsValue.SALES_NUMBERS]: product.soldCount
       }
     })
+
+    console.log(data)
 
     return <div>
       <Spacer y={5} />

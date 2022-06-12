@@ -8,6 +8,7 @@ import Collection from "../../enums/Collection";
 import MobileFinishedPage from "./MobileFinishedPage";
 import ChooseBankCrezcoPage from "./ChooseBankCrezcoPage";
 import PaymentPageCrezco from "./PaymentPageCrezco";
+import PaymentPageStripe from "./PaymentPageStripe";
 
 export default function Order() {
   const [order, setOrder] = useState(null);
@@ -20,6 +21,7 @@ export default function Order() {
   return order ? 
     <Routes>
       <Route path="payment" element={<PaymentPageCrezco order={order} />} />
+      <Route path="payment-stripe" element={<PaymentPageStripe order={order} />} />
       <Route path="choose-bank" element={<ChooseBankCrezcoPage order={order} />} />
       <Route path="mobile-handover" element={<MobileHandoverPage order={order} />} />
       <Route path="mobile-finished" element={<MobileFinishedPage />} />

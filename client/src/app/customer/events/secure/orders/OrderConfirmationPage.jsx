@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import LoadingPage from "../../../../../components/LoadingPage"
 import MainButton from "../../../../../components/MainButton"
+import { OrderSummary } from "../../../../../components/OrderSummary"
 import ResultBanner, { ResultType } from "../../../../../components/ResultBanner"
 import Spacer from "../../../../../components/Spacer"
 import Collection from "../../../../../enums/Collection"
@@ -50,32 +51,11 @@ export default function OrderConfirmationPage() {
         <Spacer y={3} />
         <h3 className="header-s">Order summary</h3>
         <Spacer y={2} />
-        {order.orderItems.map((item) => {
-          return (
-            <div key={item.productId}>
-              <div className="BasketItem flex-container">
-                <div className="BasketItem__count" style={{ marginLeft: 16 }}>
-                  {item.quantity}
-                </div>
-                <div className="text-body" style={{ marginLeft: 4 }}>
-                  {item.title}
-                </div>
-                <div className="BasketItem__spacer" />
-                <div className="text-body-faded">
-                  {formatCurrency(item.price * item.quantity, order.currency)}
-                </div>
-              </div>
-              <Spacer y={2} />
-            </div>
-          );
-        })}
-        <Divider />
-        <Spacer y={2} />
-        <div className="flex-container">
-          <div className="header-xs">Total</div>
-          <div className="flex-spacer" />
-          <div className="header-xs">{formatCurrency(order.total, order.currency)}</div>
-        </div>
+        <OrderSummary
+          lineItems={order.orderItems}
+          currency={order.currency}
+          feePercentage={order.customerFee}
+        />
       </div>
 
       <div className="anchored-bottom">

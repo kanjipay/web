@@ -1,13 +1,19 @@
+import { updateDoc } from "firebase/firestore";
+import Collection from "../../enums/Collection";
 import OrderStatus from "../../enums/OrderStatus";
 import OrderType from "../../enums/OrderType";
 import { AnalyticsEvent, AnalyticsManager } from "../../utils/AnalyticsManager";
 
-export function cancelOrder(order, navigate) {
+export async function cancelOrder(order, navigate) {
   AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
     button: "cancelOrder",
   });
 
   const { type, merchantId } = order
+
+  await updateDoc(Collection.ORDER.docRef(order.id), {
+    status: OrderStatus.ABANDONED
+  })
 
   switch (type) {
     case OrderType.TICKETS:

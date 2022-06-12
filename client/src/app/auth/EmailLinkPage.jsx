@@ -75,7 +75,7 @@ export default function EmailLinkPage() {
   } else if (emailForSignIn) {
     return <LoadingPage message="Signing you in..." />
   } else {
-    <div className="container">
+    return <div className="container">
       <div className="content">
         <Spacer y={4} />
         <Form

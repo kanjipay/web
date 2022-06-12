@@ -34,9 +34,9 @@ export async function createTicketOrder(productId, quantity) {
     deviceId
   })
 
-  const { orderId, isFree } = res.data
+  const { orderId, redirectPath } = res.data
 
-  return { orderId, isFree }
+  return { orderId, redirectPath }
 }
 
 export function sendOrderReceipt(orderId, email) {

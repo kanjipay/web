@@ -20,7 +20,7 @@ export function Field({ value, onChange, regex = /.*/, maxChars = 140, disregard
 
   const textInputStyle = {
     backgroundColor: Colors.OFF_WHITE_LIGHT,
-    color: props.disabled ? Colors.GRAY_LIGHT : Colors.BLACK,
+    color: props.disabled ? Colors.GRAY : Colors.BLACK,
     boxSizing: "border-box",
     padding: 12,
     width: "100%",

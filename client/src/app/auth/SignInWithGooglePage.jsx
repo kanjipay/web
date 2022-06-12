@@ -8,8 +8,12 @@ import Cross from "../../assets/icons/Cross";
 import { Colors } from "../../components/CircleButton";
 import { auth } from "../../utils/FirebaseUtils";
 import { processUserCredential } from "../../utils/services/UsersService";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 
 export default function SignInWithGooglePage() {
+  useEffect(() => {
+
+  })
   const navigate = useNavigate()
   const { search } = useLocation()
 
@@ -23,6 +27,10 @@ export default function SignInWithGooglePage() {
   function isAuthInProgress() {
     return localStorage.getItem(isAuthInProgressKey) === "true"
   }
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("GoogleAuth", { isAuthInProgress: isAuthInProgress() })
+  })
 
   useEffect(() => {
     console.log("google page useEffect. isAuthInProgess: ", isAuthInProgress())

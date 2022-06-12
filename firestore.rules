@@ -26,7 +26,6 @@ service cloud.firestore {
     function hasRequiredKeysForCollection(collection) {
     	let requiredKeys = {
       	"Merchant": [
-          "payeeId",
           "displayName",
           "companyName",
           "address",
@@ -55,6 +54,10 @@ service cloud.firestore {
         hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe.wasSkipped"]) &&
       	isAdminForMerchant(merchantId)
       )
+    }
+
+    match /Invite/{resourceId} {
+      allow read: if isAdminForMerchant(isAdminForMerchant(existingData().merchantId))
     }
     
     match /Event/{resourceId} {
@@ -151,12 +154,12 @@ service cloud.firestore {
       	// Only allow modification of status field
       	hasOnlyChangedKeys(["status"]) && (
         	// Rules for the customer
-          (incomingData().status == 'ABANDONED' && existingData().status == 'PENDING') ||
+          (incomingData().status == "ABANDONED" && existingData().status == "PENDING") ||
           (
             isAdminForMerchant(existingData().merchantId) &&
               // Rules for the merchant
-              (incomingData().status == 'CANCELLED' && existingData().status == 'PENDING') ||
-              (incomingData().status == 'FULFILLED' && existingData().status == 'PAID')
+              (incomingData().status == "CANCELLED" && existingData().status == "PENDING") ||
+              (incomingData().status == "FULFILLED" && existingData().status == "PAID")
           )
         )
       )
@@ -167,7 +170,7 @@ service cloud.firestore {
       
       allow update: if (
       	hasOnlyChangedKeys(["status"]) && 
-      	incomingData().status == 'CANCELLED' && existingData().status == 'PENDING'
+      	incomingData().status == "CANCELLED" && existingData().status == "PENDING"
       );
     }
     

@@ -10,7 +10,7 @@ import LoadingPage from "../../../../components/LoadingPage";
 import MainButton from "../../../../components/MainButton";
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
 import { useEffect } from "react";
-import { PageName, viewPage } from "../../../../utils/AnalyticsManager";
+import { AnalyticsManager, PageName } from "../../../../utils/AnalyticsManager";
 
 export default function MenuPage({
   merchant,
@@ -23,7 +23,7 @@ export default function MenuPage({
   const { merchantId } = useParams();
 
   useEffect(() => {
-    viewPage(PageName.MENU, { merchantId });
+    AnalyticsManager.main.viewPage(PageName.MENU, { merchantId });
   }, [merchantId]);
 
   const groupedMenuItems = {};

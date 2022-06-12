@@ -1,13 +1,19 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 import { IdentityManager } from "../../utils/IdentityManager";
 import { createPaymentAttemptCrezco } from "../../utils/services/PaymentsService";
 
 export default function PaymentPageCrezco({ order }) {
+  const { orderId } = useParams()
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("Payment", { orderId })
+  }, [orderId])
+
   const location = useLocation();
   const { bankCode, countryCode, referringDeviceId } = location.state
-  const orderId = order.id
 
   useEffect(() => {
     const deviceId = referringDeviceId ?? IdentityManager.main.getDeviceId()
