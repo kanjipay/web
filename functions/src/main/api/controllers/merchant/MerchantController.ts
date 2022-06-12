@@ -6,6 +6,12 @@ import { fetchDocument } from "../../../../shared/utils/fetchDocument";
 import LoggingController from "../../../../shared/utils/loggingClient";
 import stripe from "../../../../shared/utils/stripeClient";
 
+enum StripeStatus {
+  DETAILS_NOT_SUBMITTED = "DETAILS_NOT_SUBMITTED",
+  DETAILS_SUBMITTED = "DETAILS_SUBMITTED",
+  CHARGES_ENABLED = "CHARGES_ENABLED"
+}
+
 export class MerchantController extends BaseController {
   addCrezcoUserId = async (req, res, next) => {
     try {
@@ -45,7 +51,7 @@ export class MerchantController extends BaseController {
 
       logger.log("Retrieved merchant", { merchant })
 
-      if (merchant.stripe.areChargesEnabled) {
+      if (merchant.stripe?.areChargesEnabled) {
         logger.log("Merchant already has charges enabled for Stripe")
 
         const errorMessage = "You have already onboarded with Stripe."
@@ -67,7 +73,6 @@ export class MerchantController extends BaseController {
         const merchantUpdate = {
           stripe: {
             accountId: account.id,
-            areChargesEnabled: false
           }
         }
 
@@ -132,7 +137,17 @@ export class MerchantController extends BaseController {
 
       logger.log("Stripe account retrieved", { account })
 
-      const { charges_enabled } = account
+      const { charges_enabled, details_submitted } = account
+
+      let stripeStatus: StripeStatus
+
+      if (charges_enabled) {
+        stripeStatus = StripeStatus.CHARGES_ENABLED
+      } else if (details_submitted) {
+        stripeStatus = StripeStatus.DETAILS_SUBMITTED
+      } else {
+        stripeStatus = StripeStatus.DETAILS_NOT_SUBMITTED
+      }
 
       if (charges_enabled) {
         logger.log("Charges are enabled, updating merchant")
@@ -141,11 +156,14 @@ export class MerchantController extends BaseController {
           .collection(Collection.MERCHANT)
           .doc(merchantId)
           .update({
-            "stripe.areChargesEnabled": true
+            "stripe.areChargesEnabled": true,
+            "stripe.status": stripeStatus
           })
       }
 
-      return res.status(200).json({ areChargesEnabled: charges_enabled })
+      return res.status(200).json({ 
+        stripeStatus
+      })
     } catch (err) {
       next(err)
     }

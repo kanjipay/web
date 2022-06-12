@@ -14,7 +14,6 @@ import {
   AnalyticsEvent,
   AnalyticsManager,
   PageName,
-  viewPage,
 } from "../../../../utils/AnalyticsManager";
 import LoadingPage from "../../../../components/LoadingPage";
 import OrderType from "../../../../enums/OrderType";
@@ -28,7 +27,7 @@ export default function BasketPage({ merchant }) {
   const merchantBasketItems = () => basketItems.filter(i => i.merchantId === merchant.id)
 
   useEffect(() => {
-    viewPage(PageName.BASKET, { merchantId });
+    AnalyticsManager.main.viewPage(PageName.BASKET, { merchantId })
   }, [merchantId]);
 
   const titleElement = (

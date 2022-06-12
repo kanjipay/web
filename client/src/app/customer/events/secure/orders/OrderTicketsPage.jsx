@@ -10,32 +10,22 @@ import { createTicketOrder } from "../../../../../utils/services/OrdersService"
 
 export default function OrderTicketsPage() {
   const { state } = useLocation()
+  const { productId, quantity } = state
   const navigate = useNavigate()
   const [error, setError] = useState(null)
   const backPath = state?.backPath ?? "/"
 
   useEffect(() => {
-    if (!state) { 
-      setError({
-        title: "Something went wrong",
-        description: "Please try again later."
-      })
-      return
-    }
-    
-    const { productId, quantity } = state
+    AnalyticsManager.main.viewPage("OrderTickets", { productId, quantity })
+  }, [productId, quantity])
 
+  useEffect(() => {
     createTicketOrder(productId, quantity)
-      .then(({ orderId, isFree }) => {
+      .then(({ orderId, redirectPath }) => {
+        console.log("redirectPath: ", redirectPath)
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId, orderType: OrderType.TICKETS });
 
-        console.log("isFree: ", isFree)
-
-        if (isFree) {
-          navigate(`/events/s/orders/${orderId}/confirmation`)
-        } else {
-          navigate(`/checkout/o/${orderId}/choose-bank`)
-        }
+        navigate(redirectPath)
       })
       .catch(error => {
         setError({
@@ -43,7 +33,7 @@ export default function OrderTicketsPage() {
           description: error?.response?.data?.error
         })
       })
-  }, [state, navigate])
+  }, [productId, quantity, navigate])
 
   const handleError = () => {
     navigate(backPath)

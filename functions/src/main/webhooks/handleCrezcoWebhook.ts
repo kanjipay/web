@@ -1,18 +1,16 @@
-import { firestore } from "firebase-admin";
-import { processSuccessfulTicketsOrder } from "../../onlineMenu/utils/processSuccessfulTicketsOrder";
 import Collection from "../../shared/enums/Collection";
-import OrderStatus from "../../shared/enums/OrderStatus";
-import { OrderType } from "../../shared/enums/OrderType";
 import PaymentAttemptStatus from "../../shared/enums/PaymentAttemptStatus";
-import { db } from "../../shared/utils/admin";
 import { fetchDocument } from "../../shared/utils/fetchDocument";
 import LoggingController from "../../shared/utils/loggingClient";
 import { verifyMercadoSignature } from "../../shared/utils/verifyMercadoSignature";
+import { processPaymentUpdate } from "./processPaymentUpdate";
 
 const crezcoPaymentStatuses = {
   PaymentCompleted: PaymentAttemptStatus.SUCCESSFUL,
   PaymentPending: PaymentAttemptStatus.PENDING,
-  PaymentFailed: PaymentAttemptStatus.FAILED
+  PaymentFailed: PaymentAttemptStatus.FAILED,
+  PaymentError: PaymentAttemptStatus.FAILED,
+  PaymentAccepted: PaymentAttemptStatus.ACCEPTED
 }
 
 export const handleCrezcoWebhook = async (req, res, next) => {
@@ -39,7 +37,12 @@ export const handleCrezcoWebhook = async (req, res, next) => {
 
     loggingClient.log("Got Crezco data", {}, { eventType, payDemandId })
 
-    const { paymentAttemptId } = payload
+    const { paymentAttemptId, environment } = payload
+
+    if (environment !== process.env.ENVIRONMENT) {
+      loggingClient.log(`Webhook is for ${environment} whereas current environment is ${process.env.ENVIRONMENT}`)
+      return res.sendStatus(200)
+    }
 
     loggingClient.log("Got payment attempt id", {}, { paymentAttemptId })
 
@@ -61,74 +64,16 @@ export const handleCrezcoWebhook = async (req, res, next) => {
       return res.sendStatus(200)
     }
 
-    const { orderId } = paymentAttempt;
-    const { order, orderError } = await fetchDocument(Collection.ORDER, orderId, { status: OrderStatus.PENDING })
+    const [, error] = await processPaymentUpdate(paymentAttempt.id, paymentAttemptStatus, paymentAttempt.orderId)
 
-    if (orderError) {
-      loggingClient.log("An error occured", { message: orderError.message })
+    if (error) {
+      loggingClient.log("An error occured", { message: error.message })
       return res.sendStatus(200)
     }
 
-    const updatePaymentAttempt = db()
-      .collection(Collection.PAYMENT_ATTEMPT)
-      .doc(paymentAttemptId)
-      .update({
-        status: paymentAttemptStatus,
-      })
-
-    const promises: Promise<any>[] = [updatePaymentAttempt]
-
-    if (paymentAttemptStatus === PaymentAttemptStatus.SUCCESSFUL) {
-      const { type, orderItems, wereTicketsCreated, merchantId, userId, currency } = order
-
-      const orderUpdate = { 
-        status: OrderStatus.PAID,
-        paidAt: firestore.FieldValue.serverTimestamp()
-      }
-
-      if (type === OrderType.TICKETS && !wereTicketsCreated) {
-        const { productId, eventId, eventEndsAt, quantity } = orderItems[0]
-
-        const updateProduct = db()
-          .collection(Collection.PRODUCT)
-          .doc(productId)
-          .update({
-            reservedCount: firestore.FieldValue.increment(-quantity)
-          })
-
-        promises.push(updateProduct)
-
-        orderUpdate["wereTicketsCreated"] = true
-
-        const orderItem = orderItems[0]
-
-        promises.push(processSuccessfulTicketsOrder(
-          merchantId,
-          eventId,
-          orderItem.eventTitle,
-          productId,
-          orderItem.title,
-          orderItem.price,
-          orderId,
-          userId,
-          eventEndsAt,
-          currency,
-          quantity
-        ))
-      }
-
-      const updateOrder = db()
-        .collection(Collection.ORDER)
-        .doc(orderId)
-        .update(orderUpdate)
-
-      promises.push(updateOrder)
-    }
-
-    await Promise.all(promises)
-
     return res.sendStatus(200)
   } catch (err) {
-    next(err)
+    console.log(err)
+    return res.sendStatus(200)
   }
 }

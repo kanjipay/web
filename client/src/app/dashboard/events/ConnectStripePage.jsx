@@ -41,7 +41,7 @@ export default function ConnectStripePage({ title, body }) {
       body={body ?? "You can connect with our partner Stripe to enable card payments."}
       primaryActionTitle="Continue to Stripe"
       primaryAction={handleContinueToStripe}
-      secondaryActionTitle="Skip"
+      secondaryActionTitle="Leave for later"
       secondaryAction={handleSkipStripe}
     />
 }

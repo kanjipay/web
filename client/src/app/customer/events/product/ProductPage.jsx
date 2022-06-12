@@ -7,7 +7,7 @@ import { formatCurrency } from "../../../../utils/helpers/money";
 import { getEventStorageRef } from "../../../../utils/helpers/storage";
 import LoadingPage from "../../../../components/LoadingPage"
 import { useOpenAuthPage } from "../../../auth/useOpenAuthPage";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SmallButton from "../../../../components/SmallButton";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
 import { MarketingConsent, setMarketingConsent } from "../../../../utils/services/UsersService";
@@ -16,6 +16,8 @@ import Stepper from "../../../../components/Stepper";
 import { validateEmail } from "../../../../utils/helpers/validation";
 import { format } from "date-fns";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
+import { OrderSummary } from "../../../../components/OrderSummary";
+import { AnalyticsManager } from "../../../../utils/AnalyticsManager";
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length < 2) { return arrays }
@@ -33,7 +35,7 @@ function getAttestations(merchant, event, product) {
 
 export default function ProductPage({ merchant, event, product, user }) {
   const [quantity, setQuantity] = useState(1)
-  const productId = product.id
+  const { productId, eventId, merchantId } = useParams()
   const openAuthPage = useOpenAuthPage()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -41,6 +43,17 @@ export default function ProductPage({ merchant, event, product, user }) {
   const [isMarketingConsentApproved, setIsMarketingConsentApproved] = useState(true)
   const [attestationData, setAttestationData] = useState({})
   const [isLoading, setIsLoading] = useState(false)
+
+  const customerFee = merchant.customerFee ?? 0.1
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("Product", { 
+      productId, 
+      eventId, 
+      merchantId,
+      isAuthenticated: !!user?.email
+    })
+  })
 
   useEffect(() => {
     const attestations = getAttestations(merchant, event, product)
@@ -192,9 +205,20 @@ export default function ProductPage({ merchant, event, product, user }) {
               <SmallButton title="Change" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={handleChangeEmail} />
 
             </div>
-            
+            <Spacer y={4} />
           </div>
         }
+
+        <h3 className="header-s">Order Summary</h3>
+        <Spacer y={2} />
+        <OrderSummary 
+          lineItems={[
+            { title: product.title, quantity, price: product.price }
+          ]}
+          currency={merchant.currency}
+          feePercentage={customerFee}
+        />
+
 
         <Spacer y={6} />
 
@@ -223,7 +247,7 @@ export default function ProductPage({ merchant, event, product, user }) {
         }
         <MainButton
           title={user?.email ? "Checkout" : "Log in to continue"}
-          sideMessage={formatCurrency(product.price * quantity, merchant.currency)}
+          sideMessage={formatCurrency(Math.round(product.price * quantity * (1 + customerFee)), merchant.currency)}
           onClick={handleCheckout}
           isLoading={isLoading}
           disabled={!isEnabled()}

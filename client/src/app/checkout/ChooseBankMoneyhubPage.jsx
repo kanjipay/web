@@ -53,8 +53,8 @@ export default function ChooseBankMoneyhubPage({ order }) {
     }
   }
 
-  const handleClickBack = () => {
-    cancelOrder(order, navigate)
+  const handleClickBack = async () => {
+    await cancelOrder(order, navigate)
   }
 
   const handleChooseBank = (bankDatum) => {

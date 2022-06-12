@@ -8,6 +8,8 @@ import { getAuth } from "firebase/auth";
 
 const firebaseApp = initializeApp(JSON.parse(process.env.REACT_APP_FIREBASE_OPTIONS));
 
+console.log(JSON.parse(process.env.REACT_APP_FIREBASE_OPTIONS))
+
 const db = getFirestore();
 const storage = getStorage();
 const auth = getAuth()

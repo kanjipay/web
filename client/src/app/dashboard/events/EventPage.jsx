@@ -16,8 +16,9 @@ import { getEventStorageRef } from "../../../utils/helpers/storage";
 import { deleteDoc, updateDoc } from "firebase/firestore";
 import Popup from 'reactjs-popup';
 import Collection from "../../../enums/Collection";
-import { deleteObject, uploadBytes } from "firebase/storage";
+import { deleteObject } from "firebase/storage";
 import ArrayInput from "../../../components/ArrayInput";
+import { uploadImage } from "../../../utils/helpers/uploadImage";
 
 export function Modal({ children, modalStyle }) {
   return <div
@@ -72,10 +73,10 @@ export default function EventPage({ merchant, event, products }) {
       const file = data.photo
       data.photo = file.name
 
+      const eventRef = getEventStorageRef(event.merchantId, event.id, file.name)
+
       promises.push(
-        uploadBytes(getEventStorageRef(event.merchantId, event.id, file.name), file, {
-          cacheControl: "public,max-age=3600000"
-        })
+        uploadImage(eventRef, file)
       )
 
       promises.push(

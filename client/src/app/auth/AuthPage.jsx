@@ -15,11 +15,17 @@ import { auth } from "../../utils/FirebaseUtils";
 import { processUserCredential } from "../../utils/services/UsersService";
 import Form, { generateValidator } from "../../components/Form";
 import { Field, FieldDecorator } from "../../components/input/IntField";
+import { createLink } from "../../utils/services/LinksService";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 
 export default function AuthPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { search } = useLocation()
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("Auth")
+  }, [])
 
   const requiresPassword = location.state?.requiresPassword ?? false
   const requiredEmailDomain = location.state?.requiredEmailDomain
@@ -80,28 +86,33 @@ export default function AuthPage() {
   const handleSendEmailLink = async (data) => {
     const { firstName, lastName, email } = data
 
+    const emailLinkUrl = new URL(window.location.href)
+    emailLinkUrl.pathname = "/auth/email-link"
+    emailLinkUrl.searchParams.append("first", firstName)
+    emailLinkUrl.searchParams.append("last", lastName)
+
+    const linkId = await createLink(emailLinkUrl.pathname)
+
     const redirectUrl = new URL(window.location.href)
-    redirectUrl.pathname = "/auth/email-link"
-    redirectUrl.searchParams.append("first", firstName)
-    redirectUrl.searchParams.append("last", lastName)
+    redirectUrl.pathname = `/links/${linkId}`
 
-    sendSignInLinkToEmail(auth, email, {
-      url: redirectUrl.href,
-      handleCodeInApp: true
-    })
-      .then(() => {
-        localStorage.setItem("emailForSignIn", email)
-        navigate("email-link-sent")
+    try {
+      await sendSignInLinkToEmail(auth, email, {
+        url: redirectUrl.href,
+        handleCodeInApp: true
       })
-      .catch(error => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
 
-        setError({
-          title: "Something went wrong",
-          body: "We're sorry, but we couldn't send you an email link. Try logging in a different way, or checking back later."
-        })
+      setError({
+        title: "Something went wrong",
+        body: "We're sorry, but we couldn't send you an email link. Try logging in a different way, or checking back later."
       })
+    }
+    
+    localStorage.setItem("emailForSignIn", email)
+    navigate("email-link-sent")
   }
 
   const handleForgotPassword = () => {
@@ -112,7 +123,7 @@ export default function AuthPage() {
   const submitTitle = requiresPassword ? "Sign in" : "Send email link"
 
   if (error) {
-    <IconActionPage
+    return <IconActionPage
       Icon={Cross}
       iconBackgroundColor={Colors.RED_LIGHT}
       iconForegroundColor={Colors.RED}

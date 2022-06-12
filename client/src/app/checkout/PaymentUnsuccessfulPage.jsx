@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import IconActionPage from "../../components/IconActionPage";
+import LoadingPage from "../../components/LoadingPage";
 import {
   AnalyticsEvent,
   AnalyticsManager,
@@ -15,6 +17,7 @@ export default function PaymentUnsuccessfulPage({
   order,
 }) {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleTryAgain = () => {
     AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
@@ -23,12 +26,14 @@ export default function PaymentUnsuccessfulPage({
     navigate("../choose-bank");
   };
 
-  const handleCancelOrder = () => {
-    cancelOrder(order, navigate)
+  const handleCancelOrder = async () => {
+    await cancelOrder(order, navigate)
   };
 
-  return (
-    <IconActionPage
+  if (isLoading) {
+    return <LoadingPage />
+  } else {
+    return <IconActionPage
       Icon={Icon}
       iconBackgroundColor={iconBackgroundColor}
       iconForegroundColor={iconForegroundColor}
@@ -39,5 +44,5 @@ export default function PaymentUnsuccessfulPage({
       secondaryActionTitle="Cancel payment"
       secondaryAction={handleCancelOrder}
     />
-  );
+  }
 }

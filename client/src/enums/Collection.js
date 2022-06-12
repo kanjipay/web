@@ -5,6 +5,7 @@ export default class Collection {
   static ARTIST = new Collection("Artist");
   static MERCHANT = new Collection("Merchant");
   static MEMBERSHIP = new Collection("Membership");
+  static INVITE = new Collection("INVITE");
   static USER = new Collection("User");
   static PRODUCT = new Collection("Product");
   static EVENT = new Collection("Event")

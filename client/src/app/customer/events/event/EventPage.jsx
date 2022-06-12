@@ -5,13 +5,15 @@ import AsyncImage from "../../../../components/AsyncImage";
 import CircleIcon from "../../../../components/CircleIcon";
 import Spacer from "../../../../components/Spacer";
 import { getEventStorageRef } from "../../../../utils/helpers/storage";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ProductListing from "../product/ProductListing";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
 import { eventTimeString, generateGoogleMapsLink } from "./eventHelpers";
 import { Colors } from "../../../../components/CircleButton";
 import ShowMoreText from "react-show-more-text";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
+import { useEffect } from "react";
+import { AnalyticsManager } from "../../../../utils/AnalyticsManager";
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return <div>
@@ -58,6 +60,12 @@ export function EventDetails({ event, merchant, artists = [] }) {
 }
 
 export default function EventPage({ merchant, event, products, artists }) {
+  const { eventId, merchantId } = useParams()
+  
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
+  }, [eventId, merchantId])
+
   return <div className="container">
     <EventsAppNavBar
       title={event.title}
