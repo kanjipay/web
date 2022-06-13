@@ -57,7 +57,12 @@ service cloud.firestore {
     }
 
     match /Invite/{resourceId} {
-      allow read: if isAdminForMerchant(isAdminForMerchant(existingData().merchantId))
+      allow read: if isAdminForMerchant(existingData().merchantId)
+    }
+
+    match /AttributionLink/{resourceId} {
+      allow read;
+      allow create: if isAdminForMerchant(incomingData().merchantId)
     }
     
     match /Event/{resourceId} {

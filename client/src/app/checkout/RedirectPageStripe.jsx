@@ -5,6 +5,7 @@ import LoadingPage from "../../components/LoadingPage";
 import Collection from "../../enums/Collection";
 import OrderType from "../../enums/OrderType";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 import useBasket from "../customer/menu/basket/useBasket";
 
 export default function RedirectPageStripe() {
@@ -15,6 +16,10 @@ export default function RedirectPageStripe() {
   const { clearBasket } = useBasket()
 
   const stripePaymentIntentId = searchParams.get("payment_intent")
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("StripePaymentRedirect", { stripePaymentIntentId })
+  }, [stripePaymentIntentId])
 
   useEffect(() => {
     return Collection.PAYMENT_ATTEMPT.queryOnChangeGetOne(
@@ -50,7 +55,7 @@ export default function RedirectPageStripe() {
         }
         break;
       case PaymentAttemptStatus.FAILED:
-        navigate(`/checkout/o/${orderId}/payment-failure`);
+        navigate(`/checkout/o/${orderId}/payment-failure`, { state: { retryPath: `/checkout/o/${orderId}/payment-stripe`}});
         break;
       default:
     }

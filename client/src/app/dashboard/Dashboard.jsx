@@ -14,7 +14,7 @@ import MerchantDropdown from "./MerchantDropdown";
 import SelectOrganisationPage from "./SelectOrganisationPage";
 import CreateOrganisationPage from './CreateOrganisationPage';
 import Popup from "reactjs-popup";
-import { MenuItem } from "./events/AnalyticsPage";
+import { MenuItem } from "./events/analytics/AnalyticsPage";
 
 function UserNavBarItem({ user }) {
   const handleSignOut = () => {

@@ -13,7 +13,7 @@ export default function CreateProductPage({ event, products, merchant }) {
   const { merchantId } = useParams()
   const navigate = useNavigate()
   const handleCreateProduct = async (data) => {
-    const { title, description, releasesAt, earliestEntryAt, lastestEntryAt } = data
+    const { title, description, releasesAt, earliestEntryAt, latestEntryAt } = data
 
     const price = parseFloat(data.price) * 100
     const capacity = parseInt(data.capacity, 10)
@@ -31,7 +31,7 @@ export default function CreateProductPage({ event, products, merchant }) {
       capacity,
       releasesAt,
       earliestEntryAt: earliestEntryAt ?? null,
-      lastestEntryAt: lastestEntryAt ?? null,
+      latestEntryAt: latestEntryAt ?? null,
       sortOrder: currLargestSortOrder + 1,
       soldCount: 0,
       reservedCount: 0

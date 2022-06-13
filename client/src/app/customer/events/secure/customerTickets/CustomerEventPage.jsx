@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import Clock from "../../../../../assets/icons/Clock";
 import Location from "../../../../../assets/icons/Location";
 import User from "../../../../../assets/icons/User";
@@ -8,6 +8,7 @@ import { Colors } from "../../../../../components/CircleButton";
 import CircleIcon from "../../../../../components/CircleIcon";
 import LoadingPage from "../../../../../components/LoadingPage";
 import Spacer from "../../../../../components/Spacer";
+import { AnalyticsManager } from "../../../../../utils/AnalyticsManager";
 import { getEventStorageRef } from "../../../../../utils/helpers/storage";
 import { eventTimeString, generateGoogleMapsLink } from "../../event/eventHelpers";
 import EventsAppNavBar from "../EventsAppNavBar";
@@ -15,6 +16,10 @@ import Ticket from "./Ticket";
 
 export default function CustomerEventPage({ events }) {
   const { eventId } = useParams()
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("CustomerEvent", { eventId })
+  }, [eventId])
 
   if (events) {
     const event = events.find(event => event.id === eventId)

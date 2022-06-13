@@ -129,12 +129,12 @@ export default function ImagePicker({ height = 200, aspectRatio = 2, name, value
             onClick={handleRemoveFile}
           />
         }
-        {
+        {/* {
           preview && !isCropPopupOpen && <SmallButton
             title="Crop"
             onClick={() => setIsCropPopupOpen(true)}
           />
-        }
+        } */}
       </div>
 
       <input

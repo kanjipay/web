@@ -113,6 +113,11 @@ export class MerchantTicketsController extends BaseController {
     try {
       const { merchantId } = req.params
 
+      const getOrders = db()
+        .collection(Collection.ORDER)
+        .where("merchantId", "==", merchantId)
+        .get()
+
       const getEvents = db()
         .collection(Collection.EVENT)
         .where("merchantId", "==", merchantId)
@@ -127,11 +132,36 @@ export class MerchantTicketsController extends BaseController {
 
       const [
         eventSnapshot,
-        productSnapshot
+        productSnapshot,
+        ordersSnapshot
       ] = await Promise.all([
         getEvents,
-        getProducts
+        getProducts,
+        getOrders
       ])
+
+      const sales = ordersSnapshot.docs.flatMap(doc => {
+        const order: any = { id: doc.id, ...doc.data() }
+
+        const { eventId, attributionData, type, createdAt, currency } = order
+
+        return order.orderItems.map(item => {
+          const { productId, title: productTitle, eventTitle, quantity, price } = item
+          return { 
+            orderId: order.id,
+            amount: price * quantity,
+            quantity,
+            productId,
+            productTitle,
+            eventId,
+            eventTitle,
+            type,
+            createdAt,
+            attributionData,
+            currency
+          }
+        })
+      })
 
       const events = eventSnapshot.docs.map(doc => {
         return { id: doc.id, ...doc.data() }
@@ -141,7 +171,7 @@ export class MerchantTicketsController extends BaseController {
         return { id: doc.id, ...doc.data() }
       })
 
-      res.status(200).json({ events, products })
+      res.status(200).json({ events, products, sales })
     } catch (err) {
       next(err)
     }

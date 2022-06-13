@@ -7,18 +7,35 @@ import { OrderSummary } from "../../../../../components/OrderSummary"
 import ResultBanner, { ResultType } from "../../../../../components/ResultBanner"
 import Spacer from "../../../../../components/Spacer"
 import Collection from "../../../../../enums/Collection"
+import { AnalyticsManager } from "../../../../../utils/AnalyticsManager"
 import { auth } from "../../../../../utils/FirebaseUtils"
-import { formatCurrency } from "../../../../../utils/helpers/money"
+import useAttribution from "../../../../shared/attribution/useAttribution"
 import EventsAppNavBar from "../EventsAppNavBar"
 
 export default function OrderConfirmationPage() {
   const { orderId } = useParams()
   const navigate = useNavigate()
   const [order, setOrder] = useState(null)
+  const { clearItems } = useAttribution()
+  const [wasAttributionCleared, setWasAttributionCleared] = useState(false)
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("TicketOrderConfirmation", { orderId })
+  }, [orderId])
 
   useEffect(() => {
     return Collection.ORDER.onChange(orderId, setOrder)
   }, [orderId])
+
+  useEffect(() => {
+    if (!order || wasAttributionCleared) { return }
+
+    const { eventId } = order
+
+    setWasAttributionCleared(true)
+
+    clearItems({ eventId })
+  }, [order, wasAttributionCleared, clearItems])
 
   const currUser = auth.currentUser
   

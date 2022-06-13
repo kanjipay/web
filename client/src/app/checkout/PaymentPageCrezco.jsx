@@ -9,7 +9,7 @@ export default function PaymentPageCrezco({ order }) {
   const { orderId } = useParams()
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("Payment", { orderId })
+    AnalyticsManager.main.viewPage("CrezcoPayment", { orderId })
   }, [orderId])
 
   const location = useLocation();

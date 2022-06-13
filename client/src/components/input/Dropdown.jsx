@@ -1,9 +1,19 @@
 import Popup from "reactjs-popup";
-import { MenuItem } from "../../app/dashboard/events/AnalyticsPage";
+import { MenuItem } from "../../app/dashboard/events/analytics/AnalyticsPage";
 import Carat from "../../assets/icons/Carat";
 import { Colors } from "../CircleButton";
 
-export default function Dropdown({ optionList, name, value, onChange, disabled, allowsNull = false, width = 320, position = "bottom left", ...props }) {
+export default function Dropdown({ 
+  optionList, 
+  name, 
+  value, 
+  onChange, 
+  disabled = false, 
+  allowsNull = false, 
+  width = 320, 
+  position = "bottom left", 
+  ...props
+}) {
   const currOption = optionList.find(option => option.value === value)
   const trigger = <div style={{ 
     display: "flex",
