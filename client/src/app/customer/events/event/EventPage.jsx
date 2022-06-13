@@ -14,6 +14,8 @@ import ShowMoreText from "react-show-more-text";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
 import { useEffect } from "react";
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager";
+import useAttribution from "../../../shared/attribution/useAttribution";
+import MainButton from "../../../../components/MainButton";
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return <div>
@@ -61,9 +63,12 @@ export function EventDetails({ event, merchant, artists = [] }) {
 
 export default function EventPage({ merchant, event, products, artists }) {
   const { eventId, merchantId } = useParams()
+  const { clearItems } = useAttribution()
   
   useEffect(() => {
     AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
+
+    
   }, [eventId, merchantId])
 
   return <div className="container">

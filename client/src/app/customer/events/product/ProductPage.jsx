@@ -75,6 +75,7 @@ export default function ProductPage({ merchant, event, product, user }) {
         const state = {
           productId,
           quantity,
+          eventId,
           backPath: pathname
         }
 

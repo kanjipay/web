@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/Breadcrumb";
 import { TextArea } from "../../../components/Input";
 import Spacer from "../../../components/Spacer";
@@ -13,7 +13,7 @@ import SmallButton from "../../../components/SmallButton";
 import { ButtonTheme, Colors } from "../../../components/CircleButton";
 import ImagePicker from "../../../components/ImagePicker";
 import { getEventStorageRef } from "../../../utils/helpers/storage";
-import { deleteDoc, updateDoc } from "firebase/firestore";
+import { deleteDoc, updateDoc, where } from "firebase/firestore";
 import Popup from 'reactjs-popup';
 import Collection from "../../../enums/Collection";
 import { deleteObject } from "firebase/storage";
@@ -64,6 +64,8 @@ export function CopyToClipboardButton({ text }) {
 export default function EventPage({ merchant, event, products }) {
   const navigate = useNavigate()
   const docRef = Collection.EVENT.docRef(event.id)
+  const { merchantId } = useParams()
+  const [attributionLinks, setAttributionLinks] = useState(null)
 
   const handleUpdateEvent = async (data) => {
 
@@ -114,6 +116,13 @@ export default function EventPage({ merchant, event, products }) {
 
   const hasPublishedProducts = products.filter(p => p.isPublished).length > 0
 
+  useEffect(() => {
+    Collection.ATTRIBUTION_LINK.queryOnChange(
+      setAttributionLinks,
+      where("merchantId", "==", merchantId)
+    )
+  }, [merchantId])
+
   return <div>
     <Spacer y={2} />
     <Breadcrumb pageData={[
@@ -127,8 +136,10 @@ export default function EventPage({ merchant, event, products }) {
       <div>
         {
           event.isPublished && <div>
-            <h2 className="header-m">Event link</h2>
+            <h2 className="header-m">Event links</h2>
             <Spacer y={3} />
+            <h3 className="header-s">Plain event link</h3>
+            <Spacer y={2} />
             <p className="text-body-faded">This is the link customers can use to view your event and buy tickets.</p>
             <Spacer y={2} />
             <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
@@ -136,9 +147,52 @@ export default function EventPage({ merchant, event, products }) {
               <div className="flex-spacer"></div>
               <CopyToClipboardButton text={eventLinkString} />
             </div>
-            <Spacer y={4} />
+            <Spacer y={3} />
+            <h3 className="header-s">Attribution links</h3>
+            <Spacer y={2} />
+            <p className="text-body-faded">Want to see which of your marketing efforts is bringing in sales? You can use attribution links to analyse where your sales are coming from.</p>
+            {
+              attributionLinks && <div>
+                <Spacer y={2} />
+                {
+                  attributionLinks.length > 0 ?
+                    attributionLinks.map(link => {
+                      const linkUrl = new URL(window.location.href)
+                      linkUrl.pathname = `/l/${link.id}`
+                      
+                      const linkUrlString = linkUrl.href
+
+                      return <div style={{ padding: 16, backgroundColor: Colors.OFF_WHITE_LIGHT, display: "flex", alignItems: "center", columnGap: 16 }}>
+                        <div>
+                          <h4 className="header-xs">{link.displayName}</h4>
+                          <Spacer y={2} />
+                          <div style={{ display: "flex", columnGap: 8 }}>{
+                            Object.entries(link.attributionData).map(([key, value]) => <p style={{ 
+                              backgroundColor: Colors.OFF_WHITE, 
+                              fontSize: 14,
+                              padding: "4px 8px"
+                            }}>
+                              {`${key} = ${value}`}
+                            </p>)
+                          }</div>
+                          <Spacer y={2} />
+                          <p>{linkUrlString}</p>
+                        </div>
+                        <div style={{ flexGrow: 100 }}></div>
+                        <CopyToClipboardButton text={linkUrlString} />
+                      </div>
+                    }) :
+                    <p className="text-body">You don't have any attribution links yet</p>
+                }
+                
+              </div>
+            }
+            <Spacer y={2} />
+            <MainButton title="Create attribution link" onClick={() => navigate("create-attribution-link")} />
           </div>
         }
+
+        <Spacer y={4} />
         
         <h2 className="header-m">Event details</h2>
         <Spacer y={3} />
@@ -148,7 +202,8 @@ export default function EventPage({ merchant, event, products }) {
             ...event,
             startsAt: dateFromTimestamp(event.startsAt) ?? new Date(),
             endsAt: dateFromTimestamp(event.endsAt) ?? new Date(),
-            photo: getEventStorageRef(event.merchantId, event.id, event.photo)
+            photo: getEventStorageRef(event.merchantId, event.id, event.photo),
+            tags: event.tags ?? []
           }}
           formGroupData={[
             {
@@ -263,7 +318,7 @@ export default function EventPage({ merchant, event, products }) {
           />
         </div>
         <Spacer y={3} />
-        <p>Drag and drop to reorder. Click to edit.</p>
+        <p>Click to edit.</p>
         <Spacer y={3} />
         {
           products.map(product => {

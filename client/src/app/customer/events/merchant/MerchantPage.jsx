@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import AsyncImage from "../../../../components/AsyncImage";
 import Spacer from "../../../../components/Spacer";
 import Collection from "../../../../enums/Collection";
+import { AnalyticsManager } from "../../../../utils/AnalyticsManager";
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
 import EventListing from "../event/EventListing";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
@@ -10,6 +11,10 @@ import EventsAppNavBar from "../secure/EventsAppNavBar";
 export default function MerchantPage({ merchant }) {
   const merchantId = merchant.id
   const [events, setEvents] = useState([])
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("TicketMerchant", { merchantId })
+  }, [merchantId])
 
   useEffect(() => {
     return Collection.EVENT.queryOnChange(

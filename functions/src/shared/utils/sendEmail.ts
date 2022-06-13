@@ -13,7 +13,6 @@ enum TemplateName {
 
 async function sendEmail(toEmail: string, templateName: TemplateName, data: unknown) {
   const logger = new LoggingController("sendEmail")
-  console.log(process.env.TEMPLATE_IDS)
   const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
 
   const templateId = templateIds[templateName]

@@ -10,10 +10,15 @@ import MainButton from "../../components/MainButton";
 import IconActionPage from "../../components/IconActionPage";
 import Cross from "../../assets/icons/Cross";
 import { Colors } from "../../components/CircleButton";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 
 export default function PaymentPageStripe({ order }) {
   const { orderId } = useParams()
   const [stripeProps, setStripeProps] = useState(null)
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("StripePayment", { orderId })
+  }, [orderId])
 
   useEffect(() => {
     const deviceId = IdentityManager.main.getDeviceId()

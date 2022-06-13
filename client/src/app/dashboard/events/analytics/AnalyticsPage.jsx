@@ -1,18 +1,21 @@
-import Spacer from "../../../components/Spacer";
-import MainButton from "../../../components/MainButton";
-import { Colors } from "../../../components/CircleButton";
+import Spacer from "../../../../components/Spacer";
+import MainButton from "../../../../components/MainButton";
+import { Colors } from "../../../../components/CircleButton";
 import { useEffect, useState } from "react";
-import SegmentedControl from "../../../components/SegmentedControl";
-import { NetworkManager } from "../../../utils/NetworkManager";
+import SegmentedControl from "../../../../components/SegmentedControl";
+import { NetworkManager } from "../../../../utils/NetworkManager";
 import { useParams } from "react-router-dom";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import LoadingPage from "../../../components/LoadingPage";
+import LoadingPage from "../../../../components/LoadingPage";
 import Popup from 'reactjs-popup';
-import Forward from "../../../assets/icons/Forward";
-import Cross from "../../../assets/icons/Cross";
-import CheckBox from "../../../components/CheckBox";
-import IconPage from "../../../components/IconPage";
-import Discover from "../../../assets/icons/Discover";
+import Forward from "../../../../assets/icons/Forward";
+import Cross from "../../../../assets/icons/Cross";
+import CheckBox from "../../../../components/CheckBox";
+import IconPage from "../../../../components/IconPage";
+import Discover from "../../../../assets/icons/Discover";
+import Dropdown from "../../../../components/input/Dropdown";
+import { dateFromTimestamp } from "../../../../utils/helpers/time";
+import { format, startOfWeek } from "date-fns";
 
 class AnalyticsValue {
   static SALES_NUMBERS = "Sales numbers"
@@ -267,12 +270,11 @@ export default function AnalyticsPage() {
 
   const [analyticsValue, setAnalyticsValue] = useState(AnalyticsValue.REVENUE)
   const [filterData, setFilterData] = useState([])
-  const [groupingData, setGroupingData] = useState([])
+  const [grouping, setGrouping] = useState("Product")
   const [salesData, setSalesData] = useState(null)
 
   useEffect(() => {
     NetworkManager.get(`/merchants/m/${merchantId}/tickets/sales-data`).then(res => {
-      console.log(res.data)
       setSalesData(res.data)
     })
 
@@ -282,8 +284,10 @@ export default function AnalyticsPage() {
     setAnalyticsValue(event.target.value)
   }
 
+  console.log(filterData)
+
   if (salesData) {
-    if (salesData.events.length === 0 || salesData.products.length === 0) {
+    if (salesData.sales.length === 0) {
       return <IconPage
         Icon={Discover}
         iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
@@ -312,30 +316,6 @@ export default function AnalyticsPage() {
       setFilterData([...newData])
     }
 
-    const handleGroupingChange = (value, index) => {
-      let newGroupings = groupingData
-      if (value) {
-        newGroupings[index] = value
-      } else {
-        newGroupings.splice(index, 1)
-      }
-      
-      setGroupingData([...newGroupings])
-    }
-
-    const handleAddGrouping = () => {
-      let newGroupings = groupingData
-      newGroupings.push(null)
-      setGroupingData([...newGroupings])
-    }
-
-    const groupingsListData = ["Event", "Product"].map(name => {
-      return {
-        name,
-        isSelected: groupingData.some(value => value === name)
-      }
-    })
-
     const filtersListData = [
       {
         name: "Event",
@@ -344,7 +324,15 @@ export default function AnalyticsPage() {
       {
         name: "Product",
         values: salesData.products
-      }
+      },
+      {
+        name: "Source",
+        values: [...new Set(salesData.sales.map(datum => datum.attributionData?.source ?? "None"))].map(value => ({ id: value, title: value }))
+      },
+      {
+        name: "Campaign",
+        values: [...new Set(salesData.sales.map(datum => datum.attributionData?.campaign ?? "None"))].map(value => ({ id: value, title: value }))
+      },
     ].map(datum => {
       let newDatum = datum
       const { name, values } = datum
@@ -359,43 +347,82 @@ export default function AnalyticsPage() {
           isSelected: isFilterSelected && filterDatum.values.map(v => v.id).includes(id)
         }
       })
+
       return newDatum
     })
 
-    const data = salesData.products
-      .filter(product => {
-        const productFilter = filterData
-          .find(d => d.property === "Product")
-
-        const eventFilter = filterData
-          .find(d => d.property === "Event")
-
-        function shouldIgnoreFilter(filter) {
-          return !filter || filter.values.length === 0
+    const filteredSalesData = salesData.sales
+      .filter(datum => {
+        const filterMap = {
+          "Product": datum.productId,
+          "Event": datum.eventId,
+          "Source": datum.attributionData?.source ?? "None",
+          "Campaign": datum.attributionData?.campaign ?? "None"
         }
 
-        return (
-          (
-            shouldIgnoreFilter(productFilter) || 
-            productFilter.values
-              .map(v => v.id)
-              .includes(product.id)
-          ) && (
-            shouldIgnoreFilter(eventFilter) ||
-            eventFilter.values
-              .map(v => v.id)
-              .includes(product.eventId)
-          )
-        )
-      }).map(product => {
-      return {
-        name: product.title,
-        [AnalyticsValue.REVENUE]: product.soldCount * product.price / 100,
-        [AnalyticsValue.SALES_NUMBERS]: product.soldCount
+        return Object.entries(filterMap).every(([filterName, filterValue]) => {
+          const filter = filterData.find(d => d.property === filterName)
+          const shouldIgnoreFilter = !filter || filter.values.length === 0
+          
+          return shouldIgnoreFilter ||
+            filter.values.map(v => v.id).includes(filterValue)
+        })
+      })
+
+    // Then group it by the right value into an array, totaling the groups sales or quantity
+
+    // First need to get an array of the groups, then map through each group and construct the array element
+
+    function getGroupingValuesFromDatum(datum, grouping) {
+      switch (grouping) {
+        case "Product":
+          return { value: datum.productId, label: datum.productTitle, sortValue: datum.productTitle }
+        case "Event":
+          return { value: datum.eventId, label: datum.eventTitle, sortValue: datum.eventTitle }
+        case "Time":
+          const orderDate = dateFromTimestamp(datum.createdAt)
+          const intervalDate = startOfWeek(orderDate, {
+            weekStartsOn: 1
+          })
+          const dateString = format(intervalDate, "do MMM")
+          return { value: intervalDate.toString(), label: dateString, sortValue: intervalDate }
+        default:
+          const value = datum.attributionData ? datum.attributionData[grouping.toLowerCase()] : "None"
+          return { value, label: value, sortValue: value }
       }
+    }
+
+    const duplicatedGroupingValueStrings = filteredSalesData.map(datum => {
+      const groupingValues = getGroupingValuesFromDatum(datum, grouping)
+      const groupingValuesString = JSON.stringify(groupingValues)
+      return groupingValuesString
     })
 
-    console.log(data)
+    const groupingValueStrings = [...new Set(duplicatedGroupingValueStrings)]
+
+    const groupingValues = groupingValueStrings.map(str => JSON.parse(str))
+
+    console.log(groupingValues)
+    console.log(filteredSalesData)
+
+    const groupedSalesData = groupingValues.map(({ value, label }) => {
+      console.log(value)
+      console.log(getGroupingValuesFromDatum(filteredSalesData[0], grouping).value)
+      const groupSalesData = filteredSalesData.filter(datum => getGroupingValuesFromDatum(datum, grouping).value === value)
+
+      const { amount, quantity } = groupSalesData.reduce((aggregateData, datum) => {
+        aggregateData.amount += datum.amount
+        aggregateData.quantity += datum.quantity
+
+        return aggregateData
+      }, { amount: 0, quantity: 0 })
+
+      return {
+        name: label,
+        [AnalyticsValue.REVENUE]: amount,
+        [AnalyticsValue.SALES_NUMBERS]: quantity,
+      }
+    })
 
     return <div>
       <Spacer y={5} />
@@ -405,7 +432,10 @@ export default function AnalyticsPage() {
         <div style={{ width: 320 }}>
           <h3 className="header-s">Value</h3>
           <Spacer y={2} />
-          <SegmentedControl values={[AnalyticsValue.REVENUE, AnalyticsValue.SALES_NUMBERS]} value={analyticsValue} onChange={onAnalyticsValueChange} />
+          <SegmentedControl values={[
+            AnalyticsValue.REVENUE,
+            AnalyticsValue.SALES_NUMBERS
+          ]} value={analyticsValue} onChange={onAnalyticsValueChange} />
           <Spacer y={4} />
           <h3 className="header-s">Filters</h3>
           <Spacer y={2} />
@@ -429,32 +459,21 @@ export default function AnalyticsPage() {
           <MainButton title="Add filter" onClick={handleAddFilter} />
           
           <Spacer y={4} />
-          <h3 className="header-s">Groupings</h3>
+          <h3 className="header-s">View by</h3>
           <Spacer y={2} />
-          {
-            groupingData.length > 0 ?
-              groupingData.map((grouping, index) => {
-                return <div>
-                  <GroupingControl 
-                    value={grouping}
-                    onChange={(value) => handleGroupingChange(value, index)}
-                    groupingsListData={groupingsListData}
-                  />
-                  <Spacer y={2} />
-                </div>
-              }) :
-              <div>
-                <p>No groupings yet</p>
-                <Spacer y={2} />
-              </div>
-
-          }
-          <MainButton title="Add grouping" onClick={handleAddGrouping} />
+          <Dropdown value={grouping} onChange={event => setGrouping(event.target.value)} optionList={[
+            { value: "Event" },
+            { value: "Product" },
+            { value: "Source" },
+            { value: "Campaign" },
+            { value: "Time" }
+          ]} />
+          <Spacer y={2} />
         </div>
 
         <div className="flex-spacer" style={{ height: "60vh" }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart width={150} height={40} data={data}>
+            <BarChart width={150} height={40} data={groupedSalesData}>
               <YAxis />
               <XAxis dataKey="name" />
               <Tooltip />

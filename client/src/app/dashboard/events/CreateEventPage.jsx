@@ -26,7 +26,7 @@ export default function CreateEventPage() {
       address,
       startsAt,
       endsAt,
-      maxTicketsPerPerson,
+      maxTicketsPerPerson: parseInt(maxTicketsPerPerson, 10),
       isPublished: false
     })
 

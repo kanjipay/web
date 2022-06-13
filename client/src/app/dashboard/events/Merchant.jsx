@@ -8,7 +8,7 @@ import Spinner from "../../../assets/Spinner";
 import { Colors } from "../../../components/CircleButton";
 import IconActionPage from "../../../components/IconActionPage";
 import Collection from "../../../enums/Collection";
-import AnalyticsPage from "./AnalyticsPage";
+import AnalyticsPage from "./analytics/AnalyticsPage";
 import CrezcoConnectRedirectPage from "./CrezcoConnectRedirectPage";
 import Events from "./Events";
 import SettingsPage from "./SettingsPage";

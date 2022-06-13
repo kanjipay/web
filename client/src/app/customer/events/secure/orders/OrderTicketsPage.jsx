@@ -7,10 +7,11 @@ import LoadingPage from "../../../../../components/LoadingPage"
 import OrderType from "../../../../../enums/OrderType"
 import { AnalyticsEvent, AnalyticsManager } from "../../../../../utils/AnalyticsManager"
 import { createTicketOrder } from "../../../../../utils/services/OrdersService"
+import { getLatestItem } from "../../../../shared/attribution/AttributionReducer"
 
 export default function OrderTicketsPage() {
   const { state } = useLocation()
-  const { productId, quantity } = state
+  const { eventId, productId, quantity } = state
   const navigate = useNavigate()
   const [error, setError] = useState(null)
   const backPath = state?.backPath ?? "/"
@@ -20,7 +21,9 @@ export default function OrderTicketsPage() {
   }, [productId, quantity])
 
   useEffect(() => {
-    createTicketOrder(productId, quantity)
+    const attributionItem = getLatestItem({ eventId })
+    
+    createTicketOrder(productId, quantity, attributionItem)
       .then(({ orderId, redirectPath }) => {
         console.log("redirectPath: ", redirectPath)
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId, orderType: OrderType.TICKETS });

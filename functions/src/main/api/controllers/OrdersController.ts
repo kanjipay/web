@@ -18,7 +18,7 @@ export class OrdersController extends BaseController {
       const logger = new LoggingController("Create ticket order")
 
       const userId = req.user.id
-      const { productId, quantity, deviceId } = req.body
+      const { productId, quantity, deviceId, attributionData } = req.body
 
       logger.log("Read initial variables", {}, {
         userId,
@@ -152,6 +152,10 @@ export class OrdersController extends BaseController {
           quantity
         }],
         wereTicketsCreated: false
+      }
+
+      if (attributionData) {
+        orderData["attributionData"] = attributionData
       }
 
       logger.log("Formulated order data", { orderData })

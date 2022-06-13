@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import IconActionPage from "../../components/IconActionPage";
 import LoadingPage from "../../components/LoadingPage";
 import {
@@ -19,11 +19,15 @@ export default function PaymentUnsuccessfulPage({
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false)
 
+  const { state } = useLocation()
+
+  const retryPath = state?.retryPath ?? "../choose-bank"
+
   const handleTryAgain = () => {
     AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
       button: "retryPayment",
     });
-    navigate("../choose-bank");
+    navigate(retryPath);
   };
 
   const handleCancelOrder = async () => {

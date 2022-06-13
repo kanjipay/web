@@ -4,6 +4,7 @@ import LoadingPage from "../../components/LoadingPage";
 import Collection from "../../enums/Collection";
 import OrderType from "../../enums/OrderType";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 import { IdentityManager } from "../../utils/IdentityManager";
 import { NetworkManager } from "../../utils/NetworkManager";
 import useBasket from "../customer/menu/basket/useBasket";
@@ -17,6 +18,10 @@ export default function RedirectPageCrezco() {
   const [order, setOrder] = useState(null)
   const [hasBegunPolling, setHasBegunPolling] = useState(false)
   const [hasPolledRecently, setHasPolledRecently] = useState(false)
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("CrezcoPaymentRedirect", { paymentAttemptId })
+  }, [paymentAttemptId])
   
   // First start subscribing to payment attempt updates
   useEffect(() => {
