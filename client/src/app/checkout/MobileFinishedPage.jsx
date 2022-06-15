@@ -1,8 +1,14 @@
+import { useEffect } from "react";
 import Tick from "../../assets/icons/Tick";
 import CircleIcon from "../../components/CircleIcon";
 import Spacer from "../../components/Spacer";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 
 export default function MobileFinishedPage() {
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("CheckoutMobileFinished")
+  })
+  
   return <div className="container">
     <div className="content">
       <Spacer y={12} />

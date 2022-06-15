@@ -2,8 +2,10 @@ import { v4 as uuid } from "uuid";
 
 export class LocalStorageKeys {
   static DEVICE_ID = "deviceId"
+  static ATTRIBUTION_ITEMS = "attributionItems"
   static PSEUDO_USER_ID = "pseudoUserId"
   static MONEYHUB_BANK_ID = "moneyhubBankId"
+  static CREZCO_BANK_CODE = "crezcoBankCode"
   static BASKET = "basket"
   static BASKET_MERCHANT = "basketMerchant"
   static EMAIL = "email"

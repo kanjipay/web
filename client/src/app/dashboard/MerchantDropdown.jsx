@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import Carat from "../../assets/icons/Carat"
 import { Colors } from "../../components/CircleButton"
 import Popup from "reactjs-popup"
-import { MenuItem } from "./events/AnalyticsPage"
+import { MenuItem } from "./events/analytics/AnalyticsPage"
 
 export default function MerchantDropdown({ memberships }) {
   const { merchantId } = useParams()

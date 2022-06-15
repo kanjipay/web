@@ -10,6 +10,7 @@ import Checkout from "./checkout/Checkout";
 import Dashboard from "./dashboard/Dashboard";
 import Auth from "./auth/Auth";
 import { IntlProvider } from 'react-intl'
+import AttributionLinkPage from "./shared/attribution/AttributionLinkPage";
 
 export default function App() {
   console.log("language: ", navigator.language)
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/events/*" element={<EventsApp />} />
         <Route path="/checkout/*" element={<Checkout />} />
         <Route path="/link/:linkId" element={<OneTimeLinkPage />} />
+        <Route path="/l/:attributionLinkId" element={<AttributionLinkPage />} />
         <Route path="/merchant/*" element={<MerchantApp />} />
         <Route path="/auth/*" element={<Auth />} />
         <Route path="/dashboard/*" element={<Dashboard />} />

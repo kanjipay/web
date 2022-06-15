@@ -5,6 +5,7 @@ export default class Collection {
   static ARTIST = new Collection("Artist");
   static MERCHANT = new Collection("Merchant");
   static MEMBERSHIP = new Collection("Membership");
+  static INVITE = new Collection("INVITE");
   static USER = new Collection("User");
   static PRODUCT = new Collection("Product");
   static EVENT = new Collection("Event")
@@ -16,6 +17,7 @@ export default class Collection {
   static OPENING_HOUR_RANGE = new Collection("OpeningHourRange");
   static CONTACT_REQUEST = new Collection("ContactRequest");
   static LINK = new Collection("Link");
+  static ATTRIBUTION_LINK = new Collection("AttributionLink");
   static STATE = new Collection("State");
 
   constructor(name) {

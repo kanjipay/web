@@ -9,7 +9,7 @@ import { addDoc } from "firebase/firestore"
 import Collection from "../../../enums/Collection";
 import { useNavigate, useParams } from "react-router-dom";
 import { getEventStorageRef } from "../../../utils/helpers/storage";
-import { uploadBytes } from "firebase/storage";
+import { uploadImage } from "../../../utils/helpers/uploadImage";
 
 export default function CreateEventPage() {
   const navigate = useNavigate()
@@ -26,7 +26,7 @@ export default function CreateEventPage() {
       address,
       startsAt,
       endsAt,
-      maxTicketsPerPerson,
+      maxTicketsPerPerson: parseInt(maxTicketsPerPerson, 10),
       isPublished: false
     })
 
@@ -34,9 +34,7 @@ export default function CreateEventPage() {
 
     const ref = getEventStorageRef(merchantId, eventId, photo.name)
 
-    await uploadBytes(ref, photo, {
-      cacheControl: "public,max-age=3600000"
-    })
+    await uploadImage(ref, photo)
 
     navigate(`../e/${eventId}`)
   }

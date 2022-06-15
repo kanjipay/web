@@ -1,5 +1,5 @@
 import { firestore } from "firebase-admin"
-import { processSuccessfulTicketsOrder } from "../../../onlineMenu/utils/processSuccessfulTicketsOrder"
+import { processSuccessfulTicketsOrder } from "../../../shared/utils/processSuccessfulTicketsOrder"
 import BaseController from "../../../shared/BaseController"
 import Collection from "../../../shared/enums/Collection"
 import OrderStatus from "../../../shared/enums/OrderStatus"
@@ -18,7 +18,7 @@ export class OrdersController extends BaseController {
       const logger = new LoggingController("Create ticket order")
 
       const userId = req.user.id
-      const { productId, quantity, deviceId } = req.body
+      const { productId, quantity, deviceId, attributionData } = req.body
 
       logger.log("Read initial variables", {}, {
         userId,
@@ -126,9 +126,9 @@ export class OrdersController extends BaseController {
         }
       }
 
-      const { currency } = merchant
+      const { currency, customerFee } = merchant
 
-      const total = price * quantity
+      const total = Math.round(price * quantity * (1 + customerFee)) 
       const orderId = uuid()
 
       const orderData = {
@@ -141,6 +141,7 @@ export class OrdersController extends BaseController {
         userId,
         eventId,
         merchantId,
+        customerFee,
         orderItems: [{
           productId,
           eventId,
@@ -152,6 +153,12 @@ export class OrdersController extends BaseController {
         }],
         wereTicketsCreated: false
       }
+
+      if (attributionData) {
+        orderData["attributionData"] = attributionData
+      }
+
+      logger.log("Formulated order data", { orderData })
 
       const promises: Promise<any>[] = []
 
@@ -172,7 +179,8 @@ export class OrdersController extends BaseController {
             userId,
             endsAt,
             merchant.currency,
-            quantity
+            quantity,
+            customerFee
           )
         )
       }
@@ -196,9 +204,19 @@ export class OrdersController extends BaseController {
 
       await Promise.all(promises)
 
-      logger.log("Function successful", { orderId })
+      let redirectPath: string
 
-      res.status(200).json({ orderId, isFree })
+      if (isFree) {
+        redirectPath = `/events/s/orders/${orderId}/confirmation`
+      } else if (currency === "EUR") {
+        redirectPath = `/checkout/o/${orderId}/payment-stripe`
+      } else {
+        redirectPath = `/checkout/o/${orderId}/choose-bank`
+      }
+
+      logger.log("Function successful", { orderId, redirectPath })
+
+      return res.status(200).json({ orderId, redirectPath })
     } catch (err) {
       next(err)
     }

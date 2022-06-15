@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Tick from "../../../../assets/icons/Tick";
-import { Colors } from "../../../../components/CircleButton";
 import IconActionPage from "../../../../components/IconActionPage";
-import { PageName, viewPage } from "../../../../utils/AnalyticsManager";
+import { AnalyticsManager, PageName } from "../../../../utils/AnalyticsManager";
 
 export default function EmailSubmittedPage({ order }) {
   const navigate = useNavigate();
@@ -12,7 +11,7 @@ export default function EmailSubmittedPage({ order }) {
   const merchantId = order.merchantId;
 
   useEffect(() => {
-    viewPage(PageName.EMAIL_RECEIPT_SENT, { orderId });
+    AnalyticsManager.main.viewPage(PageName.EMAIL_RECEIPT_SENT, { orderId });
   }, [orderId]);
 
   return (

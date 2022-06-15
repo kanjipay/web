@@ -11,6 +11,7 @@ import LoadingPage from "../../components/LoadingPage"
 import Spacer from "../../components/Spacer"
 import { auth } from "../../utils/FirebaseUtils"
 import { validateEmail } from "../../utils/helpers/validation"
+import { restoreState } from "../../utils/services/StateService"
 import { processUserCredential } from "../../utils/services/UsersService"
 
 export default function EmailLinkPage() {
@@ -18,7 +19,7 @@ export default function EmailLinkPage() {
 
   const [searchParams] = useSearchParams()
   const [backPath, successPath] = ["back", "success"].map(e => base64.decode(searchParams.get(e)))
-  const [firstName, lastName] = ["first", "last"].map(e => searchParams.get(e))
+  const [firstName, lastName, stateId] = ["first", "last", "stateId"].map(e => searchParams.get(e))
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
 
   const emailFromLocalStorage = localStorage.getItem("emailForSignIn")
@@ -36,7 +37,9 @@ export default function EmailLinkPage() {
           localStorage.removeItem("emailForSignIn")
 
           processUserCredential(credential, firstName, lastName).then(() => {
-            navigate(successPath, { state: successState })
+            restoreState(stateId).then(() => {
+              navigate(successPath, { state: successState })
+            })
           })
         })
         .catch(error => {
@@ -75,7 +78,7 @@ export default function EmailLinkPage() {
   } else if (emailForSignIn) {
     return <LoadingPage message="Signing you in..." />
   } else {
-    <div className="container">
+    return <div className="container">
       <div className="content">
         <Spacer y={4} />
         <Form

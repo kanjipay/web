@@ -1,19 +1,23 @@
 import { updateDoc } from "firebase/firestore";
-import { deleteObject, uploadBytes } from "firebase/storage";
-import { useEffect, useState } from "react";
+import { deleteObject } from "firebase/storage";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Form from "../../../components/Form";
 import ImagePicker from "../../../components/ImagePicker";
 import { TextArea } from "../../../components/Input";
 import Dropdown from "../../../components/input/Dropdown";
 import { Field, IntField } from "../../../components/input/IntField";
-import ResultBanner, { ResultType } from "../../../components/ResultBanner";
+import MainButton from "../../../components/MainButton";
 import Spacer from "../../../components/Spacer";
 import Collection from "../../../enums/Collection";
+import StripeStatus from "../../../enums/StripeStatus";
 import { getMerchantStorageRef } from "../../../utils/helpers/storage";
+import { uploadImage } from "../../../utils/helpers/uploadImage";
+import { NetworkManager } from "../../../utils/NetworkManager";
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
+  const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false)
   
   const handleSaveDetails = async (data) => {
     const promises = []
@@ -22,8 +26,10 @@ export default function SettingsPage({ merchant }) {
       const file = data.photo
       data.photo = file.name
 
+      const merchantRef = getMerchantStorageRef(merchantId, file.name)
+
       promises.push(
-        uploadBytes(getMerchantStorageRef(merchantId, file.name), file)
+        uploadImage(merchantRef, file)
       )
 
       promises.push(
@@ -41,6 +47,16 @@ export default function SettingsPage({ merchant }) {
 
   const handleChangeBankDetails = async (data) => {
     window.open('mailto:team@mercadopay.co')
+  }
+
+  const handleContinueToStripe = async () => {
+    setIsRedirectingToStripe(true)
+
+    const res = await NetworkManager.post(`/merchants/m/${merchantId}/create-stripe-account-link`)
+
+    const { redirectUrl } = res.data
+
+    window.location.href = redirectUrl
   }
 
   return <div>
@@ -121,6 +137,21 @@ export default function SettingsPage({ merchant }) {
           onSubmit={handleChangeBankDetails}
         />
         <Spacer y={6} />
+        {
+          merchant.stripe?.status !== StripeStatus.CHARGES_ENABLED && <div>
+            <h2 className="header-s">Stripe</h2>
+            <Spacer y={2} />
+            <p className="text-body-faded">Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts.</p>
+            <Spacer y={2} />
+            <MainButton
+              title={merchant.stripe ? "Continue your Stripe onboarding" : "Connect with Stripe"}
+              onClick={handleContinueToStripe}
+              isLoading={isRedirectingToStripe}
+            />
+            <Spacer y={6} />
+          </div>
+        }
+        
         
       </div>
 
