@@ -14,25 +14,28 @@ import OrDivider from "../../components/OrDivider"
 import Spacer from "../../components/Spacer"
 import { IdentityManager } from "../../utils/IdentityManager"
 import { NetworkManager } from "../../utils/NetworkManager"
-import { createLink, fetchLink } from "../../utils/services/LinksService"
+import { createLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
-import { useIntl } from "react-intl"
-import { getCountryCode } from "../../utils/helpers/money"
-import Dropdown from "../../components/input/Dropdown"
+// import { useIntl } from "react-intl"
+// import { getCountryCode } from "../../utils/helpers/money"
+// import Dropdown from "../../components/input/Dropdown"
 import { cancelOrder } from "./cancelOrder"
 import Collection from "../../enums/Collection"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
 
 export default function ChooseBankCrezcoPage({ order }) {
   const navigate = useNavigate()
-  const intl = useIntl()
+  // const intl = useIntl()
   const [searchParams] = useSearchParams()
   const referringDeviceId = searchParams.get("referringDeviceId")
   const bankCodeFromQuery = searchParams.get("bank")
   const bankCodeFromStorage = localStorage.getItem("crezcoBankCode")
-  const [isLoading, setIsLoading] = useState(true)
-  const countryCodeFromStorage = localStorage.getItem("countryCode")
 
-  const [countryCode, setCountryCode] = useState(countryCodeFromStorage ?? getCountryCode(intl.locale))
+  const [isLoading, setIsLoading] = useState(true)
+  // const countryCodeFromStorage = localStorage.getItem("countryCode")
+
+  // const [countryCode, setCountryCode] = useState(countryCodeFromStorage ?? getCountryCode(intl.locale))
+  const [countryCode, setCountryCode] = useState("GB") // Hardcode until EU OB payments work
   const [bankCode, setBankCode] = useState(null)
   const [bankData, setBankData] = useState([])
   const [bankName, setBankName] = useState("")
@@ -60,20 +63,24 @@ export default function ChooseBankCrezcoPage({ order }) {
     }
   }
 
-  const handleClickBack = () => {
-    cancelOrder(order, navigate)
+  const handleClickBack = async () => {
+    await cancelOrder(order, navigate)
   }
 
   const handleChooseBank = (bankDatum) => {
-    setBankCode(bankDatum.bankCode)
+    const code = bankDatum.bankCode
+    localStorage.setItem("crezcoBankCode", code)
+    AnalyticsManager.main.logEvent("ChooseBank", { crezcoBankCode: code })
+    setBankCode(code)
   }
 
   const handleContinueToBank = () => {
-    localStorage.setItem("crezcoBankCode", bankCode)
+    AnalyticsManager.main.pressButton("ContinueToBank", { isMobile, crezcoBankCode: bankCode })
     navigate("../payment", { state: { bankCode, countryCode, referringDeviceId } })
   }
 
   const handleChooseAnotherBank = () => {
+    localStorage.removeItem("crezcoBankCode")
     setBankCode(null)
   }
 
@@ -82,6 +89,10 @@ export default function ChooseBankCrezcoPage({ order }) {
     redirectUrl.pathname = `/link/${linkId}`;
     return redirectUrl.href
   }
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("ChooseBank", { cachedBankId: bankCodeFromStorage})
+  }, [bankCodeFromStorage])
 
   useEffect(() => {
     setIsLoading(true)
@@ -95,7 +106,7 @@ export default function ChooseBankCrezcoPage({ order }) {
 
       const bankCodes = bankData.map(bankDatum => bankDatum.bankCode)
 
-      if (!bankCodes.includes(bankCodeFromStorage)) {
+      if (bankCodeFromStorage && !bankCodes.includes(bankCodeFromStorage)) {
         localStorage.removeItem("crezcoBankCode")
       }
 
@@ -250,7 +261,7 @@ export default function ChooseBankCrezcoPage({ order }) {
               style={{ flexGrow: 10, height: "100%", backgroundColor: Colors.OFF_WHITE_LIGHT }} />
           </div>
 
-          <Dropdown 
+          {/* <Dropdown 
             width="auto"
             position="bottom right"
             optionList={[
@@ -260,7 +271,7 @@ export default function ChooseBankCrezcoPage({ order }) {
             name="bankCountrySelect"
             value={countryCode}
             onChange={handleCountryCodeChange}
-          />
+          /> */}
         </div>
         
 

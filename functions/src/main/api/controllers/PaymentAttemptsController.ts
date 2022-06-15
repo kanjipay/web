@@ -4,12 +4,25 @@ import OrderStatus from "../../../shared/enums/OrderStatus";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
 import LoggingController from "../../../shared/utils/loggingClient";
 import { v4 as uuid } from "uuid"
-import { createPayment, createPaymentDemand } from "../../../shared/utils/crezcoClient";
+import { createPayment, createPaymentDemand, getPaymentStatus } from "../../../shared/utils/crezcoClient";
 import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus";
 import { firestore } from "firebase-admin";
 import { db } from "../../../shared/utils/admin";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../../shared/utils/errors";
 import stripe from "../../../shared/utils/stripeClient";
+import { processPaymentUpdate } from "../../webhooks/processPaymentUpdate";
+
+const crezcoPaymentStatuses = {
+  New: PaymentAttemptStatus.PENDING, // Payment has been created internally, authorisation has not been attempted
+  Cancelled: PaymentAttemptStatus.CANCELLED, // Payment / bank account selection process was cancelled by the user
+  Failed: PaymentAttemptStatus.FAILED, // Bank account selection process failed for some reason (failed to get redirect URL, bank failed to authorise user, etc)
+  Denied: PaymentAttemptStatus.FAILED, // Bank denied the payment - it failed a technical validation check
+  Authorised: PaymentAttemptStatus.PENDING, // User completed bank account selection and authorised the transaction. Bank has not yet processed the request
+  Accepted: PaymentAttemptStatus.ACCEPTED, // Payment accepted but funds have not yet transferred
+  Blocked: PaymentAttemptStatus.PENDING, // ??? is this the right PaymentAttemptStatus // Payment accepted by Bank, but awaiting further authorisations (multi-auth, or other approval flows)
+  Declined: PaymentAttemptStatus.FAILED, // Bank declined the payment
+  Completed: PaymentAttemptStatus.SUCCESSFUL
+}
 
 export class PaymentAttemptsController extends BaseController {
   createStripe = async (req, res, next) => {
@@ -78,7 +91,7 @@ export class PaymentAttemptsController extends BaseController {
 
       logger.log("Payment attempt doc added", { paymentAttemptData });
 
-      return res.status(200).json({ clientSecret })
+      return res.status(200).json({ clientSecret, stripeAccountId })
 
     } catch (err) {
       next(err)
@@ -174,6 +187,30 @@ export class PaymentAttemptsController extends BaseController {
       return res.status(200).json({ redirectUrl });
     } catch (err) {
       console.log(err.data?.errors)
+      next(err)
+    }
+  }
+
+  checkCrezcoPayment = async (req, res, next) => {
+    try {
+      const { paymentAttemptId, paymentDemandId } = req.body
+
+      const crezcoPaymentStatus = await getPaymentStatus(paymentDemandId)
+
+      const paymentAttemptStatus = crezcoPaymentStatuses[crezcoPaymentStatus]
+      const isPending = paymentAttemptStatus === PaymentAttemptStatus.PENDING
+
+      if (!isPending) {
+        const [, error] = await processPaymentUpdate(paymentAttemptId, paymentAttemptStatus)
+
+        if (error) {
+          next(error)
+          return
+        }
+      }
+      
+      return res.status(200).json({ isPending })
+    } catch (err) {
       next(err)
     }
   }

@@ -8,7 +8,7 @@ import Spinner from "../../../assets/Spinner";
 import { Colors } from "../../../components/CircleButton";
 import IconActionPage from "../../../components/IconActionPage";
 import Collection from "../../../enums/Collection";
-import AnalyticsPage from "./AnalyticsPage";
+import AnalyticsPage from "./analytics/AnalyticsPage";
 import CrezcoConnectRedirectPage from "./CrezcoConnectRedirectPage";
 import Events from "./Events";
 import SettingsPage from "./SettingsPage";
@@ -16,6 +16,9 @@ import ConnectCrezcoPage from "./ConnectCrezcoPage";
 import ConnectStripePage from "./ConnectStripePage";
 import StripeConnectRedirectPage from "./StripeConnectRedirectPage";
 import Discover from "../../../assets/icons/Discover";
+import User from "../../../assets/icons/User";
+import UsersPage from "./UsersPage";
+import StripeStatus from "../../../enums/StripeStatus";
 
 function SidebarItem({ title, Icon, ...props }) {
   const [isHovering, setIsHovering] = useState(false)
@@ -82,14 +85,11 @@ export default function Merchant({ user }) {
         } />
       )
 
-      if (merchant.stripe?.areChargesEnabled || merchant.stripe?.wasSkipped) {
-        routes.push(
-          <Route path="events/*" element={<Events merchant={merchant} />} />,
-          <Route path="/" element={<AnalyticsPage />} />,
-          <Route path="analytics" element={<AnalyticsPage />} />,
-          <Route path="settings" element={<SettingsPage merchant={merchant} />} />,
-          <Route path="stripe-connected" element={
-          <IconActionPage
+      let stripeRedirectPage
+
+      switch (merchant.stripe?.status) {
+        case StripeStatus.CHARGES_ENABLED:
+          stripeRedirectPage = <IconActionPage
             Icon={Tick}
             iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
             iconForegroundColor={Colors.BLACK}
@@ -98,11 +98,48 @@ export default function Merchant({ user }) {
             primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
             primaryActionTitle="Continue"
           />
-        } />
+          break;
+        case StripeStatus.DETAILS_SUBMITTED:
+          stripeRedirectPage = <IconActionPage
+            Icon={Tick}
+            iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+            iconForegroundColor={Colors.BLACK}
+            title="Details submitted"
+            body="Stripe needs to verify some of your details before you can receive card payments. This normally only takes a few days, and they'll send you an email once it's done."
+            primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
+            primaryActionTitle="Continue"
+          />
+          break;
+        case StripeStatus.DETAILS__NOT_SUBMITTED:
+          stripeRedirectPage = <IconActionPage
+            Icon={Tick}
+            iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+            iconForegroundColor={Colors.BLACK}
+            title="Stripe onboarding incomplete"
+            body="You haven't filled in all the details needed for your Stripe onboarding. Any details you have filled in are saved."
+            primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
+            primaryActionTitle="Continue"
+          />
+          break;
+        default:
+          stripeRedirectPage = <StripeConnectRedirectPage />
+      }
+
+      routes.push(<Route path="stripe-connected" element={stripeRedirectPage} />)
+
+      if (
+        [StripeStatus.CHARGES_ENABLED, StripeStatus.DETAILS_SUBMITTED].includes(merchant.stripe?.status) || 
+        merchant.stripe?.wasSkipped
+      ) {
+        routes.push(
+          <Route path="events/*" element={<Events merchant={merchant} />} />,
+          <Route path="/" element={<AnalyticsPage />} />,
+          <Route path="analytics" element={<AnalyticsPage />} />,
+          <Route path="settings" element={<SettingsPage merchant={merchant} />} />,
+          <Route path="users" element={<UsersPage merchant={merchant} />} />,
         )
       } else {
         routes.push(
-          <Route path="stripe-connected" element={<StripeConnectRedirectPage />} />,
           <Route path="*" element={<ConnectStripePage />} />
         )
       }
@@ -120,6 +157,7 @@ export default function Merchant({ user }) {
         <SidebarItem to="analytics" title="Analytics" Icon={Analytics} />
         <SidebarHeader title="Organisation" />
         <SidebarItem to="settings" title="Settings" Icon={Settings} />
+        {/* <SidebarItem to="users" title="Users" Icon={User} /> */}
       </nav>
       <div className="flex-spacer" style={{ padding: "0 24px", position: "absolute", left: 256, right: 0 }}>
         <Routes>{routes}</Routes>

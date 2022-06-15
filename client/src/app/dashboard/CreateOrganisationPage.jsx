@@ -12,12 +12,12 @@ import { IntField } from "../../components/input/IntField";
 import { ResultType } from "../../components/ResultBanner";
 import ImagePicker from "../../components/ImagePicker";
 import { getMerchantStorageRef } from "../../utils/helpers/storage";
-import { uploadBytes } from "firebase/storage";
 import { auth } from "../../utils/FirebaseUtils";
 import { onIdTokenChanged } from "firebase/auth";
 import Dropdown from "../../components/input/Dropdown";
 import { useIntl } from "react-intl"
 import { getCurrencyCode } from "../../utils/helpers/money";
+import { uploadImage } from "../../utils/helpers/uploadImage";
 
 export default function CreateOrganisationPage({ authUser }) {
   const navigate = useNavigate()
@@ -44,10 +44,7 @@ export default function CreateOrganisationPage({ authUser }) {
 
     const ref = getMerchantStorageRef(merchantId, photoFile.name)
 
-    console.log("uploading to storage")
-    await uploadBytes(ref, photoFile, {
-      cacheControl: "public,max-age=3600000"
-    })
+    await uploadImage(ref, photoFile)
 
     navigate(`/dashboard/o/${merchantId}`)
 

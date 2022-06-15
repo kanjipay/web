@@ -1,5 +1,5 @@
 import axios from "axios"
-import { createSignature } from "../../internal/webhooks/sendWebhook"
+import { createSignature } from "./createSignature"
 import { isStrictEnvironment } from "./isStrictEnvironment"
 
 const defaultHeaders = {
@@ -26,10 +26,12 @@ export async function createPaymentDemand(
   currency: string
 ) {
   try {
+    const expireSeconds = currency === "GBP" ? 60 * 10 : 60 * 60 * 24 * 3
+    
     const { signature, signatureError } = createSignature({
       paymentAttemptId,
-      paymentIntentId,
-    }, `${process.env.BASE_URL}/internal`)
+      environment: process.env.ENVIRONMENT
+    }, expireSeconds)
 
     if (signatureError) {
       return { payDemandError: signatureError }
@@ -91,4 +93,11 @@ export async function createPayment(
     console.log(err.response)
     return { paymentError: err }
   }
+}
+
+export async function getPaymentStatus(paymentDemandId: string) {
+  const paymentsRes = await axios.get(`${baseUrl}/v1/pay-demands/${paymentDemandId}/payments`, { headers: defaultHeaders })
+  const paymentStatus = paymentsRes.data[0].status.code
+
+  return paymentStatus
 }

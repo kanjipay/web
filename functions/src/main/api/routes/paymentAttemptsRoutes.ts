@@ -31,6 +31,25 @@ paymentAttemptsRoutes.post(
   paymentAttemptsController.createCrezco
 )
 
+const checkCrezcoSchema: AllowedSchema = {
+  type: "object",
+  required: ["paymentAttemptId", "paymentDemandId"],
+  properties: {
+    paymentAttemptId: {
+      type: "string"
+    },
+    paymentDemandId: {
+      type: "string"
+    }
+  }
+}
+
+paymentAttemptsRoutes.post(
+  "/crezco/check",
+  validate({ body: checkCrezcoSchema }),
+  paymentAttemptsController.checkCrezcoPayment
+)
+
 const createStripePaymentAttemptSchema: AllowedSchema = {
   type: "object",
   required: ["orderId", "deviceId"],

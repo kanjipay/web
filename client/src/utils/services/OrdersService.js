@@ -25,18 +25,19 @@ export async function createMenuOrder(merchantId, basketItems) {
   return { orderId };
 }
 
-export async function createTicketOrder(productId, quantity) {
+export async function createTicketOrder(productId, quantity, attributionItem) {
   const deviceId = IdentityManager.main.getDeviceId()
 
   const res = await NetworkManager.post("/orders/tickets", {
     productId,
     quantity,
-    deviceId
+    deviceId,
+    attributionData: attributionItem?.attributionData
   })
 
-  const { orderId, isFree } = res.data
+  const { orderId, redirectPath } = res.data
 
-  return { orderId, isFree }
+  return { orderId, redirectPath }
 }
 
 export function sendOrderReceipt(orderId, email) {

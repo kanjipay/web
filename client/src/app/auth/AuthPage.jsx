@@ -15,6 +15,8 @@ import { auth } from "../../utils/FirebaseUtils";
 import { processUserCredential } from "../../utils/services/UsersService";
 import Form, { generateValidator } from "../../components/Form";
 import { Field, FieldDecorator } from "../../components/input/IntField";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
+import { saveState } from "../../utils/services/StateService";
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -33,6 +35,10 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("Auth")
+  }, [])
 
   useEffect(() => {
     return onAuthStateChanged(auth, user => {
@@ -80,10 +86,13 @@ export default function AuthPage() {
   const handleSendEmailLink = async (data) => {
     const { firstName, lastName, email } = data
 
+    const stateId = await saveState()
+
     const redirectUrl = new URL(window.location.href)
     redirectUrl.pathname = "/auth/email-link"
     redirectUrl.searchParams.append("first", firstName)
     redirectUrl.searchParams.append("last", lastName)
+    redirectUrl.searchParams.append("stateId", stateId)
 
     sendSignInLinkToEmail(auth, email, {
       url: redirectUrl.href,
@@ -112,7 +121,7 @@ export default function AuthPage() {
   const submitTitle = requiresPassword ? "Sign in" : "Send email link"
 
   if (error) {
-    <IconActionPage
+    return <IconActionPage
       Icon={Cross}
       iconBackgroundColor={Colors.RED_LIGHT}
       iconForegroundColor={Colors.RED}

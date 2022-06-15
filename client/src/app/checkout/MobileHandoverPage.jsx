@@ -4,6 +4,7 @@ import Tick from "../../assets/icons/Tick";
 import CircleIcon from "../../components/CircleIcon";
 import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 import useBasket from "../customer/menu/basket/useBasket";
 import { redirectOrderIfNeeded } from "./cancelOrder";
 
@@ -12,6 +13,10 @@ export default function MobileHandoverPage() {
   const { orderId } = useParams()
   const navigate = useNavigate()
   const { clearBasket } = useBasket()
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("CheckoutMobileHandover", { orderId })
+  }, [orderId])
 
   useEffect(() => {
     return Collection.ORDER.onChange(orderId, order => {

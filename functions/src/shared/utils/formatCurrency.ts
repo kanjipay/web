@@ -11,7 +11,7 @@ export function currencySymbol(currencyCode: string) {
     case "GBP":
       return "£"
     case "EUR":
-      return "e"
+      return "€"
     default:
       return ""
   }

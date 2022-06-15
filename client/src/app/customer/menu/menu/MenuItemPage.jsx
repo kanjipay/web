@@ -40,7 +40,7 @@ export default function MenuItemPage({ merchant }) {
   const [quantity, setQuantity] = useState(initialQuantity);
 
   useEffect(() => {
-    viewPage(PageName.MENU_ITEM, { merchantId, itemId });
+    AnalyticsManager.main.viewPage(PageName.MENU_ITEM, { merchantId, itemId });
   }, [merchantId, itemId]);
 
   const handleAddToBasket = () => {
