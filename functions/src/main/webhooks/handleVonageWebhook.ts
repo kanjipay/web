@@ -15,6 +15,6 @@ export const handleVonageWebhook = async (req, res, next) => {
     return res.sendStatus(200)
   } catch (err) {
     console.log(err)
-    return res.sendStatus(200)
+    return res.sendStatus(500)
   }
 }
