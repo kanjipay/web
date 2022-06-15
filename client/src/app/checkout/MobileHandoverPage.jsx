@@ -1,35 +1,28 @@
-import { onSnapshot } from "firebase/firestore";
 import { useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Tick from "../../assets/icons/Tick";
-import { Colors } from "../../components/CircleButton";
 import CircleIcon from "../../components/CircleIcon";
 import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";
-import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 import useBasket from "../customer/menu/basket/useBasket";
-import { generateRedirectUrl } from "./redirects";
+import { redirectOrderIfNeeded } from "./cancelOrder";
 
 export default function MobileHandoverPage() {
   // Should be polling order for status paid
-  const { paymentIntentId } = useParams()
+  const { orderId } = useParams()
   const navigate = useNavigate()
   const { clearBasket } = useBasket()
 
   useEffect(() => {
-    return onSnapshot(Collection.PAYMENT_INTENT.docRef(paymentIntentId), doc => {
-      const paymentIntent = { id: doc.id, ...doc.data() }
-      const { status } = paymentIntent
+    AnalyticsManager.main.viewPage("CheckoutMobileHandover", { orderId })
+  }, [orderId])
 
-      console.log(`paymentIntent: ${JSON.stringify(paymentIntent)}`)
-
-      if (status !== PaymentIntentStatus.PENDING) {
-        const redirectUrl = generateRedirectUrl(status, paymentIntent)
-        console.log(`redirectUrl: ${redirectUrl}`)
-        window.location.href = redirectUrl
-      }
-    });
-  }, [paymentIntentId, navigate, clearBasket])
+  useEffect(() => {
+    return Collection.ORDER.onChange(orderId, order => {
+      redirectOrderIfNeeded(order, navigate, clearBasket)
+    })
+  }, [orderId, navigate, clearBasket])
 
   return <div className="container">
     <div className="content">

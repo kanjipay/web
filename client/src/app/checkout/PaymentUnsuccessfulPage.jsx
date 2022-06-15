@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import IconActionPage from "../../components/IconActionPage";
+import LoadingPage from "../../components/LoadingPage";
 import {
   AnalyticsEvent,
   AnalyticsManager,
 } from "../../utils/AnalyticsManager";
-import { cancelPaymentIntent } from "./redirects";
+import { cancelOrder } from "./cancelOrder";
 
 export default function PaymentUnsuccessfulPage({
   Icon,
@@ -13,33 +14,30 @@ export default function PaymentUnsuccessfulPage({
   iconForegroundColor,
   title,
   body,
-  paymentIntent,
+  order,
 }) {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
+
+  const { state } = useLocation()
+
+  const retryPath = state?.retryPath ?? "../choose-bank"
 
   const handleTryAgain = () => {
     AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
       button: "retryPayment",
     });
-    navigate("../choose-bank");
+    navigate(retryPath);
   };
 
-  const handleCancelOrder = () => {
-    setIsLoading(true);
-
-    AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
-      button: "cancelPaymentIntent",
-    });
-
-    cancelPaymentIntent(paymentIntent).then(redirectUrl => {
-      setIsLoading(false)
-      window.location.href = redirectUrl
-    })
+  const handleCancelOrder = async () => {
+    await cancelOrder(order, navigate)
   };
 
-  return (
-    <IconActionPage
+  if (isLoading) {
+    return <LoadingPage />
+  } else {
+    return <IconActionPage
       Icon={Icon}
       iconBackgroundColor={iconBackgroundColor}
       iconForegroundColor={iconForegroundColor}
@@ -49,7 +47,6 @@ export default function PaymentUnsuccessfulPage({
       primaryAction={handleTryAgain}
       secondaryActionTitle="Cancel payment"
       secondaryAction={handleCancelOrder}
-      secondaryIsLoading={isLoading}
     />
-  );
+  }
 }

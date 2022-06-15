@@ -1,4 +1,4 @@
-import { onSnapshot, query, where } from "firebase/firestore";
+import { where } from "firebase/firestore";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import LoadingPage from "../../../components/LoadingPage";
@@ -10,24 +10,12 @@ export default function RedirectPageMercado() {
   const paymentIntentId = searchParams.get("paymentIntentId")
   const navigate = useNavigate()
 
+  console.log("is running")
+
   useEffect(() => {
-    const orderQuery = query(
-      Collection.ORDER.ref,
-      where("mercado.paymentIntentId", "==", paymentIntentId)
-    );
-
-    onSnapshot(orderQuery, snapshot => {
-      const orders = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
-      if (orders.length === 0) { return }
-
-      const order = orders[0]
+    console.log("paymentIntentId: ", paymentIntentId)
+    return Collection.ORDER.queryOnChangeGetOne(order => {
       const { merchantId } = order
-
-      console.log(order.status)
-      console.log(order.id)
 
       switch (order.status) {
         case OrderStatus.PAID:
@@ -39,7 +27,7 @@ export default function RedirectPageMercado() {
           break;
         default:
       }
-    })
+    }, where("mercado.paymentIntentId", "==", paymentIntentId))
   }, [paymentIntentId, navigate])
 
 

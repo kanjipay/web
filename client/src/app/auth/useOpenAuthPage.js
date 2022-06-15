@@ -32,7 +32,8 @@ export function useOpenAuthPage() {
     successState = {}, 
     showsBack = true, 
     backPath, 
-    requiresPassword = true,
+    requiresPassword = false,
+    requiredEmailDomain,
   }) => {
     const actualBackPath = backPath ?? location.pathname
 
@@ -48,6 +49,7 @@ export function useOpenAuthPage() {
     }, {
       state: {
         requiresPassword,
+        requiredEmailDomain
       }
     })
   }

@@ -5,7 +5,9 @@ import { LocalStorageKeys } from "../IdentityManager"
 export async function saveState(additionalData = {}) {
   const localStorageKeys = [
     LocalStorageKeys.MONEYHUB_BANK_ID,
+    LocalStorageKeys.CREZCO_BANK_CODE,
     LocalStorageKeys.PSEUDO_USER_ID,
+    LocalStorageKeys.ATTRIBUTION_ITEMS
   ]
 
   const localStorageData = localStorageKeys.reduce((currState, key) => {

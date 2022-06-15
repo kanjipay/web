@@ -2,4 +2,5 @@
   padding: 16px;
   background-color: var(--color-off-white-light);
   text-align: center;
+  cursor: pointer;
 }

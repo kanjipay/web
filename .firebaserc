@@ -1,10 +1,9 @@
 {
   "projects": {
-    "default": "mercadopay-dev",
+    "default": "mercadopay-staging",
     "prod": "mercadopay",
     "dev": "mercadopay-dev",
-    "production": "mercadopay",
-    "development": "mercadopay-dev"
+    "staging": "mercadopay-staging"
   },
   "targets": {}
 }

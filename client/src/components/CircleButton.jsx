@@ -40,7 +40,7 @@ export class ButtonTheme {
 
   static MONOCHROME = new ButtonTheme(
     Colors.BLACK,
-    Colors.OFF_BLACK,
+    Colors.OFF_BLACK_LIGHT,
     Colors.WHITE
   )
 
@@ -50,8 +50,14 @@ export class ButtonTheme {
     Colors.BLACK,
     Colors.BLACK
   )
+
+  static CLEAN = new ButtonTheme(
+    Colors.WHITE,
+    Colors.OFF_WHITE_LIGHT,
+    Colors.BLACK
+  )
   
-  static DESTRUCTIVE = new ButtonTheme(Colors.RED, Colors.RED, Colors.WHITE);
+  static DESTRUCTIVE = new ButtonTheme(Colors.RED_LIGHT, Colors.RED_LIGHT, Colors.RED);
 
   constructor(backgroundColor, pressedBackgroundColor, foregroundColor, borderColor = Colors.CLEAR) {
     this.backgroundColor = backgroundColor;
@@ -74,12 +80,13 @@ export default function IconButton({
   ...props
 }) {
   const [isPressed, setIsPressed] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
 
   let backgroundColor;
 
   if (props.disabled) {
     backgroundColor = buttonTheme.disabledBackgroundColor;
-  } else if (isPressed) {
+  } else if (isPressed || isHovering) {
     backgroundColor = buttonTheme.pressedBackgroundColor;
   } else {
     backgroundColor = buttonTheme.backgroundColor;
@@ -97,13 +104,15 @@ export default function IconButton({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    cursor: "pointer",
+    cursor: props.disabled ? "mouse" : "pointer",
     ...style,
   };
 
   return (
     <button
       style={buttonStyle}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onTouchStart={() => setIsPressed(true)}

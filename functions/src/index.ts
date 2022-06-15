@@ -1,36 +1,29 @@
 import * as functions from "firebase-functions";
-import internalApp from "./internal/internalApp";
-import clientApiApp from "./clientApi/clientApiApp";
-import onlineMenuApp from "./onlineMenu/onlineMenuApp";
+import mainApp from "./main/mainApp";
+import { cronFunction } from "./cron/cron";
 
-const REGION = "europe-west2";
+const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
+const euFunctions = functions.region("europe-west2")
 
-export const internal = functions
-  .region(REGION)
-  .runWith({ secrets: [
-    "SERVICE_ACCOUNT",
-    "MONEYHUB_CLIENT_ID",
-    "MONEYHUB_CLIENT_SECRET",
-    "MONEYHUB_PRIVATE_JWKS",
-    "JWKS_PRIVATE_KEY",
-    "SENDGRID_API_KEY",
-    "CREZCO_API_KEY"
-  ] })
-  .https.onRequest(internalApp);
+export const main = euFunctions
+  .runWith({
+    secrets: [
+      "SERVICE_ACCOUNT",
+      "MONEYHUB_CLIENT_ID",
+      "MONEYHUB_CLIENT_SECRET",
+      "MONEYHUB_PRIVATE_JWKS",
+      "JWKS_PRIVATE_KEY",
+      "JWKS_PUBLIC_KEY",
+      "SENDGRID_API_KEY",
+      "CREZCO_API_KEY",
+      "STRIPE_CLIENT_SECRET",
+      "STRIPE_PAYMENT_WEBHOOK_SECRET"
+    ],
+    minInstances: envProjectId === "mercadopay" ? 1 : 0
+  })
+  .https.onRequest(mainApp)
 
-export const clientApi = functions
-  .region(REGION)
-  .runWith({ secrets: [
-    "SERVICE_ACCOUNT",
-    "JWKS_PUBLIC_KEY"
-  ] })
-  .https.onRequest(clientApiApp);
-
-export const onlineMenu = functions
-  .region(REGION)
-  .runWith({ secrets: [
-    "SERVICE_ACCOUNT",
-    "MERCADO_CLIENT_ID",
-    "MERCADO_CLIENT_SECRET"
-  ] })
-  .https.onRequest(onlineMenuApp);
+export const cron = euFunctions
+  .runWith({ secrets: ["SERVICE_ACCOUNT"] })
+  .pubsub.schedule("every 10 minutes")
+  .onRun(cronFunction)

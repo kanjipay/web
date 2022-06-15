@@ -1,10 +1,23 @@
-import Spacer from "../../components/Spacer"
+import { useState } from "react"
 import "./BankTile.css"
 
 export default function BankTile({ name, imageRef, ...props }) {
-  return <div {...props} className="BankTile">
-    <img alt={name} src={imageRef} style={{ width: 80, height: 80, margin: "auto" }} />
-    <Spacer y={2} />
-    <h3 className="header-xs">{name}</h3>
+  const [isHovering, setIsHovering] = useState(false)
+  const opacity = isHovering ? 0.8 : 1
+  return <div 
+    {...props} 
+    onMouseEnter={() => setIsHovering(true)}
+    onMouseLeave={() => setIsHovering(false)}
+    style={{ 
+      display: "flex", 
+      columnGap: 16, 
+      alignItems: "center", 
+      justifyContent: "left", 
+      cursor: "pointer",
+      opacity
+    }}>
+    <img alt={name} src={imageRef} style={{ width: 40, height: 40, margin: "auto" }} />
+    <p className="text-body">{name}</p>
+    <div className="flex-spacer"></div>
   </div>
 }

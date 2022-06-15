@@ -1,15 +1,15 @@
 import { Route, Routes } from "react-router-dom";
-import PaymentIntent from "./PaymentIntent";
+import Order from "./Order";
 import RedirectPageCrezco from "./RedirectPageCrezco";
-import RedirectPageMoneyhub from "./RedirectPageMoneyhub";
 import { Colors } from "../../components/CircleButton";
+import RedirectPageStripe from "./RedirectPageStripe";
 
 export default function Checkout() {
   return <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT }}>
     <Routes>
-      <Route path="pi/:paymentIntentId/*" element={<PaymentIntent />} />
-      <Route path="mh-redirect" element={<RedirectPageMoneyhub />} />
+      <Route path="o/:orderId/*" element={<Order />} />
       <Route path="cr-redirect" element={<RedirectPageCrezco />} />
+      <Route path="stripe-redirect" element={<RedirectPageStripe />} />
     </Routes>
   </div>
 }

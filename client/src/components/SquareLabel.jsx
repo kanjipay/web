@@ -8,15 +8,17 @@ export default function SquareLabel({
   padding = "4px 6px",
   ...props
 }) {
-  return <div {...props} style={{
-    backgroundColor,
-    color: foregroundColor,
-    fontSize,
-    padding,
-    fontWeight: 500,
-    display: "flex",
-    alignItems: "center"
-  }}>
-    {children}
+  return <div style={{ display: "inline-block" }}>
+    <div {...props} style={{
+      backgroundColor,
+      color: foregroundColor,
+      fontSize,
+      padding,
+      fontWeight: 500,
+      display: "flex",
+      alignItems: "center"
+    }}>
+      {children}
+    </div>
   </div>
 }

@@ -1,11 +1,9 @@
-import { signOut } from "firebase/auth";
-import { onSnapshot, orderBy, query, where } from "firebase/firestore"
+import { orderBy, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import AsyncImage from "../../../../components/AsyncImage";
-import NavBar from "../../../../components/NavBar";
 import Spacer from "../../../../components/Spacer";
 import Collection from "../../../../enums/Collection";
-import { auth } from "../../../../utils/FirebaseUtils";
+import { AnalyticsManager } from "../../../../utils/AnalyticsManager";
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
 import EventListing from "../event/EventListing";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
@@ -14,34 +12,18 @@ export default function MerchantPage({ merchant }) {
   const merchantId = merchant.id
   const [events, setEvents] = useState([])
 
-  // useEffect(() => {
-  //   localStorage.removeItem("crezcoBankCode")
-  //   localStorage.removeItem("moneyhubBankId")
-  //   if (auth.currentUser) {
-  //     signOut(auth).then(() => {
-  //       console.log("signed out")
-  //     })
-  //   }
-  // })
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("TicketMerchant", { merchantId })
+  }, [merchantId])
 
   useEffect(() => {
-    const eventsQuery = query(
-      Collection.EVENT.ref,
+    return Collection.EVENT.queryOnChange(
+      setEvents,
       where("merchantId", "==", merchantId),
+      where("startsAt", ">", new Date()),
+      where("isPublished", "==", true),
       orderBy("startsAt", "desc")
-    );
-
-    const unsub = onSnapshot(eventsQuery, snapshot => {
-      const e = snapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
-
-      setEvents(e)
-    })
-
-    return () => {
-      unsub()
-    }
+    )
   }, [merchantId])
 
   return <div className="container">
@@ -61,8 +43,6 @@ export default function MerchantPage({ merchant }) {
 
     <div className="content">
       <h1 className="header-l">{merchant.displayName}</h1>
-      <Spacer y={1} />
-      <p className="text-body">{merchant.tags.join(" · ")}</p>
 
       <Spacer y={4}/>
 
@@ -73,12 +53,13 @@ export default function MerchantPage({ merchant }) {
       <h2 className="header-m">Upcoming events</h2>
       <Spacer y={2} />
       {
-        events.map(event => {
-          return <div key={event.id}>
-            <EventListing event={event}  />
-            <Spacer y={3} />
-          </div>
-        })
+        events
+          .map(event => {
+            return <div key={event.id}>
+              <EventListing event={event}  />
+              <Spacer y={3} />
+            </div>
+          })
       }
     </div>
     

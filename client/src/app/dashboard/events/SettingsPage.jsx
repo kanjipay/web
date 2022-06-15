@@ -1,55 +1,62 @@
 import { updateDoc } from "firebase/firestore";
+import { deleteObject } from "firebase/storage";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import TextField, { InputGroup, TextArea } from "../../../components/Input";
+import Form from "../../../components/Form";
+import ImagePicker from "../../../components/ImagePicker";
+import { TextArea } from "../../../components/Input";
+import Dropdown from "../../../components/input/Dropdown";
+import { Field, IntField } from "../../../components/input/IntField";
 import MainButton from "../../../components/MainButton";
-import ResultBanner, { ResultType } from "../../../components/ResultBanner";
 import Spacer from "../../../components/Spacer";
 import Collection from "../../../enums/Collection";
+import StripeStatus from "../../../enums/StripeStatus";
+import { getMerchantStorageRef } from "../../../utils/helpers/storage";
+import { uploadImage } from "../../../utils/helpers/uploadImage";
+import { NetworkManager } from "../../../utils/NetworkManager";
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
-  const initialValues = {
-    ...merchant
-  }
-  const [values, setValues] = useState(initialValues)
-  const [isLoading, setIsLoading] = useState(false)
-  const [shouldShowResultBanner, setShouldShowResultBanner] = useState(false)
+  const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false)
+  
+  const handleSaveDetails = async (data) => {
+    const promises = []
 
-  const handleInputChange = (event) => {
-    const { target } = event
-    const { name, value } = target
+    if (data.photo instanceof File) {
+      const file = data.photo
+      data.photo = file.name
 
-    if (["sortCode", "accountNumber"].includes(name)) {
-      if (!/^[0-9]*$/.test(value)) { return }
-      const charLimit = name === "sortCode" ? 6 : 8
-      if (value.length > charLimit) { return }
+      const merchantRef = getMerchantStorageRef(merchantId, file.name)
+
+      promises.push(
+        uploadImage(merchantRef, file)
+      )
+
+      promises.push(
+        deleteObject(getMerchantStorageRef(merchantId, merchant.photo))
+      )
     }
 
-    setValues({ ...values, [name]: value })
+    promises.push(
+      updateDoc(Collection.MERCHANT.docRef(merchantId), {
+        ...data,
+        photo: merchant.photo
+      })
+    )
   }
 
-  const handleSaveDetails = () => {
-    setIsLoading(true)
+  const handleChangeBankDetails = async (data) => {
+    window.open('mailto:team@mercadopay.co')
+  }
 
-    const {
-      displayName,
-      description,
-      address
-    } = values
+  const handleContinueToStripe = async () => {
+    setIsRedirectingToStripe(true)
 
-    updateDoc(Collection.MERCHANT.docRef(merchantId), {
-      displayName,
-      description,
-      address
-    }).then(() => {
-      setIsLoading(false)
-      setShouldShowResultBanner(true)
+    const res = await NetworkManager.post(`/merchants/m/${merchantId}/create-stripe-account-link`)
 
-      setTimeout(() => {
-        setShouldShowResultBanner(false)
-      }, 3000)
-    })
+    const { redirectUrl } = res.data
+
+    window.location.href = redirectUrl
   }
 
   return <div>
@@ -58,88 +65,99 @@ export default function SettingsPage({ merchant }) {
     <Spacer y={2} />
     <div style={{ display: "grid", columnGap: 64, gridTemplateColumns: "1fr 1fr" }}>
       <div>
-        <h3 className="header-s">Basic information</h3>
-        <Spacer y={3} />
-        <InputGroup
-          name="displayName"
-          label="Display name"
-          explanation="Event goers will see this when visiting your event pages."
-          Input={TextField}
-          value={values.displayName}
-          onChange={handleInputChange}
+        <Form
+          initialDataSource={{
+            ...merchant,
+            photo: getMerchantStorageRef(merchantId, merchant.photo)
+          }}
+          formGroupData={[
+            {
+              title: "Basic information",
+              items: [
+                {
+                  name: "displayName",
+                  explanation: "Event goers will see this when visiting your event pages."
+                },
+                {
+                  name: "description",
+                  input: <TextArea />
+                },
+                {
+                  name: "photo",
+                  input: <ImagePicker isRemovable={false} />
+                },
+                {
+                  name: "address",
+                  label: "Business address"
+                },
+              ]
+            }
+          ]}
+          onSubmit={handleSaveDetails}
+          submitTitle="Save"
         />
-        <Spacer y={3} />
-        <InputGroup
-          name="description"
-          label="Description"
-          Input={TextArea}
-          value={values.description}
-          onChange={handleInputChange}
+        <Spacer y={6} />
+        <Form
+          initialDataSource={merchant}
+          formGroupData={[
+            {
+              title: "Bank details",
+              explanation: "Contact us to change these details",
+              items: [
+                {
+                  name: "currency",
+                  input: <Dropdown optionList={[
+                    { label: "Pounds", value: "GBP" },
+                    { label: "Euros", value: "EUR" }
+                  ]} />,
+                  disabled: true
+                },
+                {
+                  name: "companyName",
+                  explanation: "This name must exactly match the one on your bank account.",
+                  input: <Field />,
+                  disabled: true
+                },
+                {
+                  name: "sortCode",
+                  validations: [],
+                  input: <IntField disabled={true} maxChars={6} />,
+                  disabled: true
+                },
+                {
+                  name: "accountNumber",
+                  validations: [],
+                  input: <IntField disabled={true} maxChars={8} />,
+                  disabled: true
+                }
+              ]
+            }
+          ]}
+          submitTitle="Contact us to change"
+          onSubmit={handleChangeBankDetails}
         />
-        {/* <Spacer y={3} />
-      <FileUploadGroup
-        name="image"
-        label="Image"
-        file={imageAsFile}
-        onChange={handleImageAsFile}
-      /> */}
-
-        <Spacer y={3} />
-        <InputGroup
-          name="address"
-          label="Business address"
-          Input={TextField}
-          value={values.address}
-          onChange={handleInputChange}
-        />
-        <Spacer y={3} />
-        <MainButton title="Save details" onClick={handleSaveDetails} isLoading={isLoading} />
-        <Spacer y={3} />
+        <Spacer y={6} />
         {
-          shouldShowResultBanner && <div>
-            <ResultBanner resultType={ResultType.SUCCESS} message="Details saved successfully" />
-            <Spacer y={3} />
+          merchant.stripe?.status !== StripeStatus.CHARGES_ENABLED && <div>
+            <h2 className="header-s">Stripe</h2>
+            <Spacer y={2} />
+            <p className="text-body-faded">Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts.</p>
+            <Spacer y={2} />
+            <MainButton
+              title={merchant.stripe ? "Continue your Stripe onboarding" : "Connect with Stripe"}
+              onClick={handleContinueToStripe}
+              isLoading={isRedirectingToStripe}
+            />
+            <Spacer y={6} />
           </div>
         }
         
+        
       </div>
 
-      {/* <div>
-        <h3 className="header-s">Bank details</h3>
-        <Spacer y={3} />
-        <p className="text-body">This is the account that ticket sales will be paid into. It needs to be a valid UK bank account.</p>
-        <Spacer y={3} />
-        <InputGroup
-          name="companyName"
-          label="Payment name"
-          disabled={true}
-          explanation="This name must exactly match the one on your bank account."
-          Input={TextField}
-          value={values.companyName}
-          onChange={handleInputChange}
-        />
-        <Spacer y={3} />
-        <InputGroup
-          name="sortCode"
-          label="Sort code"
-          disabled={true}
-          Input={TextField}
-          value={values.sortCode}
-          onChange={handleInputChange}
-        />
-        <Spacer y={3} />
-        <InputGroup
-          name="accountNumber"
-          label="Account number"
-          disabled={true}
-          Input={TextField}
-          value={values.accountNumber}
-          onChange={handleInputChange}
-        />
-
-      </div> */}
-      
+      <div>
+        
+      </div>
     </div>
-    
   </div>
 }

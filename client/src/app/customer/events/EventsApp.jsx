@@ -5,10 +5,10 @@ import RedirectPageMercado from "./RedirectPageMercado";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../utils/FirebaseUtils";
-import { onSnapshot } from "firebase/firestore";
 import Collection from "../../../enums/Collection";
 import { Colors } from "../../../components/CircleButton";
 import LoadingPage from "../../../components/LoadingPage";
+import ArtistPage from "../ArtistPage";
 
 export default function EventsApp() {
   const [authUser, setAuthUser] = useState(null)
@@ -17,38 +17,25 @@ export default function EventsApp() {
   const [hasRetrievedAuthUser, setHasRetrievedAuthUser] = useState(false)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, authUser => {
-      console.log(authUser)
+    return onAuthStateChanged(auth, authUser => {
       setAuthUser(authUser)
       setHasRetrievedAuthUser(true)
     })
-
-    return unsub
   }, [])
 
   useEffect(() => {
-    let unsub
-
     if (!hasRetrievedAuthUser) { return }
 
     if (authUser) {
-      console.log("subbing to user")
       const userId = authUser.uid
 
-      console.log(userId)
-
-      unsub = onSnapshot(Collection.USER.docRef(userId), doc => {
-        const user = { id: doc.id, ...doc.data() }
+      return Collection.USER.onChange(userId, user => {
         setUser(user)
         setIsLoading(false)
       })
     } else {
       setUser(null)
       setIsLoading(false)
-    }
-
-    return () => {
-      if (unsub) { unsub() }
     }
   }, [authUser, hasRetrievedAuthUser])
 
@@ -57,8 +44,8 @@ export default function EventsApp() {
     <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT }}>
       <Routes>
         <Route path="s/*" element={<Secure user={user} />} />
+        <Route path="artists/:artistId" element={<ArtistPage />} />
         <Route path=":merchantId/*" element={<Merchant user={user} />} />
-
         <Route path="mcp-redirect" element={<RedirectPageMercado />} />
       </Routes>
     </div>
