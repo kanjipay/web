@@ -10,7 +10,7 @@ import "./MerchantAboutPage.css";
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
-import { PageName, viewPage } from "../../../../utils/AnalyticsManager";
+import { AnalyticsManager, PageName } from "../../../../utils/AnalyticsManager";
 import { Colors } from "../../../../components/CircleButton";
 
 export default function MerchantAboutPage({ merchant, openHourRanges }) {
@@ -19,7 +19,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
   const openingHourGridItems = [];
 
   useEffect(() => {
-    viewPage(PageName.ABOUT_MERCHANT, { merchantId });
+    AnalyticsManager.main.viewPage(PageName.ABOUT_MERCHANT, { merchantId })
   }, [merchantId]);
 
   openHourRanges
@@ -66,7 +66,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
 
         <h1 className="header-l">{merchant.displayName}</h1>
         <Spacer y={1} />
-        <p className="text-body">{merchant.tags.join(" · ")}</p>
+        <p className="text-body">{merchant.tags?.join(" · ")}</p>
         <Spacer y={3} />
 
         <div style={{ display: "flex", alignItems: "center" }}>

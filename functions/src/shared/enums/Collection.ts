@@ -8,6 +8,7 @@ enum Collection {
   REFUND_ATTEMPT = "RefundAttempt",
   LINK = "Link",
   STATE = "State",
+  INVITE = "INVITE",
 
   // Objects needed by the online menu client
   MERCHANT = "Merchant",
@@ -19,7 +20,7 @@ enum Collection {
   TICKET = "Ticket",
   PRODUCT = "Product",
   EVENT = "Event",
-  CUSTOMER = "Customer",
+  USER = "User",
   MEMBERSHIP = "Membership"
 }
 

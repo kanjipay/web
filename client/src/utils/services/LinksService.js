@@ -1,12 +1,10 @@
-import { getDoc, updateDoc } from "firebase/firestore";
-import Collection from "../../enums/Collection";
-import { ApiName, NetworkManager } from "../NetworkManager";
+import { NetworkManager } from "../NetworkManager";
 import { restoreState, saveState } from "./StateService";
 
 export async function createLink(path) {
   const stateId = await saveState()
 
-  const res = await NetworkManager.post(ApiName.INTERNAL, "/links", {
+  const res = await NetworkManager.post("/links", {
     path, stateId
   })
 
@@ -14,13 +12,10 @@ export async function createLink(path) {
 }
 
 export async function fetchLink(linkId) {
-  const doc = await getDoc(Collection.LINK.docRef(linkId));
+  const res = await NetworkManager.get(`/links/l/${linkId}`)
+  const link = res.data
 
-  if (!doc.exists()) {
-    throw new Error(`No link with id ${linkId}`);
-  }
-
-  return { id: doc.id, ...doc.data() }
+  return link
 }
 
 export async function acceptLink(link) {
@@ -30,7 +25,7 @@ export async function acceptLink(link) {
     await restoreState(stateId)
   }
   
-  await updateDoc(Collection.LINK.docRef(link.id), { wasUsed: true });
+  await NetworkManager.put(`/links/l/${link.id}/accept`)
   
   return
 }

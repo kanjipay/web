@@ -1,14 +1,16 @@
 import axios from "axios"
-import { createSignature } from "../../internal/webhooks/sendWebhook"
+import { createSignature } from "./createSignature"
+import { isStrictEnvironment } from "./isStrictEnvironment"
 
 const defaultHeaders = {
   "X-Crezco-Key": process.env.CREZCO_API_KEY
 }
 
-const baseUrl = process.env.CREZCO_URL
+const subdomain = isStrictEnvironment(process.env.ENVIRONMENT) ? "api" : "api.sandbox"
+const baseUrl = `https://${subdomain}.crezco.com`
 
-export async function fetchBankData() {
-  const { data } = await axios.get(`${baseUrl}/v1/banks/GB/DomesticInstantPayment`, {
+export async function fetchBankData(countryCode: string) {
+  const { data } = await axios.get(`${baseUrl}/v1/banks/${countryCode}/DomesticInstantPayment`, {
     headers: defaultHeaders
   })
 
@@ -20,13 +22,16 @@ export async function createPaymentDemand(
   paymentAttemptId: string,
   paymentIntentId: string,
   reference: string,
-  amount: number
+  amount: number,
+  currency: string
 ) {
   try {
+    const expireSeconds = currency === "GBP" ? 60 * 10 : 60 * 60 * 24 * 3
+    
     const { signature, signatureError } = createSignature({
       paymentAttemptId,
-      paymentIntentId,
-    }, `${process.env.BASE_URL}/internal`)
+      environment: process.env.ENVIRONMENT
+    }, expireSeconds)
 
     if (signatureError) {
       return { payDemandError: signatureError }
@@ -34,15 +39,16 @@ export async function createPaymentDemand(
 
     const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands`, {
       request: {
-        reference,
-        currency: "GBP",
+        reference: reference.length >= 18 ? "Mercado" : reference,
+        currency,
         amount: `${amount / 100}`,
         useDefaultBeneficiaryAccount: true,
         metadata: {
           signature
         }
       },
-      idempotencyId: paymentAttemptId
+      idempotencyId: paymentAttemptId,
+      idemPayDemand: paymentAttemptId
     }, {
       headers: defaultHeaders
     })
@@ -61,13 +67,14 @@ export async function createPayment(
   crezcoPayDemandId: string,
   paymentAttemptId: string,
   bankId: string,
+  countryCode: string
 ) {
   try {
     const mercadoRedirectUrl = `${process.env.CLIENT_URL}/checkout/cr-redirect?paymentAttemptId=${paymentAttemptId}`
 
     const params = {
       bankId,
-      countryIso2Code: "GB",
+      countryIso2Code: countryCode,
       successCallbackUri: mercadoRedirectUrl,
       failureRedirectUri: mercadoRedirectUrl,
       initialScreen: "ContinueToBank",
@@ -86,4 +93,11 @@ export async function createPayment(
     console.log(err.response)
     return { paymentError: err }
   }
+}
+
+export async function getPaymentStatus(paymentDemandId: string) {
+  const paymentsRes = await axios.get(`${baseUrl}/v1/pay-demands/${paymentDemandId}/payments`, { headers: defaultHeaders })
+  const paymentStatus = paymentsRes.data[0].status.code
+
+  return paymentStatus
 }

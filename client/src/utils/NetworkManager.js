@@ -2,12 +2,6 @@ import axios from "axios"
 import { auth } from "./FirebaseUtils"
 import { isExpired } from "./helpers/decodeJwt"
 
-export class ApiName {
-  static INTERNAL = "internal"
-  static ONLINE_MENU = "onlineMenu"
-  static CLIENT_API = "clientApi"
-}
-
 export class NetworkManager {
   static cachedIdToken = null
 
@@ -16,7 +10,6 @@ export class NetworkManager {
   }
 
   static async call(
-    apiName,
     method,
     path,
     data = {},
@@ -24,7 +17,7 @@ export class NetworkManager {
   ) {
     console.log(path)
     const requestConfig = {
-      url: `${process.env.REACT_APP_BASE_SERVER_URL}/${apiName}/api/v1${path}`,
+      url: `${process.env.REACT_APP_BASE_SERVER_URL}/main/api/v1${path}`,
       method,
       headers,
       data
@@ -35,8 +28,6 @@ export class NetworkManager {
     if (currUser) {
       // Need to add the idToken
       let idToken
-
-      
 
       if (this.cachedIdToken && !isExpired(this.cachedIdToken)) {
         console.log("using cached id token")
@@ -54,19 +45,19 @@ export class NetworkManager {
     return axios.request(requestConfig)
   }
 
-  static async get(apiName, path, data, headers = {}) {
-    return this.call(apiName, "get", path, data, headers)
+  static async get(path, data, headers = {}) {
+    return this.call("GET", path, data, headers)
   }
 
-  static async post(apiName, path, data, headers = {}) {
-    return this.call(apiName, "post", path, data, headers)
+  static async post(path, data, headers = {}) {
+    return this.call("POST", path, data, headers)
   }
 
-  static async put(apiName, path, data, headers = {}) {
-    return this.call(apiName, "put", path, data, headers)
+  static async put(path, data, headers = {}) {
+    return this.call("PUT", path, data, headers)
   }
 
-  static async delete(apiName, path, data, headers = {}) {
-    return this.call(apiName, "delete", path, data, headers)
+  static async delete(path, data, headers = {}) {
+    return this.call("DELETE", path, data, headers)
   }
 }

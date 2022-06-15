@@ -4,18 +4,23 @@ import "./index.css";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./app/App";
 import BasketContextProvider from "./app/customer/menu/basket/BasketContext";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import AttributionContextProvider from "./app/shared/attribution/AttributionContext";
 // import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
 console.log("environment: ", process.env.REACT_APP_ENV_NAME);
-console.log("isLocal: ", process.env.REACT_APP_IS_LOCAL)
-console.log("audit_version", 3);
 
 ReactDOM.render(
   <React.StrictMode>
     <BasketContextProvider>
-      <HelmetProvider>
-        <App />
-      </HelmetProvider>
+      <AttributionContextProvider>
+        <HelmetProvider>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <App />
+          </LocalizationProvider>
+        </HelmetProvider>
+      </AttributionContextProvider>
     </BasketContextProvider>
   </React.StrictMode>,
   document.getElementById("root")

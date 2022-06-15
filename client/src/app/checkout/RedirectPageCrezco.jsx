@@ -1,87 +1,108 @@
-import { getDoc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 import Collection from "../../enums/Collection";
+import OrderType from "../../enums/OrderType";
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
-import PaymentIntentStatus from "../../enums/PaymentIntentStatus";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 import { IdentityManager } from "../../utils/IdentityManager";
-import { ApiName, NetworkManager } from "../../utils/NetworkManager";
-import { generateRedirectUrl } from "./redirects";
+import { NetworkManager } from "../../utils/NetworkManager";
+import useBasket from "../customer/menu/basket/useBasket";
 
 export default function RedirectPageCrezco() {
+  const { clearBasket } = useBasket()
   const [searchParams] = useSearchParams()
   const paymentAttemptId = searchParams.get("paymentAttemptId")
   const navigate = useNavigate()
-  const [hasRedirected, setHasRedirected] = useState(false)
-  const [isPolling, setIsPolling] = useState(false)
-  const [shouldMakePaymentCheckCall, setShouldMakePaymentCheckCall] = useState(false)
-  const [pollsMade, setPollsMade] = useState(0)
-  const [hasPollingTimerStarted, setHasPollingTimerStarted] = useState(false)
+  const [paymentAttempt, setPaymentAttempt] = useState(null)
+  const [order, setOrder] = useState(null)
+  const [hasBegunPolling, setHasBegunPolling] = useState(false)
+  const [hasPolledRecently, setHasPolledRecently] = useState(false)
 
   useEffect(() => {
-    const unsub = onSnapshot(Collection.PAYMENT_ATTEMPT.docRef(paymentAttemptId), doc => {
-      const { status, paymentIntentId, deviceId } = doc.data()
-      const basePath = `/checkout/pi/${paymentIntentId}`;
+    AnalyticsManager.main.viewPage("CrezcoPaymentRedirect", { paymentAttemptId })
+  }, [paymentAttemptId])
+  
+  // First start subscribing to payment attempt updates
+  useEffect(() => {
+    return Collection.PAYMENT_ATTEMPT.onChange(paymentAttemptId, setPaymentAttempt)
+  }, [paymentAttemptId])
 
-      if (hasRedirected) { return }
+  // Once you retrieve a payment attempt, get the order
+  useEffect(() => {
+    if (!paymentAttempt || order) { return }
 
-      setHasRedirected(true)
+    const { orderId } = paymentAttempt
 
-      switch (status) {
-        case PaymentAttemptStatus.SUCCESSFUL:
-          getDoc(Collection.PAYMENT_INTENT.docRef(paymentIntentId)).then(doc => {
-            const paymentIntent = { id: doc.id, ...doc.data() }
-            const currentDeviceId = IdentityManager.main.getDeviceId()
+    Collection.ORDER.get(orderId).then(setOrder)
+  }, [paymentAttempt, order])
 
-            if (currentDeviceId === deviceId) {
-              const successUrl = generateRedirectUrl(PaymentIntentStatus.SUCCESSFUL, paymentIntent)
-              window.location.href = successUrl
-            } else {
-              navigate(`${basePath}/mobile-finished`)
-            }
-          })
-          break;
-        case PaymentAttemptStatus.FAILED:
-          navigate(`${basePath}/payment-failure`);
-          break;
-        default:
+  // Finally, once both the payment attempt and order are retrieved, start listening for when the payment attempt status changes
+  useEffect(() => {
+    if (!paymentAttempt || !order) { return }
+
+    const currentDeviceId = IdentityManager.main.getDeviceId()
+
+    const { status, deviceId, orderId } = paymentAttempt
+
+    switch (status) {
+      case PaymentAttemptStatus.SUCCESSFUL:
+        if (currentDeviceId === deviceId) {
+          switch (order.type) {
+            case OrderType.TICKETS:
+              navigate(`/events/s/orders/${orderId}/confirmation`)
+              break;
+            case OrderType.MENU:
+              clearBasket()
+              navigate(`/menu/orders/${orderId}/confirmation`)
+              break;
+            default:
+          }
+        } else {
+          navigate(`/checkout/o/${orderId}/mobile-finished`)
+        }
+        break;
+      case PaymentAttemptStatus.FAILED:
+        navigate(`/checkout/o/${orderId}/payment-failure`);
+        break;
+      default:
+    }
+  }, [paymentAttempt, order, navigate, clearBasket])
+
+  // The payment attempt status change relies on our webhook endpoint being called, which may not happen if the provider errors
+  // Should wait 4 seconds then poll the payments endpoint every 1 second
+  useEffect(() => {
+    console.log("Running hasBegunPolling useEffect. hasBegunPolling: ", hasBegunPolling)
+
+    if (hasBegunPolling) { return }
+
+    setTimeout(() => {
+      setHasBegunPolling(true)
+    }, 3000)
+  }, [hasBegunPolling])
+
+  useEffect(() => {
+    console.log("Running hasPolledRecently useEffect. hasBegunPolling: ", hasBegunPolling, " hasPolledRecently: ", hasPolledRecently)
+    if (!hasBegunPolling || hasPolledRecently || !paymentAttempt) { return }
+
+    setHasPolledRecently(true)
+
+    const { paymentDemandId } = paymentAttempt.crezco
+    const paymentAttemptId = paymentAttempt.id
+
+    NetworkManager.post("/payment-attempts/crezco/check", { paymentDemandId, paymentAttemptId }).then(res => {
+      
+      const { isPending } = res.data
+
+      console.log("Called polling endpoint successfully. isPending: ", isPending)
+
+      if (isPending) {
+        setTimeout(() => {
+          setHasPolledRecently(false)
+        }, 1000)
       }
     })
-
-    return () => {
-      unsub()
-    }
-  }, [paymentAttemptId, navigate, hasRedirected])
-
-  // It may be that the webhook hasn't worked so need to call polling endpoint every few secs
-  // useEffect(() => {
-  //   if (isPolling) {
-
-  //     if (shouldMakePaymentCheckCall && pollsMade < 5) {
-  //       setShouldMakePaymentCheckCall(false)
-  //       setPollsMade(pollsMade + 1)
-
-  //       NetworkManager.post(ApiName.INTERNAL, `/payment-attempts/pa/${paymentAttemptId}/check-status`).then(res => {
-  //         const { paymentAttemptStatus } = res.data
-
-  //         // If still pending, make call again
-  //         if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) {
-  //           setTimeout(() => {
-  //             setShouldMakePaymentCheckCall(true)
-  //           }, 1000)
-  //         }
-  //       })
-  //     }
-  //   } else if (!hasPollingTimerStarted) {
-  //     setHasPollingTimerStarted(true)
-  //     // Start polling after 5 seconds on the page
-  //     setTimeout(() => {
-  //       setShouldMakePaymentCheckCall(true)
-  //       setIsPolling(true)
-  //     }, 6000)
-  //   }
-  // }, [isPolling, paymentAttemptId, shouldMakePaymentCheckCall, pollsMade, hasPollingTimerStarted, navigate])
+  }, [hasBegunPolling, hasPolledRecently, paymentAttempt])
 
   return <LoadingPage />
 }

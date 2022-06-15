@@ -1,17 +1,16 @@
+import Environment from "../enums/Environment"
 import LoggingController from "./loggingClient"
 
 const Moneyhub = require("@mft/moneyhub-api-client")
 let moneyhubInstance = null
 
 async function getMoneyhub() {
-  console.log("Generating moneyhub client")
-  const isLocal = process.env.IS_LOCAL === "TRUE"
+  const isLocal = process.env.ENVIRONMENT === Environment.DEV_LOCAL
   const client_id = isLocal ? process.env.MONEYHUB_CLIENT_ID_LOCAL : process.env.MONEYHUB_CLIENT_ID
-  console.log("ClientId: ", client_id)
   const client_secret = isLocal ? process.env.MONEYHUB_CLIENT_SECRET_LOCAL : process.env.MONEYHUB_CLIENT_SECRET
   const redirect_uri = `${process.env.CLIENT_URL}/checkout/mh-redirect`
   const response_type = isLocal ? "code" : "code id_token"
-  const keysString = isLocal ? process.env.MONEYHUB_PRIVATE_JWKS_LOCAL : process.env.MONEYHUB_PRIVATE_JWKS
+  const keysString = process.env.MONEYHUB_PRIVATE_JWKS
   const keys = JSON.parse(keysString)
 
   const config = {
@@ -64,7 +63,7 @@ export async function processAuthSuccess(
       state,
     }
 
-    if (process.env.IS_LOCAL !== "TRUE") {
+    if (process.env.ENVIRONMENT !== Environment.DEV_LOCAL) {
       paramsFromCallback["id_token"] = idToken
     }
 

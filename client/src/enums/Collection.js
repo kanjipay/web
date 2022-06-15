@@ -1,9 +1,11 @@
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
 import { db } from "../utils/FirebaseUtils";
 
 export default class Collection {
+  static ARTIST = new Collection("Artist");
   static MERCHANT = new Collection("Merchant");
   static MEMBERSHIP = new Collection("Membership");
+  static INVITE = new Collection("INVITE");
   static USER = new Collection("User");
   static PRODUCT = new Collection("Product");
   static EVENT = new Collection("Event")
@@ -15,6 +17,7 @@ export default class Collection {
   static OPENING_HOUR_RANGE = new Collection("OpeningHourRange");
   static CONTACT_REQUEST = new Collection("ContactRequest");
   static LINK = new Collection("Link");
+  static ATTRIBUTION_LINK = new Collection("AttributionLink");
   static STATE = new Collection("State");
 
   constructor(name) {
@@ -22,10 +25,45 @@ export default class Collection {
     this.ref = collection(db, this.name);
     this.docRef = (docId) => doc(db, this.name, docId);
 
+    this.get = async (docId) => {
+      const doc = await getDoc(this.docRef(docId))
+
+      if (doc.exists()) {
+        return { id: doc.id, ...doc.data() }
+      } else {
+        return null
+      }
+    }
+
     this.onChange = (docId, callback) => {
       return onSnapshot(this.docRef(docId), doc => {
-        callback({ id: doc.id, ...doc.data() })
+        if (doc.exists) {
+          callback({ id: doc.id, ...doc.data() })
+        } else {
+          callback(null)
+        }
       })
+    }
+
+    this.queryOnChange = (callback, ...queryConstraints) => {
+      const q = query(
+        this.ref,
+        ...queryConstraints
+      )
+
+      return onSnapshot(q, snapshot => {
+        const docs = snapshot.docs.map(doc => {
+          return { id: doc.id, ...doc.data() }
+        })
+
+        callback(docs)
+      })
+    }
+
+    this.queryOnChangeGetOne = (callback, ...queryConstraints) => {
+      return this.queryOnChange(docs => {
+        docs.length === 0 ? callback(null) : callback(docs[0])
+      }, ...queryConstraints)
     }
   }
 }

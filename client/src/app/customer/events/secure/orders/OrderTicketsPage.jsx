@@ -3,34 +3,32 @@ import { useLocation, useNavigate } from "react-router-dom"
 import Cross from "../../../../../assets/icons/Cross"
 import { Colors } from "../../../../../components/CircleButton"
 import IconActionPage from "../../../../../components/IconActionPage"
-import IconPage from "../../../../../components/IconPage"
 import LoadingPage from "../../../../../components/LoadingPage"
 import OrderType from "../../../../../enums/OrderType"
 import { AnalyticsEvent, AnalyticsManager } from "../../../../../utils/AnalyticsManager"
 import { createTicketOrder } from "../../../../../utils/services/OrdersService"
+import { getLatestItem } from "../../../../shared/attribution/AttributionReducer"
 
 export default function OrderTicketsPage() {
   const { state } = useLocation()
+  const { eventId, productId, quantity } = state
   const navigate = useNavigate()
   const [error, setError] = useState(null)
   const backPath = state?.backPath ?? "/"
 
   useEffect(() => {
-    if (!state) { 
-      setError({
-        title: "Something went wrong",
-        description: "Please try again later."
-      })
-      return
-    }
-    
-    const { productId, quantity } = state
+    AnalyticsManager.main.viewPage("OrderTickets", { productId, quantity })
+  }, [productId, quantity])
 
-    createTicketOrder(productId, quantity)
-      .then(data => {
-        const { checkoutUrl, orderId } = data
+  useEffect(() => {
+    const attributionItem = getLatestItem({ eventId })
+    
+    createTicketOrder(productId, quantity, attributionItem)
+      .then(({ orderId, redirectPath }) => {
+        console.log("redirectPath: ", redirectPath)
         AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId, orderType: OrderType.TICKETS });
-        window.location.href = checkoutUrl
+
+        navigate(redirectPath)
       })
       .catch(error => {
         setError({
@@ -38,7 +36,7 @@ export default function OrderTicketsPage() {
           description: error?.response?.data?.error
         })
       })
-  }, [state])
+  }, [productId, quantity, navigate])
 
   const handleError = () => {
     navigate(backPath)

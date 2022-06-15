@@ -1,0 +1,210 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	// utils
+  	function incomingData() { return request.resource.data }
+    function existingData() { return resource.data }
+    function userId() { return request.auth.uid }
+    function hasAffectedKeys(keys) { return changeMap().affectedKeys().hasAny(keys) }
+    function hasOnlyChangedKeys(keys) { return changeMap().changedKeys().hasOnly(keys) }
+    
+    function membershipColPath(merchantId) {
+    	return /databases/$(database)/documents/Membership/$(merchantId + ":" + userId())
+    }
+    
+    function isAdminForMerchant(merchantId) {
+    	return (
+      	exists(membershipColPath(merchantId)) &&
+        get(membershipColPath(merchantId)).data.role == "ADMIN"
+      )
+    }
+    
+    function changeMap() {
+    	return incomingData().diff(existingData())
+    }
+    
+    function hasRequiredKeysForCollection(collection) {
+    	let requiredKeys = {
+      	"Merchant": [
+          "displayName",
+          "companyName",
+          "address",
+          "currency"
+        ],
+        "Event": ["merchantId", "title", "description", "address", "startsAt", "endsAt", "maxTicketsPerPerson"],
+        "Product": ["merchantId", "eventId", "title", "description", "capacity", "price", "sortOrder", "soldCount", "reservedCount"],
+        "MenuItem": ["title", "description", "merchantId", "sectionId", "sortOrder", "price", "isAvailable"],
+        "MenuSection": ["name", "sortOrder", "merchantId"],
+        "OpeningHourRange": ["dayOfWeek", "openTime", "closeTime", "merchantId"],
+        "Order": ["status", "orderItems", "merchantId"]
+      };
+      
+      return incomingData().keys().hasAll(requiredKeys[collection])
+    }
+    
+    // rules
+    
+    match /Merchant/{merchantId} {
+    	// we should ideally have a private details doc nested here
+      // it should contain bank details, company name and user_id
+    	allow read;
+      
+      allow update: if (
+      	hasRequiredKeysForCollection("Merchant") &&
+        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe.wasSkipped"]) &&
+      	isAdminForMerchant(merchantId)
+      )
+    }
+
+    match /Invite/{resourceId} {
+      allow read: if isAdminForMerchant(existingData().merchantId)
+    }
+
+    match /AttributionLink/{resourceId} {
+      allow read;
+      allow create: if isAdminForMerchant(incomingData().merchantId)
+    }
+    
+    match /Event/{resourceId} {
+    	allow read;
+      allow create: if isAdminForMerchant(incomingData().merchantId)
+      allow update: if (
+      	isAdminForMerchant(existingData().merchantId) && 
+        (
+          hasOnlyChangedKeys(["title", "description", "photo", "maxTicketsPerPerson"]) ||
+          (!existingData().isPublished && !hasAffectedKeys(["merchantId"]))
+        )
+      )
+      allow delete: if (
+        isAdminForMerchant(existingData().merchantId) &&
+        !existingData().isPublished
+      )
+    }
+
+    match /Artist/{resourceId} {
+      allow read;
+    }
+    
+    match /Product/{resourceId} {
+    	allow read;
+      allow create: if isAdminForMerchant(incomingData().merchantId)
+      allow update: if (
+      	isAdminForMerchant(existingData().merchantId) && 
+        (
+          hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity"]) ||
+          (!existingData().isPublished && !hasAffectedKeys(["merchantId", "eventId", "reservedCount", "soldCount"]))
+        )
+      )
+      allow delete: if (
+        isAdminForMerchant(existingData().merchantId) &&
+        !existingData().isPublished
+      );
+    }
+    
+    match /MenuItem/{resourceId} {
+    	allow read;
+      
+    	allow create: if (
+      	hasRequiredKeysForCollection("MenuItem") && 
+        isAdminForMerchant(incomingData().merchantId)
+      )
+      
+      allow update: if (
+      	hasRequiredKeysForCollection("MenuItem") &&
+      	isAdminForMerchant(existingData().merchantId) &&
+        !hasAffectedKeys(["merchantId"])
+      );
+      
+      allow delete: if isAdminForMerchant(existingData().merchantId)
+    }
+    
+    match /MenuSection/{resourceId} {
+    	allow read;
+      
+    	allow create: if (
+      	hasRequiredKeysForCollection("MenuSection") && 
+        isAdminForMerchant(incomingData().merchantId)
+      )
+      
+      allow update: if (
+      	hasRequiredKeysForCollection("MenuSection") &&
+      	isAdminForMerchant(existingData().merchantId) &&
+        !hasAffectedKeys(["merchantId"])
+      )
+      
+      allow delete: if isAdminForMerchant(existingData().merchantId)
+    }
+    
+    match /OpeningHourRange/{resourceId} {
+    	allow read;
+      
+    	allow create: if (
+      	hasRequiredKeysForCollection("OpeningHourRange") && 
+        isAdminForMerchant(incomingData().merchantId)
+      )
+      
+      allow update: if (
+      	hasRequiredKeysForCollection("OpeningHourRange") &&
+      	isAdminForMerchant(existingData().merchantId) &&
+        !hasAffectedKeys(["merchantId"])
+      )
+      
+      allow delete: if isAdminForMerchant(existingData().merchantId)
+    }
+    
+    match /Order/{orderId} {
+    	allow read;
+      
+      allow update: if (
+      	// Only allow modification of status field
+      	hasOnlyChangedKeys(["status"]) && (
+        	// Rules for the customer
+          (incomingData().status == "ABANDONED" && existingData().status == "PENDING") ||
+          (
+            isAdminForMerchant(existingData().merchantId) &&
+              // Rules for the merchant
+              (incomingData().status == "CANCELLED" && existingData().status == "PENDING") ||
+              (incomingData().status == "FULFILLED" && existingData().status == "PAID")
+          )
+        )
+      )
+    }
+    
+    match /PaymentIntent/{paymentIntentId} {
+    	allow read;
+      
+      allow update: if (
+      	hasOnlyChangedKeys(["status"]) && 
+      	incomingData().status == "CANCELLED" && existingData().status == "PENDING"
+      );
+    }
+    
+    match /PaymentAttempt/{resourceId} {
+    	allow read;
+    }
+    
+    match /ContactRequest/{resourceId} {
+    	allow create;
+    }
+    
+    match /State/{resourceId} {
+    	allow read, create, delete;
+    }
+
+    match /Link/{resourceId} {
+      allow read;
+    }
+    
+    match /User/{resourceId} {
+    	allow read, write: if userId() == resourceId
+    }
+    
+    match /Membership/{resourceId} {
+    	allow read: if userId() == existingData().userId
+    }
+    
+    match /Payee/{resourceId} {
+    	allow read: if isAdminForMerchant(existingData().merchantId);
+    }
+  }
+}

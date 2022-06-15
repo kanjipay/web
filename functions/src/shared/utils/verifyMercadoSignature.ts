@@ -1,7 +1,6 @@
 import LoggingController from "./loggingClient"
 import * as jwt from "jsonwebtoken"
 import * as jwkToPem from "jwk-to-pem";
-import axios from "axios"
 
 const keyCache = new Map()
 
@@ -15,10 +14,7 @@ export const verifyMercadoSignature = async (signature: string) => {
 
   if (!keyCache.has(receivedKid)) {
     logger.log("Kid not in cache, retrieving")
-    const configRes = await axios.get(`${process.env.BASE_SERVER_URL}/clientApi/.well-known/config`)
-    const { jwksUrl } = configRes.data
-    const jwksRes = await axios.get(jwksUrl)
-    const loadedKeys = jwksRes.data.keys.filter(key => key.use === "sig")
+    const loadedKeys = JSON.parse(process.env.JWKS_PUBLIC_KEY).keys.filter(key => key.use === "sig")
     logger.log("Got JWKS", { loadedKeys })
 
     keyCache.clear()
@@ -57,18 +53,17 @@ export const verifyMercadoSignature = async (signature: string) => {
     return { isVerified: false }
   }
 
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-  const { iat } = payload
+  const { exp } = payload
 
-  if (!iat) {
-    logger.log("No iat property")
+  if (!exp) {
+    logger.log("No exp property")
     return { isVerified: false }
   }
 
-  const signatureIssuedAt = new Date(iat * 1000)
+  const signatureExpiry = new Date(exp * 1000)
 
-  if (signatureIssuedAt < fiveMinutesAgo) {
-    logger.log("iat more than 5 mins ago")
+  if (signatureExpiry < new Date()) {
+    logger.log("exp less than current date")
     return { isVerified: false }
   }
 

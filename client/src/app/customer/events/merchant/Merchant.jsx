@@ -11,9 +11,7 @@ export default function Merchant({ user }) {
   const [merchant, setMerchant] = useState(null)
 
   useEffect(() => {
-    getDoc(Collection.MERCHANT.docRef(merchantId)).then(doc => {
-      setMerchant({ id: doc.id, ...doc.data() })
-    })
+    Collection.MERCHANT.onChange(merchantId, setMerchant)
   }, [merchantId])
 
   if (merchant) {

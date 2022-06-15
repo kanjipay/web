@@ -14,12 +14,13 @@ export default function MainButton({
   ...props
 }) {
   const [isPressed, setIsPressed] = useState(false);
+  const [isHovering, setIsHovering] = useState(false)
 
   let backgroundColor;
 
   if (props.disabled) {
     backgroundColor = buttonTheme.disabledBackgroundColor;
-  } else if (isPressed) {
+  } else if (isPressed || isHovering) {
     backgroundColor = buttonTheme.pressedBackgroundColor;
   } else {
     backgroundColor = buttonTheme.backgroundColor;
@@ -41,7 +42,6 @@ export default function MainButton({
     justifyContent: "center",
     color: foregroundColor,
     cursor: props.disabled ? "mouse" : "pointer",
-    // font: "500 1em Oswald, Roboto, sans-serif",
     ...style,
   };
 
@@ -50,6 +50,8 @@ export default function MainButton({
       <button
         style={buttonStyle}
         className="header-xs"
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
         onMouseDown={() => setIsPressed(true)}
         onMouseUp={() => setIsPressed(false)}
         onTouchStart={() => setIsPressed(true)}

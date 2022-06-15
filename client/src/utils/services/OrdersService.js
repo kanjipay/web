@@ -1,15 +1,5 @@
-import {
-  onSnapshot,
-  orderBy,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import axios from "axios";
-import OrderStatus from "../../enums/OrderStatus";
-import Collection from "../../enums/Collection";
 import { IdentityManager } from "../IdentityManager";
-import { ApiName, NetworkManager } from "../NetworkManager";
+import { NetworkManager } from "../NetworkManager";
 
 export async function createMenuOrder(merchantId, basketItems) {
   const deviceId = IdentityManager.main.getDeviceId();
@@ -23,59 +13,35 @@ export async function createMenuOrder(merchantId, basketItems) {
       title: item.title,
     }))
 
-  const res = await NetworkManager.post(ApiName.ONLINE_MENU, "/orders/menu", {
+  const res = await NetworkManager.post("/orders/menu", {
     merchantId,
     deviceId,
     userId,
     requestedItems
   })
 
-  const { checkoutUrl, orderId } = res.data
+  const { orderId } = res.data
 
-  return { checkoutUrl, orderId };
+  return { orderId };
 }
 
-export async function createTicketOrder(productId, quantity) {
+export async function createTicketOrder(productId, quantity, attributionItem) {
   const deviceId = IdentityManager.main.getDeviceId()
 
-  const res = await NetworkManager.post(ApiName.ONLINE_MENU, "/orders/tickets", {
+  const res = await NetworkManager.post("/orders/tickets", {
     productId,
     quantity,
-    deviceId
+    deviceId,
+    attributionData: attributionItem?.attributionData
   })
 
-  const { checkoutUrl, orderId } = res.data
+  const { orderId, redirectPath } = res.data
 
-  return { checkoutUrl, orderId }
-}
-
-export async function fetchOrder(orderId, onComplete) {
-  return onSnapshot(
-    Collection.ORDER.docRef(orderId), 
-    onComplete
-  );
-}
-
-export function fetchOrders(merchantId, onComplete) {
-  const userId = IdentityManager.main.getPseudoUserId()
-  
-  const ordersQuery = query(
-    Collection.ORDER.ref,
-    where("merchantId", "==", merchantId),
-    where("userId", "==", userId),
-    where("status", "==", OrderStatus.PAID),
-    orderBy("createdAt", "desc")
-  );
-
-  return onSnapshot(ordersQuery, onComplete);
-}
-
-export function setOrderStatus(orderId, status) {
-  return updateDoc(Collection.ORDER.docRef(orderId), { status });
+  return { orderId, redirectPath }
 }
 
 export function sendOrderReceipt(orderId, email) {
-  return NetworkManager.post(ApiName.ONLINE_MENU, "/orders/email-receipt", {
+  return NetworkManager.post("/orders/email-receipt", {
     orderId,
     email,
   })

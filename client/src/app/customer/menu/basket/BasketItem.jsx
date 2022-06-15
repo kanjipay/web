@@ -11,7 +11,7 @@ import {
   PageName,
 } from "../../../../utils/AnalyticsManager";
 
-export default function BasketItem({ item, isEditing = false }) {
+export default function BasketItem({ item, currency, isEditing = false }) {
   const { changeQuantity, removeItem } = useBasket();
 
   const minQuantity = 1;
@@ -78,7 +78,7 @@ export default function BasketItem({ item, isEditing = false }) {
       </div>
       <div className="BasketItem__spacer" />
       <div className="text-body-faded">
-        {formatCurrency(item.price * item.quantity)}
+        {formatCurrency(item.price * item.quantity, currency)}
       </div>
     </div>
   );

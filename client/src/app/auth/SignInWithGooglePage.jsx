@@ -8,8 +8,12 @@ import Cross from "../../assets/icons/Cross";
 import { Colors } from "../../components/CircleButton";
 import { auth } from "../../utils/FirebaseUtils";
 import { processUserCredential } from "../../utils/services/UsersService";
+import { AnalyticsManager } from "../../utils/AnalyticsManager";
 
 export default function SignInWithGooglePage() {
+  useEffect(() => {
+
+  })
   const navigate = useNavigate()
   const { search } = useLocation()
 
@@ -25,12 +29,16 @@ export default function SignInWithGooglePage() {
   }
 
   useEffect(() => {
+    AnalyticsManager.main.viewPage("GoogleAuth", { isAuthInProgress: isAuthInProgress() })
+  })
+
+  useEffect(() => {
+    console.log("google page useEffect. isAuthInProgess: ", isAuthInProgress())
     if (isAuthInProgress()) {
+
       getRedirectResult(auth)
         .then(credential => {
           if (credential) {
-            console.log(123)
-            console.log(credential)
             const displayName = credential?.user?.displayName
 
             let firstName = ""
@@ -51,6 +59,8 @@ export default function SignInWithGooglePage() {
               localStorage.setItem(isAuthInProgressKey, "false")
             })
           } else {
+            localStorage.setItem(isAuthInProgressKey, "false")
+            
             setError({
               title: "Something went wrong",
               body: "We're sorry, but we couldn't log you in. Try checking back later."

@@ -1,5 +1,5 @@
 import Discover from "../../../../../assets/icons/Discover";
-import { ButtonTheme, Colors } from "../../../../../components/CircleButton";
+import { ButtonTheme } from "../../../../../components/CircleButton";
 import IconPage from "../../../../../components/IconPage";
 import LoadingPage from "../../../../../components/LoadingPage";
 import SmallButton from "../../../../../components/SmallButton";
@@ -7,11 +7,15 @@ import Spacer from "../../../../../components/Spacer";
 import { auth } from "../../../../../utils/FirebaseUtils";
 import EventListing from "../../event/EventListing";
 import EventsAppNavBar from "../EventsAppNavBar";
+import { useEffect } from "react";
+import { AnalyticsManager } from "../../../../../utils/AnalyticsManager";
 
 export default function CustomerEventListPage({ events }) {
   let pageContents
 
-  console.log(events)
+  useEffect(() => {
+    AnalyticsManager.main.logEvent("CustomerEventList")
+  }, [])
 
   if (events) {
     if (events.length > 0) {
