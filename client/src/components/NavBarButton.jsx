@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
 
 export default function NavBarButton({ title, ...props }) {
   const [isPressed, setIsPressed] = useState(false);

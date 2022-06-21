@@ -1,5 +1,5 @@
 import { formatCurrency } from "../utils/helpers/money"
-import { Colors } from "./CircleButton"
+import { Colors } from "../enums/Colors"
 
 export function OrderSummary({ lineItems, currency, feePercentage = 0 }) {
   const totalWithoutFee = lineItems.reduce((total, lineItem) => {

@@ -10,7 +10,8 @@ import ProductListing from "./ProductListing";
 import Form from "../../../components/Form";
 import { Field, IntField } from "../../../components/input/IntField";
 import SmallButton from "../../../components/SmallButton";
-import { ButtonTheme, Colors } from "../../../components/CircleButton";
+import { Colors } from "../../../enums/Colors";
+import { ButtonTheme } from "../../../components/ButtonTheme";
 import ImagePicker from "../../../components/ImagePicker";
 import { getEventStorageRef } from "../../../utils/helpers/storage";
 import { deleteDoc, updateDoc, where } from "firebase/firestore";
@@ -19,6 +20,7 @@ import Collection from "../../../enums/Collection";
 import { deleteObject } from "firebase/storage";
 import ArrayInput from "../../../components/ArrayInput";
 import { uploadImage } from "../../../utils/helpers/uploadImage";
+import SimpleImagePicker from "../../../components/SimpleImagePicker";
 
 export function Modal({ children, modalStyle }) {
   return <div
@@ -68,11 +70,10 @@ export default function EventPage({ merchant, event, products }) {
   const [attributionLinks, setAttributionLinks] = useState(null)
 
   const handleUpdateEvent = async (data) => {
-
     const promises = []
+    const file = data.photo?.file
 
-    if (data.photo instanceof File) {
-      const file = data.photo
+    if (file) {
       data.photo = file.name
 
       const eventRef = getEventStorageRef(event.merchantId, event.id, file.name)
@@ -162,7 +163,14 @@ export default function EventPage({ merchant, event, products }) {
                       
                       const linkUrlString = linkUrl.href
 
-                      return <div style={{ padding: 16, backgroundColor: Colors.OFF_WHITE_LIGHT, display: "flex", alignItems: "center", columnGap: 16 }}>
+                      return <div style={{ 
+                        padding: 16, 
+                        backgroundColor: Colors.OFF_WHITE_LIGHT, 
+                        display: "flex", 
+                        alignItems: "center", 
+                        columnGap: 16,
+                        marginBottom: 16
+                      }}>
                         <div>
                           <h4 className="header-xs">{link.displayName}</h4>
                           <Spacer y={2} />
@@ -202,7 +210,7 @@ export default function EventPage({ merchant, event, products }) {
             ...event,
             startsAt: dateFromTimestamp(event.startsAt) ?? new Date(),
             endsAt: dateFromTimestamp(event.endsAt) ?? new Date(),
-            photo: getEventStorageRef(event.merchantId, event.id, event.photo),
+            photo: { storageRef: getEventStorageRef(event.merchantId, event.id, event.photo) },
             tags: event.tags ?? []
           }}
           formGroupData={[
@@ -221,7 +229,7 @@ export default function EventPage({ merchant, event, products }) {
                 },
                 {
                   name: "photo",
-                  input: <ImagePicker isRemovable={false} />
+                  input: <SimpleImagePicker isRemovable={false} />
                 },
                 { 
                   name: "address",

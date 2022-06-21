@@ -10,7 +10,7 @@ import MerchantOrderItem from "./MerchantOrderItem";
 import Divider from "@mui/material/Divider";
 import MainButton from "../../../../../components/MainButton";
 import { formatCurrency } from "../../../../../utils/helpers/money";
-import { Colors } from "../../../../../components/CircleButton";
+import { Colors } from "../../../../../enums/Colors";
 import { formatTimeForDisplayFromTimestamp } from "../../../../../utils/helpers/time";
 import "./MerchantOrderPage.css";
 

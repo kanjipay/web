@@ -1,6 +1,6 @@
 import Spacer from "../../../../components/Spacer";
 import MainButton from "../../../../components/MainButton";
-import { Colors } from "../../../../components/CircleButton";
+import { Colors } from "../../../../enums/Colors";
 import { useEffect, useState } from "react";
 import SegmentedControl from "../../../../components/SegmentedControl";
 import { NetworkManager } from "../../../../utils/NetworkManager";
@@ -176,7 +176,7 @@ function FilterControl({ filterDatum, onChange, filtersListData }) {
                 height: 48,
                 borderBottom: `1px solid ${Colors.OFF_WHITE}`,
               }}>
-                <CheckBox length={24} style={{ flexShrink: 100 }} color={Colors.BLACK} value={valueDatum.isSelected} onChange={() => handleClickFilterValue(valueDatum)} />
+                <CheckBox length={24} style={{ flexShrink: 100 }} color={Colors.BLACK} value={valueDatum.isSelected} onChange={event => handleClickFilterValue(valueDatum)} />
                 <p>{valueDatum.title}</p>
               </div>
             })

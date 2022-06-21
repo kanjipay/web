@@ -1,6 +1,7 @@
 import { firestore } from "firebase-admin"
 import BaseController from "../../../../shared/BaseController"
 import Collection from "../../../../shared/enums/Collection"
+import OrderStatus from "../../../../shared/enums/OrderStatus"
 import { db } from "../../../../shared/utils/admin"
 import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
@@ -116,6 +117,7 @@ export class MerchantTicketsController extends BaseController {
       const getOrders = db()
         .collection(Collection.ORDER)
         .where("merchantId", "==", merchantId)
+        .where("status", "==", OrderStatus.PAID)
         .get()
 
       const getEvents = db()

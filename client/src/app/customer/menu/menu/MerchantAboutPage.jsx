@@ -11,7 +11,7 @@ import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { AnalyticsManager, PageName } from "../../../../utils/AnalyticsManager";
-import { Colors } from "../../../../components/CircleButton";
+import { Colors } from "../../../../enums/Colors";
 
 export default function MerchantAboutPage({ merchant, openHourRanges }) {
   const weekdays = getWeekdays("en-GB");

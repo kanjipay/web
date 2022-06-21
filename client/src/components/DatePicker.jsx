@@ -1,9 +1,10 @@
 import { format, addDays } from "date-fns"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Minus from "../assets/icons/Minus"
 import Plus from "../assets/icons/Plus"
+import { Colors } from "../enums/Colors"
 import CheckBox from "./CheckBox"
-import IconButton, { Colors } from "./CircleButton"
+import IconButton from "./IconButton"
 import Spacer from "./Spacer"
 
 const defaultDateFormatter = date => date ? format(date, "EEEE") : "Invalid date"
@@ -214,9 +215,9 @@ export default function DatePicker({
     <p>{generateDateLabel()}</p>
   </div>
 
-  const handleCheckBoxChange = () => {
+  const handleCheckBoxChange = event => {
     console.log("handleCheckBox")
-    const newValue = value ? null : new Date()
+    const newValue = event.target.value ? null : new Date()
     onChange({ target: { name, value: newValue } })
 
     setValues(dateToValues(new Date()))

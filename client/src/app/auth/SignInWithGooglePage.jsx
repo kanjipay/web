@@ -5,7 +5,7 @@ import LoadingPage from "../../components/LoadingPage";
 import * as base64 from "base-64"
 import IconActionPage from "../../components/IconActionPage";
 import Cross from "../../assets/icons/Cross";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import { auth } from "../../utils/FirebaseUtils";
 import { processUserCredential } from "../../utils/services/UsersService";
 import { AnalyticsManager } from "../../utils/AnalyticsManager";

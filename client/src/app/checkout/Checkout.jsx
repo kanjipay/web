@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import Order from "./Order";
 import RedirectPageCrezco from "./RedirectPageCrezco";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import RedirectPageStripe from "./RedirectPageStripe";
 
 export default function Checkout() {

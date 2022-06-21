@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import * as base64 from "base-64"
 import { onAuthStateChanged, sendEmailVerification, sendSignInLinkToEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { ButtonTheme, Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
+import { ButtonTheme } from "../../components/ButtonTheme";
 import MainButton from "../../components/MainButton";
 import NavBar from "../../components/NavBar";
 import OrDivider from "../../components/OrDivider";

@@ -1,70 +1,126 @@
-import { getDownloadURL } from "firebase/storage"
 import { useEffect, useRef, useState } from "react"
-import { Colors } from "./CircleButton"
+import { Colors } from "../enums/Colors"
 import SmallButton from "./SmallButton"
 import Popup from "reactjs-popup"
 import ReactCrop, { centerCrop, makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import Spacer from "./Spacer"
+import { v4 as uuid } from "uuid"
+import { getDownloadURL } from "firebase/storage"
 
 export default function ImagePicker({ height = 200, aspectRatio = 2, name, value, onChange, isRemovable = true }) {
   const hiddenFileInput = useRef(null)
-  const [preview, setPreview] = useState(null)
-  const [isHovering, setIsHovering] = useState(false)
-  const [isCropPopupOpen, setIsCropPopupOpen] = useState(false)
-  const [file, setFile] = useState(null)
-  const [crop, setCrop] = useState(null)
-  const [dimensions, setDimensions] = useState({ width: 100, height: 50 })
 
-  const handleAddFile = event => {
-    hiddenFileInput.current.click()
+  function updateValue(update) {
+    onChange({ 
+      target: { 
+        name, 
+        value: {
+          ...value,
+          ...update
+        }
+      }
+    })
   }
 
-  useEffect(() => {
-    if (value) { 
-      if (value instanceof File) {
-        const objectUrl = URL.createObjectURL(value)
-        setPreview(objectUrl)
-        setFile(value)
-        return () => URL.revokeObjectURL(value)
-      } else {
+  // Crop data
+  const [crop, setCrop] = useState(null)
+  const [isCropPopupOpen, setIsCropPopupOpen] = useState(false)
+  const [cropBaseImage, setCropBaseImage] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState(null)
+  const [cropPreviewUrl, setCropPreviewUrl] = useState(null)
+  const [prevBaseFile, setPrevBaseFile] = useState(null)
 
-        getDownloadURL(value).then(url => {
-          setPreview(url)
-        })
-      }
+  // Component UI data
+  const [isHovering, setIsHovering] = useState(false)
+
+  function generateImageCropperStyle(cropBaseImage) {
+    if (!cropBaseImage) {
+      return { width: 0, height: 0, aspectRatio: 1 }
+    }
+
+    const { naturalWidth: width, naturalHeight: height } = cropBaseImage
+    const imageAspectRatio = width / height
+    const imageCropperDimensions = width > height ? { width: "70vw", height: "auto" } : { width: "auto", height: "70vh" }
+
+    return {
+      ...imageCropperDimensions,
+      imageAspectRatio
+    }
+  }
+
+  const imageCropperStyle = generateImageCropperStyle(cropBaseImage)
+
+  useEffect(() => {
+    const { baseFile, croppedFile, storageRef } = value
+
+    const cleanupFunctions = []
+
+    if (baseFile) {
+      const cropPreviewUrl = URL.createObjectURL(baseFile)
+
+      setCropPreviewUrl(cropPreviewUrl)
+
+      cleanupFunctions.push(
+        () => URL.revokeObjectURL(cropPreviewUrl)
+      )
+    }
+
+    if (croppedFile) {
+      const previewUrl = URL.createObjectURL(croppedFile)
+
+      setPreviewUrl(previewUrl)
+
+      cleanupFunctions.push(
+        () => URL.revokeObjectURL(previewUrl)
+      )
+    } else if (storageRef) {
+      getDownloadURL(storageRef).then(url => {
+        setPreviewUrl(url)
+
+        if (!baseFile) {
+          setCropPreviewUrl(url)
+        }
+      })
     } else {
-      setPreview(null)
+      setPreviewUrl(null)
+    }
+
+    return () => {
+      for (const cleanupFunction of cleanupFunctions) {
+        cleanupFunction()
+      }
     }
   }, [value])
 
+  const handleAddFile = event => {
+    hiddenFileInput.current.value = null
+    hiddenFileInput.current.click()
+    
+  }
+
   const onChangeFile = event => {
     event.preventDefault()
-    const fileUploaded = event.target.files[0]
-    setFile(fileUploaded)
+
+    const { baseFile } = value
+
+    setPrevBaseFile(baseFile)
+    const stagedFile = event.target.files[0]
+
+    updateValue({ baseFile: stagedFile })
     setIsCropPopupOpen(true)
-    onChange({ target: { name, value: fileUploaded }})
   }
 
   const handleRemoveFile = event => {
-    onChange({ target: { name, value: null } })
+    updateValue({
+      baseFile: null,
+      croppedFile: null
+    })
   }
-
-  const pickerStyle = { 
-    height, 
-    width: height * aspectRatio, 
-    backgroundColor: Colors.OFF_WHITE_LIGHT, 
-    cursor: "pointer",
-    position: "relative",
-    opacity: isHovering ? 0.95 : 1
-  }
-
-  const [src, setSrc] = useState(null)
 
   const onImageLoad = event => {
-    const { naturalWidth: width, naturalHeight: height } = event.currentTarget;
-
-    const aspectRatio = width / height
+    const image = event.currentTarget
+    const { naturalWidth: width, naturalHeight: height } = image
 
     const initialCrop = centerCrop(
       makeAspectCrop(
@@ -78,63 +134,80 @@ export default function ImagePicker({ height = 200, aspectRatio = 2, name, value
     )
 
     setCrop(initialCrop)
-
-    if (width > height) {
-      setDimensions({ width: "80vw", height: "auto", aspectRatio })
-    } else {
-      setDimensions({ width: "auto", height: "80vh", aspectRatio })
-    }
+    setCropBaseImage(image)
   }
 
-  useEffect(() => {
-    if (!file) { return }
-    const src = URL.createObjectURL(file)
-    setSrc(src)
-  }, [file])
+  const handleFinishCrop = async () => {
+    const canvas = document.createElement("canvas")
+    const scaleX = cropBaseImage.naturalWidth / cropBaseImage.width
+    const scaleY = cropBaseImage.naturalHeight / cropBaseImage.height
+    cropBaseImage.setAttribute("crossorigin", "anonymous");
+    canvas.width = crop.width
+    canvas.height = crop.height
 
-  const handleFinishCrop = () => {
+    console.log("crop: ", crop)
+    console.log("cropBaseImage: ", cropBaseImage)
+
+    const context = canvas.getContext("2d")
+
+    context.drawImage(
+      cropBaseImage,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    )
+
+    const base64ImageUrl = canvas.toDataURL("image/jpeg", 1)
+
+    const res = await fetch(base64ImageUrl)
+    const blob = await res.blob()
+    const croppedFile = new File([blob], uuid(), { type: "image/png" })
+
     setIsCropPopupOpen(false)
-    console.log(crop)
+    updateValue({ croppedFile })
   }
 
   return <div>
     <div
-      style={pickerStyle}
+      style={{
+        height,
+        width: height * aspectRatio,
+        backgroundColor: Colors.OFF_WHITE_LIGHT,
+        cursor: "pointer",
+        position: "relative",
+        opacity: isHovering ? 0.95 : 1
+      }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       <input style={{ width: 0, height: 0 }} />
 
       {
-        preview ?
-          <img src={preview} alt="" style={{ position: "absolute", height: "100%", width: "100%", objectFit: "cover" }} /> :
+        previewUrl ?
+          <img src={previewUrl} alt="" style={{ position: "absolute", height: "100%", width: "100%", objectFit: "cover" }} /> :
           <p className="text-body-faded" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>Upload an image</p>
       }
 
       <div onClick={handleAddFile} style={{ position: "absolute", height: "100%", width: "100%", top: 0 }}></div>
 
-      {
-        preview && isRemovable && <div style={{ position: "absolute", right: 16, bottom: 16 }}>
-          <SmallButton
-            title="Remove"
-            onClick={handleRemoveFile}
-          />
-        </div>
-      }
-
       <div style={{ display: "flex", position: "absolute", right: 16, bottom: 16, columnGap: 8 }}>
         {
-          preview && isRemovable && <SmallButton
+          value && isRemovable && <SmallButton
             title="Remove"
             onClick={handleRemoveFile}
           />
         }
-        {/* {
-          preview && !isCropPopupOpen && <SmallButton
+        {
+          value && !isCropPopupOpen && <SmallButton
             title="Crop"
             onClick={() => setIsCropPopupOpen(true)}
           />
-        } */}
+        }
       </div>
 
       <input
@@ -148,7 +221,7 @@ export default function ImagePicker({ height = 200, aspectRatio = 2, name, value
     </div>
 
     {
-      value instanceof File && <Popup
+      <Popup
         open={isCropPopupOpen}
         contentStyle={{
           width: "100vw",
@@ -158,21 +231,33 @@ export default function ImagePicker({ height = 200, aspectRatio = 2, name, value
         }}
       >
         <div
-          style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+          style={{ 
+            position: "absolute", 
+            top: "50%", 
+            left: "50%", 
+            transform: "translate(-50%, -50%)",
+            padding: 16, backgroundColor: Colors.WHITE
+          }}
         >
           <ReactCrop
             crop={crop}
+            style={{ ...imageCropperStyle,  }}
             onChange={(crop, percentCrop) => setCrop(percentCrop)}
           >
-            <img src={src} alt="" style={dimensions} onLoad={onImageLoad} />
+            <img src={cropPreviewUrl} alt="" style={{ width: "100%", height: "100%"}} onLoad={onImageLoad} />
           </ReactCrop>
           <Spacer y={2} />
-          <SmallButton title="Confirm" onClick={handleFinishCrop}/>
+          <div style={{ display: "flex", columnGap: 8 }}>
+            <SmallButton title="Confirm" onClick={handleFinishCrop} />
+            <SmallButton title="Cancel" onClick={() => {
+
+              setIsCropPopupOpen(false)
+              updateValue({ baseFile: prevBaseFile })
+              setPrevBaseFile(null)
+            }} />
+          </div>
         </div>
-        
       </Popup>
     }
-
-    
   </div>
 }

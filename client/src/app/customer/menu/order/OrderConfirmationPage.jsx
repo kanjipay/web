@@ -1,7 +1,7 @@
 import { Divider } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ButtonTheme } from "../../../../components/CircleButton";
+import { ButtonTheme } from "../../../../components/ButtonTheme";
 import TextField from "../../../../components/Input";
 import MainButton from "../../../../components/MainButton";
 import OrDivider from "../../../../components/OrDivider";
@@ -9,7 +9,7 @@ import Spacer from "../../../../components/Spacer";
 import { formatCurrency } from "../../../../utils/helpers/money";
 import { validateEmail } from "../../../../utils/helpers/validation";
 import { sendOrderReceipt } from "../../../../utils/services/OrdersService";
-import { Colors } from "../../../../components/CircleButton";
+import { Colors } from "../../../../enums/Colors";
 import ResultBanner, { ResultType } from "../../../../components/ResultBanner";
 import NotFound from "../../../shared/NotFoundPage";
 import { LocalStorageKeys } from "../../../../utils/IdentityManager";

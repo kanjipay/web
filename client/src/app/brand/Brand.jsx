@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import useWindowSize from "../../utils/helpers/useWindowSize";
 import NotFound from "../shared/NotFoundPage";
 import BlockButton from "./BlockButton";
-import { BookDemoPage } from "./BookDemoPage";
-import ContactRequestSuccessful from "./ContactRequestSuccessful";
 import HomePage from "./HomePage";
 import "./HomePageOld.css";
 
@@ -106,8 +104,6 @@ export function Brand() {
       minHeight: "90vh"
     }}>
       <Routes>
-        <Route path="/book-demo" element={<BookDemoPage />} />
-        <Route path="/contact-success" element={<ContactRequestSuccessful />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/:customerSegmentId" element={<HomePage />} />
         <Route path="*" element={<NotFound />} />

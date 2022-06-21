@@ -1,4 +1,4 @@
-import { Colors } from "./CircleButton"
+import { Colors } from "../enums/Colors"
 
 export default function SegmentedControl({ values, value, onChange }) {
   const gridTemplateColumns = values.map(value => "1fr").join(" ")

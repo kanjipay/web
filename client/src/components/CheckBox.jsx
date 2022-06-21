@@ -1,20 +1,27 @@
 import { useState } from "react";
 import Tick from "../assets/icons/Tick";
-import { Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
 
-export default function CheckBox({ length = 32, color = Colors.BLACK, value, onChange, disabled }) {
-  const [isChecked, setIsChecked] = useState(value)
-
+export default function CheckBox({ length = 32, color = Colors.BLACK, name, value, onChange, disabled = false }) {
   const checkColor = disabled ? Colors.GRAY_LIGHT : color
+  const [hasClickedRecently, setHasClickedRecently] = useState(false)
+
+  console.log("rerender: ", value)
 
   const handleClick = () => {
-    if (disabled) { return }
-    const newValue = !isChecked
-    setIsChecked(newValue)
-    onChange(newValue)
+    if (hasClickedRecently || disabled) { return }
+
+    setHasClickedRecently(true)
+
+    setTimeout(() => {
+      setHasClickedRecently(false)
+    }, 200)
+    console.log(value)
+    onChange({ target: { name, value: !value}})
   }
 
-  return <div className="CheckBox" onClick={handleClick} style={{
+  return <div
+    onClick={handleClick} style={{
     display: "inline-block",
     position: "relative",
     cursor: disabled ? "mouse" : "pointer",
@@ -22,14 +29,15 @@ export default function CheckBox({ length = 32, color = Colors.BLACK, value, onC
     width: length,
     height: length,
     boxSizing: "border-box",
-    backgroundColor: isChecked ? checkColor : Colors.CLEAR,
+    backgroundColor: value ? checkColor : Colors.CLEAR,
   }}>
-    <input type="checkbox" style={{
-      position: "absolute",
-      height: 0,
-      width: 0,
-      visibility: "hidden",
-    }} />
-    <Tick length={length - 4} color={isChecked ? Colors.WHITE : Colors.CLEAR} style={{ position: "absolute"}} />
+    <input 
+      type="checkbox" 
+      name={name}
+      style={{
+        position: "absolute",
+        visibility: "hidden",
+      }} />
+    <Tick length={length - 4} color={value ? Colors.WHITE : Colors.CLEAR} style={{ position: "absolute"}} />
   </div>
 }
