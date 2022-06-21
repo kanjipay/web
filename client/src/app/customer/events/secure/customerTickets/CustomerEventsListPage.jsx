@@ -1,5 +1,5 @@
 import Discover from "../../../../../assets/icons/Discover";
-import { ButtonTheme } from "../../../../../components/CircleButton";
+import { ButtonTheme } from "../../../../../components/ButtonTheme";
 import IconPage from "../../../../../components/IconPage";
 import LoadingPage from "../../../../../components/LoadingPage";
 import SmallButton from "../../../../../components/SmallButton";

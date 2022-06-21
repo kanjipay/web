@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Minus from "../assets/icons/Minus";
 import Plus from "../assets/icons/Plus";
-import IconButton, { Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
+import IconButton from "./IconButton";
 
 export default function Stepper({ value, onChange, minValue = 0, maxValue = 1000 }) {
   const [_value, setValue] = useState(value)

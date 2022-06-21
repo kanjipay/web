@@ -3,10 +3,9 @@ import useWindowSize from "../../utils/helpers/useWindowSize";
 import Spacer from "../../components/Spacer";
 import { useEffect, useState } from "react";
 import MainButton from "../../components/MainButton";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import { Link } from "react-router-dom";
 import { transactionFee } from "../../utils/variables";
-import { auth } from "../../utils/FirebaseUtils";
 
 function Benefit({ title, body }) {
   return <div style={{ textAlign: "center" }}>

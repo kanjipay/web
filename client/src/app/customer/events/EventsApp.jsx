@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../utils/FirebaseUtils";
 import Collection from "../../../enums/Collection";
-import { Colors } from "../../../components/CircleButton";
+import { Colors } from "../../../enums/Colors";
 import LoadingPage from "../../../components/LoadingPage";
 import ArtistPage from "../ArtistPage";
 

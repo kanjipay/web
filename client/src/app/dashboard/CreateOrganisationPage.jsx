@@ -6,11 +6,10 @@ import {
   validateSortCode,
   validateBankAccountNumber,
 } from "../../utils/helpers/validation";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import Form, { generateValidator } from "../../components/Form";
 import { IntField } from "../../components/input/IntField";
 import { ResultType } from "../../components/ResultBanner";
-import ImagePicker from "../../components/ImagePicker";
 import { getMerchantStorageRef } from "../../utils/helpers/storage";
 import { auth } from "../../utils/FirebaseUtils";
 import { onIdTokenChanged } from "firebase/auth";
@@ -18,6 +17,7 @@ import Dropdown from "../../components/input/Dropdown";
 import { useIntl } from "react-intl"
 import { getCurrencyCode } from "../../utils/helpers/money";
 import { uploadImage } from "../../utils/helpers/uploadImage";
+import SimpleImagePicker from "../../components/SimpleImagePicker";
 
 export default function CreateOrganisationPage({ authUser }) {
   const navigate = useNavigate()
@@ -28,7 +28,7 @@ export default function CreateOrganisationPage({ authUser }) {
   })
 
   const handleCreateMerchant = async (data) => {
-    const photoFile = data.photo
+    const { file: photoFile } = data.photo
 
     const body = {
       ...data,
@@ -90,7 +90,7 @@ export default function CreateOrganisationPage({ authUser }) {
               {
                 name: "photo",
                 explanation: "This will appear on your organisation's page for event goers to see.",
-                input: <ImagePicker />
+                input: <SimpleImagePicker />
               },
               {
                 name: "address",

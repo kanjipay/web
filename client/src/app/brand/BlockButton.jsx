@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Spinner from "../../assets/Spinner";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 
 export default function BlockButton({
   title,

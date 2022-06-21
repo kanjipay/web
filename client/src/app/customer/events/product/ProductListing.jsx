@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import Forward from "../../../../assets/icons/Forward"
-import { Colors } from "../../../../components/CircleButton"
+import { Colors } from "../../../../enums/Colors"
 import Spacer from "../../../../components/Spacer"
 import { formatCurrency } from "../../../../utils/helpers/money"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"

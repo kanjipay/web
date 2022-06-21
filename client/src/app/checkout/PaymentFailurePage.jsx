@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Cross from "../../assets/icons/Cross";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import { AnalyticsManager, PageName } from "../../utils/AnalyticsManager";
 import PaymentUnsuccessfulPage from "./PaymentUnsuccessfulPage";
 

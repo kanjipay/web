@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useParams } from "react-router-dom";
-import { Colors } from "../../components/CircleButton"
+import { useParams } from "react-router-dom";
+import { Colors } from "../../enums/Colors"
 import Spacer from "../../components/Spacer"
 import useWindowSize from "../../utils/helpers/useWindowSize";
 import NotFound from "../shared/NotFoundPage";

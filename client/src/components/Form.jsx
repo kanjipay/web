@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
 import { InputGroup } from "./Input";
 import { Field } from "./input/IntField";
 import MainButton from "./MainButton";
@@ -47,8 +47,6 @@ export default function Form({
   const [result, setResult] = useState(null)
   const [isShowingValidationErrors, setIsShowingValidationErrors] = useState(false)
 
-  console.log(data)
-
   useEffect(() => {
     const formMessage = validators.reduce((formMessage, validator) => {
       const { isValid, message } = validator(data)
@@ -81,7 +79,7 @@ export default function Form({
       const { name, required } = item
       const value = data[name]
 
-      return ((value && value !== "") || required === false)
+      return ((value != null && value !== "") || required === false)
     })
   }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
 import Spacer from "./Spacer";
 
 const textInputStyle = {
