@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 
 export default function NotFound() {
   return <div style={{ height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", padding: 16 }}>

@@ -1,4 +1,4 @@
-import { Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
 
 export default function OrDivider() {
   return (

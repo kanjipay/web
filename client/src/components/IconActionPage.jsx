@@ -1,7 +1,8 @@
 import CircleIcon from "./CircleIcon";
 import MainButton from "./MainButton";
 import Spacer from "./Spacer";
-import { ButtonTheme, Colors } from "./CircleButton";
+import { ButtonTheme } from "./ButtonTheme";
+import { Colors } from "../enums/Colors";
 import { isMobile } from "react-device-detect";
 
 export default function IconActionPage({

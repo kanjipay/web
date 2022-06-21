@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom"
 import Forward from "../../../assets/icons/Forward"
-import { Colors } from "../../../components/CircleButton"
+import { Colors } from "../../../enums/Colors"
 import IconActionPage from "../../../components/IconActionPage"
 
 export default function ConnectCrezcoPage({ user }) {

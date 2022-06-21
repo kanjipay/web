@@ -5,7 +5,7 @@ import Clock from "../../../assets/icons/Clock";
 import Settings from "../../../assets/icons/Settings";
 import Tick from "../../../assets/icons/Tick";
 import Spinner from "../../../assets/Spinner";
-import { Colors } from "../../../components/CircleButton";
+import { Colors } from "../../../enums/Colors";
 import IconActionPage from "../../../components/IconActionPage";
 import Collection from "../../../enums/Collection";
 import AnalyticsPage from "./analytics/AnalyticsPage";

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Carat from "../../assets/icons/Carat"
-import { Colors } from "../../components/CircleButton"
+import { Colors } from "../../enums/Colors"
 import Popup from "reactjs-popup"
 import { MenuItem } from "./events/analytics/AnalyticsPage"
 

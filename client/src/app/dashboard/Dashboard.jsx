@@ -3,7 +3,7 @@ import { orderBy, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
 import User from "../../assets/icons/User";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import LoadingPage from "../../components/LoadingPage";
 import Spacer from "../../components/Spacer";
 import Collection from "../../enums/Collection";

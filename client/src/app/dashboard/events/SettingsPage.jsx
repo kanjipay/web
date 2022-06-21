@@ -8,6 +8,7 @@ import { TextArea } from "../../../components/Input";
 import Dropdown from "../../../components/input/Dropdown";
 import { Field, IntField } from "../../../components/input/IntField";
 import MainButton from "../../../components/MainButton";
+import SimpleImagePicker from "../../../components/SimpleImagePicker";
 import Spacer from "../../../components/Spacer";
 import Collection from "../../../enums/Collection";
 import StripeStatus from "../../../enums/StripeStatus";
@@ -21,9 +22,9 @@ export default function SettingsPage({ merchant }) {
   
   const handleSaveDetails = async (data) => {
     const promises = []
+    const file = data.photo?.file
 
-    if (data.photo instanceof File) {
-      const file = data.photo
+    if (file) {
       data.photo = file.name
 
       const merchantRef = getMerchantStorageRef(merchantId, file.name)
@@ -68,7 +69,7 @@ export default function SettingsPage({ merchant }) {
         <Form
           initialDataSource={{
             ...merchant,
-            photo: getMerchantStorageRef(merchantId, merchant.photo)
+            photo: { storageRef: getMerchantStorageRef(merchantId, merchant.photo) }
           }}
           formGroupData={[
             {
@@ -84,7 +85,7 @@ export default function SettingsPage({ merchant }) {
                 },
                 {
                   name: "photo",
-                  input: <ImagePicker isRemovable={false} />
+                  input: <SimpleImagePicker isRemovable={false} />
                 },
                 {
                   name: "address",

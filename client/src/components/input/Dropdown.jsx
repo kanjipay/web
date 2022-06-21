@@ -1,7 +1,7 @@
 import Popup from "reactjs-popup";
 import { MenuItem } from "../../app/dashboard/events/analytics/AnalyticsPage";
 import Carat from "../../assets/icons/Carat";
-import { Colors } from "../CircleButton";
+import { Colors } from "../../enums/Colors";
 
 export default function Dropdown({ 
   optionList, 

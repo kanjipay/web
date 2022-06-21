@@ -4,7 +4,7 @@ import Clock from "../../../../../assets/icons/Clock";
 import Location from "../../../../../assets/icons/Location";
 import User from "../../../../../assets/icons/User";
 import AsyncImage from "../../../../../components/AsyncImage";
-import { Colors } from "../../../../../components/CircleButton";
+import { Colors } from "../../../../../enums/Colors";
 import CircleIcon from "../../../../../components/CircleIcon";
 import LoadingPage from "../../../../../components/LoadingPage";
 import Spacer from "../../../../../components/Spacer";

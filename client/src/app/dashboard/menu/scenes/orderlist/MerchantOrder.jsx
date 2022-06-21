@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import "./MerchantOrder.css";
-import { Colors } from "../../../../../components/CircleButton";
+import { Colors } from "../../../../../enums/Colors";
 import { formatTimeForDisplayFromTimestamp } from "../../../../../utils/helpers/time";
 
 function OrderItem({ order, menuItems }) {

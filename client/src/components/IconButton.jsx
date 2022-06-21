@@ -1,17 +1,11 @@
 import { useState } from "react";
-import Spinner from "../assets/Spinner";
 import { ButtonTheme } from "./ButtonTheme";
 
-export default function SmallButton({
-  buttonTheme = ButtonTheme.MONOCHROME,
-  title,
-  style,
-  isLoading = false,
-  onClick,
-  ...props
+export default function IconButton({
+  length = 32, borderRadius = 10000, Icon, imageRef, buttonTheme = ButtonTheme.MONOCHROME, style, ...props
 }) {
   const [isPressed, setIsPressed] = useState(false);
-  const [isHovering, setIsHovering] = useState(false)
+  const [isHovering, setIsHovering] = useState(false);
 
   let backgroundColor;
 
@@ -29,37 +23,29 @@ export default function SmallButton({
 
   const buttonStyle = {
     backgroundColor,
-    padding: "8px 16px",
+    height: length,
+    width: length,
+    borderRadius,
     display: "flex",
-    outline: "none",
     alignItems: "center",
     justifyContent: "center",
-    border: `1px solid ${buttonTheme.borderColor}`,
-    boxSizing: "border-box",
-    color: foregroundColor,
     cursor: props.disabled ? "mouse" : "pointer",
     ...style,
   };
 
-  return <div className="relative">
+  return (
     <button
       style={buttonStyle}
-      className="header-xs"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
       onTouchStart={() => setIsPressed(true)}
       onTouchEnd={() => setIsPressed(false)}
-      onClick={isLoading ? undefined : onClick}
       {...props}
     >
-      {isLoading ? "" : title}
+      {Icon && <Icon color={foregroundColor} />}
+      {imageRef && <img style={{ width: 32, height: 32 }} src={imageRef} alt="" />}
     </button>
-    {
-      isLoading && <div className="centred">
-        <Spinner length={20} color={foregroundColor} />
-      </div>
-    }
-  </div>
+  );
 }

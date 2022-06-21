@@ -9,7 +9,7 @@ import Spacer from "../../components/Spacer";
 import MainButton from "../../components/MainButton";
 import IconActionPage from "../../components/IconActionPage";
 import Cross from "../../assets/icons/Cross";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import { AnalyticsManager } from "../../utils/AnalyticsManager";
 
 export default function PaymentPageStripe({ order }) {

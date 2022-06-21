@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import Tick from "../../assets/icons/Tick";
-import { Colors } from "../../components/CircleButton";
-import IconPage from "../../components/IconPage";
+import { Colors } from "../../enums/Colors";
 import AuthPage from "./AuthPage";
 import EmailLinkPage from "./EmailLinkPage";
 import EmailLinkSentPage from "./EmailLinkSentPage";

@@ -1,6 +1,6 @@
 import { display } from "@mui/system";
 import QRCode from "react-qr-code";
-import { Colors } from "../../../../../components/CircleButton";
+import { Colors } from "../../../../../enums/Colors";
 import Spacer from "../../../../../components/Spacer";
 import { format } from "date-fns"
 import { dateFromTimestamp } from "../../../../../utils/helpers/time";

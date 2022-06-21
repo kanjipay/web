@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import Cross from "../../../../../assets/icons/Cross"
-import { Colors } from "../../../../../components/CircleButton"
+import { Colors } from "../../../../../enums/Colors"
 import IconActionPage from "../../../../../components/IconActionPage"
 import LoadingPage from "../../../../../components/LoadingPage"
 import OrderType from "../../../../../enums/OrderType"
