@@ -1,7 +1,7 @@
 import Tick from "../assets/icons/Tick";
 import Cross from "../assets/icons/Cross";
 import Details from "../assets/icons/Details";
-import { Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
 import CircleIcon from "./CircleIcon";
 
 export class ResultType {

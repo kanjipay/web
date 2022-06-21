@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Tick from "../../../assets/icons/Tick";
-import { Colors } from "../../../components/CircleButton";
+import { Colors } from "../../../enums/Colors";
 import IconActionPage from "../../../components/IconActionPage";
 import LoadingPage from "../../../components/LoadingPage";
 import { NetworkManager } from "../../../utils/NetworkManager";

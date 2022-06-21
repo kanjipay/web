@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { ButtonTheme, Colors } from "../../../components/CircleButton";
+import { ButtonTheme, Colors } from "../../../enums/Colors";
 import NavBar from "../../../components/NavBar";
 import Spacer from "../../../components/Spacer";
 import PaymentOption from "../../checkout/PaymentOption";

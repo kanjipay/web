@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AsyncImage from "../../../../components/AsyncImage";
-import IconButton, { ButtonTheme } from "../../../../components/CircleButton";
+import IconButton from "../../../../components/IconButton";
+import { ButtonTheme } from "../../../../components/ButtonTheme";
 import Spacer from "../../../../components/Spacer";
 import "./MenuItemPage.css";
 import NavBar from "../../../../components/NavBar";
@@ -17,7 +18,6 @@ import {
   AnalyticsEvent,
   AnalyticsManager,
   PageName,
-  viewPage,
 } from "../../../../utils/AnalyticsManager";
 
 export default function MenuItemPage({ merchant }) {

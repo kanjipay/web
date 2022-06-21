@@ -1,4 +1,4 @@
-import { Colors } from "../components/CircleButton";
+import { Colors } from "../enums/Colors";
 import "./Spinner.css";
 
 export default function Spinner({

@@ -11,7 +11,7 @@ import Details from "../../../../../assets/icons/Details";
 import TextLine from "../../../../../components/TextLine";
 import MainButton from "../../../../../components/MainButton";
 import "./MerchantAccountPage.css";
-import { Colors } from "../../../../../components/CircleButton";
+import { Colors } from "../../../../../enums/Colors";
 
 function MerchantAccountPage(props) {
   const { merchantData, openingHours } = props;

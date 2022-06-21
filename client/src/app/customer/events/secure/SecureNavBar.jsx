@@ -1,8 +1,9 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import User from "../../../../assets/icons/User";
-import IconButton, { ButtonTheme } from "../../../../components/CircleButton";
+import IconButton from "../../../../components/IconButton"
+import { ButtonTheme } from "../../../../components/ButtonTheme";
 import NavBar from "../../../../components/NavBar";
 import { auth } from "../../../../utils/FirebaseUtils";
 

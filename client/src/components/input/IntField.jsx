@@ -1,4 +1,4 @@
-import { Colors } from "../CircleButton"
+import { Colors } from "../../enums/Colors"
 
 export function Field({ value, onChange, regex = /.*/, maxChars = 140, disregardInCharCountRegex = null, onSubmit, ...props }) {
   const validateKey = event => {
@@ -81,8 +81,6 @@ export function FloatField({
   ...props
 }) {
   const regex = new RegExp(`^${allowsNegative ? "\\-{0,1}" : ""}([0-9]*\\.{0,1}[0-9]{0,${maxDecimalPlaces}})$`)
-
-  console.log(regex)
 
   return <Field
     value={value}

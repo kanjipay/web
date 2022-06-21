@@ -10,9 +10,10 @@ import Collection from "../../../enums/Collection"
 import { dateFromTimestamp } from "../../../utils/helpers/time"
 import Popup from 'reactjs-popup';
 import MainButton from "../../../components/MainButton"
-import { ButtonTheme } from "../../../components/CircleButton"
+import { ButtonTheme } from "../../../components/ButtonTheme"
 import { Modal } from "./EventPage"
 import { getCurrencySymbol } from "../../../utils/helpers/money"
+import CheckBox from "../../../components/CheckBox"
 
 export default function ProductPage({ event, products, merchant }) {
   const { productId } = useParams()
@@ -60,7 +61,6 @@ export default function ProductPage({ event, products, merchant }) {
             releasesAt: dateFromTimestamp(product.releasesAt) ?? new Date(),
             earliestEntryAt: dateFromTimestamp(product.earliestEntryAt),
             latestEntryAt: dateFromTimestamp(product.latestEntryAt),
-            
             price: product.price / 100
           }}
           formGroupData={[{
@@ -104,6 +104,12 @@ export default function ProductPage({ event, products, merchant }) {
                 required: false,
                 disabled: !!product.isPublished,
               },
+              {
+                name: "isAvailable",
+                label: "Show event to customers",
+                explanation: "Untick this to take your product off of sale. People who have already bought it will still have a ticket.",
+                input: <CheckBox />,
+              }
             ]
           }]}
           onSubmit={handleUpdateProduct}

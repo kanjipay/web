@@ -1,6 +1,7 @@
 import SmallButton from "./SmallButton"
 import React from "react";
-import IconButton, { ButtonTheme } from "./CircleButton";
+import IconButton from "./IconButton";
+import { ButtonTheme } from "./ButtonTheme";
 import Cross from "../assets/icons/Cross";
 import Spacer from "./Spacer";
 

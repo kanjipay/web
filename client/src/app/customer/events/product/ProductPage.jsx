@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AsyncImage from "../../../../components/AsyncImage";
-import { ButtonTheme, Colors } from "../../../../components/CircleButton";
+import { Colors } from "../../../../enums/Colors";
+import { ButtonTheme } from "../../../../components/ButtonTheme";
 import MainButton from "../../../../components/MainButton";
 import Spacer from "../../../../components/Spacer";
 import { formatCurrency } from "../../../../utils/helpers/money";
@@ -228,7 +229,7 @@ export default function ProductPage({ merchant, event, product, user }) {
           Object.keys(attestationData).map(attestation => {
             return <div>
               <div style={{ display: "flex", columnGap: 16, alignItems: "center" }}>
-                <CheckBox length={20} color={Colors.GRAY_LIGHT} value={attestationData[attestation]} onChange={(value) => setAttestationData({ ...attestationData, [attestation]: value })} />
+                <CheckBox length={20} color={Colors.GRAY_LIGHT} value={attestationData[attestation]} onChange={event => setAttestationData({ ...attestationData, [attestation]: event.target.value })} />
                 <p className="text-body">{attestation}</p>
               </div>
               <Spacer y={3} />
@@ -259,7 +260,7 @@ export default function ProductPage({ merchant, event, product, user }) {
           user && user.marketingConsentStatus === "PENDING" && <div>
             <Spacer y={2} />
             <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
-              <CheckBox length={20} color={Colors.GRAY_LIGHT} value={isMarketingConsentApproved} onChange={setIsMarketingConsentApproved} />
+              <CheckBox length={20} color={Colors.GRAY_LIGHT} value={isMarketingConsentApproved} onChange={event => setIsMarketingConsentApproved(event.target.value)} />
               <p className="text-caption">Get notified when this organiser has another relevant event on soon (recommended).</p>
             </div>
           </div>

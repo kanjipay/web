@@ -1,4 +1,7 @@
-import IconButton, { ButtonTheme, Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
+import IconButton from "./IconButton";
+import { ButtonTheme } from "./ButtonTheme";
+
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Back from "../assets/icons/Back";

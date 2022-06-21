@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import AsyncImage from "./AsyncImage";
-import { Colors } from "./CircleButton";
+import { Colors } from "../enums/Colors";
 import Spacer from "./Spacer";
 import "./Listing.css"
 import SquareLabel from "./SquareLabel";

@@ -10,6 +10,7 @@ import Collection from "../../../enums/Collection";
 import { useNavigate, useParams } from "react-router-dom";
 import { getEventStorageRef } from "../../../utils/helpers/storage";
 import { uploadImage } from "../../../utils/helpers/uploadImage";
+import SimpleImagePicker from "../../../components/SimpleImagePicker";
 
 export default function CreateEventPage() {
   const navigate = useNavigate()
@@ -22,7 +23,7 @@ export default function CreateEventPage() {
       merchantId,
       title,
       description,
-      photo: photo.name,
+      photo: photo.file.name,
       address,
       startsAt,
       endsAt,
@@ -32,9 +33,9 @@ export default function CreateEventPage() {
 
     const eventId = eventRef.id
 
-    const ref = getEventStorageRef(merchantId, eventId, photo.name)
+    const ref = getEventStorageRef(merchantId, eventId, photo.file.name)
 
-    await uploadImage(ref, photo)
+    await uploadImage(ref, photo.file)
 
     navigate(`../e/${eventId}`)
   }
@@ -74,7 +75,7 @@ export default function CreateEventPage() {
                 },
                 {
                   name: "photo",
-                  input: <ImagePicker />
+                  input: <SimpleImagePicker />
                 },
                 {
                   name: "address"

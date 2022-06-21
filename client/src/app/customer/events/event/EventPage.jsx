@@ -9,7 +9,7 @@ import { Link, useParams } from "react-router-dom";
 import ProductListing from "../product/ProductListing";
 import EventsAppNavBar from "../secure/EventsAppNavBar";
 import { eventTimeString, generateGoogleMapsLink } from "./eventHelpers";
-import { Colors } from "../../../../components/CircleButton";
+import { Colors } from "../../../../enums/Colors";
 import ShowMoreText from "react-show-more-text";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
 import { useEffect } from "react";

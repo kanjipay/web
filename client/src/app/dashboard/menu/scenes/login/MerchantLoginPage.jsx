@@ -11,7 +11,7 @@ import {
 import { Authentication } from "../../../../../utils/services/FirestoreAuth";
 import { useNavigate } from "react-router-dom";
 import ResultBanner, { ResultType } from "../../../../../components/ResultBanner";
-import { Colors } from "../../../../../components/CircleButton";
+import { Colors } from "../../../../../enums/Colors";
 
 function MerchantLogin() {
   const [email, setEmail] = useState("");

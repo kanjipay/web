@@ -11,7 +11,7 @@ import CircleIcon from "../../../../../components/CircleIcon";
 import "./MenuItemConfigPage.css";
 import DietaryAttribute from "../../../../customer/menu/menu/DietaryAttribute";
 import { formatCurrency } from "../../../../../utils/helpers/money";
-import { Colors } from "../../../../../components/CircleButton";
+import { Colors } from "../../../../../enums/Colors";
 
 // TODO DietaryAttribute should be a common component
 // TODO Better way of filtering local data

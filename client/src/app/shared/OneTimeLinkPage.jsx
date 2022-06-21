@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Cross from "../../assets/icons/Cross";
-import { Colors } from "../../components/CircleButton";
+import { Colors } from "../../enums/Colors";
 import IconPage from "../../components/IconPage";
 import LoadingPage from "../../components/LoadingPage";
 import { fetchLink, acceptLink } from "../../utils/services/LinksService";

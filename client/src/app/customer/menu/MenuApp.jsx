@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import { Colors } from "../../../components/CircleButton";
+import { Colors } from "../../../enums/Colors";
 import Merchant from "./menu/Merchant";
 import Orders from "./order/Order";
 import RedirectPageMercado from "./RedirectPageMercado";
