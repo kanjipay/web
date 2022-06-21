@@ -8,7 +8,7 @@ enum Collection {
   REFUND_ATTEMPT = "RefundAttempt",
   LINK = "Link",
   STATE = "State",
-  INVITE = "INVITE",
+  INVITE = "Invite",
 
   // Objects needed by the online menu client
   MERCHANT = "Merchant",
