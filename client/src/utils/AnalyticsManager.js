@@ -1,6 +1,6 @@
 import amplitude from "amplitude-js";
-// import axios from "axios";
 import { IdentityManager } from "./IdentityManager";
+import { hotjar } from 'react-hotjar';
 
 export class AnalyticsEvent {
   static VIEW_PAGE = "ViewPage";
@@ -36,8 +36,12 @@ export class AnalyticsManager {
     const options = { transport: "beacon" };
     const analytics = amplitude.getInstance();
 
+    const pseudoUserId = IdentityManager.main.getPseudoUserId()
     
-    analytics.init(process.env.REACT_APP_AMPLITUDE_API_KEY, IdentityManager.main.getPseudoUserId(), options);
+    analytics.init(process.env.REACT_APP_AMPLITUDE_API_KEY, pseudoUserId, options);
+    
+    hotjar.initialize(3030022, 6)
+    hotjar.identify(pseudoUserId)
 
     // /*
     // I don't believe we want to use the default device id, it's just a uuid in cookies,
@@ -45,6 +49,7 @@ export class AnalyticsManager {
     // We store the uuid in localStorage, which is more persistent
     // */
     analytics.setDeviceId(IdentityManager.main.getDeviceId());
+    
     this.analytics = analytics;
   }
 
