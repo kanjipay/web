@@ -9,6 +9,7 @@ enum Collection {
   LINK = "Link",
   STATE = "State",
   INVITE = "INVITE",
+  PHONE = "Phone",
 
   // Objects needed by the online menu client
   MERCHANT = "Merchant",
