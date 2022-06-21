@@ -11,7 +11,7 @@ export class MerchantTicketsController extends BaseController {
   check = async (req, res, next) => {
     try {
       const { ticketId, merchantId } = req.params
-      const checkedEventId = req.body.eventId
+      const { eventId: checkedEventId } = req.body
 
       const { ticket, ticketError } = await fetchDocument(Collection.TICKET, ticketId)
 
@@ -26,7 +26,7 @@ export class MerchantTicketsController extends BaseController {
         let errorMessage = "This ticket was already used"
 
         if (usedAt) {
-          errorMessage += ` ${longFormat(dateFromTimestamp(usedAt))}`
+          errorMessage += ` at ${longFormat(dateFromTimestamp(usedAt))}`
         }
 
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
