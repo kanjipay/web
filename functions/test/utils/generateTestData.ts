@@ -1,6 +1,5 @@
 import Collection from "../../src/shared/enums/Collection";
 import { db } from "./admin";
-import StripeStatus from "../../../client/src/enums/StripeStatus";
 import { addHours } from "date-fns";
 
 export async function createMerchant(
@@ -39,7 +38,7 @@ export async function createMerchant(
       }),
       stripe: {
         accountId: "acct_1L8MJV2Yi582Wuz1",
-        status: StripeStatus.CHARGES_ENABLED
+        status: "CHARGES_ENABLED"
       }
     })
 }
@@ -112,3 +111,16 @@ export async function createProduct(
       testData: true,
     })
 }
+
+export async function createLink(ticketId: string, wasUsed: boolean, expiresAt) {
+  await db
+    .collection(Collection.LINK)
+    .doc(ticketId)
+    .create({
+      createdAt: new Date(),
+      expiresAt: expiresAt,
+      path:'/myPath',
+      stateid:'abc123',
+      wasUsed:wasUsed
+    })
+};
