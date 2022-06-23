@@ -29,7 +29,6 @@ export default function SecureNavBar({
   }, [])
 
   const profileElement = (<IconButton
-    length={32}
     Icon={User}
     buttonTheme={ButtonTheme.NAVBAR}
     onClick={() => navigate(profilePath)}

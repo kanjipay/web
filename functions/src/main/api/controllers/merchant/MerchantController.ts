@@ -18,6 +18,8 @@ export class MerchantController extends BaseController {
       const { crezcoUserId } = req.body;
       const { merchantId } = req.params
 
+      const logger = new LoggingController("Add Crezco user id")
+
       await db()
         .collection(Collection.MERCHANT)
         .doc(merchantId)
@@ -27,7 +29,9 @@ export class MerchantController extends BaseController {
           }
         })
 
-      return res.sendStatus(200)
+      logger.log(`Updated merchant with id ${merchantId} with crezco user id ${crezcoUserId}`)
+
+      res.sendStatus(200)
     } catch (err) {
       next(err)
     }
@@ -39,7 +43,7 @@ export class MerchantController extends BaseController {
       
       const { merchantId } = req.params
 
-      logger.log("Creating Stripe account link", { merchantId })
+      logger.log(`Creating Stripe account link for merchant with id ${merchantId}`, { merchantId })
 
       const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
 

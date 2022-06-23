@@ -12,7 +12,6 @@ import { Field, IntField } from "../../../components/input/IntField";
 import SmallButton from "../../../components/SmallButton";
 import { Colors } from "../../../enums/Colors";
 import { ButtonTheme } from "../../../components/ButtonTheme";
-import ImagePicker from "../../../components/ImagePicker";
 import { getEventStorageRef } from "../../../utils/helpers/storage";
 import { deleteDoc, updateDoc, where } from "firebase/firestore";
 import Popup from 'reactjs-popup';

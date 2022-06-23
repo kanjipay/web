@@ -5,6 +5,7 @@ import { addDocument } from "../../../shared/utils/addDocument";
 import { db } from "../../../shared/utils/admin";
 import { HttpError, HttpStatusCode } from "../../../shared/utils/errors";
 import { fetchDocument } from "../../../shared/utils/fetchDocument";
+import LoggingController from "../../../shared/utils/loggingClient";
 import { dateFromTimestamp } from "../../../shared/utils/time";
 
 export class LinksController extends BaseController {
@@ -12,16 +13,23 @@ export class LinksController extends BaseController {
     try {
       const { path, stateId } = req.body
 
+      const logger = new LoggingController("Create link")
+
       // Expires 30 mins from now
       const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
-
-      const { linkId } = await addDocument(Collection.LINK, {
+      const linkData = {
         expiresAt,
         path,
         stateId,
         wasUsed: false,
         createdAt: firestore.FieldValue.serverTimestamp()
-      })
+      }
+
+      logger.log(`Creating one time link for path ${path} with state id ${stateId}`, { linkData })
+
+      const { linkId } = await addDocument(Collection.LINK, linkData)
+
+      logger.log(`Created link with id ${linkId}`)
 
       return res.status(200).json({ linkId });
     } catch (err) {
@@ -33,6 +41,10 @@ export class LinksController extends BaseController {
     try {
       const { linkId } = req.params
 
+      const logger = new LoggingController("Get link")
+
+      logger.log(`Retrieving link with id $`)
+
       const { link, linkError } = await fetchDocument(Collection.LINK, linkId, {
         wasUsed: false,
       })
@@ -42,11 +54,16 @@ export class LinksController extends BaseController {
         return
       }
 
-      if (dateFromTimestamp(link.expiresAt) < new Date()) {
+      const expiresAt = dateFromTimestamp(link.expiresAt)
+
+      if (expiresAt < new Date()) {
         const errorMessage = "That link has expired"
+        logger.log(`Link expired at ${expiresAt.toDateString()}`)
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return
       }
+
+      logger.log("Retrieved link successfully", { link })
 
       return res.status(200).json(link)
     } catch (err) {
@@ -58,12 +75,18 @@ export class LinksController extends BaseController {
     try {
       const { linkId } = req.params
 
+      const logger = new LoggingController("Accept link")
+
+      logger.log(`Accepting link with id ${linkId}`)
+
       await db()
         .collection(Collection.LINK)
         .doc(linkId)
         .update({
           wasUsed: true
         })
+      
+      logger.log(`Updated link as used`)
 
       return res.sendStatus(200)
     } catch (err) {
