@@ -7,6 +7,8 @@ import CircleIcon from "../../components/CircleIcon"
 import MainButton from "../../components/MainButton"
 import Spacer from "../../components/Spacer"
 import { dateFromTimestamp } from "../../utils/helpers/time"
+import { useEffect } from "react"
+import { auth } from "../../utils/FirebaseUtils"
 
 export default function SelectOrganisationPage({ memberships }) {
   const navigate = useNavigate()
@@ -14,6 +16,12 @@ export default function SelectOrganisationPage({ memberships }) {
   const handleCreateOrganisation = () => {
     navigate("/dashboard/o/create")
   }
+
+  useEffect(() => {
+    auth.currentUser.getIdToken().then(token => {
+      console.log(token)
+    })
+  })
 
   const boxStyle = {
     padding: 32, 

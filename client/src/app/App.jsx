@@ -12,6 +12,7 @@ import Auth from "./auth/Auth";
 import { IntlProvider } from 'react-intl'
 import AttributionLinkPage from "./shared/attribution/AttributionLinkPage";
 import { AnalyticsManager } from "../utils/AnalyticsManager";
+import TicketChecker from "./ticketChecker/TicketChecker";
 
 export default function App() {
   console.log("language: ", navigator.language)
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/merchant/*" element={<MerchantApp />} />
         <Route path="/auth/*" element={<Auth />} />
         <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route path="/ticket-checker/*" element={<TicketChecker />} />
 
         {/* Brand pages */}
         <Route path="*" element={<Brand />} />

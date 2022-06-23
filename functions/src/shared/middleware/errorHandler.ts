@@ -1,13 +1,13 @@
 import { HttpStatusCode } from "../utils/errors";
 import { ValidationError } from "express-json-validator-middleware";
-import LoggingController from "../utils/loggingClient";
+import { logger } from "firebase-functions/v1";
 
 export const errorHandler = (err, req, res, next) => {
-  const logger = new LoggingController("Error handler")
+
   if (err instanceof ValidationError) {
     // Handle the error
     const { validationErrors } = err
-    logger.log("Got validation errors", validationErrors)
+    logger.error("Got validation errors", validationErrors)
 
     let errorMessage
 
@@ -26,8 +26,7 @@ export const errorHandler = (err, req, res, next) => {
       }
     }
 
-    return res.status(400).json({ error: errorMessage });
-    // next();
+    return res.status(400).json({ message: errorMessage });
   } else {
     if (!err.statusCode) {
       err.statusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
@@ -35,7 +34,7 @@ export const errorHandler = (err, req, res, next) => {
 
     // err.message will often be long/descriptive - not suitable for users to see but we should log
 
-    logger.log("Non-validation related error", {
+    logger.error("Non-validation related error", {
       message: err.message,
       response: err.response,
       statusCode: err.statusCode,
@@ -45,6 +44,6 @@ export const errorHandler = (err, req, res, next) => {
     // Return a message suitable for a user to see
     return res
       .status(err.statusCode)
-      .json({ error: err.clientMessage || "An error occured" });
+      .json({ message: err.clientMessage || "An error occured" });
   }
 };

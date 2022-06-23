@@ -20,7 +20,7 @@ export class OrdersController extends BaseController {
       const userId = req.user.id
       const { productId, quantity, deviceId, attributionData } = req.body
 
-      logger.log("Read initial variables", {}, {
+      logger.log("Read initial variables", {
         userId,
         productId,
         quantity,
@@ -36,16 +36,11 @@ export class OrdersController extends BaseController {
 
       const { soldCount, reservedCount, capacity, eventId, merchantId, price, title } = product
 
-      logger.log("Got product", {
-        product
-      }, {
-        eventId,
-        merchantId,
-        price
-      })
+      logger.log("Got product", { product })
 
       if (soldCount + reservedCount + quantity >= capacity) {
         const errorMessage = "This ticket is sold out."
+        logger.log("Ticket is sold out", { soldCount, reservedCount, quantity, capacity })
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return
       }
@@ -79,16 +74,11 @@ export class OrdersController extends BaseController {
         }
       }
 
-      const { maxTicketsPerPerson, endsAt } = event
-
       const currentTicketCount = existingTicketDocs.docs.length
 
-      logger.log("Got event, merchant and existing tickets", {
-        event,
-        merchant,
-        currentTicketCount,
-        maxTicketsPerPerson
-      })
+      logger.log("Got event, merchant and existing tickets", { event, merchant, currentTicketCount })
+
+      const { maxTicketsPerPerson, endsAt } = event
 
       if (!event.isPublished) {
         const errorMessage = "This event hasn't been published yet"
@@ -105,6 +95,8 @@ export class OrdersController extends BaseController {
           errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person.`
         }
 
+        logger.log("Order violates max tickets per person policy", { currentTicketCount, quantity, maxTicketsPerPerson })
+
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return
       }
@@ -112,6 +104,8 @@ export class OrdersController extends BaseController {
       const emailDomain = merchant.emailDomain ?? event.emailDomain ?? product.emailDomain
 
       if (emailDomain) {
+        logger.log("Got required email domain for ticket: ", emailDomain)
+
         const { email } = req.user
 
         logger.log("Checking email domain", {
@@ -124,11 +118,15 @@ export class OrdersController extends BaseController {
           next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
           return
         }
+      } else {
+        logger.log("No required email domain found for ticket")
       }
 
       const { currency, customerFee } = merchant
 
       const total = Math.round(price * quantity * (1 + customerFee)) 
+
+      logger.log("Calculated total for order", { total, quantity, price, customerFee })
       const orderId = uuid()
 
       const orderData = {

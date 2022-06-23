@@ -30,6 +30,8 @@ export class PaymentAttemptsController extends BaseController {
       const logger = new LoggingController("Create payment attempt with stripe")
       const { orderId, deviceId } = req.body;
 
+      logger.log("Creating payment attempt with stripe", { orderId, deviceId })
+
       const { order, orderError } = await fetchDocument(Collection.ORDER, orderId, {
         status: OrderStatus.PENDING
       })
@@ -39,7 +41,11 @@ export class PaymentAttemptsController extends BaseController {
         return
       }
 
+      logger.log("Got order", { order })
+
       const { total, currency, merchantId } = order
+
+      logger.log(`Retrieving merchant with id ${merchantId}`)
 
       const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
 
@@ -48,24 +54,30 @@ export class PaymentAttemptsController extends BaseController {
         return
       }
 
+      logger.log("Got merchant", { merchant })
+
       const stripeAccountId = merchant.stripe?.accountId
 
-
       if (!stripeAccountId || !merchant.stripe.areChargesEnabled) {
+        logger.log("Merchant not set up for stripe", { stripe: merchant.stripe})
         const errorMessage = "Merchant is not set up for Stripe"
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return
       }
 
-      const paymentIntent = await stripe.paymentIntents.create({
+      const stripePaymentIntentData = {
         amount: total,
         currency: currency.toLowerCase(),
         automatic_payment_methods: {
           enabled: true,
         },
-      }, {
-        stripeAccount: stripeAccountId,
-      })
+      }
+
+      logger.log("Creating stripe payment intent", { stripeAccountId, stripePaymentIntentData })
+
+      const paymentIntent = await stripe.paymentIntents.create(stripePaymentIntentData, { stripeAccount: stripeAccountId })
+
+      logger.log("Stripe payment intent created", { paymentIntent })
 
       const paymentAttemptId = uuid()
 
@@ -84,12 +96,14 @@ export class PaymentAttemptsController extends BaseController {
         currency,
       }
 
+      logger.log("Creating payment attempt", { paymentAttemptData, paymentAttemptId })
+
       await db()
         .collection(Collection.PAYMENT_ATTEMPT)
         .doc(paymentAttemptId)
         .set(paymentAttemptData)
 
-      logger.log("Payment attempt doc added", { paymentAttemptData });
+      logger.log("Payment attempt added");
 
       return res.status(200).json({ clientSecret, stripeAccountId })
 
@@ -104,7 +118,7 @@ export class PaymentAttemptsController extends BaseController {
 
       const { orderId, crezcoBankCode, countryCode, deviceId } = req.body;
 
-      logger.log("Got body vars", {}, { orderId, crezcoBankCode, deviceId })
+      logger.log("Creating Crezco payment attempt", { orderId, crezcoBankCode, countryCode, deviceId })
 
       const { order, orderError } = await fetchDocument(Collection.ORDER, orderId, {
         status: OrderStatus.PENDING
@@ -117,19 +131,34 @@ export class PaymentAttemptsController extends BaseController {
 
       const { total, currency, merchantId } = order
 
+      logger.log("Got order", { order })
+
       const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
+
+      logger.log(`Retrieving merchant with id ${merchantId}`)
 
       if (merchantError) {
         next(merchantError)
         return
       }
 
+      logger.log("Got merchant", { merchant })
+
       const { crezco, companyName } = merchant
       const crezcoUserId = crezco.userId
 
       const paymentAttemptId = uuid()
 
-      logger.log("Created paymentAttemptId", {}, { paymentAttemptId })
+      logger.log("Created paymentAttemptId", { paymentAttemptId })
+
+      logger.log("Creating Crezco payment demand", {
+        crezcoUserId,
+        paymentAttemptId,
+        orderId,
+        companyName: companyName.replace(/[^a-zA-Z0-9 \.\-]/, ""),
+        total,
+        currency
+      })
 
       const { paymentDemandId, payDemandError } = await createPaymentDemand(
         crezcoUserId,
