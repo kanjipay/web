@@ -8,7 +8,8 @@ export async function createMerchant(
   {
     currency = "GBP",
     customerFee = 0.1,
-    approvalStatus = "APPROVED"
+    approvalStatus = "APPROVED",
+    addCrezcoId = true
   } = {}
 ) {
   const name = `test merchant`
@@ -21,6 +22,7 @@ export async function createMerchant(
       currency,
       customerFee,
       approvalStatus,
+      
 
       // Fixed properties
       displayName: name,
@@ -30,9 +32,11 @@ export async function createMerchant(
       testData: true,
       sortCode: "000000",
       accountNumber: "12341234",
-      crezco: {
-        userId: "6c8a6c40-b2eb-4538-b833-8d24a86208ff"
-      },
+      ...(addCrezcoId && {
+        crezco: {
+          userId: "6c8a6c40-b2eb-4538-b833-8d24a86208ff"
+        }
+      }),
       stripe: {
         accountId: "acct_1L8MJV2Yi582Wuz1",
         status: StripeStatus.CHARGES_ENABLED
