@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export function formatMinutes(mins) {
   const minsRemainder = (mins % 60).toLocaleString("en-GB", {
     minimumIntegerDigits: 2,
@@ -16,6 +18,10 @@ export function dateFromTimestamp(timestamp) {
   if (!timestamp) { return null }
   const seconds = timestamp.seconds ?? timestamp._seconds
   return new Date(seconds * 1000)
+}
+
+export function longFormat(date) {
+  return `${format(date, "MMM d")} at ${format(date, "HH:mm")}`
 }
 
 export function getWeekdays(locale) {

@@ -14,6 +14,8 @@ export class Colors {
   static OFF_BLACK_LIGHT = "#333333";
   static RED = "#ff0000";
   static RED_LIGHT = "#FFE6E6";
+  static YELLOW = "#FFC733"
+  static YELLOW_LIGHT = "#FFF8E5"
   static GREEN = "#008000";
   static LIGHT_GREEN = "#E6F3E6";
   static CLEAR = "#FFFFFF00";

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, Route, Routes, useNavigate, useParams } from "react-router-dom";
+import { NavLink, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import Analytics from "../../../assets/icons/Analytics";
 import Clock from "../../../assets/icons/Clock";
 import Settings from "../../../assets/icons/Settings";
@@ -16,7 +16,6 @@ import ConnectCrezcoPage from "./ConnectCrezcoPage";
 import ConnectStripePage from "./ConnectStripePage";
 import StripeConnectRedirectPage from "./StripeConnectRedirectPage";
 import Discover from "../../../assets/icons/Discover";
-import User from "../../../assets/icons/User";
 import UsersPage from "./UsersPage";
 import StripeStatus from "../../../enums/StripeStatus";
 

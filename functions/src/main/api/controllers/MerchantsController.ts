@@ -10,47 +10,42 @@ export class MerchantsController extends BaseController {
   create = async (req, res, next) => {
     try {
       const userId = req.user.id;
-      const loggingClient = new LoggingController("Merchant Controller");
-      loggingClient.log(
-        "Merchant creation started",
-        {
-          environment: process.env.ENVIRONMENT,
-          clientURL: process.env.CLIENT_URL,
-        },
-        req.body
-      );
+
+      const logger = new LoggingController("Merchant Controller");
+
+      logger.log("Merchant creation started");
 
       const { accountNumber, address, companyName, displayName, sortCode, description, currency, photo } = req.body;
 
       const merchantId = uuid();
+      const merchantData = {
+        address,
+        companyName,
+        photo,
+        displayName,
+        description,
+        currency,
+        sortCode,
+        accountNumber,
+        customerFee: 0.1,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        approvalStatus: "PENDING",
+      }
+
+      logger.log("Creating merchant and membership", { merchantId, merchantData })
 
       const createMerchant = db()
         .collection(Collection.MERCHANT)
         .doc(merchantId)
-        .set({
-          address,
-          companyName,
-          photo,
-          displayName,
-          description,
-          currency,
-          sortCode,
-          accountNumber,
-          customerFee: 0.1,
-          createdAt: firestore.FieldValue.serverTimestamp(),
-          approvalStatus: "PENDING",
-        });
+        .set(merchantData)
 
       await Promise.all([
         createMerchant,
         createMembership(userId, merchantId, displayName, OrganisationRole.ADMIN)
       ])
 
-      loggingClient.log(
-        "Merchant document creation complete",
-        {},
-        { merchantId }
-      );
+      logger.log(`Successfully created merchant with id ${merchantId}`)
+      
       return res.status(200).json({ merchantId });
     } catch (err) {
       next(err)
