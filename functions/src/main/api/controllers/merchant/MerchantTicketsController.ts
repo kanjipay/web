@@ -6,7 +6,7 @@ import { db } from "../../../../shared/utils/admin"
 import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
 import LoggingController from "../../../../shared/utils/loggingClient"
-import { dateFromTimestamp, longFormat } from "../../../../shared/utils/time"
+import { dateFromTimestamp } from "../../../../shared/utils/time"
 
 export class MerchantTicketsController extends BaseController {
   check = async (req, res, next) => {
@@ -28,30 +28,13 @@ export class MerchantTicketsController extends BaseController {
 
       const { eventId, productId, userId, wasUsed, usedAt } = ticket
 
-      if (wasUsed) {
-        let errorMessage = "This ticket was already used"
-
-        if (usedAt) {
-          errorMessage += ` on ${longFormat(dateFromTimestamp(usedAt))}`
-        }
-
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
-        return
-      }
-
       if (!eventId || !productId || !userId) {
         const errorMessage = "This ticket is invalid ticket. The event, product or customer is missing."
         next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, errorMessage, errorMessage))
         return
       }
 
-      if (merchantId !== ticket.merchantId) {
-        const errorMessage = "This ticket isn't for this organisation."
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
-        return
-      }
-
-      if (eventId !== checkedEventId) {
+      if (eventId !== checkedEventId || merchantId !== ticket.merchantId) {
         const errorMessage = "This ticket is for another event"
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return
@@ -74,40 +57,26 @@ export class MerchantTicketsController extends BaseController {
         }
       }
 
-      const { latestEntryAt, earliestEntryAt } = product
-
       logger.log("Got product, event and user", { product, event, user })
+
+      const { latestEntryAt, earliestEntryAt } = product
 
       const currentDate = new Date()
 
-      if (currentDate > latestEntryAt || currentDate < earliestEntryAt) {
-        let errorMessage = "This ticket can't be used right now"
-
-        if (currentDate > latestEntryAt) {
-          errorMessage = `This ticket is only valid until ${longFormat(dateFromTimestamp(latestEntryAt))}`
-        } else if (currentDate < earliestEntryAt) {
-          errorMessage = `This ticket is only valid from ${longFormat(dateFromTimestamp(earliestEntryAt))}`
-        }
-
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
-        return
-      }
-
-      if (product.eventId != checkedEventId) {
-        const errorMessage = "This ticket is invalid. The product doesn't match the event."
-        next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, errorMessage, errorMessage))
-        return
-      }
+      const isTooEarly = earliestEntryAt && currentDate < dateFromTimestamp(earliestEntryAt)
+      const isTooLate = latestEntryAt && currentDate > dateFromTimestamp(latestEntryAt)
 
       const { firstName, lastName } = user
 
-      await db()
-        .collection(Collection.TICKET)
-        .doc(ticketId)
-        .update({
-          wasUsed: true,
-          usedAt: firestore.FieldValue.serverTimestamp()
-        })
+      if (!wasUsed) {
+        await db()
+          .collection(Collection.TICKET)
+          .doc(ticketId)
+          .update({
+            wasUsed: true,
+            usedAt: firestore.FieldValue.serverTimestamp()
+          })
+      }
 
       logger.log("Updated ticket")
 
@@ -122,7 +91,13 @@ export class MerchantTicketsController extends BaseController {
         user: {
           firstName,
           lastName
-        }
+        },
+        wasUsed,
+        usedAt,
+        isTooEarly,
+        isTooLate,
+        earliestEntryAt,
+        latestEntryAt
       })
     } catch (err) {
       next(err)

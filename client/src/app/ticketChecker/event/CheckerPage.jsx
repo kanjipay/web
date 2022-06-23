@@ -11,6 +11,12 @@ import Settings from "../../../assets/icons/Settings"
 import LoadingPage from "../../../components/LoadingPage"
 import IconPage from "../../../components/IconPage"
 import Discover from "../../../assets/icons/Discover"
+import { dateFromTimestamp, longFormat } from "../../../utils/helpers/time"
+import MainButton from "../../../components/MainButton"
+import Spacer from "../../../components/Spacer"
+import ResultBanner, { ResultType } from "../../../components/ResultBanner"
+import CircleIcon from "../../../components/CircleIcon"
+import Warning from "../../../assets/icons/Warning"
 
 class PermissionStatus {
   static GRANTED = "GRANTED"
@@ -102,38 +108,78 @@ export default function CheckerPage({ event }) {
 
     NetworkManager.post(`/merchants/m/${merchantId}/tickets/${ticketId}/check`, { eventId })
       .then(res => {
-        const { product, user } = res.data
+        const { product, user, wasUsed, usedAt, isTooEarly, isTooLate, earliestEntryAt, latestEntryAt } = res.data
         const { firstName, lastName } = user
         const { title: productTitle } = product
         const body = `${productTitle} ticket bought by ${firstName} ${lastName}.`
+        const messages = []
+
+        if (wasUsed) {
+          messages.push(`This ticket was already used on ${longFormat(dateFromTimestamp(usedAt))}`)
+        }
+
+        if (isTooEarly) {
+          messages.push(`This ticket is only valid from ${longFormat(dateFromTimestamp(earliestEntryAt))}`)
+        }
+
+        if (isTooLate) {
+          messages.push(`This ticket is only valid until ${longFormat(dateFromTimestamp(latestEntryAt))}`)
+        }
 
         setScanData({
           isSuccessful: true,
-          title: "Valid ticket",
-          body
+          title: messages.length === 0 ? "Valid ticket" : "Valid ticket with issues",
+          body,
+          messages
         })
       })
       .catch(err => {
         setScanData({
           isSuccessful: false,
           title: "Invalid ticket",
-          body: err.response?.data?.message
+          body: err.response?.data?.message,
+          messages: []
         })
       })
   }, [ticketId, merchantId, eventId])
 
   if (scanData) {
-    const { isSuccessful, title, body } = scanData
+    const { isSuccessful, title, body, messages } = scanData
+    const areErrors = messages.length > 0
 
-    return <IconActionPage
-      Icon={isSuccessful ? Tick : Cross}
-      iconBackgroundColor={isSuccessful ? Colors.OFF_WHITE_LIGHT : Colors.RED_LIGHT}
-      iconForegroundColor={isSuccessful ? Colors.BLACK : Colors.RED}
-      title={title}
-      body={body}
-      primaryActionTitle="Scan another ticket"
-      primaryAction={handleResetScanner}
-    />
+    return <div className="container">
+      <div className="centred-top" style={{ width: 311 }}>
+        <CircleIcon
+          length={120}
+          Icon={isSuccessful ? (areErrors ? Warning : Tick) : Cross}
+          backgroundColor={isSuccessful ? (areErrors ? Colors.YELLOW_LIGHT : Colors.OFF_WHITE_LIGHT) : Colors.RED_LIGHT}
+          foregroundColor={isSuccessful ? (areErrors ? Colors.YELLOW : Colors.BLACK) : Colors.RED}
+          style={{ margin: "auto" }}
+        />
+        <Spacer y={2} />
+        <div className="header-s">{title}</div>
+        <Spacer y={2} />
+        <div className="text-body-faded">{body}</div>
+      </div>
+
+      <div className="anchored-bottom">
+        <div style={{ margin: 16 }}>
+          {
+            messages.map((message, index) => <div key={index}>
+              <ResultBanner
+                resultType={ResultType.INFO}
+                message={message}
+              />
+              <Spacer y={2} />
+            </div>)
+          }
+          <MainButton
+            title="Scan another ticket"
+            onClick={handleResetScanner}
+          />
+        </div>
+      </div>
+    </div>
   } else if (ticketId) {
     return <LoadingPage message="Checking ticket" />
   } else {
