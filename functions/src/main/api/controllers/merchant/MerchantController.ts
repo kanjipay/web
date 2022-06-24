@@ -128,7 +128,7 @@ export class MerchantController extends BaseController {
       logger.log("Retrieved merchant", { merchant })
 
       if (!merchant.stripe) {
-        logger.log("No account for merrchant, returning")
+        logger.log("No account for merchant, returning")
         return res.status(200).json({ areChargesEnabled: false })
       }
 

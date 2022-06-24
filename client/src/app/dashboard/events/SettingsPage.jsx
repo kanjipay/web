@@ -25,9 +25,9 @@ export default function SettingsPage({ merchant }) {
     const file = data.photo?.file
 
     if (file) {
-      data.photo = file.name
-
       const merchantRef = getMerchantStorageRef(merchantId, file.name)
+
+      data.photo = { storageRef: merchantRef }
 
       promises.push(
         uploadImage(merchantRef, file)

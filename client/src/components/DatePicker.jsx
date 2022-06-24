@@ -223,21 +223,23 @@ export default function DatePicker({
     setValues(dateToValues(new Date()))
   }
 
-  if (required) {
-    return contents
-  } else {
-    return <div>
-      <input style={{ width: 0, height: 0, display: "none" }} disabled={disabled} />
-      <div style={{ display: "flex", columnGap: 16, alignItems: "center" }}>
-        <CheckBox length={24} value={!value} onChange={handleCheckBoxChange} disabled={disabled} />
-        <p>Leave blank</p>
-      </div>
-      {
-        value && <div>
-          <Spacer y={2} />
-          {contents}
+  return <div test-id={`date-picker-${name}`}>
+    {
+      required ?
+        contents :
+        <div>
+          <input style={{ width: 0, height: 0, display: "none" }} disabled={disabled} />
+          <div style={{ display: "flex", columnGap: 16, alignItems: "center" }}>
+            <CheckBox length={24} value={!value} onChange={handleCheckBoxChange} disabled={disabled} />
+            <p>Leave blank</p>
+          </div>
+          {
+            value && <div>
+              <Spacer y={2} />
+              {contents}
+            </div>
+          }
         </div>
-      }
-    </div>
-  }
+    }
+  </div>
 }

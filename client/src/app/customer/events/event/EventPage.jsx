@@ -14,8 +14,6 @@ import ShowMoreText from "react-show-more-text";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
 import { useEffect } from "react";
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager";
-import useAttribution from "../../../shared/attribution/useAttribution";
-import MainButton from "../../../../components/MainButton";
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return <div>
@@ -28,7 +26,14 @@ export function EventDetails({ event, merchant, artists = [] }) {
       <CircleIcon Icon={Location} length={20} backgroundColor={Colors.CLEAR} />
       <p className="text-body">
         {`${event.address} · `}
-        <a href={generateGoogleMapsLink(event)} target="_blank" rel="noreferrer">Get directions</a>
+        <a 
+          href={generateGoogleMapsLink(event)} 
+          target="_blank" 
+          rel="noreferrer"
+          test-id="event-details-directions-link"
+        >
+          Get directions
+        </a>
       </p>
     </div>
     {
@@ -45,15 +50,26 @@ export function EventDetails({ event, merchant, artists = [] }) {
                     artists.map((artist, index) => {
                       return <span>
                         {index > 0 ? ", " : ""}
-                        <Link to={`/events/artists/${artist.id}`} target="_blank" rel="noreferrer">{artist.name}</Link>
-                        
+                        <Link 
+                          to={`/events/artists/${artist.id}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          test-name="event-details-artist-link"
+                        >
+                          {artist.name}
+                        </Link>
                       </span>
                     })
                   }
                   {". "}
                 </span>     
             }
-            Organised by <Link to="../..">{merchant.displayName}</Link>
+            Organised by <Link 
+              to="../.."
+              test-id="event-details-organiser-link"
+            >
+              {merchant.displayName}
+            </Link>
           </p>
         </div>
       </div>
@@ -63,12 +79,9 @@ export function EventDetails({ event, merchant, artists = [] }) {
 
 export default function EventPage({ merchant, event, products, artists }) {
   const { eventId, merchantId } = useParams()
-  const { clearItems } = useAttribution()
   
   useEffect(() => {
     AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
-
-    
   }, [eventId, merchantId])
 
   return <div className="container">
@@ -110,7 +123,11 @@ export default function EventPage({ merchant, event, products, artists }) {
       }
       <Spacer y={2} />
 
-      <EventDetails event={event} merchant={merchant} artists={artists} />
+      <EventDetails 
+        event={event} 
+        merchant={merchant} 
+        artists={artists}
+      />
       <Spacer y={4} />
       <ShowMoreText
         lines={3}
@@ -129,7 +146,10 @@ export default function EventPage({ merchant, event, products, artists }) {
               .filter(product => product.isPublished)
               .map(product => {
                 return <div key={product.id}>
-                  <ProductListing product={product} currency={merchant.currency} />
+                  <ProductListing 
+                    product={product} 
+                    currency={merchant.currency}
+                  />
                   <Spacer y={1} />
                 </div>
               })

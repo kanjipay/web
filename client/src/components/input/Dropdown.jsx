@@ -15,18 +15,21 @@ export default function Dropdown({
   ...props
 }) {
   const currOption = optionList.find(option => option.value === value)
-  const trigger = <div style={{ 
-    display: "flex",
-    columnGap: 8,
-    width,
-    height: 48, 
-    backgroundColor: Colors.OFF_WHITE_LIGHT, 
-    alignItems: "center",
-    cursor: disabled ? "mouse" : "pointer",
-    padding: "0 16px",
-    boxSizing: "border-box",
-    ...props.style
-  }}>
+  const trigger = <div 
+    test-id={`dropdown-${name}`} 
+    style={{ 
+      display: "flex",
+      columnGap: 8,
+      width,
+      height: 48, 
+      backgroundColor: Colors.OFF_WHITE_LIGHT, 
+      alignItems: "center",
+      cursor: disabled ? "mouse" : "pointer",
+      padding: "0 16px",
+      boxSizing: "border-box",
+      ...props.style
+    }}
+  >
     <Carat length={16} color={Colors.GRAY_LIGHT} />
     <p style={{ 
       color: (disabled || !value) ? Colors.GRAY_LIGHT: Colors.BLACK, 

@@ -1,6 +1,6 @@
 import "mocha"
 import { db } from "../../utils/admin";
-import { api, expect, main } from "../../utils/server";
+import { api, expect } from "../../utils/server";
 import Collection from "../../../src/shared/enums/Collection"
 import { createEvent, createMerchant, createProduct } from "../../utils/generateTestData";
 import { firestore } from "firebase-admin";
