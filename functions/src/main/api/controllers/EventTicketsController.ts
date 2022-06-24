@@ -5,14 +5,15 @@ import { db } from "../../../shared/utils/admin";
 export class EventTicketsController extends BaseController {
   get = async (req, res, next) => {
     try {
-      console.log('here');
       const { eventId} = req.params;
+      console.log(`getting ticketholders for event ${eventId}`);
       const ticketSnapshot = await db()
           .collection(Collection.TICKET)
           .where("eventId", "==", eventId)
           .get();
       
       const allTickets = ticketSnapshot.docs.map(doc => ({ id: doc.id, userId:doc.data().userId }));
+      console.log(allTickets);
       let allTicketsWithUsers = [];
       for(const {id, userId} of allTickets) {
         const userRef= await db()
