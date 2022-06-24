@@ -153,6 +153,7 @@ export default function AuthPage() {
         input: <Field type="password" />
       })
     }
+    
     return <div className="container">
       <NavBar
         title="Sign in"
@@ -196,7 +197,7 @@ export default function AuthPage() {
 }
 
 function SignInWithGoogeButton({ style, ...props }) {
-  return <button {...props} style={{ 
+  return <button {...props} test-id="google-auth-button" style={{ 
     height: 48, 
     borderWidth: 2,
     borderColor: Colors.OFF_WHITE,

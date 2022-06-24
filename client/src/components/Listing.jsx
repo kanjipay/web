@@ -15,8 +15,9 @@ export default function Listing({
   unavailableMessage = "Not available",
   linkPath,
   linkState = {},
+  ...props
 }) {
-  const listing = <div className="Listing">
+  const listing = <div className="Listing" {...props}>
     <div className="Listing__imageWrapper">
       <AsyncImage className="Listing__image" style={{ filter: isAvailable ? "none" : "blur(1px)" }} imageRef={imageRef} />
       {

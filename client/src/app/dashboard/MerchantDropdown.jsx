@@ -31,7 +31,7 @@ export default function MerchantDropdown({ memberships }) {
         columnGap: 8, 
         padding: "0 16px",
         boxSizing: "border-box",
-        width: 320, 
+        maxWidth: 256, 
         height: "100%", 
         alignItems: "center", 
         backgroundColor: isHovering ? Colors.OFF_BLACK_LIGHT : Colors.CLEAR,
@@ -43,7 +43,12 @@ export default function MerchantDropdown({ memberships }) {
       {
         <Carat length={20} color={Colors.WHITE} />
       }
-      <h4 className="header-xs" style={{ color: Colors.WHITE }}>{membership.merchantName}</h4>
+      <h4 className="header-xs" style={{ 
+        color: Colors.WHITE, 
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis" 
+      }}>{membership.merchantName}</h4>
     </div>
     return <Popup
       trigger={dropdown}

@@ -402,9 +402,6 @@ export default function AnalyticsPage() {
 
     const groupingValues = groupingValueStrings.map(str => JSON.parse(str))
 
-    console.log(groupingValues)
-    console.log(filteredSalesData)
-
     const groupedSalesData = groupingValues.map(({ value, label }) => {
       console.log(value)
       console.log(getGroupingValuesFromDatum(filteredSalesData[0], grouping).value)

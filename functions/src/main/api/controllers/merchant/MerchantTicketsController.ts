@@ -76,9 +76,9 @@ export class MerchantTicketsController extends BaseController {
             wasUsed: true,
             usedAt: firestore.FieldValue.serverTimestamp()
           })
-      }
 
-      logger.log("Updated ticket")
+        logger.log("Updated ticket")
+      }
 
       return res.status(200).json({
         product: {

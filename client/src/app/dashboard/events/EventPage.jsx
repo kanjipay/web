@@ -73,9 +73,9 @@ export default function EventPage({ merchant, event, products }) {
     const file = data.photo?.file
 
     if (file) {
-      data.photo = file.name
-
       const eventRef = getEventStorageRef(event.merchantId, event.id, file.name)
+
+      data.photo = { storageRef: eventRef }
 
       promises.push(
         uploadImage(eventRef, file)
@@ -89,7 +89,7 @@ export default function EventPage({ merchant, event, products }) {
     promises.push(
       updateDoc(docRef, {
         ...data,
-        photo: event.photo,
+        photo: file ? file.name : event.photo,
         maxTicketsPerPerson: parseInt(data.maxTicketsPerPerson, 10),
       })
     )

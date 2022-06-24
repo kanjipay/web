@@ -11,6 +11,7 @@ import { db } from "../../../shared/utils/admin";
 import { ErrorHandler, HttpError, HttpStatusCode } from "../../../shared/utils/errors";
 import stripe from "../../../shared/utils/stripeClient";
 import { processPaymentUpdate } from "../../webhooks/processPaymentUpdate";
+import { StripeStatus } from "../../../shared/enums/StripeStatus";
 
 const crezcoPaymentStatuses = {
   New: PaymentAttemptStatus.PENDING, // Payment has been created internally, authorisation has not been attempted
@@ -58,8 +59,8 @@ export class PaymentAttemptsController extends BaseController {
 
       const stripeAccountId = merchant.stripe?.accountId
 
-      if (!stripeAccountId || !merchant.stripe.areChargesEnabled) {
-        logger.log("Merchant not set up for stripe", { stripe: merchant.stripe})
+      if (!stripeAccountId || merchant.stripe.status !== StripeStatus.CHARGES_ENABLED) {
+        logger.log("Merchant not set up for stripe", { stripe: merchant.stripe })
         const errorMessage = "Merchant is not set up for Stripe"
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return

@@ -3,7 +3,7 @@ import { loadAttributionState } from "./AttributionContext";
 import { addDays } from "date-fns"
 
 function storeItems(items) {
-  localStorage.setItem("attributionItems", JSON.stringify(items ?? []))
+  localStorage.setItem("attributionItems", JSON.stringify(items ?? []) ?? [])
 }
 
 function filterObjectArray(objArray, filterObj, isPositive = true) {
@@ -22,7 +22,6 @@ export function getLatestItem(filters) {
 export default function AttributionReducer(state, action) {
   switch (action.type) {
     case AttributionAction.ADD_ITEM:
-      console.log("attribution reducer add got payload: ", action.payload)
       const item = {
         ...action.payload,
         addedAt: new Date()
@@ -37,9 +36,6 @@ export default function AttributionReducer(state, action) {
       return loadAttributionState()
     case AttributionAction.CLEAR:
       const filters = action.payload
-
-      console.log("Reducer clearItems")
-      console.log(filterObjectArray(state.attributionItems, filters, false))
 
       const newItems = filterObjectArray(state.attributionItems, filters, false)
 
