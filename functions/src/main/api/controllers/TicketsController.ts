@@ -27,6 +27,7 @@ export class TicketsController extends BaseController {
       const eventIds = [...new Set(tickets.map(t => t.eventId))]
       const productIds = [...new Set(tickets.map(t => t.productId))]
 
+      // todo fix for case with more than 10 tickets
       const eventSnapshot = await db()
         .collection(Collection.EVENT)
         .where(firestore.FieldPath.documentId(), "in", eventIds)

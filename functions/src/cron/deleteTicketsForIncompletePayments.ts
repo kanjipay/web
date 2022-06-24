@@ -24,6 +24,7 @@ export const deleteTicketsForIncompletePayments = async context => {
     const paymentAttemptIds = paymentAttempts.map(p => p.id)
     const orderIds = paymentAttempts.map(p => p.orderId)
 
+    // todo fix for case with > 10 tickets
     const ticketsSnapshot = await db()
       .collection(Collection.TICKET)
       .where("orderId", "in", orderIds)

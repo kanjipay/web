@@ -84,7 +84,7 @@ export class MerchantUsersController extends BaseController {
       if (membershipsSnapshot.docs.length === 0) { return [] }
 
       const userIds = membershipsSnapshot.docs.map(doc => doc.data().userId)
-
+      // todo refactor to handle more than 10 users
       const usersSnapshot = await db()
         .collection(Collection.USER)
         .where(firestore.FieldPath.documentId(), "in", userIds)

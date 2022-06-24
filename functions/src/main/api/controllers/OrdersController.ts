@@ -223,6 +223,7 @@ export class OrdersController extends BaseController {
   private async fetchMenuItems(requestedItems: { id: string, quantity: number, title: string }[], merchantId: string) {
     const requestedMenuItemIds = requestedItems.map(item => item.id);
 
+    // todo fix for case with more than 10 requested items
     const menuItemsSnapshot = await db()
       .collection(Collection.MENU_ITEM)
       .where(firestore.FieldPath.documentId(), "in", requestedMenuItemIds)
