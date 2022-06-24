@@ -7,6 +7,7 @@ import { dateFromTimestamp } from "../../../shared/utils/time";
 export class TicketsController extends BaseController {
   index = async (req, res, next) => {
     try {
+      console.log(req);
       const userId = req.user.id
 
       const ticketSnapshot = await db()

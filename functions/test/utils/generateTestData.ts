@@ -124,3 +124,33 @@ export async function createLink(ticketId: string, wasUsed: boolean, expiresAt) 
       wasUsed:wasUsed
     })
 };
+
+
+export async function createUser(userId: string){
+  await db
+    .collection(Collection.USER)
+    .doc(userId)
+    .create({
+      email:"test@test.com",
+      firstName:"test",
+      lastName:"test",
+      marketingConsentStatus:"APPROVED"
+    })
+}
+
+export async function createTicket(ticketId: string, userId: string){
+  await db
+    .collection(Collection.TICKET)
+    .doc(ticketId)
+    .create({
+      createdAt:new Date(),
+      eventEndsAt:new Date(),
+      eventId:"testEvent",
+      hash:'1234',
+      merchantId:'1234',
+      orderId:"1234",
+      productId:"1234",
+      userId,
+      wasUsed:false
+    })
+}
