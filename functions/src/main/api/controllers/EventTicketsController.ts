@@ -19,9 +19,9 @@ export class EventTicketsController extends BaseController {
         const userRef= await db()
           .collection(Collection.USER)
           .doc(userId)
-          .get()
+          .get();
         const {firstName, lastName, email} = userRef.data();
-        allTicketsWithUsers.push({id, userId, firstName, lastName, email})
+        allTicketsWithUsers.push({ticketId:id, userId, firstName, lastName, email});
       }
         return res.status(200).json(
           allTicketsWithUsers
