@@ -154,3 +154,16 @@ export async function createTicket(ticketId: string, userId: string, eventId: st
       wasUsed:false
     })
 }
+
+export async function createMembership(merchantId: string, userId: string, membershipId: string){
+  await db
+    .collection(Collection.MEMBERSHIP)
+    .doc(membershipId)
+    .create({
+      merchantId,
+      userId,
+      merchantName:'Test',
+      role:"ADMIN",
+      lastUsedAt:new Date(),
+    })
+}
