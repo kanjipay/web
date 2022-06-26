@@ -14,7 +14,7 @@ describe("Get tickets", () => {
     createEvent('test-merchant', eventId);
     createTicket(ticketId, userId, eventId);
   });  
-  it("Should get Oliver's tickets", (done) => {
+  it("Should get user's tickets", (done) => {
     createUserToken(userId).then((userToken) => {
         api.get('/tickets')
         .auth(userToken, { type: 'bearer' })
