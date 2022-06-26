@@ -11,7 +11,6 @@ export class MerchantUsersController extends BaseController {
   sendInvites = async (req, res, next) => {
     try {
       const userId = req.user.id
-      console.log(userId);
       const { merchantId } = req.params
       const { inviteData } = req.body
 
