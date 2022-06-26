@@ -15,7 +15,6 @@ export const authenticate = async (req, res, next) => {
 
   try {
     const decodedIdToken = await auth().verifyIdToken(idToken);
-    console.log(decodedIdToken)
     const { uid, email, name } = decodedIdToken
     req.user = { id: uid, email, name };
     next();
