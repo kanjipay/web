@@ -1,4 +1,4 @@
-/*
+
 import "mocha"
 import { db } from "../../utils/admin";
 import { api, expect } from "../../utils/server";
@@ -12,7 +12,6 @@ import { HttpStatusCode } from "../../../src/shared/utils/errors"
 describe("Add Crezco UserId", () => {
     const MERCHANT_ID = "test-add-crezco-userid";
     const crezcoUserId = "test-crezco-userid";
-    TODO login   
     before(async () => {
         await createMerchant(MERCHANT_ID, {addCrezcoId: false})
     });
@@ -32,4 +31,3 @@ describe("Add Crezco UserId", () => {
       })
 
 });
-*/
