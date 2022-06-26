@@ -27,8 +27,6 @@ describe("Get tickets", () => {
         });
     })
   after(async () => {
-    const batch = db.batch();
-    batch.delete(db.collection(Collection.TICKET).doc(ticketId));
-    await batch.commit();
+    db.collection(Collection.TICKET).doc(ticketId).delete();
   });
 });
