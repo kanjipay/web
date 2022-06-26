@@ -2,15 +2,6 @@
 import "mocha"
 import { api, expect } from "../../utils/server";
 import {createUserToken} from "../../utils/user";
-import {Blob} from "buffer";
-
-function createImgAsFile(){
-    var blob = new Blob([""], { type: 'jpg' });
-    blob["lastModifiedDate"] = "";
-    blob["name"] = "filename";
-    return blob;
-}
-
 
 describe("Create merchant", () => {
     const userId = 'oGvgPQWN4FdL9tBGO7HVeYhAEzl2' //olicairns93 in dev
@@ -21,7 +12,7 @@ describe("Create merchant", () => {
         displayName: "TEST", 
         sortCode: "000000", 
         description: "test", 
-        imageAsFile:createImgAsFile()
+        photo:"photo"
     }
   before(async () => {
   });  

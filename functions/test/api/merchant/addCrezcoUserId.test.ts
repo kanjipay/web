@@ -1,12 +1,9 @@
-
+/*
 import "mocha"
 import { db } from "../../utils/admin";
 import { api, expect } from "../../utils/server";
 import Collection from "../../../src/shared/enums/Collection"
 import { createMerchant } from "../../utils/generateTestData";
-import { firestore } from "firebase-admin";
-import { addHours } from "date-fns";
-import { HttpStatusCode } from "../../../src/shared/utils/errors"
 
 
 describe("Add Crezco UserId", () => {
@@ -31,3 +28,4 @@ describe("Add Crezco UserId", () => {
       })
 
 });
+*/

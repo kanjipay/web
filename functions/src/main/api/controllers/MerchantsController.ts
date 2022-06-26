@@ -31,7 +31,6 @@ export class MerchantsController extends BaseController {
         createdAt: firestore.FieldValue.serverTimestamp(),
         approvalStatus: "PENDING",
       }
-
       logger.log("Creating merchant and membership", { merchantId, merchantData })
 
       const createMerchant = db()
@@ -48,7 +47,8 @@ export class MerchantsController extends BaseController {
       
       return res.status(200).json({ merchantId });
     } catch (err) {
-      next(err)
+      console.log(err);
+      next(err);
     }
   }
 }
