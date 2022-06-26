@@ -47,7 +47,6 @@ export class MerchantsController extends BaseController {
       
       return res.status(200).json({ merchantId });
     } catch (err) {
-      console.log(err);
       next(err);
     }
   }
