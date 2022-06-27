@@ -27,6 +27,7 @@ const crezcoPaymentStatuses = {
 export class PaymentAttemptsController extends BaseController {
   createStripe = async (req, res, next) => {
     try {
+      console.log('here0')
       const logger = new LoggingController("Create payment attempt with stripe")
       const { orderId, deviceId } = req.body;
 
@@ -132,7 +133,7 @@ export class PaymentAttemptsController extends BaseController {
       const { total, currency, merchantId } = order
 
       logger.log("Got order", { order })
-
+      console.log('here')
       const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
 
       logger.log(`Retrieving merchant with id ${merchantId}`)
@@ -159,7 +160,7 @@ export class PaymentAttemptsController extends BaseController {
         total,
         currency
       })
-
+      console.log('here2')
       const { paymentDemandId, payDemandError } = await createPaymentDemand(
         crezcoUserId,
         paymentAttemptId,
@@ -175,7 +176,7 @@ export class PaymentAttemptsController extends BaseController {
       }
 
       logger.log("Created crezco paymentDemandId", {}, { paymentDemandId })
-
+      console.log('here3')
       const { redirectUrl, paymentError } = await createPayment(
         crezcoUserId,
         paymentDemandId,
@@ -183,7 +184,7 @@ export class PaymentAttemptsController extends BaseController {
         crezcoBankCode,
         countryCode
       )
-
+      console.log('here4')
       if (paymentError) {
         next(paymentError)
         return
@@ -212,7 +213,7 @@ export class PaymentAttemptsController extends BaseController {
         .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
       logger.log("Payment attempt doc added", { paymentAttemptData });
-
+      console.log('here5')
       return res.status(200).json({ redirectUrl });
     } catch (err) {
       console.log(err.data?.errors)
@@ -231,15 +232,15 @@ export class PaymentAttemptsController extends BaseController {
 
       if (!isPending) {
         const [, error] = await processPaymentUpdate(paymentAttemptId, paymentAttemptStatus)
-
         if (error) {
           next(error)
           return
         }
       }
-      
+    
       return res.status(200).json({ isPending })
     } catch (err) {
+      console.log(err)
       next(err)
     }
   }

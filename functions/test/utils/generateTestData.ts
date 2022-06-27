@@ -167,3 +167,21 @@ export async function createMembership(merchantId: string, userId: string, membe
       lastUsedAt:new Date(),
     })
 }
+
+export async function createTicketOrder(orderId: string, total:number, merchantId: string){
+  await db
+    .collection(Collection.ORDER)
+    .doc(orderId)
+    .create({
+      createdAt: new Date(),
+      currency:"GBP",
+      customerFee:0.1,
+      deviceId:"123-abc",
+      eventId:"test",
+      merchantId,
+      status:"PENDING",
+      total,
+      type:"TICKETS",
+      userId:'test',
+      wereTicketsCreated:false})
+}
