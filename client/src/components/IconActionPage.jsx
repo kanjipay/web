@@ -17,18 +17,19 @@ export default function IconActionPage({
   secondaryActionTitle,
   secondaryAction,
   secondaryIsLoading = false,
+  name=""
 }) {
   const buttons = <div style={{ margin: "16px" }}>
     {
       primaryActionTitle && primaryAction && <MainButton
         title={primaryActionTitle}
         style={{ boxSizing: "borderBox" }}
+        test-id={`icon-primary-button-${name}`}
         isLoading={primaryIsLoading}
         onClick={primaryAction}
         buttonTheme={ButtonTheme.MONOCHROME}
       />
     }
-    
 
     {
       secondaryActionTitle && secondaryAction && <div>
@@ -36,6 +37,7 @@ export default function IconActionPage({
         <MainButton
           title={secondaryActionTitle}
           style={{ boxSizing: "borderBox" }}
+          test-id={`icon-secondary-button-${name}`}
           isLoading={secondaryIsLoading}
           onClick={secondaryAction}
           buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}

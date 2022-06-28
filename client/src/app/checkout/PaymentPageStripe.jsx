@@ -3,7 +3,7 @@ import { IdentityManager } from "../../utils/IdentityManager";
 import { NetworkManager } from "../../utils/NetworkManager";
 import { loadStripe } from '@stripe/stripe-js';
 import { useStripe, useElements, Elements, PaymentElement } from '@stripe/react-stripe-js';
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import LoadingPage from "../../components/LoadingPage";
 import Spacer from "../../components/Spacer";
 import MainButton from "../../components/MainButton";
@@ -11,6 +11,10 @@ import IconActionPage from "../../components/IconActionPage";
 import Cross from "../../assets/icons/Cross";
 import { Colors } from "../../enums/Colors";
 import { AnalyticsManager } from "../../utils/AnalyticsManager";
+import { formatCurrency } from "../../utils/helpers/money";
+import { OrderSummary } from "../../components/OrderSummary";
+import NavBar from "../../components/NavBar";
+import { cancelOrder } from "./cancelOrder";
 
 export default function PaymentPageStripe({ order }) {
   const { orderId } = useParams()
@@ -44,17 +48,19 @@ export default function PaymentPageStripe({ order }) {
 
   if (stripeProps) {
     console.log(stripeProps)
+
     return <Elements {...stripeProps}>
-      <StripeCheckoutForm />
+      <StripeCheckoutForm order={order} />
     </Elements>
   } else {
     return <LoadingPage />
   }
 }
 
-function StripeCheckoutForm() {
+function StripeCheckoutForm({ order }) {
   const stripe = useStripe()
   const elements = useElements()
+  const navigate = useNavigate()
 
   const [errorData, setErrorData] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -100,17 +106,33 @@ function StripeCheckoutForm() {
       primaryAction={handleError}
     />
   } else {
-    console.log("rerender")
     return <div className="container">
+      <NavBar 
+        title="Complete your purchase"
+        backAction={() => cancelOrder(order, navigate)}
+      />
       <div className="content">
-        <Spacer y={4} />
-        <PaymentElement />
+        <Spacer y={9} />
+        <h3 className="header-s">Order summary</h3>
         <Spacer y={2} />
+        <OrderSummary
+          lineItems={order.orderItems}
+          currency={order.currency}
+          feePercentage={order.customerFee}
+        />
+        <Spacer y={3} />
+        <h3 className="header-s">Payment details</h3>
+        <Spacer y={2} />
+        <PaymentElement />
+        <Spacer y={4} />
         <MainButton
-          title="Submit"
+          title="Complete purchase"
+          test-id="stripe-payment-button"
+          sideMessage={formatCurrency(order.total, order.currency)}
           onClick={handleSubmit}
           isLoading={isLoading}
         />
+        <Spacer y={2} />
       </div>
     </div>
   }

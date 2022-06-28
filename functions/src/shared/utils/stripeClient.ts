@@ -1,3 +1,7 @@
-const stripe = require('stripe')(process.env.STRIPE_CLIENT_SECRET);
+import Stripe from "stripe"
+
+const stripe = new Stripe(process.env.STRIPE_CLIENT_SECRET, {
+  apiVersion: null
+})
 
 export default stripe

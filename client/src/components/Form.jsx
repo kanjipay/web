@@ -47,6 +47,8 @@ export default function Form({
   const [result, setResult] = useState(null)
   const [isShowingValidationErrors, setIsShowingValidationErrors] = useState(false)
 
+  console.log(data)
+
   useEffect(() => {
     const formMessage = validators.reduce((formMessage, validator) => {
       const { isValid, message } = validator(data)
@@ -89,7 +91,6 @@ export default function Form({
   }
 
   const handleSubmit = (e) => {
-    console.log(data)
     if (!areAllRequiredFieldsPopulated()) { return }
 
     if (areValidationErrors()) {
@@ -128,6 +129,7 @@ export default function Form({
       onClick={handleSubmit}
       disabled={!areAllRequiredFieldsPopulated()}
       isLoading={isLoading}
+      test-id={`form-submit-${submitTitle.toLowerCase().replace(" ", "-")}`}
       type="submit"
     />
     { 

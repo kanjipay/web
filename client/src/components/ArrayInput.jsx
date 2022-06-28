@@ -27,7 +27,7 @@ export default function ArrayInput({ input, maxItemCount = 100, name, value = []
     onChange({ target: { name, value: newValue }})
   }
 
-  return <div>
+  return <div test-id={`array-input-${name}`}>
     <input disabled={true} style={{ display: "none" }}/>
     <Spacer y={1} />
     {

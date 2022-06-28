@@ -6,7 +6,7 @@ import { formatCurrency } from "../../../../utils/helpers/money"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { format } from "date-fns"
 
-export default function ProductListing({ product, currency, linkPath = product.id }) {
+export default function ProductListing({ product, currency, linkPath = product.id, ...props }) {
   const isSoldOut = product.soldCount >= product.capacity
   const releaseDate = dateFromTimestamp(product.releasesAt)
   const isReleased = releaseDate < new Date()
@@ -26,11 +26,27 @@ export default function ProductListing({ product, currency, linkPath = product.i
     message = "Unavailable"
   }
 
-  const productListing = <div style={{ backgroundColor, padding: "16px", display: "flex", alignItems: "center" }}>
+  const productListing = <div 
+    style={{ backgroundColor, padding: "16px", display: "flex", alignItems: "center" }} 
+    test-name="product-listing"
+    {...props}
+  >
     <div>
-      <p className="header-xs" style={{ color: textColor, textDecoration: isAvailable ? "none" : "line-through" }}>{product.title}</p>
+      <p 
+        className="header-xs" 
+        style={{ color: textColor, textDecoration: isAvailable ? "none" : "line-through" }}
+        test-name="product-listing-title"
+      >
+        {product.title}
+      </p>
       <Spacer y={1} />
-      <p className="text-caption" style={{ color: textColor }}>{message}</p>
+      <p 
+        className="text-caption" 
+        test-name="product-listing-message" 
+        style={{ color: textColor }}
+      >
+        {message}
+      </p>
     </div>
     <div className="flex-spacer" />
     {
