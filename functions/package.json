@@ -19,6 +19,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@google-cloud/error-reporting": "^3.0.1",
     "@mft/moneyhub-api-client": "^4.16.0",
     "@sendgrid/mail": "^7.6.2",
     "axios": "^0.26.1",
