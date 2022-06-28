@@ -40,7 +40,6 @@ export default function SimpleImagePicker({
   const onChangeFile = event => {
     event.preventDefault()
     const file = event.target.files[0]
-    console.log("onChangeFile", file)
     onChange({ target: { name, value: { file } } })
   }
 
@@ -48,7 +47,7 @@ export default function SimpleImagePicker({
     onChange({ target: { name, value: { ...value, file: null, storageRef: null } } })
   }
 
-  return <div>
+  return <div test-id={`image-picker-${name}`}>
     <div
       style={{
         height,
@@ -83,6 +82,7 @@ export default function SimpleImagePicker({
       <input
         type="file"
         name={name}
+        test-id={`image-picker-input-${name}`}
         style={{ display: "none", position: "absolute" }}
         ref={hiddenFileInput}
         onChange={onChangeFile}

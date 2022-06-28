@@ -14,6 +14,7 @@ import ShowMoreText from "react-show-more-text";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
 import { useEffect } from "react";
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager";
+import { addMinutes } from "date-fns";
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return <div>
@@ -137,7 +138,7 @@ export default function EventPage({ merchant, event, products, artists }) {
       </ShowMoreText>
 
       {
-        dateFromTimestamp(event.startsAt) > new Date() && <div>
+        new Date() < addMinutes(dateFromTimestamp(event.endsAt), -30) && <div>
           <Spacer y={4} />
           <h1 className="header-m">Get tickets</h1>
           <Spacer y={2} />

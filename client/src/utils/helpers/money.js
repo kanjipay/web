@@ -1,9 +1,5 @@
 export function formatCurrency(int, currencyCode = "GBP") {
-  if (int === 0) {
-    return "Free"
-  } else {
-    return getCurrencySymbol(currencyCode) + (int / 100).toFixed(2).toString();
-  }
+  return getCurrencySymbol(currencyCode) + (int / 100).toFixed(2).toString();
 }
 
 const languageCodeToCurrencyCode = {

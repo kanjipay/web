@@ -17,7 +17,7 @@ export default function Listing({
   linkState = {},
   ...props
 }) {
-  const listing = <div className="Listing" {...props}>
+  const listing = <div className="Listing">
     <div className="Listing__imageWrapper">
       <AsyncImage className="Listing__image" style={{ filter: isAvailable ? "none" : "blur(1px)" }} imageRef={imageRef} />
       {
@@ -42,9 +42,12 @@ export default function Listing({
   </div>
 
   return isAvailable && linkPath ?
-    <Link to={linkPath} state={linkState}>
+    <Link to={linkPath} state={linkState} {...props}>
       {listing}
     </Link> :
-    listing
+    <div {...props} >
+      {listing}
+    </div>
+    
 }
 

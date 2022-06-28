@@ -48,7 +48,7 @@ export default function SelectOrganisationPage({ memberships }) {
           columnGap: 24,
           rowGap: 24,
         }}>
-          <Link to={`/dashboard/o/create`}>
+          <Link to={`/dashboard/o/create`} test-id="create-organisation-button">
             <div style={{ ...boxStyle, display: "flex", alignItems: "center" }}>
               <div style={{ textAlign: "center", width: "100%" }}>
                 <Plus />

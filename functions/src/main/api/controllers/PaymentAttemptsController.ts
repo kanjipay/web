@@ -60,7 +60,7 @@ export class PaymentAttemptsController extends BaseController {
       const stripeAccountId = merchant.stripe?.accountId
 
       if (!stripeAccountId || merchant.stripe.status !== StripeStatus.CHARGES_ENABLED) {
-        logger.log("Merchant not set up for stripe", { stripe: merchant.stripe })
+        logger.error("Merchant not set up for stripe", { stripe: merchant.stripe })
         const errorMessage = "Merchant is not set up for Stripe"
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return

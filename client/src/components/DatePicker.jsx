@@ -132,7 +132,8 @@ export default function DatePicker({
       value: values[name],
       onChange: onChangeValue,
       placeholder,
-      disabled
+      disabled,
+      "test-id": `date-picker-field-${name}`
     }
   }
 
@@ -149,7 +150,7 @@ export default function DatePicker({
     return dateFormatter(date)
   }
   
-  const contents = <div style={{ 
+  const contents = <div test-id={`date-picker-component-${name}`} style={{ 
     height: 48, 
     display: "flex",
     columnGap: 12,
@@ -168,6 +169,7 @@ export default function DatePicker({
           Icon={Minus}
           style={{ height: 48, width: 32, borderRadius: 0 }}
           onClick={() => incrementDate(-1)}
+          test-id="date-picker-decrement"
           disabled={disabled}
         />
         <div style={{
@@ -187,6 +189,7 @@ export default function DatePicker({
           Icon={Plus} 
           style={{ height: 48, width: 32, borderRadius: 0 }} 
           onClick={() => incrementDate(1)} 
+          test-id="date-picker-increment"
           disabled={disabled} 
         />
       </div>
@@ -230,7 +233,13 @@ export default function DatePicker({
         <div>
           <input style={{ width: 0, height: 0, display: "none" }} disabled={disabled} />
           <div style={{ display: "flex", columnGap: 16, alignItems: "center" }}>
-            <CheckBox length={24} value={!value} onChange={handleCheckBoxChange} disabled={disabled} />
+            <CheckBox 
+              length={24} 
+              value={!value} 
+              onChange={handleCheckBoxChange} 
+              disabled={disabled}
+              name={`date-picker-isblank`}
+            />
             <p>Leave blank</p>
           </div>
           {

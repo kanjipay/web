@@ -85,6 +85,7 @@ export default function EventsPage() {
       <div className="flex-spacer"></div>
       <MainButton 
         title="Create an event" 
+        test-id="create-event-button"
         onClick={handleCreateNewEvent}
         style={{ padding: "0 16px" }}
       />

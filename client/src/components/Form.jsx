@@ -129,6 +129,7 @@ export default function Form({
       onClick={handleSubmit}
       disabled={!areAllRequiredFieldsPopulated()}
       isLoading={isLoading}
+      test-id={`form-submit-${submitTitle.toLowerCase().replace(" ", "-")}`}
       type="submit"
     />
     { 

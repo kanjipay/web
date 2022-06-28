@@ -44,8 +44,8 @@ export default function ProductPage({ event, products, merchant }) {
   return <div>
     <Spacer y={2} />
     <Breadcrumb pageData={[
-      { title: "Events", path: "../.." },
-      { title: event.title, path: ".." },
+      { title: "Events", path: "../..", testId: "events" },
+      { title: event.title, path: "..", testId: "event" },
       { title: product.title },
     ]} />
     <Spacer y={2} />
@@ -119,7 +119,13 @@ export default function ProductPage({ event, products, merchant }) {
           !product.isPublished && <div>
             <Spacer y={2} />
             <Popup
-              trigger={<div><MainButton title="Publish" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} /></div>}
+              trigger={<div>
+                <MainButton 
+                  title="Publish" 
+                  test-id="publish-product-button"
+                  buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                />
+              </div>}
               modal
             >
               {
@@ -128,19 +134,34 @@ export default function ProductPage({ event, products, merchant }) {
                   <Spacer y={2} />
                   <p className="text-body-faded">Once you publish a product, it'll become visible to customers, and you won't be able to edit the price, release date or capacity.</p>
                   <Spacer y={4} />
-                  <MainButton title="Publish product" onClick={() => {
-                    handlePublishProduct()
-                    close()
-                  }} />
+                  <MainButton 
+                    title="Publish product" 
+                    test-id="confirm-publish-product-button"
+                    onClick={() => {
+                      handlePublishProduct()
+                      close()
+                    }}
+                  />
                   <Spacer y={2} />
-                  <MainButton title="Cancel" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={close} />
+                  <MainButton 
+                    title="Cancel" 
+                    test-id="cancel-publish-product-button"
+                    buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} 
+                    onClick={close}
+                  />
                 </Modal>
               }
             </Popup>
 
             <Spacer y={2} />
             <Popup
-              trigger={<div><MainButton title="Delete" buttonTheme={ButtonTheme.DESTRUCTIVE} /></div>}
+              trigger={<div>
+                <MainButton 
+                  title="Delete" 
+                  test-id="delete-product-button"
+                  buttonTheme={ButtonTheme.DESTRUCTIVE}
+                />
+              </div>}
               modal
             >
               {
@@ -149,12 +170,22 @@ export default function ProductPage({ event, products, merchant }) {
                   <Spacer y={2} />
                   <p className="text-body-faded">Deleting products can't be reversed, so you'll have to start from scratch if you change your mind.</p>
                   <Spacer y={4} />
-                  <MainButton title="Delete product" buttonTheme={ButtonTheme.DESTRUCTIVE} onClick={() => {
-                    handleDeleteProduct()
-                    close()
-                  }} />
+                  <MainButton 
+                    title="Delete product" 
+                    test-id="confirm-delete-product-button"
+                    buttonTheme={ButtonTheme.DESTRUCTIVE} 
+                    onClick={() => {
+                      handleDeleteProduct()
+                      close()
+                    }}
+                  />
                   <Spacer y={2} />
-                  <MainButton title="Cancel" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={close} />
+                  <MainButton 
+                    title="Cancel" 
+                    test-id="cancel-delete-product-button"
+                    buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} 
+                    onClick={close}
+                  />
                 </Modal>
               }
 
@@ -163,10 +194,6 @@ export default function ProductPage({ event, products, merchant }) {
         }
         <Spacer y={6} />
       </div>
-      <div>
-        
-      </div>
-
     </div>
   </div>
 

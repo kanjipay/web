@@ -31,7 +31,7 @@ export default function MerchantDropdown({ memberships }) {
         columnGap: 8, 
         padding: "0 16px",
         boxSizing: "border-box",
-        maxWidth: 256, 
+        width: 320, 
         height: "100%", 
         alignItems: "center", 
         backgroundColor: isHovering ? Colors.OFF_BLACK_LIGHT : Colors.CLEAR,
@@ -64,7 +64,7 @@ export default function MerchantDropdown({ memberships }) {
       {close => <div>
         <MenuItem showsSeparator={false} title="All organisations" onClick={() => navigate("/dashboard")} />
         <MenuItem title="Create an organisation" onClick={() => navigate("/dashboard/o/create")} />
-        <h4 className="text-body-faded" style={{ padding: 16 }}>Your projects</h4>
+        <h4 className="text-body-faded" style={{ padding: 16 }}>Your organisations</h4>
         {
           memberships.map(m => {
             return <MenuItem

@@ -16,6 +16,7 @@ import Discover from "../../../../assets/icons/Discover";
 import Dropdown from "../../../../components/input/Dropdown";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
 import { format, startOfWeek } from "date-fns";
+import { getCurrencySymbol } from "../../../../utils/helpers/money";
 
 class AnalyticsValue {
   static SALES_NUMBERS = "Sales numbers"
@@ -265,7 +266,7 @@ export function MenuItem({ title, onClick, style, showsSeparator = true, showsAr
   </div>
 }
 
-export default function AnalyticsPage() {
+export default function AnalyticsPage({ merchant }) {
   const { merchantId } = useParams()
 
   const [analyticsValue, setAnalyticsValue] = useState(AnalyticsValue.REVENUE)
@@ -283,8 +284,6 @@ export default function AnalyticsPage() {
   const onAnalyticsValueChange = (event) => {
     setAnalyticsValue(event.target.value)
   }
-
-  console.log(filterData)
 
   if (salesData) {
     if (salesData.sales.length === 0) {
@@ -421,6 +420,8 @@ export default function AnalyticsPage() {
       }
     })
 
+    const formatter = num => analyticsValue === AnalyticsValue.REVENUE ? `${getCurrencySymbol(merchant?.currency ?? "GBP")}${num / 100}` : num.toString()
+
     return <div>
       <Spacer y={5} />
       <h1 className="header-l">Analytics</h1>
@@ -471,9 +472,11 @@ export default function AnalyticsPage() {
         <div className="flex-spacer" style={{ height: "60vh" }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart width={150} height={40} data={groupedSalesData}>
-              <YAxis />
+              <YAxis 
+                tickFormatter={formatter} />
+
               <XAxis dataKey="name" />
-              <Tooltip />
+              <Tooltip formatter={formatter} />
               <Bar dataKey={analyticsValue} fill={Colors.BLACK} />
             </BarChart>
           </ResponsiveContainer>
