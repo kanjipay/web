@@ -1,6 +1,8 @@
 import { HttpError } from "../utils/errors";
 import { ValidationError } from "express-json-validator-middleware";
 import { logger } from "firebase-functions/v1";
+const {ErrorReporting} = require('@google-cloud/error-reporting');
+const errors = new ErrorReporting();
 
 export const errorHandler = (err, req, res, next) => {
 
@@ -40,7 +42,8 @@ export const errorHandler = (err, req, res, next) => {
       .json({ message: err.clientMessage || "An error occured" });
   } else {
     logger.error("Uncategorised error", err)
-
+      // Report 500 servers error the Cloud Error Service
+      errors.report(err);
     return res.status(500).json({ message: "An unexpected error occured" })
   }
 };

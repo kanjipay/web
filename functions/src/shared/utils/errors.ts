@@ -1,6 +1,3 @@
-const {ErrorReporting} = require('@google-cloud/error-reporting');
-const errors = new ErrorReporting();
-
 export class InvalidRequestValueError extends Error {
   constructor(fieldName, location, expectedType, value) {
     super(
@@ -30,10 +27,6 @@ export class ErrorHandler {
   handle = (err) => {
     err.statusCode = this.statusCode;
     err.clientMessage = this.clientMessage;
-    if (this.statusCode == HttpStatusCode.INTERNAL_SERVER_ERROR) {
-      // Report 500 servers error the Cloud Error Service
-      errors.report(err);
-    }
     this.next(err);
   };
 }
