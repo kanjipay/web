@@ -42,8 +42,8 @@ export const errorHandler = (err, req, res, next) => {
       .json({ message: err.clientMessage || "An error occured" });
   } else {
     logger.error("Uncategorised error", err)
-      // Report 500 servers error the Cloud Error Service
-      errors.report(err);
+    // Report 500 servers error the Cloud Error Service
+    errors.report(err);
     return res.status(500).json({ message: "An unexpected error occured" })
   }
 };
