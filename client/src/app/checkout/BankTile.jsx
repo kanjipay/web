@@ -8,6 +8,8 @@ export default function BankTile({ name, imageRef, ...props }) {
     {...props} 
     onMouseEnter={() => setIsHovering(true)}
     onMouseLeave={() => setIsHovering(false)}
+    test-name="bank-tile"
+    test-id={`bank-tile-${name.toLowerCase().replace(" ", "-")}`}
     style={{ 
       display: "flex", 
       columnGap: 16, 

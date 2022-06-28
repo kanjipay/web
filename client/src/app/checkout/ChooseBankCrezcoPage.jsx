@@ -194,6 +194,7 @@ export default function ChooseBankCrezcoPage({ order }) {
 
           <MainButton
             title={isMobile ? "Continue to my bank" : "Continue on desktop"}
+            test-id="continue-to-bank-button"
             onClick={handleContinueToBank}
           />
           {/* <Spacer y={1} />

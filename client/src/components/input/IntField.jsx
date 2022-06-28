@@ -1,6 +1,14 @@
 import { Colors } from "../../enums/Colors"
 
-export function Field({ value, onChange, regex = /.*/, maxChars = 140, disregardInCharCountRegex = null, onSubmit, ...props }) {
+export function Field({ 
+  value, 
+  onChange,
+  regex = /.*/, 
+  maxChars = 140, 
+  disregardInCharCountRegex = null, 
+  onSubmit, 
+  ...props
+}) {
   const validateKey = event => {
     const currentValue = event.target.value ?? ""
     const currPosition = event.target.selectionStart
@@ -29,6 +37,7 @@ export function Field({ value, onChange, regex = /.*/, maxChars = 140, disregard
   return <input
     style={textInputStyle}
     onKeyPress={validateKey}
+    test-id={`field-${props.name}`}
     value={value}
     onChange={onChange}
     {...props}

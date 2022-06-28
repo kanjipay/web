@@ -79,6 +79,7 @@ export default function OrderConfirmationPage() {
         <div style={{ margin: "16px" }}>
           <MainButton
             title="Done"
+            test-id="ticket-order-confirmation-done-button"
             style={{ boxSizing: "borderBox" }}
             onClick={() => navigate(`/events/s/tickets`)}
           />

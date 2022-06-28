@@ -3,7 +3,6 @@ import Form, { generateValidator } from "../../../components/Form";
 import { TextArea } from "../../../components/Input";
 import DatePicker from "../../../components/DatePicker";
 import { IntField } from "../../../components/input/IntField";
-import ImagePicker from "../../../components/ImagePicker";
 import Breadcrumb from "../../../components/Breadcrumb";
 import { addDoc } from "firebase/firestore"
 import Collection from "../../../enums/Collection";
