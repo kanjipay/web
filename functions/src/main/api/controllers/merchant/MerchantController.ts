@@ -90,9 +90,9 @@ export class MerchantController extends BaseController {
 
       const baseUrl = `${process.env.CLIENT_URL}/dashboard/o/${merchantId}`
 
-      const accountLinkCreateBody = {
+      const accountLinkCreateBody: any = {
         account: stripeAccountId,
-        refresh_url: baseUrl,
+        refresh_url: `${baseUrl}/stripe-connected`,
         return_url: `${baseUrl}/stripe-connected`,
         type: "account_onboarding"
       }
@@ -129,12 +129,12 @@ export class MerchantController extends BaseController {
 
       if (!merchant.stripe) {
         logger.log("No account for merchant, returning")
-        return res.status(200).json({ areChargesEnabled: false })
+        return res.status(200).json({ stripeStatus: StripeStatus.DETAILS_NOT_SUBMITTED })
       }
 
       if (merchant.stripe.areChargesEnabled) {
         logger.log("areChargesEnabled set to true on merchant, returning")
-        return res.status(200).json({ areChargesEnabled: true })
+        return res.status(200).json({ stripeStatus: StripeStatus.CHARGES_ENABLED })
       }
 
       const account = await stripe.accounts.retrieve(merchant.stripe.accountId)
@@ -153,21 +153,16 @@ export class MerchantController extends BaseController {
         stripeStatus = StripeStatus.DETAILS_NOT_SUBMITTED
       }
 
-      if (charges_enabled) {
-        logger.log("Charges are enabled, updating merchant")
-        
-        await db()
-          .collection(Collection.MERCHANT)
-          .doc(merchantId)
-          .update({
-            "stripe.areChargesEnabled": true,
-            "stripe.status": stripeStatus
-          })
-      }
+      const update = { "stripe.status": stripeStatus }
 
-      return res.status(200).json({ 
-        stripeStatus
-      })
+      logger.log("updating merchant", { update })
+        
+      await db()
+        .collection(Collection.MERCHANT)
+        .doc(merchantId)
+        .update(update)
+
+      return res.status(200).json({ stripeStatus })
     } catch (err) {
       next(err)
     }

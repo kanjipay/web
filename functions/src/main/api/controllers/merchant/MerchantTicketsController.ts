@@ -35,7 +35,27 @@ export class MerchantTicketsController extends BaseController {
       }
 
       if (eventId !== checkedEventId || merchantId !== ticket.merchantId) {
-        const errorMessage = "This ticket is for another event"
+        const [
+          { event: ticketEvent, eventError: ticketEventError },
+          { event: checkedEvent, eventError: checkedEventError }
+        ] = await Promise.all([
+          fetchDocument(Collection.EVENT, eventId),
+          fetchDocument(Collection.EVENT, checkedEventId)
+        ])
+
+        let errorMessage: string
+
+        if (!ticketEvent || ticketEventError) {
+          errorMessage = "Couldn't find the event this ticket is for."
+        } else if (!checkedEvent || checkedEventError) {
+          errorMessage = "The event you're scanning for doesn't exist"
+        } else {
+          const { title: ticketEventTitle } = ticketEvent
+          const { title: checkedEventTitle } = checkedEvent
+
+          errorMessage = `This ticket is for ${ticketEventTitle} but you're checking tickets for ${checkedEventTitle}.`
+        }
+
         next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
         return
       }

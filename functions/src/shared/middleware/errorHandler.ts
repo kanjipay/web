@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "../utils/errors";
+import { HttpError } from "../utils/errors";
 import { ValidationError } from "express-json-validator-middleware";
 import { logger } from "firebase-functions/v1";
 
@@ -7,9 +7,9 @@ export const errorHandler = (err, req, res, next) => {
   if (err instanceof ValidationError) {
     // Handle the error
     const { validationErrors } = err
-    logger.error("Got validation errors", validationErrors)
+    logger.error("ValidationError", validationErrors)
 
-    let errorMessage
+    let errorMessage: string
 
     for (const location of ["body", "query", "params"]) {
       const errors = validationErrors[location]
@@ -27,23 +27,20 @@ export const errorHandler = (err, req, res, next) => {
     }
 
     return res.status(400).json({ message: errorMessage });
-  } else {
-    if (!err.statusCode) {
-      err.statusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
-    }
-
-    // err.message will often be long/descriptive - not suitable for users to see but we should log
-
-    logger.error("Non-validation related error", {
-      message: err.message,
-      response: err.response,
+  } else if (err instanceof HttpError) {
+    logger.error("HttpError", {
+      ...err.args,
       statusCode: err.statusCode,
-      fullError: err
+      clientMessage: err.clientMessage
     })
 
     // Return a message suitable for a user to see
     return res
       .status(err.statusCode)
       .json({ message: err.clientMessage || "An error occured" });
+  } else {
+    logger.error("Uncategorised error", err)
+
+    return res.status(500).json({ message: "An unexpected error occured" })
   }
 };

@@ -126,7 +126,7 @@ export default function EventPage({ merchant, event, products }) {
   return <div>
     <Spacer y={2} />
     <Breadcrumb pageData={[
-      { title: "Events", path: "../.." },
+      { title: "Events", path: "../..", testId: "events" },
       { title: event.title },
     ]}/>
     <Spacer y={2} />
@@ -196,11 +196,10 @@ export default function EventPage({ merchant, event, products }) {
             }
             <Spacer y={2} />
             <MainButton title="Create attribution link" onClick={() => navigate("create-attribution-link")} />
+            <Spacer y={4} />
           </div>
         }
 
-        <Spacer y={4} />
-        
         <h2 className="header-m">Event details</h2>
         <Spacer y={3} />
         <Form
@@ -258,7 +257,13 @@ export default function EventPage({ merchant, event, products }) {
           !event.isPublished && <div>
             <Spacer y={2} />
             <Popup
-              trigger={<div><MainButton title="Publish" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} /></div>}
+              trigger={<div>
+                <MainButton 
+                  title="Publish"
+                  test-id="publish-event-button"
+                  buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                />
+              </div>}
               modal
             >
               {
@@ -269,12 +274,21 @@ export default function EventPage({ merchant, event, products }) {
                     <Spacer y={2} />
                     <p className="text-body-faded">Once you publish an event, it'll become visible to customers, and you won't be able to edit the start and end date or address.</p>
                     <Spacer y={4} />
-                    <MainButton title="Publish event" onClick={() => {
-                      handlePublishEvent()
-                      close()
-                    }} />
+                    <MainButton 
+                      title="Publish event"
+                      test-id="confirm-publish-event-button"
+                      onClick={() => {
+                        handlePublishEvent()
+                        close()
+                      }}
+                    />
                     <Spacer y={2} />
-                    <MainButton title="Cancel" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={close} />
+                    <MainButton 
+                      title="Cancel" 
+                      buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} 
+                      test-id="cancel-publish-event-button"
+                      onClick={close}
+                    />
                   </Modal> :
                   <Modal>
                     <h2 className="header-m">Can't publish event</h2>
@@ -288,7 +302,13 @@ export default function EventPage({ merchant, event, products }) {
             
             <Spacer y={2} />
             <Popup
-              trigger={<div><MainButton title="Delete" buttonTheme={ButtonTheme.DESTRUCTIVE} /></div>}
+              trigger={<div>
+                <MainButton 
+                  title="Delete" 
+                  buttonTheme={ButtonTheme.DESTRUCTIVE}
+                  test-id="delete-event-button"
+                />
+              </div>}
               modal
             >
               {
@@ -297,12 +317,22 @@ export default function EventPage({ merchant, event, products }) {
                   <Spacer y={2} />
                   <p className="text-body-faded">Deleting events can't be reversed, so you'll have to start from scratch if you change your mind.</p>
                   <Spacer y={4} />
-                  <MainButton title="Delete event" buttonTheme={ButtonTheme.DESTRUCTIVE} onClick={() => {
-                    handleDeleteEvent()
-                    close()
-                  }} />
+                  <MainButton 
+                    title="Delete event" 
+                    buttonTheme={ButtonTheme.DESTRUCTIVE} 
+                    test-id="confirm-delete-event-button"
+                    onClick={() => {
+                      handleDeleteEvent()
+                      close()
+                    }} 
+                  />
                   <Spacer y={2} />
-                  <MainButton title="Cancel" buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} onClick={close} />
+                  <MainButton 
+                    title="Cancel" 
+                    buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                    test-id="cancel-delete-event-button"
+                    onClick={close}
+                  />
                 </Modal>
               }
               
@@ -321,6 +351,7 @@ export default function EventPage({ merchant, event, products }) {
           <MainButton
             title="Create product"
             onClick={handleCreateProduct}
+            test-id="create-product-button"
             style={{padding: "0 16px"}}
           />
         </div>

@@ -18,6 +18,7 @@ import Form, { generateValidator } from "../../components/Form";
 import { Field, FieldDecorator } from "../../components/input/IntField";
 import { AnalyticsManager } from "../../utils/AnalyticsManager";
 import { saveState } from "../../utils/services/StateService";
+import Revealer from "../../components/Revealer";
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -173,22 +174,29 @@ export default function AuthPage() {
             </div>
           }
 
-          <Form
-            formGroupData={[
-              {
-                items: formFields
-              }
-            ]}
-            onSubmit={onSubmit}
-            submitTitle={submitTitle}
-          />
+          <Revealer 
+            title="Email me a sign in link"
+            name="auth"
+          >
+            <Form
+              formGroupData={[
+                {
+                  items: formFields
+                }
+              ]}
+              onSubmit={onSubmit}
+              submitTitle={submitTitle}
+            />
 
-          {
-            requiresPassword && <div>
-              <Spacer y={2} />
-              <MainButton title="Forgot password" onClick={handleForgotPassword} buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} />
-            </div>
-          }
+            {
+              requiresPassword && <div>
+                <Spacer y={2} />
+                <MainButton title="Forgot password" onClick={handleForgotPassword} buttonTheme={ButtonTheme.MONOCHROME_OUTLINED} />
+              </div>
+            }
+          </Revealer>
+
+          
           <Spacer y={6} />
         </div>
       </div>
@@ -218,7 +226,7 @@ function SignInWithGoogeButton({ style, ...props }) {
       alt=""
       style={{ height: 20, width: 20 }}
     />
-    Sign in with Google
+    Continue with Google
     
   </button>
 }
