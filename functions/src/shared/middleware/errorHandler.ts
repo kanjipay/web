@@ -2,7 +2,8 @@ import { HttpError } from "../utils/errors";
 import { ValidationError } from "express-json-validator-middleware";
 import { logger } from "firebase-functions/v1";
 const {ErrorReporting} = require('@google-cloud/error-reporting');
-const errors = new ErrorReporting();
+
+const errors = new ErrorReporting({reportMode:'always'});
 
 export const errorHandler = (err, req, res, next) => {
 
