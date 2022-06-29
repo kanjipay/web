@@ -1,4 +1,5 @@
 import { firestore } from "firebase-admin";
+import { fetchDocumentsInArray } from "../../../cron/deleteTicketsForIncompletePayments";
 import BaseController from "../../../shared/BaseController";
 import Collection from "../../../shared/enums/Collection";
 import { db } from "../../../shared/utils/admin";
@@ -27,28 +28,30 @@ export class TicketsController extends BaseController {
       const eventIds = [...new Set(tickets.map(t => t.eventId))]
       const productIds = [...new Set(tickets.map(t => t.productId))]
 
-      const eventSnapshot = await db()
-        .collection(Collection.EVENT)
-        .where(firestore.FieldPath.documentId(), "in", eventIds)
-        .get()
+      const eventDocs = await fetchDocumentsInArray(
+        db().collection(Collection.EVENT),
+        firestore.FieldPath.documentId(),
+        eventIds
+      )
 
-      const productSnapshot = await db()
-        .collection(Collection.PRODUCT)
-        .where(firestore.FieldPath.documentId(), "in", productIds)
-        .get()
+      const productDocs = await fetchDocumentsInArray(
+        db().collection(Collection.PRODUCT),
+        firestore.FieldPath.documentId(),
+        productIds
+      )
 
-      const products = productSnapshot.docs.map(doc => {
+      const products = productDocs.map(doc => {
         const productId = doc.id
-        const { title, description, price, eventId, sortOrder } = doc.data()
+        const { title, description, price, eventId, sortOrder } = doc
         const productTickets = tickets.filter(ticket => ticket.productId === productId)
         return { id: productId, title, description, price, eventId, sortOrder, tickets: productTickets }
       }).sort((product1, product2) => {
         return product2.sortOrder - product1.sortOrder
       })
 
-      const events = eventSnapshot.docs.map(doc => {
+      const events = eventDocs.map(doc => {
         const eventId = doc.id
-        const { address, title, description, startsAt, endsAt, photo, merchantId } = doc.data()
+        const { address, title, description, startsAt, endsAt, photo, merchantId } = doc
         const eventProducts = products.filter(product => product.eventId === eventId)
         return { id: eventId, address, title, description, startsAt, endsAt, photo, merchantId, products: eventProducts }
       }).sort((event1, event2) => {

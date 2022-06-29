@@ -5,6 +5,7 @@ import { db } from "../../utils/admin"
 import Collection from "../../../src/shared/enums/Collection";
 import { openNewPage } from "../utils/browser";
 import { uploadImage } from "../utils/puppeteer";
+import { fetchDocumentsInArray } from "../../../src/cron/deleteTicketsForIncompletePayments"
 
 require('dotenv').config();
 
@@ -75,10 +76,11 @@ describe("Create merchant", () => {
 
     const merchantIds = merchantsToDelete.docs.map(doc => doc.id)
 
-    const membershipsToDelete = await db
-      .collection(Collection.MEMBERSHIP)
-      .where("merchantId", "in", merchantIds)
-      .get()
+    const membershipsToDelete = await fetchDocumentsInArray(
+      db.collection(Collection.MEMBERSHIP),
+      "merchantId",
+      merchantIds
+    )
 
     const batch = db.batch()
 
@@ -86,7 +88,7 @@ describe("Create merchant", () => {
       batch.delete(db.collection(Collection.MERCHANT).doc(merchantId))
     }
 
-    for (const membership of membershipsToDelete.docs) {
+    for (const membership of membershipsToDelete) {
       batch.delete(db.collection(Collection.MEMBERSHIP).doc(membership.id))
     }
 

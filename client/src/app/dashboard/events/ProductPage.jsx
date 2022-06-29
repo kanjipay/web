@@ -22,12 +22,19 @@ export default function ProductPage({ event, products, merchant }) {
   const docRef = Collection.PRODUCT.docRef(productId)
 
   const handleUpdateProduct = async (data) => {
-    console.log(data)
-    await updateDoc(docRef, {
-      ...data,
-      price: parseFloat(data.price) * 100,
-      capacity: parseInt(data.capacity, 10)
-    })
+    let update
+
+    if (product.isPublished) {
+      const { title, description, isAvailable } = data
+      update = { title, description, isAvailable }
+    } else {
+      update = {
+        ...data,
+        price: parseFloat(data.price) * 100,
+        capacity: parseInt(data.capacity, 10)
+      }
+    }
+    await updateDoc(docRef, update)
   }
 
   const handleDeleteProduct = async () => {
