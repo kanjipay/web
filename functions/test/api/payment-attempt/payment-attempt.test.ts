@@ -1,4 +1,4 @@
-/*
+
 import "mocha"
 import { api, expect } from "../../utils/server";
 import { createMerchant, createTicketOrder } from "../../utils/generateTestData";
@@ -30,4 +30,3 @@ describe("Payment attempts", () => {
     db.collection(Collection.MERCHANT).doc(merchantId).delete();
   });
 });
-*/

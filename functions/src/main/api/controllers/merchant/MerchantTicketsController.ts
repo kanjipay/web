@@ -52,7 +52,7 @@ export class MerchantTicketsController extends BaseController {
         } else {
           const { title: ticketEventTitle } = ticketEvent
           const { title: checkedEventTitle } = checkedEvent
-
+          console.log({eventId,checkedEventId, merchantId, ticket})
           errorMessage = `This ticket is for ${ticketEventTitle} but you're checking tickets for ${checkedEventTitle}.`
         }
 

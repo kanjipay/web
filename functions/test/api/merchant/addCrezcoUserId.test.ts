@@ -1,10 +1,8 @@
-/*
-Todo get this working
 import "mocha"
 import { db } from "../../utils/admin";
 import { api, expect } from "../../utils/server";
 import Collection from "../../../src/shared/enums/Collection"
-import { createMerchant  createMembership} from "../../utils/generateTestData";
+import { createMerchant, createMembership} from "../../utils/generateTestData";
 import {createUserToken} from "../../utils/user";
 
 
@@ -19,8 +17,7 @@ describe("Add Crezco UserId", () => {
     });
     it("Should update crezco id", async () => {
         const userToken = await createUserToken(userId);
-        console.log(userToken);
-        const res = await api.post(`/merchants/m/${merchantId}/crezco`)
+        const res = await api.put(`/merchants/m/${merchantId}/crezco`)
             .auth(userToken, { type: 'bearer' })
             .send({crezcoUserId})
         const merchantDoc = await db.collection(Collection.MERCHANT).doc(merchantId).get()
@@ -28,9 +25,9 @@ describe("Add Crezco UserId", () => {
         expect(merchantDoc.exists).to.eql(true);
         expect(merchantDoc.data().crezco.userId).to.eql(crezcoUserId);                
     }) 
+    
     after(async () => {
         db.collection(Collection.MERCHANT).doc(merchantId).delete();
         db.collection(Collection.MEMBERSHIP).doc(membershipId).delete();
         });
 });
-*/

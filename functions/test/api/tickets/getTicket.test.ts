@@ -12,7 +12,7 @@ describe("Get tickets", () => {
   const ticketId = 'test-get-ticket-ticket';
   before(async () => {
     createEvent('test-merchant', eventId);
-    createTicket(ticketId, userId, eventId);
+    createTicket(ticketId, userId, eventId, '123');
   });  
   it("Should get user's tickets", (done) => {
     createUserToken(userId).then((userToken) => {

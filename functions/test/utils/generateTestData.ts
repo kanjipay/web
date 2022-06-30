@@ -138,7 +138,7 @@ export async function createUser(userId: string){
     })
 }
 
-export async function createTicket(ticketId: string, userId: string, eventId: string){
+export async function createTicket(ticketId: string, userId: string, eventId: string, merchantId: string){
   await db
     .collection(Collection.TICKET)
     .doc(ticketId)
@@ -147,7 +147,7 @@ export async function createTicket(ticketId: string, userId: string, eventId: st
       eventEndsAt:new Date(),
       eventId:eventId,
       hash:'1234',
-      merchantId:'1234',
+      merchantId,
       orderId:"1234",
       productId:"1234",
       userId,
