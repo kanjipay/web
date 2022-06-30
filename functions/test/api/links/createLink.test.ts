@@ -21,8 +21,10 @@ describe("Create link", () => {
   })
   after(async () => {
     const googleLinks = await db.collection(Collection.LINK).where("path", "==", testPath).get();
+    const batch = db.batch();
     googleLinks.forEach((doc) => {
       db.collection(Collection.LINK).doc(doc.id);
     });
+    await batch.commit();
   });
 })

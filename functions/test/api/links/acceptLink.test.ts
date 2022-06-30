@@ -27,6 +27,6 @@ describe("Accept link", () => {
 
 
   after(async () => {
-    db.collection(Collection.LINK).doc(toAcceptLinkId).delete();
+    await db.collection(Collection.LINK).doc(toAcceptLinkId).delete();
   });
 })

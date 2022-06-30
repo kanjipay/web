@@ -25,7 +25,7 @@ describe("Test Stripe account linking", () => {
         expect(merchantDoc.data().stripe.accountId).to.not.be.null;
     })
     after(async () => {
-        db.collection(Collection.MERCHANT).doc(merchantId).delete();
-        db.collection(Collection.MEMBERSHIP).doc(membershipId).delete();
+        await db.collection(Collection.MERCHANT).doc(merchantId).delete();
+        await db.collection(Collection.MEMBERSHIP).doc(membershipId).delete();
         });
 });

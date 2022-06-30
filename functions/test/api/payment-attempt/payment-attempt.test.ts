@@ -26,7 +26,7 @@ describe("Payment attempts", () => {
         });
     })
   after(async () => {
-    db.collection(Collection.ORDER).doc(orderId).delete();
-    db.collection(Collection.MERCHANT).doc(merchantId).delete();
+    await db.collection(Collection.ORDER).doc(orderId).delete();
+    await db.collection(Collection.MERCHANT).doc(merchantId).delete();
   });
 });

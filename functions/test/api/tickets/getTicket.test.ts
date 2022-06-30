@@ -27,6 +27,6 @@ describe("Get tickets", () => {
         });
     })
   after(async () => {
-    db.collection(Collection.TICKET).doc(ticketId).delete();
+    await db.collection(Collection.TICKET).doc(ticketId).delete();
   });
 });

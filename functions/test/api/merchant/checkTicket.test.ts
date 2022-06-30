@@ -32,10 +32,12 @@ describe("Check tickets", () => {
     }) 
     
     after(async () => {
+        const batch = db.batch();
         db.collection(Collection.MERCHANT).doc(merchantId).delete();
         db.collection(Collection.MEMBERSHIP).doc(membershipId).delete();
         db.collection(Collection.TICKET).doc(ticketId).delete();
         db.collection(Collection.EVENT).doc(eventId).delete();
         db.collection(Collection.PRODUCT).doc(productId).delete();
+        await batch.commit();
         });
 });

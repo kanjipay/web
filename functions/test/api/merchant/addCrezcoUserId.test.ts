@@ -27,7 +27,7 @@ describe("Add Crezco UserId", () => {
     }) 
     
     after(async () => {
-        db.collection(Collection.MERCHANT).doc(merchantId).delete();
-        db.collection(Collection.MEMBERSHIP).doc(membershipId).delete();
+        await db.collection(Collection.MERCHANT).doc(merchantId).delete();
+        await db.collection(Collection.MEMBERSHIP).doc(membershipId).delete();
         });
 });
