@@ -1,5 +1,5 @@
 import { firestore } from "firebase-admin";
-import { fetchDocumentsInArray } from "../../../cron/deleteTicketsForIncompletePayments";
+import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray";
 import BaseController from "../../../shared/BaseController";
 import Collection from "../../../shared/enums/Collection";
 import { db } from "../../../shared/utils/admin";

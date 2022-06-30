@@ -11,7 +11,7 @@ import LoggingController from "../../../shared/utils/loggingClient"
 import { sendMenuReceiptEmail } from "../../../shared/utils/sendEmail"
 import { v4 as uuid } from "uuid"
 import MerchantStatus from "../../../shared/enums/MerchantStatus"
-import { fetchDocumentsInArray } from "../../../cron/deleteTicketsForIncompletePayments"
+import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
 
 export class OrdersController extends BaseController {
   createWithTickets = async (req, res, next) => {

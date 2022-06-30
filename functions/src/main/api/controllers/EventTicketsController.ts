@@ -2,7 +2,7 @@ import BaseController from "../../../shared/BaseController";
 import Collection from "../../../shared/enums/Collection";
 import { db } from "../../../shared/utils/admin";
 import { logger } from "firebase-functions/v1";
-import { fetchDocumentsInArray } from "../../../cron/deleteTicketsForIncompletePayments";
+import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray";
 import { firestore } from "firebase-admin";
 
 export class EventTicketsController extends BaseController {
