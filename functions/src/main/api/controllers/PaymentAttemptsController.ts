@@ -235,7 +235,6 @@ export class PaymentAttemptsController extends BaseController {
     
       return res.status(200).json({ isPending })
     } catch (err) {
-      console.log(err)
       next(err)
     }
   }
