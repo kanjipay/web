@@ -59,18 +59,8 @@ export const deleteTicketsForIncompletePayments = async context => {
     const paymentAttemptIds = paymentAttempts.map(p => p.id)
     const orderIds = paymentAttempts.map(p => p.orderId)
 
-<<<<<<< HEAD
-    // todo fix for case with > 10 tickets
-    const ticketsSnapshot = await db()
-      .collection(Collection.TICKET)
-      .where("orderId", "in", orderIds)
-      .get()
-
-    const ticketIds = ticketsSnapshot.docs.map(doc => doc.id)
-=======
     const tickets = await fetchDocumentsInArray(db().collection(Collection.TICKET), "orderId", orderIds)
     const ticketIds = tickets.map(doc => doc.id)
->>>>>>> main
 
     // For all of these payment attempts, update them to failed, update the orders to abandoned and delete the associated tickets
     const batch = db().batch()
