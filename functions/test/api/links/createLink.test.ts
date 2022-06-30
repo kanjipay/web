@@ -1,9 +1,12 @@
 import "mocha"
 import { api, expect } from "../../utils/server";
+import Collection from "../../../src/shared/enums/Collection"
+import { db } from "../../utils/admin";
 
 describe("Create link", () => {
+  const testPath = 'TEST_PATH';
   const linkData =  {
-      path:'https://google.com',
+      path:testPath,
       stateId: "123"
     };
 
@@ -16,7 +19,10 @@ describe("Create link", () => {
             done();                               
           });
   })
-  /*
-  possible todo delete the created link in an after
-  */
+  after(async () => {
+    const googleLinks = await db.collection(Collection.LINK).where("path", "==", testPath).get();
+    googleLinks.forEach((doc) => {
+      db.collection(Collection.LINK).doc(doc.id);
+    });
+  });
 })
