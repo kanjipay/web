@@ -21,6 +21,7 @@ export default function ConnectCrezcoPage({ user }) {
     iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
     iconForegroundColor={Colors.BLACK}
     title={`One more step, ${user.firstName}`}
+    name="connect-crezco"
     body="Before your organisation can accept payments, you'll need to verify you own the account you've provided. You can do this by using our trusted partner Crezco."
     primaryAction={handleVerifyDetails}
     primaryActionTitle="Continue to Crezco"

@@ -43,7 +43,12 @@ export default function MerchantDropdown({ memberships }) {
       {
         <Carat length={20} color={Colors.WHITE} />
       }
-      <h4 className="header-xs" style={{ color: Colors.WHITE }}>{membership.merchantName}</h4>
+      <h4 className="header-xs" style={{ 
+        color: Colors.WHITE, 
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis" 
+      }}>{membership.merchantName}</h4>
     </div>
     return <Popup
       trigger={dropdown}
@@ -59,7 +64,7 @@ export default function MerchantDropdown({ memberships }) {
       {close => <div>
         <MenuItem showsSeparator={false} title="All organisations" onClick={() => navigate("/dashboard")} />
         <MenuItem title="Create an organisation" onClick={() => navigate("/dashboard/o/create")} />
-        <h4 className="text-body-faded" style={{ padding: 16 }}>Your projects</h4>
+        <h4 className="text-body-faded" style={{ padding: 16 }}>Your organisations</h4>
         {
           memberships.map(m => {
             return <MenuItem

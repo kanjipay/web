@@ -16,11 +16,9 @@ import Spacer from "../../components/Spacer"
 import Collection from "../../enums/Collection"
 import { formatCurrency } from "../../utils/helpers/money"
 import { IdentityManager } from "../../utils/IdentityManager"
-import { createLink, fetchLink } from "../../utils/services/LinksService"
+import { createLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
-import { cancelPaymentIntent } from "./redirects"
 import { fetchMoneyhubBankData } from "./fetchMoneyhubBankData"
-import TextField from "../../components/Input"
 import { cancelOrder } from "./cancelOrder"
 
 export default function ChooseBankMoneyhubPage({ order }) {

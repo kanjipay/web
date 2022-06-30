@@ -15,6 +15,7 @@ export default function Listing({
   unavailableMessage = "Not available",
   linkPath,
   linkState = {},
+  ...props
 }) {
   const listing = <div className="Listing">
     <div className="Listing__imageWrapper">
@@ -41,9 +42,12 @@ export default function Listing({
   </div>
 
   return isAvailable && linkPath ?
-    <Link to={linkPath} state={linkState}>
+    <Link to={linkPath} state={linkState} {...props}>
       {listing}
     </Link> :
-    listing
+    <div {...props} >
+      {listing}
+    </div>
+    
 }
 

@@ -36,7 +36,7 @@ export default function OrderTicketsPage() {
           description: error?.response?.data?.error
         })
       })
-  }, [productId, quantity, navigate])
+  }, [productId, eventId, quantity, navigate])
 
   const handleError = () => {
     navigate(backPath)

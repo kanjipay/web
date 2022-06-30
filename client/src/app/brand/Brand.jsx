@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Route, Routes } from "react-router-dom";
+import { ButtonTheme } from "../../components/ButtonTheme";
+import SmallButton from "../../components/SmallButton";
 import { Colors } from "../../enums/Colors";
 import useWindowSize from "../../utils/helpers/useWindowSize";
 import NotFound from "../shared/NotFoundPage";
@@ -78,23 +80,37 @@ export function Brand() {
       width: "100%", 
       backgroundColor: Colors.BLACK + opacityToAlphaHex(opacity)
     }}>
-      <div style={{ margin: "auto", maxWidth: 1200, display: "flex", alignItems: "center" }}>
+      <div style={{ 
+        margin: "auto",
+        columnGap: 16,
+        maxWidth: 1200,
+        display: "flex", 
+        alignItems: "center"
+      }}>
         <Link to="/">
           <h2 style={{
             fontFamily: "Oswald, Roboto, sans-serif",
             fontWeight: 600,
-            fontSize: isMobile ? "2rem" : "3rem",
+            fontSize: isMobile ? "2rem" : "2rem",
             color: Colors.WHITE
           }}>Mercado</h2>
         </Link>
         
         <div className="flex-spacer"></div>
 
-        
+        <Link to="/dashboard/o/create">
+          <SmallButton
+            title="Become an organiser"
+            buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
+          />
+        </Link>
 
-        <a href={calendlyLink} target="_blank" rel="noreferrer">
-          <BlockButton title="Book a demo" style={{ display: "inline-block", width: 140 }} />
-        </a>
+        <Link to="/dashboard">
+          <SmallButton
+            title="Sign in"
+            buttonTheme={ButtonTheme.MONOCHROME_OUTLINED_REVERSE}
+          />
+        </Link>
         
       </div>
     </header>

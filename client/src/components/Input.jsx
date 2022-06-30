@@ -73,30 +73,7 @@ export function InputGroup({
   </label>
 }
 
-export function FileUploadGroup({ name, label, onChange, file }) {
-  return <label for="file-upload">
-    <span className="header-xs">{label}</span>
-    <Spacer y={1} />
 
-    <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
-      <span style={{
-        height: 48,
-        backgroundColor: Colors.BLACK,
-        color: Colors.WHITE,
-        alignItems: "center",
-        padding: "0 16px",
-        boxSizing: "border-box",
-        display: "flex",
-        cursor: "pointer"
-      }}>
-        {file ? "Change file" : "Add file"}
-      </span>
-      {file?.name}
-    </div>
-    
-    <input name={name} id="file-upload" type="file" style={{ display: "none" }} onChange={onChange} />
-  </label>
-}
 
 export default function TextField({ placeholder, style, prefix = "", suffix = "", onChange, value = "", ...props }) {
   const inputStyle = {
@@ -127,7 +104,7 @@ export default function TextField({ placeholder, style, prefix = "", suffix = ""
 }
 
 export function TextArea({ placeholder, style, ...props}) {
-  return <textarea placeholder={placeholder} style={{
+  return <textarea test-id={`textarea-${props.name}`} placeholder={placeholder} style={{
     ...textInputStyle,
     border: 0,
     height: 100,
