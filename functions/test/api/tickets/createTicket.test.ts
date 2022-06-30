@@ -128,7 +128,7 @@ describe("Create ticket", () => {
         usedTicketId
       ]
     }
-
+    
     for (const [collectionName, ids] of Object.entries(deleteMap)) {
       for (const id of ids) {
         const docRef = db.collection(collectionName).doc(id)
