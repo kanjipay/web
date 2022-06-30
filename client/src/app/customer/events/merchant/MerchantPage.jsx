@@ -56,7 +56,7 @@ export default function MerchantPage({ merchant }) {
         events
           .map(event => {
             return <div key={event.id}>
-              <EventListing event={event}  />
+              <EventListing event={event} />
               <Spacer y={3} />
             </div>
           })

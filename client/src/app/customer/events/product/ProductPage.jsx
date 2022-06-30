@@ -229,7 +229,13 @@ export default function ProductPage({ merchant, event, product, user }) {
           Object.keys(attestationData).map(attestation => {
             return <div>
               <div style={{ display: "flex", columnGap: 16, alignItems: "center" }}>
-                <CheckBox length={20} color={Colors.GRAY_LIGHT} value={attestationData[attestation]} onChange={event => setAttestationData({ ...attestationData, [attestation]: event.target.value })} />
+                <CheckBox 
+                  length={20} 
+                  color={Colors.GRAY_LIGHT} 
+                  value={attestationData[attestation]} 
+                  onChange={event => setAttestationData({ ...attestationData, [attestation]: event.target.value })} 
+                  test-name="product-attestation-checkbox"
+                />
                 <p className="text-body">{attestation}</p>
               </div>
               <Spacer y={3} />
@@ -249,18 +255,25 @@ export default function ProductPage({ merchant, event, product, user }) {
         }
         <MainButton
           title={user?.email ? "Checkout" : "Log in to continue"}
-          sideMessage={formatCurrency(Math.round(product.price * quantity * (1 + customerFee)), merchant.currency)}
+          sideMessage={user?.email ? formatCurrency(Math.round(product.price * quantity * (1 + customerFee)), merchant.currency) : undefined}
           onClick={handleCheckout}
           isLoading={isLoading}
           disabled={!isEnabled()}
           style={{ boxSizing: "borderBox" }}
+          test-id="product-cta-button"
         />
 
         {
           user && user.marketingConsentStatus === "PENDING" && <div>
             <Spacer y={2} />
             <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
-              <CheckBox length={20} color={Colors.GRAY_LIGHT} value={isMarketingConsentApproved} onChange={event => setIsMarketingConsentApproved(event.target.value)} />
+              <CheckBox 
+                length={20} 
+                color={Colors.GRAY_LIGHT} 
+                value={isMarketingConsentApproved} 
+                onChange={event => setIsMarketingConsentApproved(event.target.value)}
+                test-id="product-marketing-consent-status"
+              />
               <p className="text-caption">Get notified when this organiser has another relevant event on soon (recommended).</p>
             </div>
           </div>

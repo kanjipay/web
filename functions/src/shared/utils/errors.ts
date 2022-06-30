@@ -34,15 +34,17 @@ export class ErrorHandler {
 // Generate instance of HTTPError and pass into next() when raising an error yourself
 export class HttpError extends Error {
   clientMessage: string;
+  args: any[];
   statusCode: number;
 
   constructor(
     statusCode,
     clientMessage = "An error occured",
-    message = undefined
+    ...args: any[]
   ) {
-    super(message || clientMessage);
+    super(clientMessage);
 
+    this.args = args
     this.clientMessage = clientMessage;
     this.statusCode = statusCode;
   }

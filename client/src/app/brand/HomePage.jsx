@@ -7,6 +7,11 @@ import useWindowSize from "../../utils/helpers/useWindowSize";
 import NotFound from "../shared/NotFoundPage";
 import BlockButton from "./BlockButton";
 import * as pluralize from "pluralize"
+import MainButton from "../../components/MainButton"
+import { ButtonTheme } from "../../components/ButtonTheme";
+import Collection from "../../enums/Collection";
+import { limit, orderBy, where } from "firebase/firestore";
+import EventListing from "../customer/events/event/EventListing";
 
 class CustomerSegment {
   constructor(id, displayName, headerPhoto, screenshotPhoto, photo1, photo2) {
@@ -92,6 +97,17 @@ export default function HomePage() {
 
   const [customerSegment, setCustomerSegment] = useState(CustomerSegment.GENERAL)
 
+  const [events, setEvents] = useState([])
+
+  useEffect(() => {
+    return Collection.EVENT.queryOnChange(
+      setEvents,
+      where("startsAt", ">", new Date()),
+      orderBy("startsAt", "desc"),
+      limit(3)
+    )
+  }, [])
+
   useEffect(() => {
     if (customerSegmentId) {
       const segment = CustomerSegment.all().find(s => s.id === customerSegmentId)
@@ -112,7 +128,7 @@ export default function HomePage() {
   const secondSectionImage = <SquareImage src={`/img/${customerSegment.photo1}`} />
 
   const secondSectionCopy = <SquareTitleBody
-    title="Flat 2% processing fee"
+    title="Simple, fair pricing"
     body="Our industry-leading low fee means you can spend more of your budget on making your event great. And unlike other platforms, you'll get revenue from ticket sales upfront."
   />
 
@@ -127,7 +143,17 @@ export default function HomePage() {
       height: "100vh",
       position: "relative",
     }}>
-      <img alt="" src={`/img/${customerSegment.headerPhoto}`} style={{ backgroundColor: Colors.BLACK, width: "100%", height: "100%", position: "absolute", objectFit: "cover" }} />
+      <img 
+        alt="" 
+        src={`/img/${customerSegment.headerPhoto}`} 
+        style={{ 
+          backgroundColor: Colors.BLACK, 
+          width: "100%", 
+          height: "100%", 
+          position: "absolute", 
+          objectFit: "cover"
+        }}
+      />
       <div style={{
         position: "absolute",
         backgroundColor: "#00000080",
@@ -138,6 +164,13 @@ export default function HomePage() {
         justifyContent: "center",
         padding: "0px 32px",
         boxSizing: "border-box"
+      }}></div>
+      <div style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 800
       }}>
         <h1 style={{
           color: Colors.WHITE,
@@ -147,10 +180,59 @@ export default function HomePage() {
           fontSize: isMobile ? "3em" : "4em",
           textAlign: "center",
           width: "100%",
-
-        }}>{headline}</h1>
+        }}
+        >
+          {headline}
+        </h1>
+        <Spacer y={6} />
+        <a href={calendlyLink} target="_blank" rel="noreferrer">
+          <MainButton
+            title="Book a demo"
+            buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
+            style={{ width: 200, margin: "auto" }}
+          />
+        </a>
       </div>
+    </div>
+    <div>
+      <div 
+        style={{ 
+          maxWidth: 1200, 
+          margin: "auto",
+          padding: "64px 16px"
+        }}
+      >
+        <h2 style={{
+          fontFamily: "Rubik, Roboto, sans-serif",
+          fontWeight: 700,
+          fontSize: isMobile ? "2em" : "3em",
+          margin: "auto",
+          color: Colors.BLACK
+        }}>What's on</h2>
+        <Spacer y={4} />
+        <div style={{ display: isMobile ? "block" : "flex", columnGap: 24 }}>
+          {
+            events.map(event => {
+              const listing = <EventListing
+                key={event.id}
+                event={event}
+                style={{ width: isMobile ? "auto" : "calc(33% - 16px)" }}
+                linkPath={`/events/${event.merchantId}/${event.id}`}
+              />
 
+              if (isMobile) {
+                return <div>
+                  {listing}
+                  <Spacer y={3} />
+                </div>
+              } else {
+                return listing
+              }
+            })
+          }
+          <div></div>
+        </div>
+      </div>
     </div>
     <div style={{
       display: "grid",

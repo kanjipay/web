@@ -39,6 +39,7 @@ export default function ConnectStripePage({ title, body }) {
       Icon={Forward}
       title={title ?? "Connect Stripe"}
       body={body ?? "You can connect with our partner Stripe to enable card payments."}
+      name="connect-stripe"
       primaryActionTitle="Continue to Stripe"
       primaryAction={handleContinueToStripe}
       secondaryActionTitle="Leave for later"

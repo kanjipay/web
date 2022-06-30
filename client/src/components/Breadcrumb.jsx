@@ -5,13 +5,18 @@ export default function Breadcrumb({ pageData }) {
 
   pageData.forEach((pageDatum, index) => {
     const isLastDatum = index === pageData.length - 1
-    const { title, path } = pageDatum
+    const { title, path, testId } = pageDatum
     const separator = <p key={`separator-${index}`} className="text-body">/</p>
     flexItems.push(separator)
 
     const item = isLastDatum ?
       <p key={`title-${index}`} className="text-body" style={{ fontWeight: 600 }}>{title}</p> :
-      <Link key={`title-${index}`} style={{ textDecoration: "underline", fontWeight: 400 }} to={path}>
+      <Link 
+        key={`title-${index}`} 
+        style={{ textDecoration: "underline", fontWeight: 400 }} 
+        to={path} 
+        test-id={`breadcrumb-${testId}`}
+      >
         {title}
       </Link>
 
