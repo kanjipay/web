@@ -5,7 +5,7 @@ service cloud.firestore {
   	function incomingData() { return request.resource.data }
     function existingData() { return resource.data }
     function userId() { return request.auth.uid }
-    function hasAffectedKeys(keys) { return changeMap().affectedKeys().hasAny(keys) }
+    function hasChangedKeys(keys) { return changeMap().changedKeys().hasAny(keys) }
     function hasOnlyChangedKeys(keys) { return changeMap().changedKeys().hasOnly(keys) }
     
     function membershipColPath(merchantId) {
@@ -72,7 +72,7 @@ service cloud.firestore {
       	isAdminForMerchant(existingData().merchantId) && 
         (
           hasOnlyChangedKeys(["title", "description", "photo", "maxTicketsPerPerson"]) ||
-          (!existingData().isPublished && !hasAffectedKeys(["merchantId"]))
+          (!existingData().isPublished && !hasChangedKeys(["merchantId"]))
         )
       )
       allow delete: if (
@@ -92,7 +92,7 @@ service cloud.firestore {
       	isAdminForMerchant(existingData().merchantId) && 
         (
           hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity"]) ||
-          (!existingData().isPublished && !hasAffectedKeys(["merchantId", "eventId", "reservedCount", "soldCount"]))
+          (!existingData().isPublished && !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"]))
         )
       )
       allow delete: if (
@@ -112,7 +112,7 @@ service cloud.firestore {
       allow update: if (
       	hasRequiredKeysForCollection("MenuItem") &&
       	isAdminForMerchant(existingData().merchantId) &&
-        !hasAffectedKeys(["merchantId"])
+        !hasChangedKeys(["merchantId"])
       );
       
       allow delete: if isAdminForMerchant(existingData().merchantId)
@@ -129,7 +129,7 @@ service cloud.firestore {
       allow update: if (
       	hasRequiredKeysForCollection("MenuSection") &&
       	isAdminForMerchant(existingData().merchantId) &&
-        !hasAffectedKeys(["merchantId"])
+        !hasChangedKeys(["merchantId"])
       )
       
       allow delete: if isAdminForMerchant(existingData().merchantId)
@@ -146,7 +146,7 @@ service cloud.firestore {
       allow update: if (
       	hasRequiredKeysForCollection("OpeningHourRange") &&
       	isAdminForMerchant(existingData().merchantId) &&
-        !hasAffectedKeys(["merchantId"])
+        !hasChangedKeys(["merchantId"])
       )
       
       allow delete: if isAdminForMerchant(existingData().merchantId)

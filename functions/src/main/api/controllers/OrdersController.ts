@@ -11,6 +11,7 @@ import LoggingController from "../../../shared/utils/loggingClient"
 import { sendMenuReceiptEmail } from "../../../shared/utils/sendEmail"
 import { v4 as uuid } from "uuid"
 import MerchantStatus from "../../../shared/enums/MerchantStatus"
+import { fetchDocumentsInArray } from "../../../cron/deleteTicketsForIncompletePayments"
 
 export class OrdersController extends BaseController {
   createWithTickets = async (req, res, next) => {
@@ -223,23 +224,11 @@ export class OrdersController extends BaseController {
   private async fetchMenuItems(requestedItems: { id: string, quantity: number, title: string }[], merchantId: string) {
     const requestedMenuItemIds = requestedItems.map(item => item.id);
 
-    // todo fix for case with more than 10 requested items
-    const menuItemsSnapshot = await db()
+    const query = db()
       .collection(Collection.MENU_ITEM)
-      .where(firestore.FieldPath.documentId(), "in", requestedMenuItemIds)
       .where("merchantId", "==", merchantId)
-      .get();
-
-    const menuItems = menuItemsSnapshot.docs.map((item) => {
-      const { isAvailable, price, title, photo } = item.data();
-      return {
-        id: item.id,
-        isAvailable,
-        price,
-        title,
-        photo,
-      };
-    });
+      
+    const menuItems = await fetchDocumentsInArray(query, firestore.FieldPath.documentId(), requestedMenuItemIds)
 
     return menuItems
   }

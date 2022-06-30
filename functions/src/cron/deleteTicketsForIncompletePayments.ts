@@ -5,6 +5,41 @@ import OrderStatus from "../shared/enums/OrderStatus"
 import PaymentAttemptStatus from "../shared/enums/PaymentAttemptStatus"
 import { db } from "../shared/utils/admin"
 
+export async function fetchDocumentsInArray(
+  query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>, 
+  fieldPath: string | FirebaseFirestore.FieldPath, 
+  valuesArray: any[], 
+  isPositive: boolean = true
+) {
+  const promises: Promise<FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>>[] = []
+
+  let i = 0
+  const chunkSize = 10
+
+  while (i < valuesArray.length) {
+    const valuesArraySlice = valuesArray.slice(i, i + chunkSize)
+
+    const retrieveDocs = query
+      .where(fieldPath, isPositive ? "in" : "not-in", valuesArray)
+      .get()
+
+    promises.push(retrieveDocs)
+
+    i += valuesArraySlice.length
+  }
+
+  const querySnapshots = await Promise.all(promises)
+
+  return querySnapshots
+    .map(snapshot => snapshot.docs)
+    .flat()
+    .map(doc => { 
+      const result: any = { id: doc.id, ...doc.data() }
+
+      return result
+    })
+}
+
 export const deleteTicketsForIncompletePayments = async context => {
   try {
     const threeBusinessDaysAgo = addBusinessDays(new Date(), -3)
@@ -24,6 +59,7 @@ export const deleteTicketsForIncompletePayments = async context => {
     const paymentAttemptIds = paymentAttempts.map(p => p.id)
     const orderIds = paymentAttempts.map(p => p.orderId)
 
+<<<<<<< HEAD
     // todo fix for case with > 10 tickets
     const ticketsSnapshot = await db()
       .collection(Collection.TICKET)
@@ -31,6 +67,10 @@ export const deleteTicketsForIncompletePayments = async context => {
       .get()
 
     const ticketIds = ticketsSnapshot.docs.map(doc => doc.id)
+=======
+    const tickets = await fetchDocumentsInArray(db().collection(Collection.TICKET), "orderId", orderIds)
+    const ticketIds = tickets.map(doc => doc.id)
+>>>>>>> main
 
     // For all of these payment attempts, update them to failed, update the orders to abandoned and delete the associated tickets
     const batch = db().batch()
