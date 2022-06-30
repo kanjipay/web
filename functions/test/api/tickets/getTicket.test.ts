@@ -11,8 +11,7 @@ describe("Get tickets", () => {
   const eventId = 'test-get-ticket-event'
   const ticketId = 'test-get-ticket-ticket';
   before(async () => {
-    createEvent('test-merchant', eventId);
-    createTicket(ticketId, userId, eventId, '123');
+    await Promise.all([ createEvent('test-merchant', eventId), createTicket(ticketId, userId, eventId, '123') ]);
   });  
   it("Should get user's tickets", (done) => {
     createUserToken(userId).then((userToken) => {
