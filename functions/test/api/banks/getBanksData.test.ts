@@ -29,4 +29,3 @@ describe("Get Banks Data", () => {
   });
 
 });
-x1
