@@ -20,7 +20,6 @@ export class OrdersController extends BaseController {
 
       const userId = req.user.id
       const { productId, quantity, deviceId, attributionData } = req.body
-
       logger.log("Read initial variables", {
         userId,
         productId,

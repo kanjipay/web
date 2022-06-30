@@ -27,8 +27,6 @@ describe("Accept link", () => {
 
 
   after(async () => {
-    const batch = db.batch();
-    batch.delete(db.collection(Collection.LINK).doc(toAcceptLinkId));
-    await batch.commit();
+    db.collection(Collection.LINK).doc(toAcceptLinkId).delete();
   });
 })
