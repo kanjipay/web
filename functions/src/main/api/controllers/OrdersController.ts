@@ -12,8 +12,230 @@ import { sendMenuReceiptEmail } from "../../../shared/utils/sendEmail"
 import { v4 as uuid } from "uuid"
 import MerchantStatus from "../../../shared/enums/MerchantStatus"
 import { fetchDocumentsInArray } from "../../../cron/deleteTicketsForIncompletePayments"
+import axios from "axios"
+import { logger } from "firebase-functions/v1"
+
+enum DeviceType {
+  MOBILE = "Mobile",
+  TABLET = "Tablet",
+  DESKTOP = "Desktop",
+  OTHER = "Other"
+}
+
+enum Gender {
+  MALE = "Male",
+  FEMALE = "Female",
+  NOT_DETERMINED = "Not determined"
+}
+
+async function getGender(userId: string) {
+  logger.log("Retrieving gender of user", { userId })
+  const { user, userError } = await fetchDocument(Collection.USER, userId)
+
+  if (userError) {
+    return [null, userError]
+  }
+
+  logger.log("Retrieved user", { user })
+
+  const { firstName, gender: existingUserGender } = user
+
+  let gender: Gender
+
+  if (existingUserGender) {
+    logger.log("Gender exists on user", { existingUserGender })
+    gender = existingUserGender
+  } else {
+    const url = "https://api.genderize.io"
+    logger.log("No gender on user, retrieving from endpoint", { url })
+    const { data: genderResData } = await axios.get(url, {
+      params: {
+        name: firstName
+      }
+    })
+
+    const { gender: genderFromApi, probability } = genderResData
+
+    logger.log("Got response from gender api", { ...genderResData })
+
+    if (probability > 0.95) {
+      gender = genderFromApi === "male" ? Gender.MALE : Gender.FEMALE
+    } else {
+      gender = Gender.NOT_DETERMINED
+    }
+
+    logger.log("Updating user with gender", { gender, userId })
+
+    await db()
+      .collection(Collection.USER)
+      .doc(userId)
+      .update({ gender })
+  }
+
+  return [gender, null]
+}
+
+function getUserAgentData(userAgent: any) {
+  let deviceType: DeviceType
+
+  const {
+    browser,
+    platform,
+    os,
+    isMobile,
+    isDesktop,
+    isTablet
+  } = userAgent
+
+  if (isMobile) {
+    deviceType = DeviceType.MOBILE
+  } else if (isTablet) {
+    deviceType = DeviceType.TABLET
+  } else if (isDesktop) {
+    deviceType = DeviceType.DESKTOP
+  } else {
+    deviceType = DeviceType.OTHER
+  }
+
+  return {
+    deviceType,
+    browser,
+    platform,
+    os
+  }
+}
+
+async function getLocationData(ip: string) {
+  logger.log("Getting location from ip", { ip })
+
+  const { ipGeolocation: existingIpGeolocation } = await fetchDocument(Collection.IP_GEOLOCATION, ip)
+
+  let ipGeolocation: any
+
+  if (existingIpGeolocation) {
+    logger.log("Found existing geolocation data for ip")
+    ipGeolocation = existingIpGeolocation
+  } else {
+    logger.log("No existing data for ip, calling geolocation from ip endpoint")
+    const { data: geolocationResData } = await axios.get("https://api.ipgeolocation.io/ipgeo", {
+      params: {
+        apiKey: process.env.IP_GEOLOCATION_API_KEY,
+        ip
+      }
+    })
+
+    const { latitude: latitudeString, longitude: longitudeString } = geolocationResData
+
+    logger.log("Got location from ip", { latitudeString, longitudeString })
+
+    const latitude = parseFloat(latitudeString)
+    const longitude = parseFloat(longitudeString)
+    const coordinates = new firestore.GeoPoint(latitude, longitude)
+
+    logger.log("Calling reverse geocoding endpoint")
+
+    const { data: geocodingResData } = await axios.get("https://maps.googleapis.com/maps/api/geocode/json", {
+      params: {
+        key: process.env.GOOGLE_MAPS_API_KEY,
+        latlng: `${latitude},${longitude}`
+      }
+    })
+
+    logger.log("Got geocoding data", { ...geocodingResData })
+
+    const relevantLocationTypes = ["neighborhood", "sublocality", "administrative_area_level_3"]
+
+    const locationName = geocodingResData.results
+      .map(result => {
+        return result.address_components.filter(comp => {
+          return comp.types.some(type => relevantLocationTypes.includes(type))
+        })
+      })
+      .filter(addressComponents => addressComponents.length > 0)
+      .reduce((selectedAddressComponents, addressComponents) => {
+        if (addressComponents.length > selectedAddressComponents.length) {
+          return addressComponents
+        } else {
+          return selectedAddressComponents
+        }
+      }, [])
+      .map(addressComponent => addressComponent.long_name)
+      .slice(0, 2)
+      .join(", ")
+
+    logger.log("Imputed location name", { locationName })
+
+    const geolocationData = {
+      locationName,
+      coordinates
+    }
+
+    logger.log("Saving data to IP geolocation object", { geolocationData })
+
+    await db()
+      .collection(Collection.IP_GEOLOCATION)
+      .doc(ip)
+      .set(geolocationData)
+
+    ipGeolocation = geolocationData
+  }
+
+  const { coordinates, locationName } = ipGeolocation
+
+  return { coordinates, locationName }
+}
 
 export class OrdersController extends BaseController {
+  enrich = async (req, res, next) => {
+    try {
+      const { orderId } = req.params
+      const userId = req.user.id
+
+      logger.log("Enriching order data", { orderId, userId })
+
+      const [gender, genderError] = await getGender(userId)
+
+      if (genderError) {
+        next(genderError)
+        return
+      }
+
+      logger.log("Imputed gender from user's name", { gender })
+
+      const userAgentData = getUserAgentData(req.useragent)
+
+      logger.log("Got data from user agent", { ...userAgentData })
+
+      const orderUpdate = {
+        gender,
+        ...userAgentData
+      }
+
+      const ip = req.headers['x-appengine-user-ip'] ?? req.headers["x-forwarded-for"]
+
+      if (ip) {
+        const { coordinates, locationName } = await getLocationData(ip)
+        orderUpdate["coordinates"] = coordinates
+        orderUpdate["locationName"] = locationName
+      }
+
+      logger.log("Updating order with data", { sessionData: orderUpdate })
+
+      await db()
+        .collection(Collection.ORDER)
+        .doc(orderId)
+        .update({
+          sessionData: orderUpdate
+        })
+
+      logger.log("Order updated")
+
+      return res.sendStatus(200)
+    } catch (err) {
+      next(err)
+    }
+  }
+
   createWithTickets = async (req, res, next) => {
     try {
       const logger = new LoggingController("Create ticket order")

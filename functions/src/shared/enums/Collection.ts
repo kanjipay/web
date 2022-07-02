@@ -10,6 +10,7 @@ enum Collection {
   STATE = "State",
   INVITE = "INVITE",
   PHONE = "Phone",
+  IP_GEOLOCATION = "IpGeolocation",
 
   // Objects needed by the online menu client
   MERCHANT = "Merchant",
