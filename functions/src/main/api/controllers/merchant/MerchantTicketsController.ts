@@ -25,7 +25,7 @@ export class MerchantTicketsController extends BaseController {
       const { eventId, productId, userId, wasUsed, usedAt } = ticket
 
       if (!eventId || !productId || !userId) {
-        const errorMessage = "This ticket is invalid ticket. The event, product or customer is missing."
+        const errorMessage = "This ticket is invalid. The event, product or customer is missing."
         next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, errorMessage, errorMessage))
         return
       }
@@ -155,7 +155,8 @@ export class MerchantTicketsController extends BaseController {
       const sales = ordersSnapshot.docs.flatMap(doc => {
         const order: any = { id: doc.id, ...doc.data() }
 
-        const { eventId, attributionData, type, createdAt, currency } = order
+        const { eventId, attributionData, type, createdAt, currency, sessionData } = order
+        const strongSessionData = sessionData ?? {}
 
         return order.orderItems.map(item => {
           const { productId, title: productTitle, eventTitle, quantity, price } = item
@@ -170,7 +171,8 @@ export class MerchantTicketsController extends BaseController {
             type,
             createdAt,
             attributionData,
-            currency
+            currency,
+            ...strongSessionData
           }
         })
       })
