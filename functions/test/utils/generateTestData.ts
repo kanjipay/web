@@ -1,6 +1,6 @@
 import Collection from "../../src/shared/enums/Collection";
 import { db } from "./admin";
-import StripeStatus from "../../../client/src/enums/StripeStatus";
+import { StripeStatus } from "../../src/shared/enums/StripeStatus"
 import { addHours } from "date-fns";
 
 export async function createMerchant(

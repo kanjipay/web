@@ -67,6 +67,12 @@ const createOrderWithTicketsSchema: AllowedSchema = {
   }
 }
 
+ordersRoutes.put(
+  "/o/:orderId/enrich",
+  authenticate,
+  ordersController.enrich
+)
+
 ordersRoutes.post(
   "/tickets",
   validate({ body: createOrderWithTicketsSchema }),
