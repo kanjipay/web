@@ -308,6 +308,9 @@ export default function AnalyticsPage({ merchant }) {
           })
           const dateString = format(intervalDate, "do MMM")
           return { value: intervalDate.toString(), label: dateString, sortValue: intervalDate }
+        case "Returning user":
+          const val = datum.isExistingUser ? "Returning user" : "New user"
+          return { value: val, label: val, sortValue: val }
         case "Location":
           return defaultValue("locationName")
         case "Gender":
@@ -400,6 +403,7 @@ export default function AnalyticsPage({ merchant }) {
             { value: "Time" },
             { value: "Source" },
             { value: "Campaign" },
+            { value: "Returning user" },
             { value: "Gender" },
             { value: "Location" },
             { value: "Browser" },

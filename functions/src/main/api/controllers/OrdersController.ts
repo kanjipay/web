@@ -185,15 +185,41 @@ async function getLocationData(ip: string) {
   return { coordinates, locationName }
 }
 
+async function isExistingUser(userId: string, merchantId: string) {
+  const paidOrderSnapshot = await db()
+    .collection(Collection.ORDER)
+    .where("userId", "==", userId)
+    .where("merchantId", "==", merchantId)
+    .where("status", "in", [OrderStatus.PAID, OrderStatus.FULFILLED])
+    .get()
+
+  return paidOrderSnapshot.docs.length > 0
+}
+
 export class OrdersController extends BaseController {
   enrich = async (req, res, next) => {
     try {
       const { orderId } = req.params
-      const userId = req.user.id
+      const userId: string = req.user.id
 
       logger.log("Enriching order data", { orderId, userId })
 
-      const [gender, genderError] = await getGender(userId)
+      const { order, orderError } = await fetchDocument(Collection.ORDER, orderId)
+
+      if (orderError) {
+        next(orderError)
+        return
+      }
+
+      const { merchantId } = order
+
+      const [
+        isExisting,
+        [gender, genderError]
+      ] = await Promise.all([
+        isExistingUser(userId, merchantId),
+        getGender(userId)
+      ])
 
       if (genderError) {
         next(genderError)
@@ -208,10 +234,13 @@ export class OrdersController extends BaseController {
 
       const orderUpdate = {
         gender,
+        isExistingUser: isExisting,
         ...userAgentData
       }
 
       const ip = req.headers['x-appengine-user-ip'] ?? req.headers["x-forwarded-for"]
+
+      
 
       if (ip) {
         const { coordinates, locationName } = await getLocationData(ip)
@@ -352,9 +381,11 @@ export class OrdersController extends BaseController {
       logger.log("Calculated total for order", { total, quantity, price, customerFee })
       const orderId = uuid()
 
+      const isFree = total === 0
+
       const orderData = {
         createdAt: firestore.FieldValue.serverTimestamp(),
-        status: OrderStatus.PENDING,
+        status: isFree ? OrderStatus.PAID : OrderStatus.PENDING,
         type: OrderType.TICKETS,
         total,
         currency,
@@ -372,7 +403,7 @@ export class OrdersController extends BaseController {
           eventEndsAt: endsAt,
           quantity
         }],
-        wereTicketsCreated: false
+        wereTicketsCreated: isFree
       }
 
       if (attributionData) {
@@ -383,7 +414,7 @@ export class OrdersController extends BaseController {
 
       const promises: Promise<any>[] = []
 
-      const isFree = total === 0
+      
 
       if (isFree) {
         logger.log("Event is free, processing successful order")
