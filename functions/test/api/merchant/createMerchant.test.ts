@@ -5,7 +5,7 @@ import { db } from "../../utils/admin";
 import Collection from "../../../src/shared/enums/Collection"
 
 describe("Create merchant", () => {
-    const userId = 'Q9wUk5mSWDVBrl5yregV8r5ccFJ2' //jeeves smith in dev
+    const userId = 'Sf9VnvaTxmWm2DECrHg6a7mlV6I3' //matt ffrench in dev
     const merchantData = {
         accountNumber: "00000000", 
         address: "8B Mitchison road", 

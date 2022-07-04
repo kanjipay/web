@@ -1,13 +1,14 @@
-/*
+
 import "mocha"
 import { db } from "../../utils/admin";
 import { api, expect } from "../../utils/server";
 import Collection from "../../../src/shared/enums/Collection"
-import { createEvent, createMerchant, createProduct } from "../../utils/generateTestData";
+import { createEvent, createMerchant, createProduct, createMembership } from "../../utils/generateTestData";
 import { firestore } from "firebase-admin";
 import { addHours } from "date-fns";
+import {createUserToken} from "../../utils/user";
+
 import { HttpStatusCode } from "../../../src/shared/utils/errors"
-import { longFormat } from "../../../src/shared/utils/time"
 
 describe("Create ticket", () => {
   const validTicketId = "valid-ticket"
@@ -16,12 +17,14 @@ describe("Create ticket", () => {
   const nonexistentEventTicketId = "nonexistant-event"
   const usedTicketId = "used"
 
+
   const merchantId = "test-create-ticket-merchant"
   const eventId = "test-create-ticket-event"
   const incorrectEventId = "test-create-ticket-incorrect-event"
   const productId = "test-create-ticket-product"
-  const userId = "test-create-ticket-user"
-  const orderId = "test-create-ticket-order"
+  const userId = 'oGvgPQWN4FdL9tBGO7HVeYhAEzl2'; //olicairns93 in dev
+  const orderId = "test-create-ticket-order";
+  const membershipId = "test-create-ticket-mb";
 
   const defaultTicketData = {
     merchantId,
@@ -50,6 +53,7 @@ describe("Create ticket", () => {
   before(async () => {
     await Promise.all([
       createMerchant(merchantId),
+      createMembership(merchantId,userId, membershipId),
       createEvent(merchantId, eventId),
       createEvent(merchantId, incorrectEventId),
       createProduct(merchantId, eventId, productId),
@@ -62,55 +66,38 @@ describe("Create ticket", () => {
   })
 
   it("Should accept a valid ticket", async () => {
+    const userToken = await createUserToken(userId);
+
     const res = await api
       .post(`/merchants/m/${merchantId}/tickets/${validTicketId}/check`)
+      .auth(userToken, { type: 'bearer' })
       .send({ eventId })
-    
     expect(res.status).to.eql(200)
-    expect(res.body).to.be.a("object")
-    expect(res.body).to.include("event")
-
     const ticketDoc = await db.collection(Collection.TICKET).doc(validTicketId).get()
 
     expect(ticketDoc.exists).to.eql(true)
     expect(ticketDoc.data().wasUsed).to.eql(true)
-    expect(ticketDoc.data()).to.include("usedAt")
-  })
-
-  it("Should not accept a ticket when the entry time is incorrect", async () => {
-    const res = await api
-      .post(`/merchants/m/${merchantId}/tickets/${incorrectEntryTimeTicketId}/check`)
-      .send({ eventId })
-
-    expect(res.status).to.eql(HttpStatusCode.BAD_REQUEST)
-    expect(res.error.message).to.eql(`This ticket is only valid from ${longFormat(earliestEntryAt)}`)
+    expect(ticketDoc.data().usedAt).is.not.undefined;
   })
 
   it("Should not accept a ticket with an incorrect event id", async () => {
+    const userToken = await createUserToken(userId);
     const res = await api
       .post(`/merchants/m/${merchantId}/tickets/${incorrectEventTicketId}/check`)
+      .auth(userToken, { type: 'bearer' })
       .send({ eventId })
 
     expect(res.status).to.eql(HttpStatusCode.BAD_REQUEST)
-    expect(res.error.message).to.eql("This ticket is for another event")
   })
 
-  it("Should not accept a ticket for a nonexistant event", async () => {
-    const res = await api
-      .post(`/merchants/m/${merchantId}/tickets/${nonexistentEventTicketId}/check`)
-      .send({ eventId })
-
-    expect(res.status).to.eql(HttpStatusCode.NOT_FOUND)
-    expect(res.error.message).to.eql(`Event with id ${incorrectEventId} doesn't exist.`)
-  })
-
-  it("Should not accept a ticket that was already used", async () => {
+  it("Should report was used if already used", async () => {
+    const userToken = await createUserToken(userId);
     const res = await api
       .post(`/merchants/m/${merchantId}/tickets/${usedTicketId}/check`)
+      .auth(userToken, { type: 'bearer' })
       .send({ eventId })
-
-    expect(res.status).to.eql(HttpStatusCode.BAD_REQUEST)
-    expect(res.error.message).to.eql(`This ticket was already used at ${longFormat(usedAt)}`)
+    expect(res.status).to.eql(200);
+    expect(res.body.wasUsed).to.eql(true);
   })
 
   after(async () => {
@@ -126,7 +113,8 @@ describe("Create ticket", () => {
         incorrectEventTicketId,
         nonexistentEventTicketId,
         usedTicketId
-      ]
+      ],
+      [Collection.MEMBERSHIP]: [membershipId]
     }
     
     for (const [collectionName, ids] of Object.entries(deleteMap)) {
@@ -139,4 +127,3 @@ describe("Create ticket", () => {
     await batch.commit()
   })
 })
-*/
