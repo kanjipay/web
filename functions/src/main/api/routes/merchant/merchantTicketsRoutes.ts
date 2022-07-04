@@ -27,4 +27,9 @@ merchantTicketsRoutes.get(
   merchantTicketsController.salesData
 )
 
+merchantTicketsRoutes.get(
+  "eventAttendees/:eventId", 
+  merchantTicketsController.getEventAttendees
+);
+
 export default merchantTicketsRoutes;

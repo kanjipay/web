@@ -5,20 +5,17 @@ import OrderStatus from "../../../../shared/enums/OrderStatus"
 import { db } from "../../../../shared/utils/admin"
 import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
-import LoggingController from "../../../../shared/utils/loggingClient"
 import { dateFromTimestamp } from "../../../../shared/utils/time"
+import { logger } from "firebase-functions/v1";
+import { fetchDocumentsInArray } from "../../../../shared/utils/fetchDocumentsInArray";
 
 export class MerchantTicketsController extends BaseController {
   check = async (req, res, next) => {
     try {
-      const logger = new LoggingController("Check ticket")
       const { ticketId, merchantId } = req.params
       const { eventId: checkedEventId } = req.body
-
       logger.log(`Checking ticket with id ${ticketId}`, { ticketId, merchantId, checkedEventId })
-
       const { ticket, ticketError } = await fetchDocument(Collection.TICKET, ticketId)
-
       if (ticketError) {
         next(ticketError)
         return
@@ -190,6 +187,77 @@ export class MerchantTicketsController extends BaseController {
       res.status(200).json({ events, products, sales })
     } catch (err) {
       next(err)
+    }
+  }
+  getEventAttendees = async (req, res, next) => {
+    try {
+      const {eventId} = req.params;
+      logger.log("getting ticketholders for event" , {eventId});
+      const ticketDocs = await db()
+          .collection(Collection.TICKET)
+          .where("eventId", "==", eventId)
+          .get();
+      
+      
+      const ticketUserIds = ticketDocs.docs.map((ticketDoc) => ticketDoc.data().userId);
+      const ticketProductIds = ticketDocs.docs.map((ticketDoc) => ticketDoc.data().productId);
+      logger.log("ticket Userids", {ticketUserIds})
+      logger.log("Product ids", {ticketProductIds});
+      const ticketUsers = await fetchDocumentsInArray(
+        db().collection(Collection.USER),
+        firestore.FieldPath.documentId(),
+        ticketUserIds,
+      )
+
+      const ticketProducts = await fetchDocumentsInArray(
+        db().collection(Collection.PRODUCT),
+        firestore.FieldPath.documentId(),
+        ticketProductIds,
+      )
+      logger.log("ticket users",{ticketUsers})
+      logger.log("products",{ticketProducts})
+      const ticketDetails = ticketDocs.docs.map(doc => {
+        const ticketId = doc.id
+        const { createdAt,
+          eventEndsAt,
+          merchantId,
+          orderId,
+          productId,
+          userId,
+          wasUsed } = doc.data();
+        const ticketUser = ticketUsers.find(user => user.id === userId)
+        const {email, firstName, lastName} = ticketUser
+        return { 
+          ticketId,
+          createdAt,
+          eventEndsAt,
+          merchantId,
+          orderId,
+          productId,
+          userId,
+          wasUsed,
+          email, 
+          firstName, 
+          lastName
+         }
+      });
+      logger.log('ticket details',{ticketDetails});
+      const ticketDetailsWithProduct = ticketDetails.map(ticket => {
+      const ticketProduct = ticketProducts.find(product => product.id === ticket.productId)
+      const {earliestEntryAt, lastestEntryAt, description} = ticketProduct
+      return {...ticket,
+          earliestEntryAt, 
+          lastestEntryAt, 
+          description
+         }
+      })
+      logger.log("ticket details with product",{ticketDetailsWithProduct});
+        return res.status(200).json(
+          ticketDetailsWithProduct
+        );
+    } catch (err) {
+      logger.error(err)
+      next(err);
     }
   }
 }
