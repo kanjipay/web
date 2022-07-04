@@ -5,7 +5,15 @@ describe("Get Banks Data", () => {
     api
       .get('/banks/GB')
       .end(function(err, res) {
+        console.log(res.body);
         expect(res).to.have.status(200);
+        expect(res.body.length).to.be.above(0);
+        const missingBankCode = res.body.filter(item => item.bankCode == undefined).length
+        expect(missingBankCode).to.be.equal(0);
+        const missingBankName = res.body.filter(item => item.bankName == undefined).length
+        expect(missingBankName).to.be.equal(0);
+        const missingLogoUrl= res.body.filter(item => item.logoUrl == undefined).length
+        expect(missingLogoUrl).to.be.equal(0);  
         done();                              
       });
    
