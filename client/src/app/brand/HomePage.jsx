@@ -174,7 +174,6 @@ export default function HomePage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "0px 32px",
             boxSizing: "border-box",
           }}
         ></div>
@@ -184,7 +183,9 @@ export default function HomePage() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 800,
+            width: isMobile ? "100%" : 800,
+            padding: isMobile ? "0 16px" : 0,
+            boxSizing: "border-box"
           }}
         >
           <h1
