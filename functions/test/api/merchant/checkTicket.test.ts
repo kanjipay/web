@@ -8,7 +8,7 @@ import { createMerchant, createMembership, createTicket, createEvent, createProd
 import {createUserToken} from "../../utils/user";
 
 
-describe("Check tickets", () => {
+describe("Get sales data", () => {
     const merchantId = "test-check-ticket-userid";
     const membershipId = 'test-crezco-membershipid';
     const userId = 'oGvgPQWN4FdL9tBGO7HVeYhAEzl2'; //olicairns93 in dev

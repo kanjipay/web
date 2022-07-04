@@ -1,3 +1,3 @@
 /*
-not fully implemented
+function not fully implemented
 */ 

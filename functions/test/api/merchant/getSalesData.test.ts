@@ -4,11 +4,11 @@ import { api, expect } from "../../utils/server";
 import { db } from "../../utils/admin";
 import Collection from "../../../src/shared/enums/Collection"
 
-import { createMerchant, createMembership, } from "../../utils/generateTestData";
+import { createMerchant, createMembership, createTicket, createEvent, createProduct} from "../../utils/generateTestData";
 import {createUserToken} from "../../utils/user";
 
 
-describe("Get users", () => {
+describe("Check tickets", () => {
     const merchantId = "test-check-ticket-userid";
     const membershipId = 'test-crezco-membershipid';
     const userId = 'oGvgPQWN4FdL9tBGO7HVeYhAEzl2'; //olicairns93 in dev
@@ -17,16 +17,17 @@ describe("Get users", () => {
     const productId = '1234';
 
     before(async () => {
+        await createTicket(ticketId, userId, eventId,merchantId);
         await createMerchant(merchantId);
+        await createEvent(merchantId, eventId);
         await createMembership(merchantId, userId, membershipId);
+        await createProduct(merchantId, eventId, productId);
     });
-    it("Should return user", async () => {
+    it("Should return expected stats", async () => {
         const userToken = await createUserToken(userId);
-        const res = await api.get(`/merchants/m/${merchantId}/users/`)
+        const res = await api.get(`/merchants/m/${merchantId}/tickets/sales-data`)
             .auth(userToken, { type: 'bearer' })
         expect(res).to.have.status(200);
-        expect(res.body.length).to.equal(1);
-        expect(res.body[0].id).to.equal(userId);
     }) 
     
     after(async () => {

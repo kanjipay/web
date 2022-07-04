@@ -1,3 +1,4 @@
+/*
 import "mocha"
 import { api, expect } from "../../utils/server";
 
@@ -8,25 +9,26 @@ import { createMerchant, createMembership, } from "../../utils/generateTestData"
 import {createUserToken} from "../../utils/user";
 
 
-describe("Get users", () => {
+describe("Send invites", () => {
     const merchantId = "test-check-ticket-userid";
     const membershipId = 'test-crezco-membershipid';
     const userId = 'oGvgPQWN4FdL9tBGO7HVeYhAEzl2'; //olicairns93 in dev
     const ticketId = 'testTicketCheckTicketId';
     const eventId = 'testEvent';
     const productId = '1234';
-
+    const reqBody = {inviteData:[]}
     before(async () => {
         await createMerchant(merchantId);
         await createMembership(merchantId, userId, membershipId);
     });
-    it("Should return user", async () => {
+    it("Should send invite", async () => {
         const userToken = await createUserToken(userId);
-        const res = await api.get(`/merchants/m/${merchantId}/users/`)
+        const req = await api.post(`/merchants/m/${merchantId}/users/invites`)
             .auth(userToken, { type: 'bearer' })
-        expect(res).to.have.status(200);
-        expect(res.body.length).to.equal(1);
-        expect(res.body[0].id).to.equal(userId);
+            .send(reqBody)
+        console.log(req);
+        expect(req).to.have.status(200);
+
     }) 
     
     after(async () => {
@@ -39,3 +41,4 @@ describe("Get users", () => {
         await batch.commit();
         });
 });
+*/

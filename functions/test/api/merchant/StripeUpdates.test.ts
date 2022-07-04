@@ -15,7 +15,7 @@ describe("Test Stripe account linking", () => {
         await createMerchant(merchantId, {addCrezcoId: false});
         await createMembership(merchantId, userId, membershipId);
     });
-    it("Should update crezco id", async () => {
+    it("Should create stripe account link", async () => {
         const userToken = await createUserToken(userId);
         const res = await api.post(`/merchants/m/${merchantId}/create-stripe-account-link`)
             .auth(userToken, { type: 'bearer' })
@@ -23,6 +23,13 @@ describe("Test Stripe account linking", () => {
         expect(res).to.have.status(200);
         expect(merchantDoc.exists).to.eql(true);
         expect(merchantDoc.data().stripe.accountId).to.not.be.null;
+    });
+    it("Should link update stripe status", async () => {
+        const userToken = await createUserToken(userId);
+        const res = await api.put(`/merchants/m/${merchantId}/update-stripe-status`)
+            .auth(userToken, { type: 'bearer' })
+        expect(res).to.have.status(200);
+        expect(res.body.stripeStatus).to.not.be.undefined;
     })
     after(async () => {
         await db.collection(Collection.MERCHANT).doc(merchantId).delete();

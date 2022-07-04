@@ -5,7 +5,7 @@ import { db } from "../../utils/admin";
 import Collection from "../../../src/shared/enums/Collection"
 
 describe("Create merchant", () => {
-    const userId = 'Sf9VnvaTxmWm2DECrHg6a7mlV6I3' //matt ffrench in dev
+    const userId = 'vsgINc5j4mQwRvnFKuPCh7tMxcn1' //matt ffrench in dev
     const merchantData = {
         accountNumber: "00000000", 
         address: "8B Mitchison road", 
@@ -18,7 +18,7 @@ describe("Create merchant", () => {
   before(async () => {
   });  
   it("Should create a valid merchant", async () => {
-    const userToken = await createUserToken(userId)
+    const userToken = await createUserToken(userId);
     const res = await api.post('/merchants/create')
         .auth(userToken, { type: 'bearer' })
         .send(merchantData)
@@ -32,6 +32,10 @@ describe("Create merchant", () => {
     const membershipDocs = await db.collection(Collection.MEMBERSHIP).where("merchantId", "==", merchantId).get();
     const membership = membershipDocs.docs[0];
     expect(membership.data().userId).to.equal(userId);
+  })
+  after(async () => {
+    const TestMerchants = await db.collection(Collection.MERCHANT).where("companyName", "==", "TEST").get();
+    TestMerchants.forEach(async (merchant) => await db.collection(Collection.MERCHANT).doc(merchant.id).delete());
   })
 });
 
