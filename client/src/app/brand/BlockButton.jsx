@@ -1,6 +1,6 @@
-import { useState } from "react";
-import Spinner from "../../assets/Spinner";
-import { Colors } from "../../enums/Colors";
+import { useState } from "react"
+import Spinner from "../../assets/Spinner"
+import { Colors } from "../../enums/Colors"
 
 export default function BlockButton({
   title,
@@ -9,21 +9,19 @@ export default function BlockButton({
   onClick,
   ...props
 }) {
-  const [isPressed, setIsPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(false)
 
-  let backgroundColor;
+  let backgroundColor
 
   if (props.disabled) {
-    backgroundColor = Colors.GRAY_LIGHT;
+    backgroundColor = Colors.GRAY_LIGHT
   } else if (isPressed) {
     backgroundColor = Colors.OFF_WHITE_LIGHT
   } else {
     backgroundColor = Colors.WHITE
   }
 
-  const foregroundColor = props.disabled
-    ? Colors.GRAY
-    : Colors.BLACK
+  const foregroundColor = props.disabled ? Colors.GRAY : Colors.BLACK
 
   const buttonStyle = {
     backgroundColor,
@@ -39,7 +37,7 @@ export default function BlockButton({
     fontWeight: 500,
     cursor: props.disabled ? "mouse" : "pointer",
     ...style,
-  };
+  }
 
   return (
     <div className="MainButton relative">
@@ -60,5 +58,5 @@ export default function BlockButton({
         </div>
       )}
     </div>
-  );
+  )
 }

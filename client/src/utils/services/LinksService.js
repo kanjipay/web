@@ -1,14 +1,15 @@
-import { NetworkManager } from "../NetworkManager";
-import { restoreState, saveState } from "./StateService";
+import { NetworkManager } from "../NetworkManager"
+import { restoreState, saveState } from "./StateService"
 
 export async function createLink(path) {
   const stateId = await saveState()
 
   const res = await NetworkManager.post("/links", {
-    path, stateId
+    path,
+    stateId,
   })
 
-  return res.data.linkId;
+  return res.data.linkId
 }
 
 export async function fetchLink(linkId) {
@@ -24,8 +25,8 @@ export async function acceptLink(link) {
   if (stateId) {
     await restoreState(stateId)
   }
-  
+
   await NetworkManager.put(`/links/l/${link.id}/accept`)
-  
+
   return
 }

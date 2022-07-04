@@ -9,18 +9,13 @@ export class NetworkManager {
     return `${process.env.REACT_APP_BASE_SERVER_URL}/${apiName}`
   }
 
-  static async call(
-    method,
-    path,
-    data = {},
-    headers = {}
-  ) {
+  static async call(method, path, data = {}, headers = {}) {
     console.log(path)
     const requestConfig = {
       url: `${process.env.REACT_APP_BASE_SERVER_URL}/main/api/v1${path}`,
       method,
       headers,
-      data
+      data,
     }
 
     const currUser = auth.currentUser
@@ -38,7 +33,7 @@ export class NetworkManager {
         this.cachedIdToken = freshIdToken
         idToken = freshIdToken
       }
-      
+
       requestConfig.headers["Authorization"] = `Bearer ${idToken}`
     }
 

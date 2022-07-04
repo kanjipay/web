@@ -1,5 +1,5 @@
-import AttributionAction from "./AttributionAction";
-import { loadAttributionState } from "./AttributionContext";
+import AttributionAction from "./AttributionAction"
+import { loadAttributionState } from "./AttributionContext"
 import { addDays } from "date-fns"
 
 function storeItems(items) {
@@ -8,15 +8,22 @@ function storeItems(items) {
 
 function filterObjectArray(objArray, filterObj, isPositive = true) {
   const keys = Object.keys(filterObj)
-  return objArray.filter(obj => keys.every(key => isPositive ? filterObj[key] === obj[key] : filterObj[key] !== obj[key]))
+  return objArray.filter((obj) =>
+    keys.every((key) =>
+      isPositive ? filterObj[key] === obj[key] : filterObj[key] !== obj[key]
+    )
+  )
 }
 
 export function getLatestItem(filters) {
   const items = loadAttributionState().attributionItems
   const twoDaysAgo = addDays(new Date(), -2)
-  const eligibleItems = filterObjectArray(items.filter(item => item.addedAt > twoDaysAgo), filters)
+  const eligibleItems = filterObjectArray(
+    items.filter((item) => item.addedAt > twoDaysAgo),
+    filters
+  )
   eligibleItems.sort((item1, item2) => item2.addedAt - item1.addedAt) // Sort latest first
-  return eligibleItems.find(item => item)
+  return eligibleItems.find((item) => item)
 }
 
 export default function AttributionReducer(state, action) {
@@ -24,7 +31,7 @@ export default function AttributionReducer(state, action) {
     case AttributionAction.ADD_ITEM:
       const item = {
         ...action.payload,
-        addedAt: new Date()
+        addedAt: new Date(),
       }
 
       state.attributionItems.push(item)
@@ -42,7 +49,7 @@ export default function AttributionReducer(state, action) {
       storeItems(newItems)
 
       return {
-        attributionItems: newItems
+        attributionItems: newItems,
       }
     default:
       return state

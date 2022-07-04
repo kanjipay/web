@@ -1,9 +1,9 @@
-import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import LoadingPage from "../../../components/LoadingPage";
-import Collection from "../../../enums/Collection";
-import { AnalyticsManager } from "../../../utils/AnalyticsManager";
-import useAttribution from "./useAttribution";
+import { useEffect } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import LoadingPage from "../../../components/LoadingPage"
+import Collection from "../../../enums/Collection"
+import { AnalyticsManager } from "../../../utils/AnalyticsManager"
+import useAttribution from "./useAttribution"
 
 export default function AttributionLinkPage() {
   const { attributionLinkId } = useParams()
@@ -15,17 +15,25 @@ export default function AttributionLinkPage() {
   }, [attributionLinkId])
 
   useEffect(() => {
-    Collection.ATTRIBUTION_LINK.get(attributionLinkId).then(attributionLink => {
-      const { path, attributionData, createdAt, id, displayName, ...productData } = attributionLink
+    Collection.ATTRIBUTION_LINK.get(attributionLinkId).then(
+      (attributionLink) => {
+        const {
+          path,
+          attributionData,
+          createdAt,
+          id,
+          displayName,
+          ...productData
+        } = attributionLink
 
-      addItem({
-        attributionData,
-        ...productData
-      })
+        addItem({
+          attributionData,
+          ...productData,
+        })
 
-      navigate(path)
-    })
-
+        navigate(path)
+      }
+    )
   }, [attributionLinkId, navigate, addItem])
 
   return <LoadingPage />

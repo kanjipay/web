@@ -1,37 +1,37 @@
-import { useParams } from "react-router-dom";
-import NavBar from "../../../../../components/NavBar";
-import Spacer from "../../../../../components/Spacer";
-import { useNavigate } from "react-router-dom";
-import { setOrderFulfilled } from "../../../../../utils/services/MerchantService";
-import CircleIcon from "../../../../../components/CircleIcon";
-import Clock from "../../../../../assets/icons/Clock";
-import Cutlery from "../../../../../assets/icons/Cutlery";
-import MerchantOrderItem from "./MerchantOrderItem";
-import Divider from "@mui/material/Divider";
-import MainButton from "../../../../../components/MainButton";
-import { formatCurrency } from "../../../../../utils/helpers/money";
-import { Colors } from "../../../../../enums/Colors";
-import { formatTimeForDisplayFromTimestamp } from "../../../../../utils/helpers/time";
-import "./MerchantOrderPage.css";
+import { useParams } from "react-router-dom"
+import NavBar from "../../../../../components/NavBar"
+import Spacer from "../../../../../components/Spacer"
+import { useNavigate } from "react-router-dom"
+import { setOrderFulfilled } from "../../../../../utils/services/MerchantService"
+import CircleIcon from "../../../../../components/CircleIcon"
+import Clock from "../../../../../assets/icons/Clock"
+import Cutlery from "../../../../../assets/icons/Cutlery"
+import MerchantOrderItem from "./MerchantOrderItem"
+import Divider from "@mui/material/Divider"
+import MainButton from "../../../../../components/MainButton"
+import { formatCurrency } from "../../../../../utils/helpers/money"
+import { Colors } from "../../../../../enums/Colors"
+import { formatTimeForDisplayFromTimestamp } from "../../../../../utils/helpers/time"
+import "./MerchantOrderPage.css"
 
 function MerchantOrderPage({ orderList, menuItems }) {
-  const navigate = useNavigate();
-  const { orderId } = useParams();
+  const navigate = useNavigate()
+  const { orderId } = useParams()
 
   //TODO error handling if this returns more than 1 order
-  const filteredOrderList = orderList.filter((order) => order.id === orderId);
-  const order = filteredOrderList[0];
-  const orderTime = formatTimeForDisplayFromTimestamp(order.paidAt);
+  const filteredOrderList = orderList.filter((order) => order.id === orderId)
+  const order = filteredOrderList[0]
+  const orderTime = formatTimeForDisplayFromTimestamp(order.paidAt)
 
   //TODO Implement This in Database Design + Customer Facing App
-  const requestedCutlery = true;
+  const requestedCutlery = true
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
   const enrichedOrderItemElements = order.orderItems.map((orderItem) => {
-    const menuItem = menuItems.find((x) => x.id === orderItem.menuItemId);
-    const enrichedOrderItemElement = { orderItem, menuItem };
-    return enrichedOrderItemElement;
-  });
+    const menuItem = menuItems.find((x) => x.id === orderItem.menuItemId)
+    const enrichedOrderItemElement = { orderItem, menuItem }
+    return enrichedOrderItemElement
+  })
 
   //Calculate total cost of purchase
   const totalCost = enrichedOrderItemElements.reduce(
@@ -40,12 +40,12 @@ function MerchantOrderPage({ orderList, menuItems }) {
       enrichedOrderItemElement.menuItem.price *
         enrichedOrderItemElement.orderItem.quantity,
     0
-  );
+  )
 
   const handeFulfilment = (orderId) => {
-    setOrderFulfilled(orderId);
-    navigate(-1);
-  };
+    setOrderFulfilled(orderId)
+    navigate(-1)
+  }
 
   return (
     <div className="container">
@@ -94,7 +94,9 @@ function MerchantOrderPage({ orderList, menuItems }) {
         <div className="MerchantOrderPage__totalFlexContainer">
           <h3 className="header-s">Total</h3>
           <div className="flex-spacer" />
-          <h3 className="header-s">{formatCurrency(totalCost, order.currency)}</h3>
+          <h3 className="header-s">
+            {formatCurrency(totalCost, order.currency)}
+          </h3>
         </div>
 
         <Spacer y={2} />
@@ -112,7 +114,7 @@ function MerchantOrderPage({ orderList, menuItems }) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default MerchantOrderPage;
+export default MerchantOrderPage

@@ -1,6 +1,9 @@
 // The libraries for decoding jwts only work for node, not normal javascript, so need a helper function
 export function decodeJwt(jwt) {
-  const [header, payload] = jwt.split(".").slice(0, 2).map(e => JSON.parse(window.atob(e)))
+  const [header, payload] = jwt
+    .split(".")
+    .slice(0, 2)
+    .map((e) => JSON.parse(window.atob(e)))
   return { header, payload }
 }
 

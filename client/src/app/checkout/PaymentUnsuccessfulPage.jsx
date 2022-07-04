@@ -1,12 +1,9 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import IconActionPage from "../../components/IconActionPage";
-import LoadingPage from "../../components/LoadingPage";
-import {
-  AnalyticsEvent,
-  AnalyticsManager,
-} from "../../utils/AnalyticsManager";
-import { cancelOrder } from "./cancelOrder";
+import { useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import IconActionPage from "../../components/IconActionPage"
+import LoadingPage from "../../components/LoadingPage"
+import { AnalyticsEvent, AnalyticsManager } from "../../utils/AnalyticsManager"
+import { cancelOrder } from "./cancelOrder"
 
 export default function PaymentUnsuccessfulPage({
   Icon,
@@ -16,7 +13,7 @@ export default function PaymentUnsuccessfulPage({
   body,
   order,
 }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
   const { state } = useLocation()
@@ -26,27 +23,29 @@ export default function PaymentUnsuccessfulPage({
   const handleTryAgain = () => {
     AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
       button: "retryPayment",
-    });
-    navigate(retryPath);
-  };
+    })
+    navigate(retryPath)
+  }
 
   const handleCancelOrder = async () => {
     await cancelOrder(order, navigate)
-  };
+  }
 
   if (isLoading) {
     return <LoadingPage />
   } else {
-    return <IconActionPage
-      Icon={Icon}
-      iconBackgroundColor={iconBackgroundColor}
-      iconForegroundColor={iconForegroundColor}
-      title={title}
-      body={body}
-      primaryActionTitle="Try again"
-      primaryAction={handleTryAgain}
-      secondaryActionTitle="Cancel payment"
-      secondaryAction={handleCancelOrder}
-    />
+    return (
+      <IconActionPage
+        Icon={Icon}
+        iconBackgroundColor={iconBackgroundColor}
+        iconForegroundColor={iconForegroundColor}
+        title={title}
+        body={body}
+        primaryActionTitle="Try again"
+        primaryAction={handleTryAgain}
+        secondaryActionTitle="Cancel payment"
+        secondaryAction={handleCancelOrder}
+      />
+    )
   }
 }

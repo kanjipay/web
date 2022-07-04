@@ -1,11 +1,16 @@
-import { NetworkManager } from "../NetworkManager";
+import { NetworkManager } from "../NetworkManager"
 
-export async function createPaymentAttemptCrezco(orderId, bankCode, countryCode, deviceId) {
+export async function createPaymentAttemptCrezco(
+  orderId,
+  bankCode,
+  countryCode,
+  deviceId
+) {
   const res = await NetworkManager.post("/payment-attempts/crezco", {
     orderId,
     deviceId,
     countryCode,
-    crezcoBankCode: bankCode
+    crezcoBankCode: bankCode,
   })
 
   const { redirectUrl } = res.data

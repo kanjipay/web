@@ -1,10 +1,10 @@
-import "./TextLine.css";
-import Spacer from "./Spacer";
+import "./TextLine.css"
+import Spacer from "./Spacer"
 
 function TextLine(props) {
-  const { leftComponent, rightComponent, spacer } = props;
+  const { leftComponent, rightComponent, spacer } = props
 
-  const spacerWanted = spacer ? spacer > 0 : false;
+  const spacerWanted = spacer ? spacer > 0 : false
 
   return (
     <div className="grid-container">
@@ -16,7 +16,7 @@ function TextLine(props) {
 
       {spacerWanted ? <Spacer y={spacer} /> : <div></div>}
     </div>
-  );
+  )
 }
 
-export default TextLine;
+export default TextLine
