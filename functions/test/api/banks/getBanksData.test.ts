@@ -5,7 +5,6 @@ describe("Get Banks Data", () => {
     api
       .get('/banks/GB')
       .end(function(err, res) {
-        console.log(res.body);
         expect(res).to.have.status(200);
         expect(res.body.length).to.be.above(0);
         const missingBankCode = res.body.filter(item => item.bankCode == undefined).length

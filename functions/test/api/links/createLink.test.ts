@@ -10,14 +10,11 @@ describe("Create link", () => {
       stateId: "123"
     };
 
-  it("Should successfully create a link", (done) => {
-    api
+  it("Should successfully create a link", async () => {
+    const res = await api
         .post('/links')
-        .send(linkData)
-        .end(function(err, res) {
-            expect(res).to.have.status(200);
-            done();                               
-          });
+        .send(linkData);
+    expect(res).to.have.status(200);
   })
   after(async () => {
     const googleLinks = await db.collection(Collection.LINK).where("path", "==", testPath).get();
