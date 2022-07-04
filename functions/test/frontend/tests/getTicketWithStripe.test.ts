@@ -1,18 +1,15 @@
 import "mocha"
-import { checkoutProduct } from "../utils/checkoutProduct";
-import { db } from "../../utils/admin";
-import Collection from "../../../src/shared/enums/Collection";
-import { testId } from "../utils/findByTestValues";
-import { cleanTicketPurchases } from "../utils/cleanTicketPurchases";
-import { openNewPage } from "../utils/browser";
+import { checkoutProduct } from "../utils/checkoutProduct"
+import { db } from "../../utils/admin"
+import Collection from "../../../src/shared/enums/Collection"
+import { testId } from "../utils/findByTestValues"
+import { cleanTicketPurchases } from "../utils/cleanTicketPurchases"
+import { openNewPage } from "../utils/browser"
 
-require('dotenv').config();
+require("dotenv").config()
 
 async function updateMerchantCurrency(currency: string) {
-  await db
-    .collection(Collection.MERCHANT)
-    .doc("trinity")
-    .update({ currency })
+  await db.collection(Collection.MERCHANT).doc("trinity").update({ currency })
 }
 
 describe("Buy Stripe ticket", () => {
@@ -44,7 +41,7 @@ describe("Buy Stripe ticket", () => {
   after(async () => [
     await Promise.all([
       updateMerchantCurrency("GBP"),
-      cleanTicketPurchases("trinity")
-    ])
+      cleanTicketPurchases("trinity"),
+    ]),
   ])
 })

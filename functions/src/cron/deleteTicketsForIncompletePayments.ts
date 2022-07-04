@@ -6,12 +6,14 @@ import PaymentAttemptStatus from "../shared/enums/PaymentAttemptStatus"
 import { db } from "../shared/utils/admin"
 
 export async function fetchDocumentsInArray(
-  query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>, 
-  fieldPath: string | FirebaseFirestore.FieldPath, 
-  valuesArray: any[], 
+  query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>,
+  fieldPath: string | FirebaseFirestore.FieldPath,
+  valuesArray: any[],
   isPositive: boolean = true
 ) {
-  const promises: Promise<FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>>[] = []
+  const promises: Promise<
+    FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>
+  >[] = []
 
   let i = 0
   const chunkSize = 10
@@ -31,16 +33,16 @@ export async function fetchDocumentsInArray(
   const querySnapshots = await Promise.all(promises)
 
   return querySnapshots
-    .map(snapshot => snapshot.docs)
+    .map((snapshot) => snapshot.docs)
     .flat()
-    .map(doc => { 
+    .map((doc) => {
       const result: any = { id: doc.id, ...doc.data() }
 
       return result
     })
 }
 
-export const deleteTicketsForIncompletePayments = async context => {
+export const deleteTicketsForIncompletePayments = async (context) => {
   try {
     const threeBusinessDaysAgo = addBusinessDays(new Date(), -3)
 
@@ -50,32 +52,45 @@ export const deleteTicketsForIncompletePayments = async context => {
       .where("createdAt", "<", threeBusinessDaysAgo)
       .get()
 
-    const paymentAttempts: any[] = paymentAttemptSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    const paymentAttempts: any[] = paymentAttemptSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
 
-    logger.log("Got incomplete payment attempts", { paymentAttemptCount: paymentAttempts.length })
+    logger.log("Got incomplete payment attempts", {
+      paymentAttemptCount: paymentAttempts.length,
+    })
 
-    if (paymentAttempts.length === 0) { return }
+    if (paymentAttempts.length === 0) {
+      return
+    }
 
-    const paymentAttemptIds = paymentAttempts.map(p => p.id)
-    const orderIds = paymentAttempts.map(p => p.orderId)
+    const paymentAttemptIds = paymentAttempts.map((p) => p.id)
+    const orderIds = paymentAttempts.map((p) => p.orderId)
 
-    const tickets = await fetchDocumentsInArray(db().collection(Collection.TICKET), "orderId", orderIds)
-    const ticketIds = tickets.map(doc => doc.id)
+    const tickets = await fetchDocumentsInArray(
+      db().collection(Collection.TICKET),
+      "orderId",
+      orderIds
+    )
+    const ticketIds = tickets.map((doc) => doc.id)
 
     // For all of these payment attempts, update them to failed, update the orders to abandoned and delete the associated tickets
     const batch = db().batch()
 
     for (const paymentAttemptId of paymentAttemptIds) {
-      const docRef = db().collection(Collection.PAYMENT_ATTEMPT).doc(paymentAttemptId)
+      const docRef = db()
+        .collection(Collection.PAYMENT_ATTEMPT)
+        .doc(paymentAttemptId)
       batch.update(docRef, {
-        status: PaymentAttemptStatus.FAILED
+        status: PaymentAttemptStatus.FAILED,
       })
     }
 
     for (const orderId of orderIds) {
       const docRef = db().collection(Collection.ORDER).doc(orderId)
       batch.update(docRef, {
-        status: OrderStatus.CANCELLED
+        status: OrderStatus.CANCELLED,
       })
     }
 

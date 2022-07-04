@@ -10,7 +10,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "lint": "npx prettier --write .",
+    "lint": "npx prettier --no-semi --write .",
     "postbuild": "copyfiles -u 1 src/**/*.handlebars src/**/*.json lib/",
     "test-backend": "env-cmd -f ./.env.local mocha -r ts-node/register test/api/**/*.test.ts --timeout 10000",
     "test-frontend": "env-cmd -f ./.env.local mocha -r ts-node/register test/frontend/tests/*.test.ts --timeout 100000"

@@ -1,15 +1,11 @@
-import Collection from "../../src/shared/enums/Collection";
-import { db } from "./admin";
+import Collection from "../../src/shared/enums/Collection"
+import { db } from "./admin"
 import { StripeStatus } from "../../src/shared/enums/StripeStatus"
-import { addHours } from "date-fns";
+import { addHours } from "date-fns"
 
 export async function createMerchant(
   merchantId: string,
-  {
-    currency = "GBP",
-    customerFee = 0.1,
-    approvalStatus = "APPROVED"
-  } = {}
+  { currency = "GBP", customerFee = 0.1, approvalStatus = "APPROVED" } = {}
 ) {
   const name = `test merchant`
 
@@ -31,43 +27,39 @@ export async function createMerchant(
       sortCode: "000000",
       accountNumber: "12341234",
       crezco: {
-        userId: "6c8a6c40-b2eb-4538-b833-8d24a86208ff"
+        userId: "6c8a6c40-b2eb-4538-b833-8d24a86208ff",
       },
       stripe: {
         accountId: "acct_1L8MJV2Yi582Wuz1",
-        status: StripeStatus.CHARGES_ENABLED
-      }
+        status: StripeStatus.CHARGES_ENABLED,
+      },
     })
 }
 
 export async function createEvent(
-  merchantId: string, 
+  merchantId: string,
   eventId: string,
   {
     isPublished = true,
     maxTicketsPerPerson = 1000,
     startsAt = addHours(new Date(), 4),
-    endsAt = addHours(new Date(), 6)
+    endsAt = addHours(new Date(), 6),
   } = {}
 ) {
-  await db
-    .collection(Collection.EVENT)
-    .doc(eventId)
-    .create({
-      // variable properties
-      merchantId,
-      isPublished,
-      maxTicketsPerPerson,
-      startsAt,
-      endsAt,
+  await db.collection(Collection.EVENT).doc(eventId).create({
+    // variable properties
+    merchantId,
+    isPublished,
+    maxTicketsPerPerson,
+    startsAt,
+    endsAt,
 
-      // Fixed properties
-      title: `test event`,
-      address: "28 Paragon, Bath",
-      description: "Some description",
-      testData: true,
-      
-    })
+    // Fixed properties
+    title: `test event`,
+    address: "28 Paragon, Bath",
+    description: "Some description",
+    testData: true,
+  })
 }
 
 export async function createProduct(
@@ -81,8 +73,8 @@ export async function createProduct(
     reservedCount = 0,
     soldCount = 0,
     capacity = 10000,
-    releasesAt = addHours(new Date, -1),
-    price = 1
+    releasesAt = addHours(new Date(), -1),
+    price = 1,
   } = {},
   optionalFields = {}
 ) {

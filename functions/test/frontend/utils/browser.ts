@@ -12,9 +12,9 @@ export async function getBrowser(): Promise<Browser> {
       headless: false,
       args: [
         "--no-sandbox",
-        '--disable-web-security',
+        "--disable-web-security",
         "--disable-features=IsolateOrigins",
-        "--disable-site-isolation-trials"
+        "--disable-site-isolation-trials",
       ],
     })
   }
@@ -28,4 +28,3 @@ export async function openNewPage(): Promise<Page> {
 
   return page
 }
-

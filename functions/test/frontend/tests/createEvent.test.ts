@@ -1,16 +1,16 @@
 import "mocha"
 import * as chai from "chai"
-import { baseUrl } from "../utils/baseUrl";
-import { testId } from "../utils/findByTestValues";
-import { db } from "../../utils/admin";
-import Collection from "../../../src/shared/enums/Collection";
-import { sleep } from "../utils/sleep";
-import { openNewPage } from "../utils/browser";
-import { isVisible, uploadImage } from "../utils/puppeteer";
+import { baseUrl } from "../utils/baseUrl"
+import { testId } from "../utils/findByTestValues"
+import { db } from "../../utils/admin"
+import Collection from "../../../src/shared/enums/Collection"
+import { sleep } from "../utils/sleep"
+import { openNewPage } from "../utils/browser"
+import { isVisible, uploadImage } from "../utils/puppeteer"
 
-require('dotenv').config();
+require("dotenv").config()
 
-const expect = chai.expect;
+const expect = chai.expect
 
 describe("Create event", () => {
   it("Can create event", async () => {
@@ -18,7 +18,9 @@ describe("Create event", () => {
 
     await page.goto(`${baseUrl}/dashboard/o/trinity/events`)
 
-    const createEventButton = await page.waitForSelector(testId("create-event-button"))
+    const createEventButton = await page.waitForSelector(
+      testId("create-event-button")
+    )
     await createEventButton.click()
 
     await page.type(testId("field-title"), "Test event")
@@ -26,24 +28,42 @@ describe("Create event", () => {
     await uploadImage(page, testId("image-picker-input-photo"))
     await page.type(testId("field-address"), "Example address")
 
-    await page.click(`${testId("date-picker-startsAt")} ${testId("date-picker-increment")}`)
-    await page.click(`${testId("date-picker-endsAt")} ${testId("date-picker-increment")}`)
-    await page.click(`${testId("date-picker-endsAt")} ${testId("date-picker-increment")}`)
+    await page.click(
+      `${testId("date-picker-startsAt")} ${testId("date-picker-increment")}`
+    )
+    await page.click(
+      `${testId("date-picker-endsAt")} ${testId("date-picker-increment")}`
+    )
+    await page.click(
+      `${testId("date-picker-endsAt")} ${testId("date-picker-increment")}`
+    )
 
     await page.click(testId("form-submit-create-event"))
 
-    const createProductButton = await page.waitForSelector(testId("create-product-button"))
+    const createProductButton = await page.waitForSelector(
+      testId("create-product-button")
+    )
     await createProductButton.click()
 
-    const createProductFormButton = await page.waitForSelector(testId("form-submit-create-product"))
+    const createProductFormButton = await page.waitForSelector(
+      testId("form-submit-create-product")
+    )
 
     await page.type(testId("field-title"), "Product title")
     await page.type(testId("textarea-description"), "Example description")
     await page.type(testId("field-price"), "10")
     await page.type(testId("field-capacity"), "1000")
 
-    await page.click(`${testId("date-picker-earliestEntryAt")} ${testId("checkbox-date-picker-isblank")}`)
-    await page.click(`${testId("date-picker-earliestEntryAt")} ${testId("date-picker-increment")}`)
+    await page.click(
+      `${testId("date-picker-earliestEntryAt")} ${testId(
+        "checkbox-date-picker-isblank"
+      )}`
+    )
+    await page.click(
+      `${testId("date-picker-earliestEntryAt")} ${testId(
+        "date-picker-increment"
+      )}`
+    )
 
     await createProductFormButton.click()
 
@@ -57,18 +77,22 @@ describe("Create event", () => {
 
     await sleep(2000)
 
-    const priceValue = await priceField.evaluate(x => x.getAttribute("value"))
+    const priceValue = await priceField.evaluate((x) => x.getAttribute("value"))
 
     expect(priceValue).to.eql("12")
 
     await page.click(testId("publish-product-button"))
 
-    const cancelPublishProductButton = await page.waitForSelector(testId("cancel-publish-product-button"))
+    const cancelPublishProductButton = await page.waitForSelector(
+      testId("cancel-publish-product-button")
+    )
     await cancelPublishProductButton.click()
 
     await page.click(testId("publish-product-button"))
 
-    const confirmPublishProductButton = await page.waitForSelector(testId("confirm-publish-product-button"))
+    const confirmPublishProductButton = await page.waitForSelector(
+      testId("confirm-publish-product-button")
+    )
     await confirmPublishProductButton.click()
 
     await sleep(3000)
@@ -84,16 +108,25 @@ describe("Create event", () => {
     // expect(isPublishVisible).to.eql(false, "Publish button still visible after publishing product")
     // expect(isDeleteVisible).to.eql(false, "Delete button still visible after publishing product")
 
-    const isPriceFieldDisabled = await priceField.evaluate(x => x.hasAttribute("disabled"))
-    expect(isPriceFieldDisabled).to.eql(true, "Price field not disabled after publishing product")
+    const isPriceFieldDisabled = await priceField.evaluate((x) =>
+      x.hasAttribute("disabled")
+    )
+    expect(isPriceFieldDisabled).to.eql(
+      true,
+      "Price field not disabled after publishing product"
+    )
 
     // Now go back to event page
     await page.click(testId("breadcrumb-event"))
 
-    const publishEventButton = await page.waitForSelector(testId("publish-event-button"))
+    const publishEventButton = await page.waitForSelector(
+      testId("publish-event-button")
+    )
     await publishEventButton.click()
 
-    const confirmPublishEventButton = await page.waitForSelector(testId("confirm-publish-event-button"))
+    const confirmPublishEventButton = await page.waitForSelector(
+      testId("confirm-publish-event-button")
+    )
     await confirmPublishEventButton.click()
   })
 
@@ -110,12 +143,9 @@ describe("Create event", () => {
       .where("title", "==", "Test product")
       .get()
 
-    const [
-      testEvents,
-      testProducts
-    ] = await Promise.all([
+    const [testEvents, testProducts] = await Promise.all([
       fetchTestEvents,
-      fetchTestProducts
+      fetchTestProducts,
     ])
 
     for (const event of testEvents.docs) {

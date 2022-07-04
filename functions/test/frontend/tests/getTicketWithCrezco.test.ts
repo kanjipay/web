@@ -1,10 +1,10 @@
 import "mocha"
 import { testId } from "../utils/findByTestValues"
-import { checkoutProduct } from "../utils/checkoutProduct";
-import { cleanTicketPurchases } from "../utils/cleanTicketPurchases";
-import { openNewPage } from "../utils/browser";
+import { checkoutProduct } from "../utils/checkoutProduct"
+import { cleanTicketPurchases } from "../utils/cleanTicketPurchases"
+import { openNewPage } from "../utils/browser"
 
-require('dotenv').config()
+require("dotenv").config()
 
 describe("Buy Crezco ticket", () => {
   it("Should buy Crezco ticket", async () => {
@@ -18,11 +18,12 @@ describe("Buy Crezco ticket", () => {
     await page.waitForSelector(testId("continue-to-bank-button"))
     await page.click(testId("continue-to-bank-button"))
 
-    const crezcoNextStepButtonSelector = 'button[data-test-id="pay-demand-next-step"]'
+    const crezcoNextStepButtonSelector =
+      'button[data-test-id="pay-demand-next-step"]'
     await page.waitForSelector(crezcoNextStepButtonSelector)
     await page.click(crezcoNextStepButtonSelector)
 
-    const mockBankUsernameSelector = '#username'
+    const mockBankUsernameSelector = "#username"
     await page.waitForSelector(mockBankUsernameSelector)
     await page.type(mockBankUsernameSelector, "test_executed")
 

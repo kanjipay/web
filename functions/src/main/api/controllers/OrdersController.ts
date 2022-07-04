@@ -19,13 +19,13 @@ enum DeviceType {
   MOBILE = "Mobile",
   TABLET = "Tablet",
   DESKTOP = "Desktop",
-  OTHER = "Other"
+  OTHER = "Other",
 }
 
 enum Gender {
   MALE = "Male",
   FEMALE = "Female",
-  NOT_DETERMINED = "Not determined"
+  NOT_DETERMINED = "Not determined",
 }
 
 async function getGender(userId: string) {
@@ -50,8 +50,8 @@ async function getGender(userId: string) {
     logger.log("No gender on user, retrieving from endpoint", { url })
     const { data: genderResData } = await axios.get(url, {
       params: {
-        name: firstName
-      }
+        name: firstName,
+      },
     })
 
     const { gender: genderFromApi, probability } = genderResData
@@ -66,10 +66,7 @@ async function getGender(userId: string) {
 
     logger.log("Updating user with gender", { gender, userId })
 
-    await db()
-      .collection(Collection.USER)
-      .doc(userId)
-      .update({ gender })
+    await db().collection(Collection.USER).doc(userId).update({ gender })
   }
 
   return [gender, null]
@@ -78,14 +75,7 @@ async function getGender(userId: string) {
 function getUserAgentData(userAgent: any) {
   let deviceType: DeviceType
 
-  const {
-    browser,
-    platform,
-    os,
-    isMobile,
-    isDesktop,
-    isTablet
-  } = userAgent
+  const { browser, platform, os, isMobile, isDesktop, isTablet } = userAgent
 
   if (isMobile) {
     deviceType = DeviceType.MOBILE
@@ -101,14 +91,17 @@ function getUserAgentData(userAgent: any) {
     deviceType,
     browser,
     platform,
-    os
+    os,
   }
 }
 
 async function getLocationData(ip: string) {
   logger.log("Getting location from ip", { ip })
 
-  const { ipGeolocation: existingIpGeolocation } = await fetchDocument(Collection.IP_GEOLOCATION, ip)
+  const { ipGeolocation: existingIpGeolocation } = await fetchDocument(
+    Collection.IP_GEOLOCATION,
+    ip
+  )
 
   let ipGeolocation: any
 
@@ -117,14 +110,18 @@ async function getLocationData(ip: string) {
     ipGeolocation = existingIpGeolocation
   } else {
     logger.log("No existing data for ip, calling geolocation from ip endpoint")
-    const { data: geolocationResData } = await axios.get("https://api.ipgeolocation.io/ipgeo", {
-      params: {
-        apiKey: process.env.IP_GEOLOCATION_API_KEY,
-        ip
+    const { data: geolocationResData } = await axios.get(
+      "https://api.ipgeolocation.io/ipgeo",
+      {
+        params: {
+          apiKey: process.env.IP_GEOLOCATION_API_KEY,
+          ip,
+        },
       }
-    })
+    )
 
-    const { latitude: latitudeString, longitude: longitudeString } = geolocationResData
+    const { latitude: latitudeString, longitude: longitudeString } =
+      geolocationResData
 
     logger.log("Got location from ip", { latitudeString, longitudeString })
 
@@ -134,24 +131,31 @@ async function getLocationData(ip: string) {
 
     logger.log("Calling reverse geocoding endpoint")
 
-    const { data: geocodingResData } = await axios.get("https://maps.googleapis.com/maps/api/geocode/json", {
-      params: {
-        key: process.env.GOOGLE_MAPS_API_KEY,
-        latlng: `${latitude},${longitude}`
+    const { data: geocodingResData } = await axios.get(
+      "https://maps.googleapis.com/maps/api/geocode/json",
+      {
+        params: {
+          key: process.env.GOOGLE_MAPS_API_KEY,
+          latlng: `${latitude},${longitude}`,
+        },
       }
-    })
+    )
 
     logger.log("Got geocoding data", { ...geocodingResData })
 
-    const relevantLocationTypes = ["neighborhood", "sublocality", "administrative_area_level_3"]
+    const relevantLocationTypes = [
+      "neighborhood",
+      "sublocality",
+      "administrative_area_level_3",
+    ]
 
     const locationName = geocodingResData.results
-      .map(result => {
-        return result.address_components.filter(comp => {
-          return comp.types.some(type => relevantLocationTypes.includes(type))
+      .map((result) => {
+        return result.address_components.filter((comp) => {
+          return comp.types.some((type) => relevantLocationTypes.includes(type))
         })
       })
-      .filter(addressComponents => addressComponents.length > 0)
+      .filter((addressComponents) => addressComponents.length > 0)
       .reduce((selectedAddressComponents, addressComponents) => {
         if (addressComponents.length > selectedAddressComponents.length) {
           return addressComponents
@@ -159,7 +163,7 @@ async function getLocationData(ip: string) {
           return selectedAddressComponents
         }
       }, [])
-      .map(addressComponent => addressComponent.long_name)
+      .map((addressComponent) => addressComponent.long_name)
       .slice(0, 2)
       .join(", ")
 
@@ -167,7 +171,7 @@ async function getLocationData(ip: string) {
 
     const geolocationData = {
       locationName,
-      coordinates
+      coordinates,
     }
 
     logger.log("Saving data to IP geolocation object", { geolocationData })
@@ -204,7 +208,10 @@ export class OrdersController extends BaseController {
 
       logger.log("Enriching order data", { orderId, userId })
 
-      const { order, orderError } = await fetchDocument(Collection.ORDER, orderId)
+      const { order, orderError } = await fetchDocument(
+        Collection.ORDER,
+        orderId
+      )
 
       if (orderError) {
         next(orderError)
@@ -213,12 +220,9 @@ export class OrdersController extends BaseController {
 
       const { merchantId } = order
 
-      const [
-        isExisting,
-        [gender, genderError]
-      ] = await Promise.all([
+      const [isExisting, [gender, genderError]] = await Promise.all([
         isExistingUser(userId, merchantId),
-        getGender(userId)
+        getGender(userId),
       ])
 
       if (genderError) {
@@ -235,12 +239,11 @@ export class OrdersController extends BaseController {
       const orderUpdate = {
         gender,
         isExistingUser: isExisting,
-        ...userAgentData
+        ...userAgentData,
       }
 
-      const ip = req.headers['x-appengine-user-ip'] ?? req.headers["x-forwarded-for"]
-
-      
+      const ip =
+        req.headers["x-appengine-user-ip"] ?? req.headers["x-forwarded-for"]
 
       if (ip) {
         const { coordinates, locationName } = await getLocationData(ip)
@@ -250,12 +253,9 @@ export class OrdersController extends BaseController {
 
       logger.log("Updating order with data", { sessionData: orderUpdate })
 
-      await db()
-        .collection(Collection.ORDER)
-        .doc(orderId)
-        .update({
-          sessionData: orderUpdate
-        })
+      await db().collection(Collection.ORDER).doc(orderId).update({
+        sessionData: orderUpdate,
+      })
 
       logger.log("Order updated")
 
@@ -276,30 +276,50 @@ export class OrdersController extends BaseController {
         userId,
         productId,
         quantity,
-        deviceId
+        deviceId,
       })
 
-      const { product, productError } = await fetchDocument(Collection.PRODUCT, productId)
+      const { product, productError } = await fetchDocument(
+        Collection.PRODUCT,
+        productId
+      )
 
       if (productError) {
         next(productError)
         return
       }
 
-      const { soldCount, reservedCount, capacity, eventId, merchantId, price, title } = product
+      const {
+        soldCount,
+        reservedCount,
+        capacity,
+        eventId,
+        merchantId,
+        price,
+        title,
+      } = product
 
       logger.log("Got product", { product })
 
       if (soldCount + reservedCount + quantity >= capacity) {
         const errorMessage = "This ticket is sold out."
-        logger.log("Ticket is sold out", { soldCount, reservedCount, quantity, capacity })
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        logger.log("Ticket is sold out", {
+          soldCount,
+          reservedCount,
+          quantity,
+          capacity,
+        })
+        next(
+          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+        )
         return
       }
 
       if (!product.isPublished) {
         const errorMessage = "This ticket hasn't been published yet"
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        next(
+          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+        )
         return
       }
 
@@ -312,11 +332,11 @@ export class OrdersController extends BaseController {
       const [
         { event, eventError },
         { merchant, merchantError },
-        existingTicketDocs
+        existingTicketDocs,
       ] = await Promise.all([
         fetchDocument(Collection.EVENT, eventId),
         fetchDocument(Collection.MERCHANT, merchantId),
-        fetchExistingTickets
+        fetchExistingTickets,
       ])
 
       for (const error of [eventError, merchantError]) {
@@ -328,13 +348,19 @@ export class OrdersController extends BaseController {
 
       const currentTicketCount = existingTicketDocs.docs.length
 
-      logger.log("Got event, merchant and existing tickets", { event, merchant, currentTicketCount })
+      logger.log("Got event, merchant and existing tickets", {
+        event,
+        merchant,
+        currentTicketCount,
+      })
 
       const { maxTicketsPerPerson, endsAt } = event
 
       if (!event.isPublished) {
         const errorMessage = "This event hasn't been published yet"
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        next(
+          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+        )
         return
       }
 
@@ -347,13 +373,20 @@ export class OrdersController extends BaseController {
           errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person.`
         }
 
-        logger.log("Order violates max tickets per person policy", { currentTicketCount, quantity, maxTicketsPerPerson })
+        logger.log("Order violates max tickets per person policy", {
+          currentTicketCount,
+          quantity,
+          maxTicketsPerPerson,
+        })
 
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        next(
+          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+        )
         return
       }
 
-      const emailDomain = merchant.emailDomain ?? event.emailDomain ?? product.emailDomain
+      const emailDomain =
+        merchant.emailDomain ?? event.emailDomain ?? product.emailDomain
 
       if (emailDomain) {
         logger.log("Got required email domain for ticket: ", emailDomain)
@@ -362,12 +395,18 @@ export class OrdersController extends BaseController {
 
         logger.log("Checking email domain", {
           emailDomain,
-          email
+          email,
         })
 
         if (email.slice(email.length - emailDomain.length) !== emailDomain) {
           const errorMessage = `Your email must end in ${emailDomain}.`
-          next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+          next(
+            new HttpError(
+              HttpStatusCode.BAD_REQUEST,
+              errorMessage,
+              errorMessage
+            )
+          )
           return
         }
       } else {
@@ -376,9 +415,14 @@ export class OrdersController extends BaseController {
 
       const { currency, customerFee } = merchant
 
-      const total = Math.round(price * quantity * (1 + customerFee)) 
+      const total = Math.round(price * quantity * (1 + customerFee))
 
-      logger.log("Calculated total for order", { total, quantity, price, customerFee })
+      logger.log("Calculated total for order", {
+        total,
+        quantity,
+        price,
+        customerFee,
+      })
       const orderId = uuid()
 
       const isFree = total === 0
@@ -394,16 +438,18 @@ export class OrdersController extends BaseController {
         eventId,
         merchantId,
         customerFee,
-        orderItems: [{
-          productId,
-          eventId,
-          eventTitle: event.title,
-          title,
-          price,
-          eventEndsAt: endsAt,
-          quantity
-        }],
-        wereTicketsCreated: isFree
+        orderItems: [
+          {
+            productId,
+            eventId,
+            eventTitle: event.title,
+            title,
+            price,
+            eventEndsAt: endsAt,
+            quantity,
+          },
+        ],
+        wereTicketsCreated: isFree,
       }
 
       if (attributionData) {
@@ -413,8 +459,6 @@ export class OrdersController extends BaseController {
       logger.log("Formulated order data", { orderData })
 
       const promises: Promise<any>[] = []
-
-      
 
       if (isFree) {
         logger.log("Event is free, processing successful order")
@@ -440,13 +484,13 @@ export class OrdersController extends BaseController {
       const createOrder = db()
         .collection(Collection.ORDER)
         .doc(orderId)
-        .set(orderData);
+        .set(orderData)
 
       const updateProduct = db()
         .collection(Collection.PRODUCT)
         .doc(productId)
         .update({
-          reservedCount: firestore.FieldValue.increment(quantity)
+          reservedCount: firestore.FieldValue.increment(quantity),
         })
 
       promises.push(createOrder)
@@ -474,70 +518,96 @@ export class OrdersController extends BaseController {
     }
   }
 
-  private async fetchMenuItems(requestedItems: { id: string, quantity: number, title: string }[], merchantId: string) {
-    const requestedMenuItemIds = requestedItems.map(item => item.id);
+  private async fetchMenuItems(
+    requestedItems: { id: string; quantity: number; title: string }[],
+    merchantId: string
+  ) {
+    const requestedMenuItemIds = requestedItems.map((item) => item.id)
 
     const query = db()
       .collection(Collection.MENU_ITEM)
       .where("merchantId", "==", merchantId)
-      
-    const menuItems = await fetchDocumentsInArray(query, firestore.FieldPath.documentId(), requestedMenuItemIds)
+
+    const menuItems = await fetchDocumentsInArray(
+      query,
+      firestore.FieldPath.documentId(),
+      requestedMenuItemIds
+    )
 
     return menuItems
   }
 
-  private checkMenuItemsForErrors(requestedItems: { id: string, quantity: number, title: string }[], menuItems): HttpError | null {
-    const menuItemIds = menuItems.map((item) => item.id);
+  private checkMenuItemsForErrors(
+    requestedItems: { id: string; quantity: number; title: string }[],
+    menuItems
+  ): HttpError | null {
+    const menuItemIds = menuItems.map((item) => item.id)
     const unavailableItemIds = menuItems
       .filter((item) => !item.isAvailable)
-      .map((item) => item.id);
+      .map((item) => item.id)
 
     const nonexistantMenuItemTitles = requestedItems
       .filter((item) => !menuItemIds.includes(item.id))
-      .map((item) => item.title);
+      .map((item) => item.title)
 
     const unavailableMenuItemTitles = requestedItems
       .filter((item) => unavailableItemIds.includes(item.id))
-      .map((item) => item.title);
+      .map((item) => item.title)
 
     if (nonexistantMenuItemTitles.length > 0) {
-      const isPlural = nonexistantMenuItemTitles.length > 1;
-      const errorMessage = `We couldn't find the following item${isPlural ? "s" : ""
-        } on the menu: ${nonexistantMenuItemTitles.join(
-          ", "
-        )}. Please remove from your basket to continue.`;
-      return new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+      const isPlural = nonexistantMenuItemTitles.length > 1
+      const errorMessage = `We couldn't find the following item${
+        isPlural ? "s" : ""
+      } on the menu: ${nonexistantMenuItemTitles.join(
+        ", "
+      )}. Please remove from your basket to continue.`
+      return new HttpError(
+        HttpStatusCode.BAD_REQUEST,
+        errorMessage,
+        errorMessage
+      )
     }
 
     if (unavailableMenuItemTitles.length > 0) {
-      const isPlural = unavailableMenuItemTitles.length > 1;
-      const errorMessage = `The following item${isPlural ? "s are" : " is"
-        } currently unavailable: ${unavailableMenuItemTitles.join(
-          ", "
-        )}. Please remove from your basket to continue.`;
-      return new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+      const isPlural = unavailableMenuItemTitles.length > 1
+      const errorMessage = `The following item${
+        isPlural ? "s are" : " is"
+      } currently unavailable: ${unavailableMenuItemTitles.join(
+        ", "
+      )}. Please remove from your basket to continue.`
+      return new HttpError(
+        HttpStatusCode.BAD_REQUEST,
+        errorMessage,
+        errorMessage
+      )
     }
 
     return null
   }
 
-  private calculateOrderTotal(requestedItems: { id: string, quantity: number, title: string }[], menuItems): number {
+  private calculateOrderTotal(
+    requestedItems: { id: string; quantity: number; title: string }[],
+    menuItems
+  ): number {
     const prices = menuItems.reduce((obj, item) => {
-      obj[item.id] = item.price;
-      return obj;
-    }, {});
+      obj[item.id] = item.price
+      return obj
+    }, {})
 
     const total = requestedItems.reduce((currTotal, item) => {
-      const price = prices[item.id] || 0;
-      return currTotal + item.quantity * price;
-    }, 0);
+      const price = prices[item.id] || 0
+      return currTotal + item.quantity * price
+    }, 0)
 
     return total
   }
 
-  private async generateOrderNumber(merchantId: string, loggingClient: LoggingController): Promise<number> {
-    const startOfToday = new Date();
-    startOfToday.setUTCHours(0, 0, 0, 0);
+  private async generateOrderNumber(
+    merchantId: string,
+    loggingClient: LoggingController
+  ): Promise<number> {
+    const startOfToday = new Date()
+    startOfToday.setUTCHours(0, 0, 0, 0)
 
     const latestOrdersSnap = await db()
       .collection(Collection.ORDER)
@@ -545,41 +615,42 @@ export class OrdersController extends BaseController {
       .where("createdAt", ">=", startOfToday)
       .orderBy("createdAt", "desc")
       .limit(1)
-      .get();
+      .get()
     // .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
 
-    let orderNumber;
+    let orderNumber
 
     const latestOrders = latestOrdersSnap.docs.map((doc) => ({
       id: doc.id,
       orderNumber: doc.data().orderNumber,
-    }));
+    }))
 
     if (latestOrders.length > 0) {
-      const latestOrderNumber = latestOrders[0].orderNumber || 1;
-      orderNumber = latestOrderNumber + 1;
+      const latestOrderNumber = latestOrders[0].orderNumber || 1
+      orderNumber = latestOrderNumber + 1
     } else {
-      orderNumber = 1;
+      orderNumber = 1
     }
 
-    loggingClient.log("Order number set", {}, { orderNumber });
+    loggingClient.log("Order number set", {}, { orderNumber })
 
     return orderNumber
   }
 
-  private generateOrderItems(requestedItems: { id: string, quantity: number, title: string }[], menuItems): {
-    menuItemId: string,
-    quantity: number,
-    title: string,
-    photo: string,
+  private generateOrderItems(
+    requestedItems: { id: string; quantity: number; title: string }[],
+    menuItems
+  ): {
+    menuItemId: string
+    quantity: number
+    title: string
+    photo: string
     price: number
   }[] {
     return requestedItems.map((item) => {
-      const menuItem = menuItems.find(
-        (menuItem) => menuItem.id === item.id
-      );
+      const menuItem = menuItems.find((menuItem) => menuItem.id === item.id)
 
-      const { title, photo, price } = menuItem;
+      const { title, photo, price } = menuItem
 
       return {
         menuItemId: item.id,
@@ -587,32 +658,30 @@ export class OrdersController extends BaseController {
         title,
         photo,
         price,
-      };
+      }
     })
   }
 
   private async createOrderItems(orderId: string, orderItems) {
-    const batch = db().batch();
+    const batch = db().batch()
 
     for (const item of orderItems) {
-      const orderItemRef = db()
-        .collection("OrderItem")
-        .doc()
+      const orderItemRef = db().collection("OrderItem").doc()
 
       batch.set(orderItemRef, {
         orderId,
-        ...item
-      });
+        ...item,
+      })
     }
 
-    await batch.commit();
+    await batch.commit()
   }
 
   createWithMenu = async (req, res, next) => {
     try {
-      const { requestedItems, merchantId, deviceId, userId } = req.body;
+      const { requestedItems, merchantId, deviceId, userId } = req.body
 
-      const loggingClient = new LoggingController("Order Controller");
+      const loggingClient = new LoggingController("Order Controller")
       loggingClient.log(
         "Order creation started",
         {
@@ -624,9 +693,13 @@ export class OrdersController extends BaseController {
           merchantId,
           deviceId,
         }
-      );
+      )
 
-      const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId, { status: MerchantStatus.OPEN })
+      const { merchant, merchantError } = await fetchDocument(
+        Collection.MERCHANT,
+        merchantId,
+        { status: MerchantStatus.OPEN }
+      )
       const { currency } = merchant
 
       if (merchantError) {
@@ -635,7 +708,10 @@ export class OrdersController extends BaseController {
       }
 
       const menuItems = await this.fetchMenuItems(requestedItems, merchantId)
-      const menuItemError = this.checkMenuItemsForErrors(requestedItems, menuItems)
+      const menuItemError = this.checkMenuItemsForErrors(
+        requestedItems,
+        menuItems
+      )
 
       if (menuItemError) {
         next(menuItemError)
@@ -644,33 +720,34 @@ export class OrdersController extends BaseController {
 
       const total = this.calculateOrderTotal(requestedItems, menuItems)
       const orderItems = this.generateOrderItems(requestedItems, menuItems)
-      const orderNumber = await this.generateOrderNumber(merchantId, loggingClient)
+      const orderNumber = await this.generateOrderNumber(
+        merchantId,
+        loggingClient
+      )
 
-      const orderRef = await db()
-        .collection(Collection.ORDER)
-        .add({
-          createdAt: firestore.FieldValue.serverTimestamp(),
-          status: OrderStatus.PENDING,
-          type: OrderType.MENU,
-          total,
-          currency,
-          deviceId,
-          userId,
-          merchantId,
-          receiptSent: false,
-          orderNumber,
-          orderItems
-        });
+      const orderRef = await db().collection(Collection.ORDER).add({
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        status: OrderStatus.PENDING,
+        type: OrderType.MENU,
+        total,
+        currency,
+        deviceId,
+        userId,
+        merchantId,
+        receiptSent: false,
+        orderNumber,
+        orderItems,
+      })
 
-      const orderId = orderRef.id;
+      const orderId = orderRef.id
 
-      loggingClient.log("Order document creation complete", {}, { orderId });
+      loggingClient.log("Order document creation complete", {}, { orderId })
 
       await this.createOrderItems(orderId, orderItems)
 
-      loggingClient.log("Order subcollection creation complete");
+      loggingClient.log("Order subcollection creation complete")
 
-      return res.status(200).json({ orderId });
+      return res.status(200).json({ orderId })
     } catch (err) {
       next(err)
     }
@@ -678,9 +755,13 @@ export class OrdersController extends BaseController {
 
   sendMenuReceipt = async (req, res, next) => {
     try {
-      const { email, orderId } = req.body;
+      const { email, orderId } = req.body
 
-      const { order, orderError } = await fetchDocument(Collection.ORDER, orderId, { receiptSent: false })
+      const { order, orderError } = await fetchDocument(
+        Collection.ORDER,
+        orderId,
+        { receiptSent: false }
+      )
 
       if (orderError) {
         next(orderError)
@@ -689,7 +770,10 @@ export class OrdersController extends BaseController {
 
       const { merchantId, orderNumber, orderItems, total } = order
 
-      const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
+      const { merchant, merchantError } = await fetchDocument(
+        Collection.MERCHANT,
+        merchantId
+      )
 
       if (merchantError) {
         next(merchantError)
@@ -698,19 +782,23 @@ export class OrdersController extends BaseController {
 
       const { displayName, currency } = merchant
 
-      const sendEmail = sendMenuReceiptEmail(email, displayName, orderNumber, orderItems, total, currency)
+      const sendEmail = sendMenuReceiptEmail(
+        email,
+        displayName,
+        orderNumber,
+        orderItems,
+        total,
+        currency
+      )
 
       const updateOrder = db()
         .collection(Collection.ORDER)
         .doc(orderId)
         .update({ receiptSent: true })
 
-      await Promise.all([
-        sendEmail,
-        updateOrder
-      ])
+      await Promise.all([sendEmail, updateOrder])
 
-      return res.sendStatus(200);
+      return res.sendStatus(200)
     } catch (err) {
       next(err)
     }
