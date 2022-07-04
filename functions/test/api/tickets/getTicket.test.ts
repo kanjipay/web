@@ -9,7 +9,7 @@ import Collection from "../../../src/shared/enums/Collection";
 describe("Get tickets", () => {
   const userId = 'oGvgPQWN4FdL9tBGO7HVeYhAEzl2' //olicairns93 in dev;
   const eventId = 'test-get-ticket-event'
-  const ticketId = 'test-get-ticket-ticket';
+  const ticketId = 'test-get-ticket-ticket2';
   before(async () => {
     await Promise.all([ createEvent('test-merchant', eventId), createTicket(ticketId, userId, eventId, '123') ]);
   });  
@@ -27,5 +27,6 @@ describe("Get tickets", () => {
     })
   after(async () => {
     await db.collection(Collection.TICKET).doc(ticketId).delete();
+    await db.collection(Collection.EVENT).doc(eventId).delete();
   });
 });

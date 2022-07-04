@@ -1,11 +1,9 @@
-/*
-Todo fix
 import "mocha"
 import { api, expect } from "../../utils/server";
 import {createUserToken} from "../../utils/user";
 
 describe("Create merchant", () => {
-    const userId = 'oGvgPQWN4FdL9tBGO7HVeYhAEzl2' //olicairns93 in dev
+    const userId = 'Q9wUk5mSWDVBrl5yregV8r5ccFJ2' //jeeves smith in dev
     const merchantData = {
         accountNumber: "00000000", 
         address: "8B Mitchison road", 
@@ -19,6 +17,7 @@ describe("Create merchant", () => {
   });  
   it("Should create a valid merchant", (done) => {
     createUserToken(userId).then((userToken) => {
+
         api.post('/merchants/create')
         .auth(userToken, { type: 'bearer' })
         .send(merchantData)
@@ -29,4 +28,3 @@ describe("Create merchant", () => {
         });
     })
 });
-*/

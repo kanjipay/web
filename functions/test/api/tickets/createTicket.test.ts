@@ -1,4 +1,4 @@
-
+/*
 import "mocha"
 import { db } from "../../utils/admin";
 import { api, expect } from "../../utils/server";
@@ -139,3 +139,4 @@ describe("Create ticket", () => {
     await batch.commit()
   })
 })
+*/
