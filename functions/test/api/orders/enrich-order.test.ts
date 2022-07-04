@@ -30,6 +30,5 @@ describe("Enrich order data", () => {
         await db.collection(Collection.MERCHANT).doc(merchantId).delete();
         await db.collection(Collection.MEMBERSHIP).doc(membershipId).delete();
         await db.collection(Collection.ORDER).doc(orderId).delete();
-
         });
 });
