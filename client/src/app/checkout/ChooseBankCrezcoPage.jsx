@@ -7,7 +7,6 @@ import Discover from "../../assets/icons/Discover"
 import Spinner from "../../assets/Spinner"
 import { Colors } from "../../enums/Colors"
 import CircleIcon from "../../components/CircleIcon"
-import LoadingPage from "../../components/LoadingPage"
 import MainButton from "../../components/MainButton"
 import NavBar from "../../components/NavBar"
 import OrDivider from "../../components/OrDivider"
@@ -23,6 +22,9 @@ import { cancelOrder } from "./cancelOrder"
 import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 
+const cachedBankFileNamePrefix = ["PROD", "STAGING"].includes(process.env.REACT_APP_ENV_NAME) ? "Prod" : "Sandbox"
+const cachedBankData = require(`./crezcoBanks${cachedBankFileNamePrefix}.json`)
+
 export default function ChooseBankCrezcoPage({ order }) {
   const navigate = useNavigate()
   // const intl = useIntl()
@@ -30,14 +32,12 @@ export default function ChooseBankCrezcoPage({ order }) {
   const referringDeviceId = searchParams.get("referringDeviceId")
   const bankCodeFromQuery = searchParams.get("bank")
   const bankCodeFromStorage = localStorage.getItem("crezcoBankCode")
-
-  const [isLoading, setIsLoading] = useState(true)
   // const countryCodeFromStorage = localStorage.getItem("countryCode")
 
   // const [countryCode, setCountryCode] = useState(countryCodeFromStorage ?? getCountryCode(intl.locale))
   const [countryCode, setCountryCode] = useState("GB") // Hardcode until EU OB payments work
   const [bankCode, setBankCode] = useState(null)
-  const [bankData, setBankData] = useState([])
+  const [bankData, setBankData] = useState(cachedBankData)
   const [bankName, setBankName] = useState("")
   const [filteredBankData, setFilteredBankData] = useState([])
   const [linkId, setLinkId] = useState(null)
@@ -94,44 +94,60 @@ export default function ChooseBankCrezcoPage({ order }) {
     AnalyticsManager.main.viewPage("ChooseBank", { cachedBankId: bankCodeFromStorage})
   }, [bankCodeFromStorage])
 
+  function receiveBankData(bankData) {
+    setBankData(bankData)
+    setFilteredBankData(bankData)
+
+    const initialBankCode = bankCodeFromQuery ?? bankCodeFromStorage
+
+    const bankCodes = bankData.map(bankDatum => bankDatum.bankCode)
+
+    if (bankCodeFromStorage && !bankCodes.includes(bankCodeFromStorage)) {
+      localStorage.removeItem("crezcoBankCode")
+    }
+
+    if (bankCodes.includes(initialBankCode)) {
+      setBankCode(initialBankCode)
+    }
+  }
+
   useEffect(() => {
-    setIsLoading(true)
-
     NetworkManager.get(`/banks/${countryCode}`).then(res => {
-      const bankData = res.data.sort((bankDatum1, bankDatum2) => {
-        return bankDatum1.bankName > bankDatum2.bankName ? 1 : -1
-      })
-      
-      setBankData(bankData)
-
-      const bankCodes = bankData.map(bankDatum => bankDatum.bankCode)
-
-      if (bankCodeFromStorage && !bankCodes.includes(bankCodeFromStorage)) {
-        localStorage.removeItem("crezcoBankCode")
-      }
-
-      const initialBankCode = bankCodeFromQuery ?? bankCodeFromStorage
-
-      if (bankCodes.includes(initialBankCode)) {
-        setBankCode(initialBankCode)
-      }
-
-      setFilteredBankData(bankData)
-      setIsLoading(false)
-
+      setBankData(res.data)
     })
   }, [bankCodeFromQuery, bankCodeFromStorage, countryCode])
 
   useEffect(() => {
+    const sortedData = bankData.sort((bankDatum1, bankDatum2) => {
+      return bankDatum1.bankName > bankDatum2.bankName ? 1 : -1
+    })
+
+    setFilteredBankData(sortedData)
+
+    const bankCodes = sortedData.map(bankDatum => bankDatum.bankCode)
+    const initialBankCode = bankCodeFromQuery ?? bankCodeFromStorage
+
+    if (bankCodeFromStorage && !bankCodes.includes(bankCodeFromStorage)) {
+      localStorage.removeItem("crezcoBankCode")
+    }
+
+    if (bankCodes.includes(initialBankCode)) {
+      setBankCode(initialBankCode)
+    }
+  }, [bankData, bankCodeFromQuery, bankCodeFromStorage])
+
+  useEffect(() => {
     if (bankCode && !isMobile) {
-      const deviceId = IdentityManager.main.getDeviceId()
-      createLink(`/checkout/o/${order.id}/choose-bank?referringDeviceId=${deviceId}&bank=${bankCode}`).then(linkId => {
-        setLinkId(linkId)
-      })
+      if (!linkId) {
+        const deviceId = IdentityManager.main.getDeviceId()
+        createLink(`/checkout/o/${order.id}/choose-bank?referringDeviceId=${deviceId}&bank=${bankCode}`).then(linkId => {
+          setLinkId(linkId)
+        })
+      }
     } else {
       setLinkId(null)
     }
-  }, [order, bankCode])
+  }, [order, bankCode, linkId])
 
   useEffect(() => {
     if (!linkId) { return }
@@ -144,9 +160,7 @@ export default function ChooseBankCrezcoPage({ order }) {
     })
   }, [linkId, navigate])
 
-  if (isLoading) {
-    return <LoadingPage />
-  } else if (bankCode) {
+  if (bankCode) {
     const bankDatum = bankData.find(d => d.bankCode === bankCode)
     const { bankName, logoUrl } = bankDatum
     return <div className="container">

@@ -1,0 +1,227 @@
+[
+  {
+    "bankCode": "aibgb",
+    "bankName": "Allied Irish Bank UK",
+    "logoUrl": "https://images.yapily.com/image/127fb30b-31ad-434c-91a7-6e5ab450e0d3?size=0"
+  },
+  {
+    "bankCode": "aibgbbusiness",
+    "bankName": "Allied Irish Bank Business UK",
+    "logoUrl": "https://images.yapily.com/image/1afa8038-6128-49dd-bec9-69fc76cba298?size=0"
+  },
+  {
+    "bankCode": "bankofirelandbusiness_uk",
+    "bankName": "Bank of Ireland Business UK",
+    "logoUrl": "https://images.yapily.com/image/dfaa1ebd-eda2-4fb6-86c4-51ca3add4bde?size=0"
+  },
+  {
+    "bankCode": "bankofireland_uk",
+    "bankName": "Bank of Ireland UK",
+    "logoUrl": "https://images.yapily.com/image/45e3b36d-a177-4323-b662-a58082fe407b?size=0"
+  },
+  {
+    "bankCode": "bankofscotland",
+    "bankName": "Bank of Scotland (Personal)",
+    "logoUrl": "https://images.yapily.com/image/a9bcb0bb-229c-4de6-ab96-df6314fd37b9?size=0"
+  },
+  {
+    "bankCode": "bankofscotlandbusiness",
+    "bankName": "Bank of Scotland (Business)",
+    "logoUrl": "https://images.yapily.com/image/dfc2ed6f-32b1-45ed-afa0-ff2791020b37?size=0"
+  },
+  {
+    "bankCode": "barclays",
+    "bankName": "Barclays Personal",
+    "logoUrl": "https://images.yapily.com/image/d8155160-2be4-4fb7-93cc-ba524e422cc3?size=0"
+  },
+  {
+    "bankCode": "barclays_business",
+    "bankName": "Barclays Business",
+    "logoUrl": "https://images.yapily.com/image/674d2584-efb9-4f66-aa7a-03aae576035c?size=0"
+  },
+  {
+    "bankCode": "barclays_corporate",
+    "bankName": "Barclays Corporate",
+    "logoUrl": "https://images.yapily.com/image/b591ec82-9f24-4a2f-8ede-849adf11ad79?size=0"
+  },
+  {
+    "bankCode": "barclays_wealth",
+    "bankName": "Barclays Wealth",
+    "logoUrl": "https://images.yapily.com/image/23e9bf23-37bf-4a08-ab29-cdea6c60a239?size=0"
+  },
+  {
+    "bankCode": "cashplus",
+    "bankName": "Cash Plus",
+    "logoUrl": "https://images.yapily.com/image/c6a645e3-3094-4099-b14f-28bf5b611e49?size=0"
+  },
+  {
+    "bankCode": "chelseabuildingsociety",
+    "bankName": "Chelsea Building Society",
+    "logoUrl": "https://images.yapily.com/image/73dd6a83-e203-4070-a42d-f2b9703c2260?size=0"
+  },
+  {
+    "bankCode": "clydesdalebank",
+    "bankName": "Clydesdale Bank",
+    "logoUrl": "https://images.yapily.com/image/76458121-ef74-4fca-b678-9ac79d2789c5?size=0"
+  },
+  {
+    "bankCode": "coutts",
+    "bankName": "Coutts & Company",
+    "logoUrl": "https://images.yapily.com/image/5f049447-3805-46fa-8e16-f3e89f6036c3?size=0"
+  },
+  {
+    "bankCode": "cumberlandbuildingsociety",
+    "bankName": "Cumberland Building Society",
+    "logoUrl": "https://images.yapily.com/image/a9787902-659c-4447-941a-645db9d1b8c3?size=0"
+  },
+  {
+    "bankCode": "danskebankbusiness_uk",
+    "bankName": "Danske Bank Business UK",
+    "logoUrl": "https://images.yapily.com/image/a282d712-fff0-4ab3-99fc-863d603abcb1?size=0"
+  },
+  {
+    "bankCode": "danskebank_uk",
+    "bankName": "Danske Bank",
+    "logoUrl": "https://images.yapily.com/image/f387a249-720d-4bf5-95d0-5f96768dd09c?size=0"
+  },
+  {
+    "bankCode": "firstdirect",
+    "bankName": "First Direct",
+    "logoUrl": "https://images.yapily.com/image/bfa8938c-75f4-4304-9056-377e8b79923d?size=0"
+  },
+  {
+    "bankCode": "firsttrustbank",
+    "bankName": "AIB NI (First Trust) Personal",
+    "logoUrl": "https://images.yapily.com/image/19822174-cffa-4dcd-a31a-75278fb5a276?size=0"
+  },
+  {
+    "bankCode": "firsttrustbankbusiness",
+    "bankName": "AIB NI (First Trust) Business",
+    "logoUrl": "https://images.yapily.com/image/4932b75c-d696-4732-b8fb-36f3d7283e9f?size=0"
+  },
+  {
+    "bankCode": "halifax",
+    "bankName": "Halifax Personal",
+    "logoUrl": "https://images.yapily.com/image/9c5470ca-cb71-4dab-ba4a-c15603d3bcf7?size=0"
+  },
+  {
+    "bankCode": "hsbcbusiness_uk",
+    "bankName": "HSBC UK Business",
+    "logoUrl": "https://images.yapily.com/image/da33b95f-edfd-49ae-a904-f760d85ecf40?size=0"
+  },
+  {
+    "bankCode": "hsbc_uk",
+    "bankName": "HSBC Personal",
+    "logoUrl": "https://images.yapily.com/image/fc734d3c-4480-471e-94ee-500f83ae3bae?size=0"
+  },
+  {
+    "bankCode": "lloyds",
+    "bankName": "Lloyds (Personal)",
+    "logoUrl": "https://images.yapily.com/image/0b0567cd-1fe6-4ff2-a82e-da53361b6fef?size=0"
+  },
+  {
+    "bankCode": "lloydsbusiness",
+    "bankName": "Lloyds (Business)",
+    "logoUrl": "https://images.yapily.com/image/687ddef5-dd48-476a-b9a7-38e294431201?size=0"
+  },
+  {
+    "bankCode": "monzo_ob",
+    "bankName": "Monzo",
+    "logoUrl": "https://images.yapily.com/image/f70dc041-c7a5-47d3-9c6b-846778eac01a?size=0"
+  },
+  {
+    "bankCode": "nationwide",
+    "bankName": "Nationwide",
+    "logoUrl": "https://images.yapily.com/image/ea319578-6cec-4724-af57-333d0ec43fc0?size=0"
+  },
+  {
+    "bankCode": "natwest",
+    "bankName": "Natwest",
+    "logoUrl": "https://images.yapily.com/image/06a3822f-2890-4055-b1a1-d352532b6340?size=0"
+  },
+  {
+    "bankCode": "natwestbusiness",
+    "bankName": "Natwest Corporate",
+    "logoUrl": "https://images.yapily.com/image/06a3822f-2890-4055-b1a1-d352532b6340?size=0"
+  },
+  {
+    "bankCode": "rbs",
+    "bankName": "Royal Bank of Scotland",
+    "logoUrl": "https://images.yapily.com/image/694b1b08-bb78-40d8-bf58-aae12a40de99?size=0"
+  },
+  {
+    "bankCode": "rbsbusiness",
+    "bankName": "Royal Bank of Scotland Bankline",
+    "logoUrl": "https://images.yapily.com/image/23735cc4-18f6-4dbc-b67a-001ca9040c8c"
+  },
+  {
+    "bankCode": "revolut",
+    "bankName": "Revolut",
+    "logoUrl": "https://images.yapily.com/image/fe9124de-3dd2-4b6f-a519-ad5f9e2b594e?size=0"
+  },
+  {
+    "bankCode": "santander_uk",
+    "bankName": "Santander",
+    "logoUrl": "https://images.yapily.com/image/a32a626b-92e4-449f-843a-007ca9bb0240?size=0"
+  },
+  {
+    "bankCode": "siliconvalleybank",
+    "bankName": "Silicon Valley Bank",
+    "logoUrl": "https://images.yapily.com/image/03940098-5297-4290-a683-c759794cde1e?size=0"
+  },
+  {
+    "bankCode": "starling",
+    "bankName": "Starling Bank",
+    "logoUrl": "https://images.yapily.com/image/398dcc4d-b350-4b8d-8d3d-cbd105eb9c63?size=0"
+  },
+  {
+    "bankCode": "tescobank",
+    "bankName": "Tesco Bank",
+    "logoUrl": "https://images.yapily.com/image/b0152001-2af2-4f31-a713-0bda70339bfb?size=0"
+  },
+  {
+    "bankCode": "tide",
+    "bankName": "Tide",
+    "logoUrl": "https://images.yapily.com/image/c8d4547b-5c35-43c2-ae21-e902268c5886?size=0"
+  },
+  {
+    "bankCode": "tsb",
+    "bankName": "TSB Bank",
+    "logoUrl": "https://images.yapily.com/image/626cd8d9-5b54-4b0b-b3d1-a621890e7446?size=0"
+  },
+  {
+    "bankCode": "ulsterbankbusiness_uk",
+    "bankName": "Ulster Bank Business",
+    "logoUrl": "https://images.yapily.com/image/6772712b-149c-48ba-b0ce-905887fda292?size=0"
+  },
+  {
+    "bankCode": "ulsterbank_uk",
+    "bankName": "Ulster Bank UK",
+    "logoUrl": "https://images.yapily.com/image/6772712b-149c-48ba-b0ce-905887fda292?size=0"
+  },
+  {
+    "bankCode": "virginmoney",
+    "bankName": "Virgin Money",
+    "logoUrl": "https://images.yapily.com/image/fcac9f73-b37c-44a7-a46c-6047c5966c5b?size=0"
+  },
+  {
+    "bankCode": "virginmoney_essential",
+    "bankName": "Virgin Money (Essential)",
+    "logoUrl": "https://images.yapily.com/image/2bc464ec-2ef8-4ddb-bb21-7246c8ae988a?size=0"
+  },
+  {
+    "bankCode": "wise-live",
+    "bankName": "Wise",
+    "logoUrl": "https://images.yapily.com/image/8180921d-e33a-4a6b-9dd0-c6baa3dd4f31?size=0"
+  },
+  {
+    "bankCode": "yorkshirebank",
+    "bankName": "Yorkshire Bank",
+    "logoUrl": "https://images.yapily.com/image/b68e8a74-7ec1-4c23-9c7d-ef6508039959?size=0"
+  },
+  {
+    "bankCode": "yorkshirebuildingsociety",
+    "bankName": "Yorkshire Building Society",
+    "logoUrl": "https://images.yapily.com/image/eeb082df-042f-4ec8-bbc4-7e6cd9f9d124?size=0"
+  }
+]
