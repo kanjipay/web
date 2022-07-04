@@ -1,5 +1,6 @@
 import Collection from "../../src/shared/enums/Collection";
 import { db } from "./admin";
+import { StripeStatus } from "../../src/shared/enums/StripeStatus"
 import { addHours } from "date-fns";
 
 export async function createMerchant(
@@ -38,7 +39,7 @@ export async function createMerchant(
       }),
       stripe: {
         accountId: "acct_1L8MJV2Yi582Wuz1",
-        status: "CHARGES_ENABLED"
+        status: StripeStatus.CHARGES_ENABLED
       }
     })
 }

@@ -17,7 +17,9 @@ export const main = euFunctions
       "SENDGRID_API_KEY",
       "CREZCO_API_KEY",
       "STRIPE_CLIENT_SECRET",
-      "STRIPE_PAYMENT_WEBHOOK_SECRET"
+      "STRIPE_PAYMENT_WEBHOOK_SECRET",
+      "IP_GEOLOCATION_API_KEY",
+      "GOOGLE_MAPS_API_KEY"
     ],
     minInstances: envProjectId === "mercadopay" ? 1 : 0
   })

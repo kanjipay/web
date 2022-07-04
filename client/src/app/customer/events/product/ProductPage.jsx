@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { dateFromTimestamp } from "../../../../utils/helpers/time";
 import { OrderSummary } from "../../../../components/OrderSummary";
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager";
+import { NetworkManager } from "../../../../utils/NetworkManager";
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length < 2) { return arrays }

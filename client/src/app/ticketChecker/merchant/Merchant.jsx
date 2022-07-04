@@ -23,7 +23,7 @@ export default function Merchant() {
   return merchant && events ? 
     <Routes>
       <Route path="/" element={<SelectEventPage merchant={merchant} events={events} />} />
-      <Route path=":eventId/*" element={<Event events={events} />} />
+      <Route path=":eventId/*" element={<Event events={events} merchant={merchant} />} />
     </Routes> :
     <LoadingPage />
 }
