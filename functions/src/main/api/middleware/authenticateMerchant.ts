@@ -33,6 +33,6 @@ export async function authenticateMerchant(req, res, next) {
   if (isValid) {
     next()
   } else {
-    res.status(403).send("Unauthorized");
+    res.status(403).send("Unauthorized")
   }
 }

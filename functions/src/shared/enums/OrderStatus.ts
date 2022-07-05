@@ -3,7 +3,7 @@ enum OrderStatus {
   FULFILLED = "FULFILLED",
   PENDING = "PENDING",
   CANCELLED = "CANCELLED",
-  ABANDONED = "ABANDONED"
+  ABANDONED = "ABANDONED",
 }
 
-export default OrderStatus;
+export default OrderStatus

@@ -1,5 +1,5 @@
-import Spinner from "../assets/Spinner";
-import Spacer from "../components/Spacer";
+import Spinner from "../assets/Spinner"
+import Spacer from "../components/Spacer"
 
 export default function LoadingPage({ message }) {
   return (
@@ -14,5 +14,5 @@ export default function LoadingPage({ message }) {
         )}
       </div>
     </div>
-  );
+  )
 }

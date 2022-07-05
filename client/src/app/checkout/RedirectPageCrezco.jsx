@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import LoadingPage from "../../components/LoadingPage";
-import Collection from "../../enums/Collection";
-import OrderType from "../../enums/OrderType";
-import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
-import { AnalyticsManager } from "../../utils/AnalyticsManager";
-import { IdentityManager } from "../../utils/IdentityManager";
-import { NetworkManager } from "../../utils/NetworkManager";
-import useBasket from "../customer/menu/basket/useBasket";
+import { useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import LoadingPage from "../../components/LoadingPage"
+import Collection from "../../enums/Collection"
+import OrderType from "../../enums/OrderType"
+import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
+import { IdentityManager } from "../../utils/IdentityManager"
+import { NetworkManager } from "../../utils/NetworkManager"
+import useBasket from "../customer/menu/basket/useBasket"
 
 export default function RedirectPageCrezco() {
   const { clearBasket } = useBasket()
@@ -20,17 +20,24 @@ export default function RedirectPageCrezco() {
   const [hasPolledRecently, setHasPolledRecently] = useState(false)
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("CrezcoPaymentRedirect", { paymentAttemptId })
+    AnalyticsManager.main.viewPage("CrezcoPaymentRedirect", {
+      paymentAttemptId,
+    })
   }, [paymentAttemptId])
-  
+
   // First start subscribing to payment attempt updates
   useEffect(() => {
-    return Collection.PAYMENT_ATTEMPT.onChange(paymentAttemptId, setPaymentAttempt)
+    return Collection.PAYMENT_ATTEMPT.onChange(
+      paymentAttemptId,
+      setPaymentAttempt
+    )
   }, [paymentAttemptId])
 
   // Once you retrieve a payment attempt, get the order
   useEffect(() => {
-    if (!paymentAttempt || order) { return }
+    if (!paymentAttempt || order) {
+      return
+    }
 
     const { orderId } = paymentAttempt
 
@@ -39,7 +46,9 @@ export default function RedirectPageCrezco() {
 
   // Finally, once both the payment attempt and order are retrieved, start listening for when the payment attempt status changes
   useEffect(() => {
-    if (!paymentAttempt || !order) { return }
+    if (!paymentAttempt || !order) {
+      return
+    }
 
     const currentDeviceId = IdentityManager.main.getDeviceId()
 
@@ -51,20 +60,20 @@ export default function RedirectPageCrezco() {
           switch (order.type) {
             case OrderType.TICKETS:
               navigate(`/events/s/orders/${orderId}/confirmation`)
-              break;
+              break
             case OrderType.MENU:
               clearBasket()
               navigate(`/menu/orders/${orderId}/confirmation`)
-              break;
+              break
             default:
           }
         } else {
           navigate(`/checkout/o/${orderId}/mobile-finished`)
         }
-        break;
+        break
       case PaymentAttemptStatus.FAILED:
-        navigate(`/checkout/o/${orderId}/payment-failure`);
-        break;
+        navigate(`/checkout/o/${orderId}/payment-failure`)
+        break
       default:
     }
   }, [paymentAttempt, order, navigate, clearBasket])
@@ -72,9 +81,14 @@ export default function RedirectPageCrezco() {
   // The payment attempt status change relies on our webhook endpoint being called, which may not happen if the provider errors
   // Should wait 4 seconds then poll the payments endpoint every 1 second
   useEffect(() => {
-    console.log("Running hasBegunPolling useEffect. hasBegunPolling: ", hasBegunPolling)
+    console.log(
+      "Running hasBegunPolling useEffect. hasBegunPolling: ",
+      hasBegunPolling
+    )
 
-    if (hasBegunPolling) { return }
+    if (hasBegunPolling) {
+      return
+    }
 
     setTimeout(() => {
       setHasBegunPolling(true)
@@ -82,19 +96,31 @@ export default function RedirectPageCrezco() {
   }, [hasBegunPolling])
 
   useEffect(() => {
-    console.log("Running hasPolledRecently useEffect. hasBegunPolling: ", hasBegunPolling, " hasPolledRecently: ", hasPolledRecently)
-    if (!hasBegunPolling || hasPolledRecently || !paymentAttempt) { return }
+    console.log(
+      "Running hasPolledRecently useEffect. hasBegunPolling: ",
+      hasBegunPolling,
+      " hasPolledRecently: ",
+      hasPolledRecently
+    )
+    if (!hasBegunPolling || hasPolledRecently || !paymentAttempt) {
+      return
+    }
 
     setHasPolledRecently(true)
 
     const { paymentDemandId } = paymentAttempt.crezco
     const paymentAttemptId = paymentAttempt.id
 
-    NetworkManager.post("/payment-attempts/crezco/check", { paymentDemandId, paymentAttemptId }).then(res => {
-      
+    NetworkManager.post("/payment-attempts/crezco/check", {
+      paymentDemandId,
+      paymentAttemptId,
+    }).then((res) => {
       const { isPending } = res.data
 
-      console.log("Called polling endpoint successfully. isPending: ", isPending)
+      console.log(
+        "Called polling endpoint successfully. isPending: ",
+        isPending
+      )
 
       if (isPending) {
         setTimeout(() => {

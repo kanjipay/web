@@ -1,47 +1,47 @@
-import { Divider } from "@mui/material";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ButtonTheme } from "../../../../components/ButtonTheme";
-import TextField from "../../../../components/Input";
-import MainButton from "../../../../components/MainButton";
-import OrDivider from "../../../../components/OrDivider";
-import Spacer from "../../../../components/Spacer";
-import { formatCurrency } from "../../../../utils/helpers/money";
-import { validateEmail } from "../../../../utils/helpers/validation";
-import { sendOrderReceipt } from "../../../../utils/services/OrdersService";
-import { Colors } from "../../../../enums/Colors";
-import ResultBanner, { ResultType } from "../../../../components/ResultBanner";
-import NotFound from "../../../shared/NotFoundPage";
-import { LocalStorageKeys } from "../../../../utils/IdentityManager";
+import { Divider } from "@mui/material"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { ButtonTheme } from "../../../../components/ButtonTheme"
+import TextField from "../../../../components/Input"
+import MainButton from "../../../../components/MainButton"
+import OrDivider from "../../../../components/OrDivider"
+import Spacer from "../../../../components/Spacer"
+import { formatCurrency } from "../../../../utils/helpers/money"
+import { validateEmail } from "../../../../utils/helpers/validation"
+import { sendOrderReceipt } from "../../../../utils/services/OrdersService"
+import { Colors } from "../../../../enums/Colors"
+import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
+import NotFound from "../../../shared/NotFoundPage"
+import { LocalStorageKeys } from "../../../../utils/IdentityManager"
 
 export default function OrderConfirmationPage({ order }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const initialEmail = localStorage.getItem(LocalStorageKeys.EMAIL) ?? ""
-  const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState(initialEmail);
+  const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState(initialEmail)
 
-  const { merchantId, status } = order;
+  const { merchantId, status } = order
 
   function handleSendEmail() {
-    setIsLoading(true);
+    setIsLoading(true)
 
     localStorage.setItem(LocalStorageKeys.EMAIL, email)
 
     sendOrderReceipt(order.id, email)
       .then((res) => {
-        setIsLoading(false);
-        navigate("../email-submitted");
+        setIsLoading(false)
+        navigate("../email-submitted")
       })
       .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
+        console.log(err)
+        setIsLoading(false)
+      })
   }
 
   function handleEmailFieldChange(event) {
-    setEmail(event.target.value);
+    setEmail(event.target.value)
   }
-  
+
   if (status === "PAID") {
     return (
       <div className="container">
@@ -79,7 +79,7 @@ export default function OrderConfirmationPage({ order }) {
                 </div>
                 <Spacer y={2} />
               </div>
-            );
+            )
           })}
           <Divider />
           <Spacer y={2} />
@@ -153,8 +153,8 @@ export default function OrderConfirmationPage({ order }) {
           </div>
         )}
       </div>
-    );
+    )
   } else {
-    return <NotFound />;
+    return <NotFound />
   }
 }

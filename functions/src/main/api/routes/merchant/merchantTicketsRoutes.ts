@@ -1,19 +1,19 @@
-import { Router } from "express";
-import { validate } from "../../../../shared/utils/validate";
-import { AllowedSchema } from "express-json-validator-middleware";
-import { MerchantTicketsController } from "../../controllers/merchant/MerchantTicketsController";
+import { Router } from "express"
+import { validate } from "../../../../shared/utils/validate"
+import { AllowedSchema } from "express-json-validator-middleware"
+import { MerchantTicketsController } from "../../controllers/merchant/MerchantTicketsController"
 
-const merchantTicketsController = new MerchantTicketsController();
-const merchantTicketsRoutes = Router({ mergeParams: true });
+const merchantTicketsController = new MerchantTicketsController()
+const merchantTicketsRoutes = Router({ mergeParams: true })
 
 const checkTicketBodySchema: AllowedSchema = {
   type: "object",
   required: ["eventId"],
   properties: {
     eventId: {
-      type: "string"
-    }
-  }
+      type: "string",
+    },
+  },
 }
 
 merchantTicketsRoutes.post(
@@ -22,9 +22,6 @@ merchantTicketsRoutes.post(
   merchantTicketsController.check
 )
 
-merchantTicketsRoutes.get(
-  "/sales-data",
-  merchantTicketsController.salesData
-)
+merchantTicketsRoutes.get("/sales-data", merchantTicketsController.salesData)
 
-export default merchantTicketsRoutes;
+export default merchantTicketsRoutes

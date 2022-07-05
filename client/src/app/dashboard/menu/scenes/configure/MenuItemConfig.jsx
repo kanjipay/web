@@ -1,18 +1,18 @@
-import AsyncImage from "../../../../../components/AsyncImage";
-import { getMenuItemStorageRef } from "../../../../../utils/helpers/storage";
-import "./MenuItemConfig.css";
-import Switch from "@mui/material/Switch";
-import Spacer from "../../../../../components/Spacer";
-import { Link } from "react-router-dom";
-import { setMenuItemAvailability } from "../../../../../utils/services/MerchantService";
+import AsyncImage from "../../../../../components/AsyncImage"
+import { getMenuItemStorageRef } from "../../../../../utils/helpers/storage"
+import "./MenuItemConfig.css"
+import Switch from "@mui/material/Switch"
+import Spacer from "../../../../../components/Spacer"
+import { Link } from "react-router-dom"
+import { setMenuItemAvailability } from "../../../../../utils/services/MerchantService"
 
 function MenuItemConfig(props) {
-  const { menuItem } = props;
+  const { menuItem } = props
 
   const handleItemToggle = () => {
-    const newAvailability = !menuItem.isAvailable;
-    setMenuItemAvailability(menuItem.id, newAvailability);
-  };
+    const newAvailability = !menuItem.isAvailable
+    setMenuItemAvailability(menuItem.id, newAvailability)
+  }
 
   return (
     <div className="MenuItemConfig__flexContainer">
@@ -46,7 +46,7 @@ function MenuItemConfig(props) {
         />
       </div>
     </div>
-  );
+  )
 }
 
-export default MenuItemConfig;
+export default MenuItemConfig

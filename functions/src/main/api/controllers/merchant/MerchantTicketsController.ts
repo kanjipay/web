@@ -13,8 +13,18 @@ export class MerchantTicketsController extends BaseController {
     try {
       const { ticketId, merchantId } = req.params
       const { eventId: checkedEventId } = req.body
-      logger.log(`Checking ticket with id ${ticketId}`, { ticketId, merchantId, checkedEventId })
-      const { ticket, ticketError } = await fetchDocument(Collection.TICKET, ticketId)
+
+      logger.log(`Checking ticket with id ${ticketId}`, {
+        ticketId,
+        merchantId,
+        checkedEventId,
+      })
+
+      const { ticket, ticketError } = await fetchDocument(
+        Collection.TICKET,
+        ticketId
+      )
+
       if (ticketError) {
         next(ticketError)
         return
@@ -25,18 +35,25 @@ export class MerchantTicketsController extends BaseController {
       const { eventId, productId, userId, wasUsed, usedAt } = ticket
 
       if (!eventId || !productId || !userId) {
-        const errorMessage = "This ticket is invalid. The event, product or customer is missing."
-        next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, errorMessage, errorMessage))
+        const errorMessage =
+          "This ticket is invalid. The event, product or customer is missing."
+        next(
+          new HttpError(
+            HttpStatusCode.INTERNAL_SERVER_ERROR,
+            errorMessage,
+            errorMessage
+          )
+        )
         return
       }
 
       if (eventId !== checkedEventId || merchantId !== ticket.merchantId) {
         const [
           { event: ticketEvent, eventError: ticketEventError },
-          { event: checkedEvent, eventError: checkedEventError }
+          { event: checkedEvent, eventError: checkedEventError },
         ] = await Promise.all([
           fetchDocument(Collection.EVENT, eventId),
-          fetchDocument(Collection.EVENT, checkedEventId)
+          fetchDocument(Collection.EVENT, checkedEventId),
         ])
 
         let errorMessage: string
@@ -52,7 +69,9 @@ export class MerchantTicketsController extends BaseController {
           errorMessage = `This ticket is for ${ticketEventTitle} but you're checking tickets for ${checkedEventTitle}.`
         }
 
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        next(
+          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+        )
         return
       }
 
@@ -63,7 +82,7 @@ export class MerchantTicketsController extends BaseController {
       ] = await Promise.all([
         fetchDocument(Collection.PRODUCT, productId),
         fetchDocument(Collection.EVENT, eventId),
-        fetchDocument(Collection.USER, userId)
+        fetchDocument(Collection.USER, userId),
       ])
 
       for (const error of [productError, eventError, userError]) {
@@ -79,41 +98,40 @@ export class MerchantTicketsController extends BaseController {
 
       const currentDate = new Date()
 
-      const isTooEarly = earliestEntryAt && currentDate < dateFromTimestamp(earliestEntryAt)
-      const isTooLate = latestEntryAt && currentDate > dateFromTimestamp(latestEntryAt)
+      const isTooEarly =
+        earliestEntryAt && currentDate < dateFromTimestamp(earliestEntryAt)
+      const isTooLate =
+        latestEntryAt && currentDate > dateFromTimestamp(latestEntryAt)
 
       const { firstName, lastName } = user
 
       if (!wasUsed) {
-        await db()
-          .collection(Collection.TICKET)
-          .doc(ticketId)
-          .update({
-            wasUsed: true,
-            usedAt: firestore.FieldValue.serverTimestamp()
-          })
+        await db().collection(Collection.TICKET).doc(ticketId).update({
+          wasUsed: true,
+          usedAt: firestore.FieldValue.serverTimestamp(),
+        })
 
         logger.log("Updated ticket")
       }
 
       return res.status(200).json({
         product: {
-          title: product.title
+          title: product.title,
         },
         event: {
           title: event.title,
-          photo: event.photo
+          photo: event.photo,
         },
         user: {
           firstName,
-          lastName
+          lastName,
         },
         wasUsed,
         usedAt,
         isTooEarly,
         isTooLate,
         earliestEntryAt,
-        latestEntryAt
+        latestEntryAt,
       })
     } catch (err) {
       next(err)
@@ -142,25 +160,31 @@ export class MerchantTicketsController extends BaseController {
         .where("isPublished", "==", true)
         .get()
 
-      const [
-        eventSnapshot,
-        productSnapshot,
-        ordersSnapshot
-      ] = await Promise.all([
-        getEvents,
-        getProducts,
-        getOrders
-      ])
+      const [eventSnapshot, productSnapshot, ordersSnapshot] =
+        await Promise.all([getEvents, getProducts, getOrders])
 
-      const sales = ordersSnapshot.docs.flatMap(doc => {
+      const sales = ordersSnapshot.docs.flatMap((doc) => {
         const order: any = { id: doc.id, ...doc.data() }
 
-        const { eventId, attributionData, type, createdAt, currency, sessionData } = order
+        const {
+          eventId,
+          attributionData,
+          type,
+          createdAt,
+          currency,
+          sessionData,
+        } = order
         const strongSessionData = sessionData ?? {}
 
-        return order.orderItems.map(item => {
-          const { productId, title: productTitle, eventTitle, quantity, price } = item
-          return { 
+        return order.orderItems.map((item) => {
+          const {
+            productId,
+            title: productTitle,
+            eventTitle,
+            quantity,
+            price,
+          } = item
+          return {
             orderId: order.id,
             amount: price * quantity,
             quantity,
@@ -172,16 +196,16 @@ export class MerchantTicketsController extends BaseController {
             createdAt,
             attributionData,
             currency,
-            ...strongSessionData
+            ...strongSessionData,
           }
         })
       })
 
-      const events = eventSnapshot.docs.map(doc => {
+      const events = eventSnapshot.docs.map((doc) => {
         return { id: doc.id, ...doc.data() }
       })
 
-      const products = productSnapshot.docs.map(doc => {
+      const products = productSnapshot.docs.map((doc) => {
         return { id: doc.id, ...doc.data() }
       })
 

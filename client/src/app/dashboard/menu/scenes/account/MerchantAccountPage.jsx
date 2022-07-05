@@ -1,33 +1,33 @@
-import BottomNavBar from "../../../../../components/BottomNavBar";
-import { getWeekdays, formatMinutes } from "../../../../../utils/helpers/time";
-import { Helmet } from "react-helmet-async";
-import AsyncImage from "../../../../../components/AsyncImage";
-import { getMerchantStorageRef } from "../../../../../utils/helpers/storage";
-import Spacer from "../../../../../components/Spacer";
-import CircleIcon from "../../../../../components/CircleIcon";
-import Clock from "../../../../../assets/icons/Clock";
-import Location from "../../../../../assets/icons/Location";
-import Details from "../../../../../assets/icons/Details";
-import TextLine from "../../../../../components/TextLine";
-import MainButton from "../../../../../components/MainButton";
-import "./MerchantAccountPage.css";
-import { Colors } from "../../../../../enums/Colors";
+import BottomNavBar from "../../../../../components/BottomNavBar"
+import { getWeekdays, formatMinutes } from "../../../../../utils/helpers/time"
+import { Helmet } from "react-helmet-async"
+import AsyncImage from "../../../../../components/AsyncImage"
+import { getMerchantStorageRef } from "../../../../../utils/helpers/storage"
+import Spacer from "../../../../../components/Spacer"
+import CircleIcon from "../../../../../components/CircleIcon"
+import Clock from "../../../../../assets/icons/Clock"
+import Location from "../../../../../assets/icons/Location"
+import Details from "../../../../../assets/icons/Details"
+import TextLine from "../../../../../components/TextLine"
+import MainButton from "../../../../../components/MainButton"
+import "./MerchantAccountPage.css"
+import { Colors } from "../../../../../enums/Colors"
 
 function MerchantAccountPage(props) {
-  const { merchantData, openingHours } = props;
-  const weekdays = getWeekdays("en-GB");
-  const openingHourGridItems = [];
+  const { merchantData, openingHours } = props
+  const weekdays = getWeekdays("en-GB")
+  const openingHourGridItems = []
   const formattedSortCode =
     merchantData.sortCode.slice(0, 2) +
     "-" +
     merchantData.sortCode.slice(2, 4) +
     "-" +
-    merchantData.sortCode.slice(4, 6);
+    merchantData.sortCode.slice(4, 6)
 
   openingHours
     .sort((range1, range2) => range1.dayOfWeek - range2.dayOfWeek)
     .forEach((range, index) => {
-      const weekday = weekdays[range.dayOfWeek - 1];
+      const weekday = weekdays[range.dayOfWeek - 1]
 
       openingHourGridItems.push(
         <div
@@ -36,7 +36,7 @@ function MerchantAccountPage(props) {
         >
           {weekday}
         </div>
-      );
+      )
 
       openingHourGridItems.push(
         <div
@@ -47,8 +47,8 @@ function MerchantAccountPage(props) {
             range.closeTime
           )}`}
         </div>
-      );
-    });
+      )
+    })
 
   return (
     <div className="container">
@@ -67,7 +67,11 @@ function MerchantAccountPage(props) {
         <Spacer y={2} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Details} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
+          <CircleIcon
+            Icon={Details}
+            style={{ marginRight: 8 }}
+            backgroundColor={Colors.CLEAR}
+          />
           <div className="header-s">Details</div>
         </div>
         <Spacer y={2} />
@@ -95,7 +99,11 @@ function MerchantAccountPage(props) {
         <Spacer y={1} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Location} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
+          <CircleIcon
+            Icon={Location}
+            style={{ marginRight: 8 }}
+            backgroundColor={Colors.CLEAR}
+          />
           <div className="header-s">Address</div>
         </div>
         <Spacer y={2} />
@@ -103,7 +111,11 @@ function MerchantAccountPage(props) {
         <Spacer y={3} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Clock} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
+          <CircleIcon
+            Icon={Clock}
+            style={{ marginRight: 8 }}
+            backgroundColor={Colors.CLEAR}
+          />
           <div className="header-s">Opening hours</div>
         </div>
         <Spacer y={2} />
@@ -128,7 +140,7 @@ function MerchantAccountPage(props) {
         <BottomNavBar />
       </div>
     </div>
-  );
+  )
 }
 
-export default MerchantAccountPage;
+export default MerchantAccountPage

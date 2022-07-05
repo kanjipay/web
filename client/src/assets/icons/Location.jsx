@@ -14,5 +14,5 @@ export default function Location({ length = 32, color = "black" }) {
         fill={color}
       />
     </svg>
-  );
+  )
 }

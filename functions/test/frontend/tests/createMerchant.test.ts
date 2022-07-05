@@ -1,13 +1,13 @@
 import "mocha"
 import { baseUrl } from "../utils/baseUrl"
-import { testId } from "../utils/findByTestValues";
+import { testId } from "../utils/findByTestValues"
 import { db } from "../../utils/admin"
-import Collection from "../../../src/shared/enums/Collection";
-import { openNewPage } from "../utils/browser";
-import { uploadImage } from "../utils/puppeteer";
+import Collection from "../../../src/shared/enums/Collection"
+import { openNewPage } from "../utils/browser"
+import { uploadImage } from "../utils/puppeteer"
 import { fetchDocumentsInArray } from "../../../src/cron/deleteTicketsForIncompletePayments"
 
-require('dotenv').config();
+require("dotenv").config()
 
 describe("Create merchant", () => {
   it("Should create merchant", async () => {
@@ -15,7 +15,9 @@ describe("Create merchant", () => {
 
     await page.goto(`${baseUrl}/dashboard`)
 
-    const createOrgButton = await page.waitForSelector(testId("create-organisation-button"))
+    const createOrgButton = await page.waitForSelector(
+      testId("create-organisation-button")
+    )
     await createOrgButton.click()
 
     await page.waitForSelector(testId("field-displayName"))
@@ -29,7 +31,9 @@ describe("Create merchant", () => {
     await page.type(testId("field-accountNumber"), "12341234")
     await page.click(testId("form-submit-create-organisation"))
 
-    const connectCrezcoButton = await page.waitForSelector(testId("icon-primary-button-connect-crezco"))
+    const connectCrezcoButton = await page.waitForSelector(
+      testId("icon-primary-button-connect-crezco")
+    )
     await connectCrezcoButton.click()
 
     const signInLink = await page.waitForSelector("#signInLink")
@@ -40,13 +44,19 @@ describe("Create merchant", () => {
     await page.type("#password", process.env.CREZCO_AUTH_PASSWORD)
     await page.click("#next")
 
-    const confirmBankButton = await page.waitForSelector('button[data-test-id="confirm-onboarding"]')
+    const confirmBankButton = await page.waitForSelector(
+      'button[data-test-id="confirm-onboarding"]'
+    )
     await confirmBankButton.click()
 
-    const crezcoConnectedButton = await page.waitForSelector(testId("icon-primary-button-crezco-connected"))
+    const crezcoConnectedButton = await page.waitForSelector(
+      testId("icon-primary-button-crezco-connected")
+    )
     await crezcoConnectedButton.click()
 
-    const connectStripeButton = await page.waitForSelector(testId("icon-primary-button-connect-stripe"))
+    const connectStripeButton = await page.waitForSelector(
+      testId("icon-primary-button-connect-stripe")
+    )
     await connectStripeButton.click()
 
     const stripeEmailField = await page.waitForSelector("#email")
@@ -61,10 +71,14 @@ describe("Create merchant", () => {
     await firstToggleBox.click()
     await page.click('button[type="button"]')
 
-    const confirmButton = await page.waitForSelector('button[data-test="requirements-index-done-button"]')
+    const confirmButton = await page.waitForSelector(
+      'button[data-test="requirements-index-done-button"]'
+    )
     await confirmButton.click()
 
-    const stripeConnectedButton = await page.waitForSelector(testId("icon-primary-button-stripe-connected"))
+    const stripeConnectedButton = await page.waitForSelector(
+      testId("icon-primary-button-stripe-connected")
+    )
     await stripeConnectedButton.click()
   })
 
@@ -74,7 +88,7 @@ describe("Create merchant", () => {
       .where("displayName", "==", "Test merchant")
       .get()
 
-    const merchantIds = merchantsToDelete.docs.map(doc => doc.id)
+    const merchantIds = merchantsToDelete.docs.map((doc) => doc.id)
 
     const membershipsToDelete = await fetchDocumentsInArray(
       db.collection(Collection.MEMBERSHIP),

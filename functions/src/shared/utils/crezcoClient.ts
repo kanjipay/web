@@ -4,22 +4,27 @@ import { isStrictEnvironment } from "./isStrictEnvironment"
 import LoggingController from "./loggingClient"
 
 const defaultHeaders = {
-  "X-Crezco-Key": process.env.CREZCO_API_KEY
+  "X-Crezco-Key": process.env.CREZCO_API_KEY,
 }
 
-const subdomain = isStrictEnvironment(process.env.ENVIRONMENT) ? "api" : "api.sandbox"
+const subdomain = isStrictEnvironment(process.env.ENVIRONMENT)
+  ? "api"
+  : "api.sandbox"
 const baseUrl = `https://${subdomain}.crezco.com`
 
 export async function fetchBankData(countryCode: string) {
-  const { data } = await axios.get(`${baseUrl}/v1/banks/${countryCode}/DomesticInstantPayment`, {
-    headers: defaultHeaders
-  })
+  const { data } = await axios.get(
+    `${baseUrl}/v1/banks/${countryCode}/DomesticInstantPayment`,
+    {
+      headers: defaultHeaders,
+    }
+  )
 
   return data
 }
 
 export async function createPaymentDemand(
-  crezcoUserId: string, 
+  crezcoUserId: string,
   paymentAttemptId: string,
   paymentIntentId: string,
   reference: string,
@@ -34,11 +39,14 @@ export async function createPaymentDemand(
     const expireSeconds = currency === "GBP" ? 60 * 10 : 60 * 60 * 24 * 3
 
     logger.log("Set jwt expiry for webhook", { expireSeconds })
-    
-    const { signature, signatureError } = createSignature({
-      paymentAttemptId,
-      environment: process.env.ENVIRONMENT
-    }, expireSeconds)
+
+    const { signature, signatureError } = createSignature(
+      {
+        paymentAttemptId,
+        environment: process.env.ENVIRONMENT,
+      },
+      expireSeconds
+    )
 
     if (signatureError) {
       logger.log("Error when creating webhook signature", { signatureError })
@@ -54,11 +62,11 @@ export async function createPaymentDemand(
         amount: `${amount / 100}`,
         useDefaultBeneficiaryAccount: true,
         metadata: {
-          signature
-        }
+          signature,
+        },
       },
       idempotencyId: paymentAttemptId,
-      idemPayDemand: paymentAttemptId
+      idemPayDemand: paymentAttemptId,
     }
 
     const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands`
@@ -66,10 +74,12 @@ export async function createPaymentDemand(
     logger.log("Calling create pay demand endpoint", {
       url,
       body: paymentDemandData,
-      headers: defaultHeaders
+      headers: defaultHeaders,
     })
 
-    const res = await axios.post(url, paymentDemandData, { headers: defaultHeaders })
+    const res = await axios.post(url, paymentDemandData, {
+      headers: defaultHeaders,
+    })
 
     const paymentDemandId = res.data
 
@@ -83,7 +93,7 @@ export async function createPaymentDemand(
 }
 
 export async function createPayment(
-  crezcoUserId: string, 
+  crezcoUserId: string,
   crezcoPayDemandId: string,
   paymentAttemptId: string,
   bankId: string,
@@ -104,7 +114,7 @@ export async function createPayment(
       successCallbackUri: mercadoRedirectUrl,
       failureRedirectUri: mercadoRedirectUrl,
       initialScreen: "ContinueToBank",
-      finalScreen: "PaymentStatus"
+      finalScreen: "PaymentStatus",
     }
 
     const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment`
@@ -112,15 +122,19 @@ export async function createPayment(
     logger.log("Calling Crezco create payment endpoint", {
       url,
       params,
-      headers: defaultHeaders
-    })
-
-    const res = await axios.post(`${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment`, {}, {
       headers: defaultHeaders,
-      params
     })
 
-    logger.log("Got response", { ...res.data})
+    const res = await axios.post(
+      `${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment`,
+      {},
+      {
+        headers: defaultHeaders,
+        params,
+      }
+    )
+
+    logger.log("Got response", { ...res.data })
 
     const redirectUrl = res.data.redirect
 
@@ -132,7 +146,10 @@ export async function createPayment(
 }
 
 export async function getPaymentStatus(paymentDemandId: string) {
-  const paymentsRes = await axios.get(`${baseUrl}/v1/pay-demands/${paymentDemandId}/payments`, { headers: defaultHeaders })
+  const paymentsRes = await axios.get(
+    `${baseUrl}/v1/pay-demands/${paymentDemandId}/payments`,
+    { headers: defaultHeaders }
+  )
   const paymentStatus = paymentsRes.data[0].status.code
 
   return paymentStatus

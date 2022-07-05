@@ -4,17 +4,17 @@ import {
   query,
   where,
   updateDoc,
-} from "firebase/firestore";
-import Collection from "../../enums/Collection";
-import OrderStatus from "../../enums/OrderStatus";
+} from "firebase/firestore"
+import Collection from "../../enums/Collection"
+import OrderStatus from "../../enums/OrderStatus"
 
 export function fetchMerchantByUserId(userId, onComplete) {
   const fetchMerchantByUserIdQuery = query(
     Collection.MERCHANT.ref,
     where("userId", "==", userId)
-  );
+  )
 
-  return onSnapshot(fetchMerchantByUserIdQuery, onComplete);
+  return onSnapshot(fetchMerchantByUserIdQuery, onComplete)
 }
 
 export function fetchMerchantOrders(merchantId, onComplete) {
@@ -23,24 +23,24 @@ export function fetchMerchantOrders(merchantId, onComplete) {
     where("status", "==", "PAID"),
     where("merchantId", "==", merchantId),
     orderBy("createdAt")
-  );
-  return onSnapshot(fetchMerchantOrdersQuery, onComplete);
+  )
+  return onSnapshot(fetchMerchantOrdersQuery, onComplete)
 }
 
 export const setOrderFulfilled = (orderId) => {
   updateDoc(Collection.ORDER.docRef(orderId), {
     status: OrderStatus.FULFILLED,
-  });
-};
+  })
+}
 
 export const setMerchantStatus = (merchantId, newStatus) => {
   updateDoc(Collection.MERCHANT.docRef(merchantId), {
     status: newStatus,
-  });
-};
+  })
+}
 
 export const setMenuItemAvailability = (menuItemId, newAvailability) => {
   updateDoc(Collection.MENU_ITEM.docRef(menuItemId), {
     isAvailable: newAvailability,
-  });
-};
+  })
+}

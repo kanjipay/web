@@ -1,7 +1,7 @@
-import { updateProfile } from "firebase/auth";
-import { getDoc, setDoc, updateDoc } from "firebase/firestore";
-import Collection from "../../enums/Collection";
-import { auth } from "../FirebaseUtils";
+import { updateProfile } from "firebase/auth"
+import { getDoc, setDoc, updateDoc } from "firebase/firestore"
+import Collection from "../../enums/Collection"
+import { auth } from "../FirebaseUtils"
 
 export class MarketingConsent {
   static PENDING = "PENDING"
@@ -30,7 +30,7 @@ export async function processUserCredential(credential, firstName, lastName) {
       firstName,
       lastName,
       email,
-      marketingConsentStatus: MarketingConsent.PENDING
+      marketingConsentStatus: MarketingConsent.PENDING,
     })
   }
 
@@ -38,16 +38,23 @@ export async function processUserCredential(credential, firstName, lastName) {
 }
 
 export async function setMarketingConsent(marketingConsentStatus) {
-  const acceptableStatuses = [MarketingConsent.APPROVED, MarketingConsent.DECLINED]
+  const acceptableStatuses = [
+    MarketingConsent.APPROVED,
+    MarketingConsent.DECLINED,
+  ]
 
-  if (!acceptableStatuses.includes(marketingConsentStatus)) { return false }
+  if (!acceptableStatuses.includes(marketingConsentStatus)) {
+    return false
+  }
 
   const userId = auth.currentUser?.uid
 
-  if (!userId) { return false }
+  if (!userId) {
+    return false
+  }
 
   await updateDoc(Collection.USER.docRef(userId), {
-    marketingConsentStatus
+    marketingConsentStatus,
   })
 
   return true

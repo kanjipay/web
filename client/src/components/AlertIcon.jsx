@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Box, ThemeProvider, createTheme } from "@mui/system";
+import * as React from "react"
+import { Box, ThemeProvider, createTheme } from "@mui/system"
 
 const theme = createTheme({
   palette: {
@@ -17,7 +17,7 @@ const theme = createTheme({
       dark: "#009688",
     },
   },
-});
+})
 
 export default function AlertIcon(backgroundColor, textColor) {
   return (
@@ -35,5 +35,5 @@ export default function AlertIcon(backgroundColor, textColor) {
         </Box>
       </Box>
     </ThemeProvider>
-  );
+  )
 }

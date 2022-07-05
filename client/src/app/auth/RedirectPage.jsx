@@ -1,7 +1,7 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
-import LoadingPage from "../../components/LoadingPage";
+import { useNavigate, useSearchParams } from "react-router-dom"
+import LoadingPage from "../../components/LoadingPage"
 import * as base64 from "base-64"
-import { useEffect } from "react";
+import { useEffect } from "react"
 
 export default function RedirectPage() {
   const [searchParams] = useSearchParams()
@@ -12,6 +12,6 @@ export default function RedirectPage() {
   useEffect(() => {
     navigate(successPath, { state: successState })
   }, [navigate, successPath, successState])
-  
+
   return <LoadingPage />
 }

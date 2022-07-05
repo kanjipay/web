@@ -6,7 +6,7 @@ import IconActionPage from "../../../components/IconActionPage"
 import { Colors } from "../../../enums/Colors"
 import { NetworkManager } from "../../../utils/NetworkManager"
 import TicketCheckerNavBar from "../TicketCheckerNavBar"
-import { QrReader } from 'react-qr-reader';
+import { QrReader } from "react-qr-reader"
 import Settings from "../../../assets/icons/Settings"
 import LoadingPage from "../../../components/LoadingPage"
 import IconPage from "../../../components/IconPage"
@@ -33,13 +33,15 @@ class DeviceType {
 function isBackFacingCameraPresent(stream) {
   return true // the below doesn't work
   console.log(stream.getTracks())
-  return stream.getTracks()[0].getCapabilities()?.facingMode?.[0] === "environment"
+  return (
+    stream.getTracks()[0].getCapabilities()?.facingMode?.[0] === "environment"
+  )
 }
 
 async function getPermissionStatus(deviceType) {
   const allDevices = await navigator.mediaDevices.enumerateDevices()
 
-  const devices = allDevices.filter(device => device.kind === deviceType)
+  const devices = allDevices.filter((device) => device.kind === deviceType)
 
   if (devices.length === 0) {
     return PermissionStatus.DEVICE_NOT_PRESENT
@@ -62,23 +64,31 @@ export default function CheckerPage({ event }) {
   }
 
   const handleGiveCameraPermission = () => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-      .then(stream => {
-        const status = isBackFacingCameraPresent(stream) ? PermissionStatus.GRANTED : PermissionStatus.DEVICE_NOT_PRESENT
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: false })
+      .then((stream) => {
+        const status = isBackFacingCameraPresent(stream)
+          ? PermissionStatus.GRANTED
+          : PermissionStatus.DEVICE_NOT_PRESENT
         setCameraPermissionStatus(status)
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error)
         setCameraPermissionStatus(PermissionStatus.DECLINED)
       })
   }
 
   useEffect(() => {
-    getPermissionStatus(DeviceType.CAMERA).then(status => {
+    getPermissionStatus(DeviceType.CAMERA).then((status) => {
       if (status === PermissionStatus.GRANTED) {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-          .then(stream => {
-            setCameraPermissionStatus(isBackFacingCameraPresent(stream) ? PermissionStatus.GRANTED : PermissionStatus.DEVICE_NOT_PRESENT)
+        navigator.mediaDevices
+          .getUserMedia({ video: true, audio: false })
+          .then((stream) => {
+            setCameraPermissionStatus(
+              isBackFacingCameraPresent(stream)
+                ? PermissionStatus.GRANTED
+                : PermissionStatus.DEVICE_NOT_PRESENT
+            )
           })
       } else {
         setCameraPermissionStatus(status)
@@ -98,47 +108,74 @@ export default function CheckerPage({ event }) {
       if (result !== ticketId) {
         setTicketId(result)
       }
-      
+
       return
     }
   }
 
   useEffect(() => {
-    if (!merchantId || !eventId || !ticketId) { return }
+    if (!merchantId || !eventId || !ticketId) {
+      return
+    }
 
-    NetworkManager.post(`/merchants/m/${merchantId}/tickets/${ticketId}/check`, { eventId })
-      .then(res => {
-        const { product, user, wasUsed, usedAt, isTooEarly, isTooLate, earliestEntryAt, latestEntryAt } = res.data
+    NetworkManager.post(
+      `/merchants/m/${merchantId}/tickets/${ticketId}/check`,
+      { eventId }
+    )
+      .then((res) => {
+        const {
+          product,
+          user,
+          wasUsed,
+          usedAt,
+          isTooEarly,
+          isTooLate,
+          earliestEntryAt,
+          latestEntryAt,
+        } = res.data
         const { firstName, lastName } = user
         const { title: productTitle } = product
         const body = `${productTitle} ticket bought by ${firstName} ${lastName}.`
         const messages = []
 
         if (wasUsed) {
-          messages.push(`This ticket was already used on ${longFormat(dateFromTimestamp(usedAt))}`)
+          messages.push(
+            `This ticket was already used on ${longFormat(
+              dateFromTimestamp(usedAt)
+            )}`
+          )
         }
 
         if (isTooEarly) {
-          messages.push(`This ticket is only valid from ${longFormat(dateFromTimestamp(earliestEntryAt))}`)
+          messages.push(
+            `This ticket is only valid from ${longFormat(
+              dateFromTimestamp(earliestEntryAt)
+            )}`
+          )
         }
 
         if (isTooLate) {
-          messages.push(`This ticket is only valid until ${longFormat(dateFromTimestamp(latestEntryAt))}`)
+          messages.push(
+            `This ticket is only valid until ${longFormat(
+              dateFromTimestamp(latestEntryAt)
+            )}`
+          )
         }
 
         setScanData({
           isSuccessful: true,
-          title: messages.length === 0 ? "Valid ticket" : "Valid ticket with issues",
+          title:
+            messages.length === 0 ? "Valid ticket" : "Valid ticket with issues",
           body,
-          messages
+          messages,
         })
       })
-      .catch(err => {
+      .catch((err) => {
         setScanData({
           isSuccessful: false,
           title: "Invalid ticket",
           body: err.response?.data?.message,
-          messages: []
+          messages: [],
         })
       })
   }, [ticketId, merchantId, eventId])
@@ -147,100 +184,113 @@ export default function CheckerPage({ event }) {
     const { isSuccessful, title, body, messages } = scanData
     const areErrors = messages.length > 0
 
-    return <div className="container">
-      <div className="centred-top" style={{ width: 311 }}>
-        <CircleIcon
-          length={120}
-          Icon={isSuccessful ? (areErrors ? Warning : Tick) : Cross}
-          backgroundColor={isSuccessful ? (areErrors ? Colors.YELLOW_LIGHT : Colors.OFF_WHITE_LIGHT) : Colors.RED_LIGHT}
-          foregroundColor={isSuccessful ? (areErrors ? Colors.YELLOW : Colors.BLACK) : Colors.RED}
-          style={{ margin: "auto" }}
-        />
-        <Spacer y={2} />
-        <div className="header-s">{title}</div>
-        <Spacer y={2} />
-        <div className="text-body-faded">{body}</div>
-      </div>
-
-      <div className="anchored-bottom">
-        <div style={{ margin: 16 }}>
-          {
-            messages.map((message, index) => <div key={index}>
-              <ResultBanner
-                resultType={ResultType.INFO}
-                message={message}
-              />
-              <Spacer y={2} />
-            </div>)
-          }
-          <MainButton
-            title="Scan another ticket"
-            onClick={handleResetScanner}
+    return (
+      <div className="container">
+        <div className="centred-top" style={{ width: 311 }}>
+          <CircleIcon
+            length={120}
+            Icon={isSuccessful ? (areErrors ? Warning : Tick) : Cross}
+            backgroundColor={
+              isSuccessful
+                ? areErrors
+                  ? Colors.YELLOW_LIGHT
+                  : Colors.OFF_WHITE_LIGHT
+                : Colors.RED_LIGHT
+            }
+            foregroundColor={
+              isSuccessful
+                ? areErrors
+                  ? Colors.YELLOW
+                  : Colors.BLACK
+                : Colors.RED
+            }
+            style={{ margin: "auto" }}
           />
+          <Spacer y={2} />
+          <div className="header-s">{title}</div>
+          <Spacer y={2} />
+          <div className="text-body-faded">{body}</div>
+        </div>
+
+        <div className="anchored-bottom">
+          <div style={{ margin: 16 }}>
+            {messages.map((message, index) => (
+              <div key={index}>
+                <ResultBanner resultType={ResultType.INFO} message={message} />
+                <Spacer y={2} />
+              </div>
+            ))}
+            <MainButton
+              title="Scan another ticket"
+              onClick={handleResetScanner}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    )
   } else if (ticketId) {
     return <LoadingPage message="Checking ticket" />
   } else {
     switch (cameraPermissionStatus) {
       case PermissionStatus.GRANTED:
-        return <div className="container">
-          <TicketCheckerNavBar
-            title="Scan tickets"
-            backPath="../.."
-          />
-          <div className="content" style={{ padding: 0 }}>
-            <QrReader
-              constraints={{
-                facingMode: "environment"
-              }}
-              containerStyle={{
-                height: "calc(100vh - 48px)",
-                overflow: "hidden",
-                marginTop: 48,
-              }}
-              videoContainerStyle={{
-                paddingTop: "calc(100vh - 48px)",
-              }}
-              videoStyle={{
-                objectFit: "fill",
-              }}
-              onResult={onResult}
-            />
+        return (
+          <div className="container">
+            <TicketCheckerNavBar title="Scan tickets" backPath="../.." />
+            <div className="content" style={{ padding: 0 }}>
+              <QrReader
+                constraints={{
+                  facingMode: "environment",
+                }}
+                containerStyle={{
+                  height: "calc(100vh - 48px)",
+                  overflow: "hidden",
+                  marginTop: 48,
+                }}
+                videoContainerStyle={{
+                  paddingTop: "calc(100vh - 48px)",
+                }}
+                videoStyle={{
+                  objectFit: "fill",
+                }}
+                onResult={onResult}
+              />
+            </div>
           </div>
-        </div>
+        )
       case PermissionStatus.NOT_GRANTED:
-        return <IconActionPage
-          Icon={Settings}
-          iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
-          iconForegroundColor={Colors.BLACK}
-          title="Camera permission required"
-          body="To scan tickets, we need permission to use your device's camera."
-          primaryActionTitle="Give permission"
-          primaryAction={handleGiveCameraPermission}
-        />
+        return (
+          <IconActionPage
+            Icon={Settings}
+            iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+            iconForegroundColor={Colors.BLACK}
+            title="Camera permission required"
+            body="To scan tickets, we need permission to use your device's camera."
+            primaryActionTitle="Give permission"
+            primaryAction={handleGiveCameraPermission}
+          />
+        )
       case PermissionStatus.DEVICE_NOT_PRESENT:
-        return <IconPage
-          Icon={Discover}
-          iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
-          iconForegroundColor={Colors.BLACK}
-          title="Unable to scan"
-          body="We couldn't detect a back facing camera on your device."
-        />
+        return (
+          <IconPage
+            Icon={Discover}
+            iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+            iconForegroundColor={Colors.BLACK}
+            title="Unable to scan"
+            body="We couldn't detect a back facing camera on your device."
+          />
+        )
       case PermissionStatus.DECLINED:
-        return <IconPage
-          Icon={Discover}
-          iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
-          iconForegroundColor={Colors.BLACK}
-          title="Unable to scan"
-          body="You declined camera permissions."
-        />
+        return (
+          <IconPage
+            Icon={Discover}
+            iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+            iconForegroundColor={Colors.BLACK}
+            title="Unable to scan"
+            body="You declined camera permissions."
+          />
+        )
       default:
         return <LoadingPage />
     }
-    
   }
-  
-  
 }

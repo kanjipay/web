@@ -1,6 +1,6 @@
 import LoggingController from "./loggingClient"
 import * as jwt from "jsonwebtoken"
-import * as jwkToPem from "jwk-to-pem";
+import * as jwkToPem from "jwk-to-pem"
 
 const keyCache = new Map()
 
@@ -9,12 +9,14 @@ export const verifyMercadoSignature = async (signature: string) => {
 
   const decoded = jwt.decode(signature, { complete: true })
   const receivedKid = decoded.header.kid
-  
+
   logger.log("Got kid from signature", { receivedKid })
 
   if (!keyCache.has(receivedKid)) {
     logger.log("Kid not in cache, retrieving")
-    const loadedKeys = JSON.parse(process.env.JWKS_PUBLIC_KEY).keys.filter(key => key.use === "sig")
+    const loadedKeys = JSON.parse(process.env.JWKS_PUBLIC_KEY).keys.filter(
+      (key) => key.use === "sig"
+    )
     logger.log("Got JWKS", { loadedKeys })
 
     keyCache.clear()

@@ -41,5 +41,5 @@ export default function Details({ length = 32, color = "black" }) {
       />
       <circle cx="25" cy="37" r="3" fill={color} />
     </svg>
-  );
+  )
 }

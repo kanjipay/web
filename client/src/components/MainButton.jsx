@@ -1,8 +1,8 @@
-import { useState } from "react";
-import Spinner from "../assets/Spinner";
-import { ButtonTheme } from "./ButtonTheme";
-import "./MainButton.css";
-import { Colors } from "../enums/Colors";
+import { useState } from "react"
+import Spinner from "../assets/Spinner"
+import { ButtonTheme } from "./ButtonTheme"
+import "./MainButton.css"
+import { Colors } from "../enums/Colors"
 
 export default function MainButton({
   buttonTheme = ButtonTheme.MONOCHROME,
@@ -13,22 +13,22 @@ export default function MainButton({
   onClick,
   ...props
 }) {
-  const [isPressed, setIsPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
 
-  let backgroundColor;
+  let backgroundColor
 
   if (props.disabled) {
-    backgroundColor = buttonTheme.disabledBackgroundColor;
+    backgroundColor = buttonTheme.disabledBackgroundColor
   } else if (isPressed || isHovering) {
-    backgroundColor = buttonTheme.pressedBackgroundColor;
+    backgroundColor = buttonTheme.pressedBackgroundColor
   } else {
-    backgroundColor = buttonTheme.backgroundColor;
+    backgroundColor = buttonTheme.backgroundColor
   }
 
   const foregroundColor = props.disabled
     ? buttonTheme.disabledForegroundColor
-    : buttonTheme.foregroundColor;
+    : buttonTheme.foregroundColor
 
   const buttonStyle = {
     backgroundColor,
@@ -43,7 +43,7 @@ export default function MainButton({
     color: foregroundColor,
     cursor: props.disabled ? "mouse" : "pointer",
     ...style,
-  };
+  }
 
   return (
     <div className="MainButton relative">
@@ -68,19 +68,23 @@ export default function MainButton({
       )}
 
       {sideMessage && (
-        <div style={{
-          position: "absolute",
-          height: "100%",
-          padding: "0px 16px",
-          display: "flex",
-          alignItems: "center",
-          top: 0,
-          right: 0,
-          fontWeight: 500,
-          color: Colors.WHITE,
-          backgroundColor: Colors.OFF_BLACK_LIGHT,
-        }}>{sideMessage}</div>
+        <div
+          style={{
+            position: "absolute",
+            height: "100%",
+            padding: "0px 16px",
+            display: "flex",
+            alignItems: "center",
+            top: 0,
+            right: 0,
+            fontWeight: 500,
+            color: Colors.WHITE,
+            backgroundColor: Colors.OFF_BLACK_LIGHT,
+          }}
+        >
+          {sideMessage}
+        </div>
       )}
     </div>
-  );
+  )
 }

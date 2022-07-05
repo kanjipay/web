@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { validate } from "../../../../shared/utils/validate";
-import { AllowedSchema } from "express-json-validator-middleware";
-import { MerchantUsersController } from "../../controllers/merchant/MerchantUsersController";
+import { Router } from "express"
+import { validate } from "../../../../shared/utils/validate"
+import { AllowedSchema } from "express-json-validator-middleware"
+import { MerchantUsersController } from "../../controllers/merchant/MerchantUsersController"
 
-const merchantUsersController = new MerchantUsersController();
-const merchantUsersRoutes = Router({ mergeParams: true });
+const merchantUsersController = new MerchantUsersController()
+const merchantUsersRoutes = Router({ mergeParams: true })
 
 const sendInvitesSchema: AllowedSchema = {
   type: "object",
@@ -20,12 +20,12 @@ const sendInvitesSchema: AllowedSchema = {
             type: "string",
           },
           name: {
-            type: "string"
-          }
-        }
-      }
-    }
-  }
+            type: "string",
+          },
+        },
+      },
+    },
+  },
 }
 
 merchantUsersRoutes.post(
@@ -34,9 +34,6 @@ merchantUsersRoutes.post(
   merchantUsersController.sendInvites
 )
 
-merchantUsersRoutes.get(
-  "/",
-  merchantUsersController.getUsers
-)
+merchantUsersRoutes.get("/", merchantUsersController.getUsers)
 
-export default merchantUsersRoutes;
+export default merchantUsersRoutes

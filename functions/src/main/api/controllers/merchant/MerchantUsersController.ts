@@ -1,6 +1,6 @@
-import BaseController from "../../../../shared/BaseController";
-import Collection from "../../../../shared/enums/Collection";
-import { db } from "../../../../shared/utils/admin";
+import BaseController from "../../../../shared/BaseController"
+import Collection from "../../../../shared/enums/Collection"
+import { db } from "../../../../shared/utils/admin"
 import { v4 as uuid } from "uuid"
 import { addDays } from "date-fns";
 import { firestore } from "firebase-admin";
@@ -15,13 +15,11 @@ export class MerchantUsersController extends BaseController {
       const { merchantId } = req.params
       const { inviteData } = req.body
 
-      const [
-        { merchant, merchantError },
-        { user, userError }
-      ] = await Promise.all([
-        fetchDocument(Collection.MERCHANT, merchantId),
-        fetchDocument(Collection.USER, userId)
-      ])
+      const [{ merchant, merchantError }, { user, userError }] =
+        await Promise.all([
+          fetchDocument(Collection.MERCHANT, merchantId),
+          fetchDocument(Collection.USER, userId),
+        ])
 
       const loadingError = merchantError || userError
 
@@ -49,7 +47,7 @@ export class MerchantUsersController extends BaseController {
           merchantId,
           expiresAt: addDays(new Date(), 1),
           createdAt: firestore.FieldValue.serverTimestamp(),
-          wasUsed: false
+          wasUsed: false,
         })
       }
 
@@ -60,14 +58,15 @@ export class MerchantUsersController extends BaseController {
         return datum
       })
 
-      const sendInviteEmails = sendInvites(inviteDataWithIds, firstName, displayName)
+      const sendInviteEmails = sendInvites(
+        inviteDataWithIds,
+        firstName,
+        displayName
+      )
 
-      await Promise.all([
-        createInvites,
-        sendInviteEmails
-      ])
+      await Promise.all([createInvites, sendInviteEmails])
 
-      return res.status(200).json({});
+      return res.status(200).json({})
     } catch (err) {
       next(err)
     }
@@ -81,10 +80,12 @@ export class MerchantUsersController extends BaseController {
         .collection(Collection.MEMBERSHIP)
         .where("merchantId", "==", merchantId)
         .get()
-      
-      if (membershipsSnapshot.docs.length === 0) { return [] }
 
-      const userIds = membershipsSnapshot.docs.map(doc => doc.data().userId)
+      if (membershipsSnapshot.docs.length === 0) {
+        return []
+      }
+
+      const userIds = membershipsSnapshot.docs.map((doc) => doc.data().userId)
 
       const users = await fetchDocumentsInArray(
         db().collection(Collection.USER),

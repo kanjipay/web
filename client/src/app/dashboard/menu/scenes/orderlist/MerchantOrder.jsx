@@ -1,29 +1,29 @@
-import { Link } from "react-router-dom";
-import "./MerchantOrder.css";
-import { Colors } from "../../../../../enums/Colors";
-import { formatTimeForDisplayFromTimestamp } from "../../../../../utils/helpers/time";
+import { Link } from "react-router-dom"
+import "./MerchantOrder.css"
+import { Colors } from "../../../../../enums/Colors"
+import { formatTimeForDisplayFromTimestamp } from "../../../../../utils/helpers/time"
 
 function OrderItem({ order, menuItems }) {
-  var orderListString = "";
+  var orderListString = ""
 
-  const orderTime = formatTimeForDisplayFromTimestamp(order.paidAt);
+  const orderTime = formatTimeForDisplayFromTimestamp(order.paidAt)
 
   //Here we join each element of the individual item to the menu. This is done locally to minimize network calls needed.
   const enrichedOrderItemElements = order.orderItems.map((orderItem) => {
-    const menuItem = menuItems.find((x) => x.id === orderItem.menuItemId);
-    const enrichedOrderItemElement = { orderItem, menuItem };
-    return enrichedOrderItemElement;
-  });
+    const menuItem = menuItems.find((x) => x.id === orderItem.menuItemId)
+    const enrichedOrderItemElement = { orderItem, menuItem }
+    return enrichedOrderItemElement
+  })
 
   //Here we build up a string that will contain what is in the order
   for (var enrichedOrderItem of enrichedOrderItemElements) {
-    const name = enrichedOrderItem.menuItem.title;
-    const quantity = enrichedOrderItem.orderItem.quantity;
+    const name = enrichedOrderItem.menuItem.title
+    const quantity = enrichedOrderItem.orderItem.quantity
 
     if (orderListString.length === 0) {
-      orderListString = orderListString.concat(quantity, "x ", name);
+      orderListString = orderListString.concat(quantity, "x ", name)
     } else {
-      orderListString = orderListString.concat(", ", quantity, "x ", name);
+      orderListString = orderListString.concat(", ", quantity, "x ", name)
     }
   }
 
@@ -54,7 +54,7 @@ function OrderItem({ order, menuItems }) {
         </div>
       </div>
     </Link>
-  );
+  )
 }
 
-export default OrderItem;
+export default OrderItem

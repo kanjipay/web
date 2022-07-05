@@ -18,8 +18,12 @@ export default function EmailLinkPage() {
   const navigate = useNavigate()
 
   const [searchParams] = useSearchParams()
-  const [backPath, successPath] = ["back", "success"].map(e => base64.decode(searchParams.get(e)))
-  const [firstName, lastName, stateId] = ["first", "last", "stateId"].map(e => searchParams.get(e))
+  const [backPath, successPath] = ["back", "success"].map((e) =>
+    base64.decode(searchParams.get(e))
+  )
+  const [firstName, lastName, stateId] = ["first", "last", "stateId"].map((e) =>
+    searchParams.get(e)
+  )
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
 
   const emailFromLocalStorage = localStorage.getItem("emailForSignIn")
@@ -27,13 +31,17 @@ export default function EmailLinkPage() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (error) { return }
+    if (error) {
+      return
+    }
 
     if (isSignInWithEmailLink(auth, window.location.href)) {
-      if (!emailForSignIn) { return }
+      if (!emailForSignIn) {
+        return
+      }
 
       signInWithEmailLink(auth, emailForSignIn, window.location.href)
-        .then(credential => {
+        .then((credential) => {
           localStorage.removeItem("emailForSignIn")
 
           processUserCredential(credential, firstName, lastName).then(() => {
@@ -42,21 +50,29 @@ export default function EmailLinkPage() {
             })
           })
         })
-        .catch(error => {
+        .catch((error) => {
           setError({
             title: "Something went wrong",
-            body: "We're sorry, but we couldn't log you in. Try checking back later."
+            body: "We're sorry, but we couldn't log you in. Try checking back later.",
           })
         })
     } else {
       setError({
         title: "Invalid link",
-        body: "This isn't a valid email sign in link."
+        body: "This isn't a valid email sign in link.",
       })
     }
-  }, [emailForSignIn, navigate, successPath, successState, firstName, lastName, error])
+  }, [
+    emailForSignIn,
+    navigate,
+    successPath,
+    successState,
+    firstName,
+    lastName,
+    error,
+  ])
 
-  const handleEmailSubmit = async data => {
+  const handleEmailSubmit = async (data) => {
     const { email } = data
     setEmailForSignIn(email)
   }
@@ -66,39 +82,46 @@ export default function EmailLinkPage() {
   }
 
   if (error) {
-    return <IconActionPage
-      Icon={Cross}
-      iconBackgroundColor={Colors.RED_LIGHT}
-      iconForegroundColor={Colors.RED}
-      title={error.title}
-      body={error.body}
-      primaryActionTitle="Go back"
-      primaryAction={handleError}
-    />
+    return (
+      <IconActionPage
+        Icon={Cross}
+        iconBackgroundColor={Colors.RED_LIGHT}
+        iconForegroundColor={Colors.RED}
+        title={error.title}
+        body={error.body}
+        primaryActionTitle="Go back"
+        primaryAction={handleError}
+      />
+    )
   } else if (emailForSignIn) {
     return <LoadingPage message="Signing you in..." />
   } else {
-    return <div className="container">
-      <div className="content">
-        <Spacer y={4} />
-        <Form
-          formGroupData={[
-            {
-              explanation: "It looks like you've switched devices. Please enter your email again for added security.",
-              items: [
-                {
-                  name: "email",
-                  validators: [generateValidator(validateEmail, "Invalid email")],
-                  input: <Field type="email" placeholder="Email" />
-                }
-              ]
-            }
-          ]}
-          onSubmit={handleEmailSubmit}
-          submitTitle="Submit"
-        />
-        <Spacer y={6} />
+    return (
+      <div className="container">
+        <div className="content">
+          <Spacer y={4} />
+          <Form
+            formGroupData={[
+              {
+                explanation:
+                  "It looks like you've switched devices. Please enter your email again for added security.",
+                items: [
+                  {
+                    name: "email",
+                    validators: [
+                      generateValidator(validateEmail, "Invalid email"),
+                    ],
+                    input: <Field type="email" placeholder="Email" />,
+                  },
+                ],
+              },
+            ]}
+            onSubmit={handleEmailSubmit}
+            submitTitle="Submit"
+          />
+          <Spacer y={6} />
+        </div>
       </div>
-    </div>
+    )
   }
 }

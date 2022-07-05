@@ -20,5 +20,4 @@ export function isExpired(token: string) {
   const currDate = new Date()
 
   return currDate < expiryDate
-
 }

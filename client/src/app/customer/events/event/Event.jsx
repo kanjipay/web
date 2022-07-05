@@ -20,7 +20,9 @@ export default function Event({ merchant, user }) {
   }, [eventId])
 
   useEffect(() => {
-    if (!event) { return }
+    if (!event) {
+      return
+    }
 
     if (!event.artistIds || event.artistIds.length === 0) {
       setArtists([])
@@ -45,16 +47,33 @@ export default function Event({ merchant, user }) {
   if (event && products && artists) {
     if (event.isPublished) {
       console.log(artists)
-      return <Routes>
-        <Route path="/" element={<EventPage merchant={merchant} event={event} products={products} artists={artists} />} />
-        <Route path="/:productId/*" element={<Product merchant={merchant} event={event} user={user} />} />
-      </Routes>
+      return (
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <EventPage
+                merchant={merchant}
+                event={event}
+                products={products}
+                artists={artists}
+              />
+            }
+          />
+          <Route
+            path="/:productId/*"
+            element={<Product merchant={merchant} event={event} user={user} />}
+          />
+        </Routes>
+      )
     } else {
-      return <IconPage
-        Icon={Discover}
-        title="Coming soon"
-        body="The event organiser hasn't published this event yet. Try checking back later."
-      />
+      return (
+        <IconPage
+          Icon={Discover}
+          title="Coming soon"
+          body="The event organiser hasn't published this event yet. Try checking back later."
+        />
+      )
     }
   } else {
     return <LoadingPage />

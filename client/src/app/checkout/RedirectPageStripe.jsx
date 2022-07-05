@@ -1,12 +1,12 @@
-import { where } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import LoadingPage from "../../components/LoadingPage";
-import Collection from "../../enums/Collection";
-import OrderType from "../../enums/OrderType";
-import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus";
-import { AnalyticsManager } from "../../utils/AnalyticsManager";
-import useBasket from "../customer/menu/basket/useBasket";
+import { where } from "firebase/firestore"
+import { useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import LoadingPage from "../../components/LoadingPage"
+import Collection from "../../enums/Collection"
+import OrderType from "../../enums/OrderType"
+import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
+import useBasket from "../customer/menu/basket/useBasket"
 
 export default function RedirectPageStripe() {
   const [paymentAttempt, setPaymentAttempt] = useState(null)
@@ -18,7 +18,9 @@ export default function RedirectPageStripe() {
   const stripePaymentIntentId = searchParams.get("payment_intent")
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("StripePaymentRedirect", { stripePaymentIntentId })
+    AnalyticsManager.main.viewPage("StripePaymentRedirect", {
+      stripePaymentIntentId,
+    })
   }, [stripePaymentIntentId])
 
   useEffect(() => {
@@ -29,7 +31,9 @@ export default function RedirectPageStripe() {
   }, [stripePaymentIntentId])
 
   useEffect(() => {
-    if (!paymentAttempt || order) { return }
+    if (!paymentAttempt || order) {
+      return
+    }
 
     const { orderId } = paymentAttempt
 
@@ -37,7 +41,9 @@ export default function RedirectPageStripe() {
   }, [paymentAttempt, order])
 
   useEffect(() => {
-    if (!paymentAttempt || !order) { return }
+    if (!paymentAttempt || !order) {
+      return
+    }
 
     const { status, orderId } = paymentAttempt
 
@@ -46,17 +52,19 @@ export default function RedirectPageStripe() {
         switch (order.type) {
           case OrderType.TICKETS:
             navigate(`/events/s/orders/${orderId}/confirmation`)
-            break;
+            break
           case OrderType.MENU:
             clearBasket()
             navigate(`/menu/orders/${orderId}/confirmation`)
-            break;
+            break
           default:
         }
-        break;
+        break
       case PaymentAttemptStatus.FAILED:
-        navigate(`/checkout/o/${orderId}/payment-failure`, { state: { retryPath: `/checkout/o/${orderId}/payment-stripe`}});
-        break;
+        navigate(`/checkout/o/${orderId}/payment-failure`, {
+          state: { retryPath: `/checkout/o/${orderId}/payment-stripe` },
+        })
+        break
       default:
     }
   }, [paymentAttempt, order, navigate, clearBasket])

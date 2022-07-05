@@ -1,9 +1,9 @@
-import { formatCurrency } from "../../../../../utils/helpers/money";
-import "./MerchantOrderItem.css";
-import Spacer from "../../../../../components/Spacer";
+import { formatCurrency } from "../../../../../utils/helpers/money"
+import "./MerchantOrderItem.css"
+import Spacer from "../../../../../components/Spacer"
 
 function MerchantOrderItem({ quantity, name, price }) {
-  const totalPrice = price * quantity;
+  const totalPrice = price * quantity
 
   return (
     <div>
@@ -15,7 +15,7 @@ function MerchantOrderItem({ quantity, name, price }) {
       </div>
       <Spacer y={1} />
     </div>
-  );
+  )
 }
 
-export default MerchantOrderItem;
+export default MerchantOrderItem

@@ -1,11 +1,11 @@
-import { onAuthStateChanged } from "firebase/auth";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import User from "../../../../assets/icons/User";
+import { onAuthStateChanged } from "firebase/auth"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import User from "../../../../assets/icons/User"
 import IconButton from "../../../../components/IconButton"
-import { ButtonTheme } from "../../../../components/ButtonTheme";
-import NavBar from "../../../../components/NavBar";
-import { auth } from "../../../../utils/FirebaseUtils";
+import { ButtonTheme } from "../../../../components/ButtonTheme"
+import NavBar from "../../../../components/NavBar"
+import { auth } from "../../../../utils/FirebaseUtils"
 
 export default function SecureNavBar({
   showsBackButton = true,
@@ -17,22 +17,24 @@ export default function SecureNavBar({
   rightElements = [],
   transparentDepth,
   opaqueDepth,
-  profilePath
+  profilePath,
 }) {
   const navigate = useNavigate()
   const [user, setUser] = useState(auth.currentUser)
 
   useEffect(() => {
-    onAuthStateChanged(auth, user => {
+    onAuthStateChanged(auth, (user) => {
       setUser(user)
     })
   }, [])
 
-  const profileElement = (<IconButton
-    Icon={User}
-    buttonTheme={ButtonTheme.NAVBAR}
-    onClick={() => navigate(profilePath)}
-  />)
+  const profileElement = (
+    <IconButton
+      Icon={User}
+      buttonTheme={ButtonTheme.NAVBAR}
+      onClick={() => navigate(profilePath)}
+    />
+  )
 
   function generateRightElements() {
     if (user) {
@@ -53,6 +55,6 @@ export default function SecureNavBar({
     transparentDepth,
     opaqueDepth,
   }
-  
-  return <NavBar {...props}/>
+
+  return <NavBar {...props} />
 }
