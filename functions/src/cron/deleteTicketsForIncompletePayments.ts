@@ -6,7 +6,6 @@ import PaymentAttemptStatus from "../shared/enums/PaymentAttemptStatus"
 import { db } from "../shared/utils/admin"
 import { fetchDocumentsInArray } from "../shared/utils/fetchDocumentsInArray"
 
-
 export const deleteTicketsForIncompletePayments = async (context) => {
   try {
     const threeBusinessDaysAgo = addBusinessDays(new Date(), -3)

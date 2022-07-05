@@ -1,9 +1,9 @@
-import { firestore } from "firebase-admin";
-import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray";
-import BaseController from "../../../shared/BaseController";
-import Collection from "../../../shared/enums/Collection";
-import { db } from "../../../shared/utils/admin";
-import { dateFromTimestamp } from "../../../shared/utils/time";
+import { firestore } from "firebase-admin"
+import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
+import BaseController from "../../../shared/BaseController"
+import Collection from "../../../shared/enums/Collection"
+import { db } from "../../../shared/utils/admin"
+import { dateFromTimestamp } from "../../../shared/utils/time"
 
 export class TicketsController extends BaseController {
   index = async (req, res, next) => {

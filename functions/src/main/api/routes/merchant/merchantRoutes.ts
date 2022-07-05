@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { MerchantController } from "../../controllers/merchant/MerchantController";
-import merchantTicketsRoutes from "./merchantTicketsRoutes";
-import { AllowedSchema } from "express-json-validator-middleware";
-import { validate } from "../../../../shared/utils/validate";
-import merchantUsersRoutes from "./merchantUsersRoutes";
-import merchantEventAttendeesRoutes from "./merchantEventAttendeesRoutes";
+import { Router } from "express"
+import { MerchantController } from "../../controllers/merchant/MerchantController"
+import merchantTicketsRoutes from "./merchantTicketsRoutes"
+import { AllowedSchema } from "express-json-validator-middleware"
+import { validate } from "../../../../shared/utils/validate"
+import merchantUsersRoutes from "./merchantUsersRoutes"
+import merchantEventAttendeesRoutes from "./merchantEventAttendeesRoutes"
 
 const merchantController = new MerchantController()
 const merchantRoutes = Router({ mergeParams: true })

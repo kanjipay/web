@@ -6,7 +6,7 @@ import { db } from "../../../../shared/utils/admin"
 import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
 import { dateFromTimestamp } from "../../../../shared/utils/time"
-import { logger } from "firebase-functions/v1";
+import { logger } from "firebase-functions/v1"
 
 export class MerchantTicketsController extends BaseController {
   check = async (req, res, next) => {

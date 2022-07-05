@@ -1,12 +1,12 @@
-import { Router } from "express";
-import { MerchantEventAttendeesController } from "../../controllers/merchant/MerchantEventAttendeesController";
+import { Router } from "express"
+import { MerchantEventAttendeesController } from "../../controllers/merchant/MerchantEventAttendeesController"
 
-const merchantEventAttendeesController = new MerchantEventAttendeesController();
-const merchantEventAttendeesRoutes = Router({ mergeParams: true });
+const merchantEventAttendeesController = new MerchantEventAttendeesController()
+const merchantEventAttendeesRoutes = Router({ mergeParams: true })
 
 merchantEventAttendeesRoutes.get(
-  "/:eventId", 
+  "/:eventId",
   merchantEventAttendeesController.getEventAttendees
-);
+)
 
-export default merchantEventAttendeesRoutes;
+export default merchantEventAttendeesRoutes

@@ -2,11 +2,11 @@ import BaseController from "../../../../shared/BaseController"
 import Collection from "../../../../shared/enums/Collection"
 import { db } from "../../../../shared/utils/admin"
 import { v4 as uuid } from "uuid"
-import { addDays } from "date-fns";
-import { firestore } from "firebase-admin";
-import { fetchDocument } from "../../../../shared/utils/fetchDocument";
-import { sendInvites } from "../../../../shared/utils/sendEmail";
-import { fetchDocumentsInArray } from "../../../../shared/utils/fetchDocumentsInArray";
+import { addDays } from "date-fns"
+import { firestore } from "firebase-admin"
+import { fetchDocument } from "../../../../shared/utils/fetchDocument"
+import { sendInvites } from "../../../../shared/utils/sendEmail"
+import { fetchDocumentsInArray } from "../../../../shared/utils/fetchDocumentsInArray"
 
 export class MerchantUsersController extends BaseController {
   sendInvites = async (req, res, next) => {
