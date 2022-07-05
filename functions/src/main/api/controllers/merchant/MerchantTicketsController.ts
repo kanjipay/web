@@ -5,13 +5,12 @@ import OrderStatus from "../../../../shared/enums/OrderStatus"
 import { db } from "../../../../shared/utils/admin"
 import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
-import LoggingController from "../../../../shared/utils/loggingClient"
 import { dateFromTimestamp } from "../../../../shared/utils/time"
+import { logger } from "firebase-functions/v1"
 
 export class MerchantTicketsController extends BaseController {
   check = async (req, res, next) => {
     try {
-      const logger = new LoggingController("Check ticket")
       const { ticketId, merchantId } = req.params
       const { eventId: checkedEventId } = req.body
 
