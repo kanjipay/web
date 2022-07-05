@@ -19,20 +19,20 @@ export class MerchantEventAttendeesController extends BaseController {
       
       logger.log("order docs" , {orderDocs});
 
-      const orderUserIds = new Set(orderDocs.docs.map((orderDoc) => orderDoc.data().userId));
-      const orderProductIds = new Set(orderDocs.docs.map((orderDoc) => orderDoc.data().orderItems[0].productId));
+      const orderUserIds =  [...new Set(orderDocs.docs.map((orderDoc) => orderDoc.data().userId))];
+      const orderProductIds = [...new Set(orderDocs.docs.map((orderDoc) => orderDoc.data().orderItems[0].productId))];
       logger.log("order Userids", {orderUserIds})
       logger.log("Product ids", {orderProductIds});
       const orderUsers = await fetchDocumentsInArray(
         db().collection(Collection.USER),
         firestore.FieldPath.documentId(),
-        [...orderUserIds],
+        orderUserIds,
       )
 
       const orderProducts = await fetchDocumentsInArray(
         db().collection(Collection.PRODUCT),
         firestore.FieldPath.documentId(),
-        [...orderProductIds],
+        orderProductIds,
       )
       logger.log("ticket users",{orderUsers})
       logger.log("products",{orderProducts})
@@ -45,7 +45,7 @@ export class MerchantEventAttendeesController extends BaseController {
           userId} = doc.data();
         const {earliestEntryAt, lastestEntryAt, description} = orderProducts.find(product => product.id === productId)
         const {email, firstName, lastName} = orderUsers.find(user => user.id === userId)
-        const {eventEndsAt, productId} = orderItems[0];
+        const {eventEndsAt, productId, quantity} = orderItems[0];
         return { 
           createdAt,
           eventEndsAt,
@@ -59,7 +59,8 @@ export class MerchantEventAttendeesController extends BaseController {
           lastName,
           earliestEntryAt, 
           lastestEntryAt, 
-          description
+          description,
+          quantity
          }
       });
       logger.log('ticket details',{ticketDetails});
