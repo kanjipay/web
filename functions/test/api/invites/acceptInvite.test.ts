@@ -1,3 +1,0 @@
-/*
-function not fully implemented
-*/ 

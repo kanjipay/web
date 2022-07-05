@@ -49,6 +49,10 @@ export class MerchantTicketsController extends BaseController {
           errorMessage = "Couldn't find the event this ticket is for."
         } else if (!checkedEvent || checkedEventError) {
           errorMessage = "The event you're scanning for doesn't exist"
+        } else if (merchantId !== ticket.merchantId) {
+          console.log(merchantId);
+          console.log(ticket.merchantId);
+          errorMessage = 'This ticket is for another organiser.'
         } else {
           const { title: ticketEventTitle } = ticketEvent
           const { title: checkedEventTitle } = checkedEvent
