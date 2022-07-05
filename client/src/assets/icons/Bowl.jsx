@@ -49,5 +49,5 @@ export default function Bowl({ length = 32, color = "black" }) {
         strokeLinecap="round"
       />
     </svg>
-  );
+  )
 }

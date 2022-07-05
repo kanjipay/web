@@ -1,9 +1,9 @@
-import { useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
-import LoadingPage from "../../../../components/LoadingPage";
-import { useOpenAuthPage } from "../../../auth/useOpenAuthPage";
-import CustomerTickets from "./customerTickets/CustomerTickets";
-import Orders from "./orders/Orders";
+import { useEffect } from "react"
+import { Route, Routes, useLocation } from "react-router-dom"
+import LoadingPage from "../../../../components/LoadingPage"
+import { useOpenAuthPage } from "../../../auth/useOpenAuthPage"
+import CustomerTickets from "./customerTickets/CustomerTickets"
+import Orders from "./orders/Orders"
 
 export default function Secure({ user }) {
   const openAuthPage = useOpenAuthPage()
@@ -17,16 +17,18 @@ export default function Secure({ user }) {
         successPath: window.location.pathname,
         successState: location.state ?? {},
         backPath,
-        requiresPassword: false
+        requiresPassword: false,
       })
     }
   })
 
   if (user) {
-    return <Routes>
-      <Route path="tickets/*" element={<CustomerTickets user={user} />} />
-      <Route path="orders/*" element={<Orders />} />
-    </Routes>
+    return (
+      <Routes>
+        <Route path="tickets/*" element={<CustomerTickets user={user} />} />
+        <Route path="orders/*" element={<Orders />} />
+      </Routes>
+    )
   } else {
     return <LoadingPage />
   }

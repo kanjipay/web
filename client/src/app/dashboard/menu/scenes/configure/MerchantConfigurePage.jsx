@@ -1,38 +1,38 @@
-import Spacer from "../../../../../components/Spacer";
-import BottomNavBar from "../../../../../components/BottomNavBar";
-import Switch from "@mui/material/Switch";
-import TextLine from "../../../../../components/TextLine";
-import MenuItemConfig from "./MenuItemConfig";
-import MainButton from "../../../../../components/MainButton";
-import NavBar from "../../../../../components/NavBar";
-import { setMerchantStatus } from "../../../../../utils/services/MerchantService";
-import "./MerchantConfigurePage.css";
+import Spacer from "../../../../../components/Spacer"
+import BottomNavBar from "../../../../../components/BottomNavBar"
+import Switch from "@mui/material/Switch"
+import TextLine from "../../../../../components/TextLine"
+import MenuItemConfig from "./MenuItemConfig"
+import MainButton from "../../../../../components/MainButton"
+import NavBar from "../../../../../components/NavBar"
+import { setMerchantStatus } from "../../../../../utils/services/MerchantService"
+import "./MerchantConfigurePage.css"
 
 function MerchantConfigurePage(props) {
-  const { merchantData, menuItems, menuSections } = props;
+  const { merchantData, menuItems, menuSections } = props
   const shopOpenStatusString =
-    "Your shop is " + merchantData.status.toLowerCase();
-  var isConfiguredOpen = merchantData.status === "OPEN";
+    "Your shop is " + merchantData.status.toLowerCase()
+  var isConfiguredOpen = merchantData.status === "OPEN"
 
   //Create grouped menu items array to display correctly
-  const groupedMenuItems = {};
+  const groupedMenuItems = {}
 
   menuItems.forEach((menuItem) => {
-    const menuSectionId = menuItem.sectionId;
-    const currValue = groupedMenuItems[menuSectionId];
+    const menuSectionId = menuItem.sectionId
+    const currValue = groupedMenuItems[menuSectionId]
 
     if (currValue) {
-      groupedMenuItems[menuSectionId].push(menuItem);
+      groupedMenuItems[menuSectionId].push(menuItem)
     } else {
-      groupedMenuItems[menuSectionId] = [menuItem];
+      groupedMenuItems[menuSectionId] = [menuItem]
     }
-  });
+  })
 
   const handleOpenToggle = () => {
-    const newStatus = isConfiguredOpen ? "CLOSED" : "OPEN";
+    const newStatus = isConfiguredOpen ? "CLOSED" : "OPEN"
 
-    setMerchantStatus(merchantData.id, newStatus);
-  };
+    setMerchantStatus(merchantData.id, newStatus)
+  }
 
   return (
     <div className="container">
@@ -80,7 +80,7 @@ function MerchantConfigurePage(props) {
         <BottomNavBar />
       </div>
     </div>
-  );
+  )
 }
 
-export default MerchantConfigurePage;
+export default MerchantConfigurePage

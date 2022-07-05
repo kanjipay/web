@@ -49,7 +49,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "npx prettier --write .",
+    "lint": "npx prettier --no-semi --write .",
     "build:dev": "env-cmd -f ./.env.dev npm run-script build",
     "build:staging": "env-cmd -f ./.env.staging npm run-script build",
     "build:prod": "env-cmd -f ./.env.prod npm run-script build"

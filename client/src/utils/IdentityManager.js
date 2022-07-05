@@ -1,4 +1,4 @@
-import { v4 as uuid } from "uuid";
+import { v4 as uuid } from "uuid"
 
 export class LocalStorageKeys {
   static DEVICE_ID = "deviceId"
@@ -18,7 +18,8 @@ export class IdentityManager {
     const deviceId = localStorage.getItem(LocalStorageKeys.DEVICE_ID) ?? uuid()
     this.setDeviceId(deviceId)
 
-    const pseudoUserId = localStorage.getItem(LocalStorageKeys.PSEUDO_USER_ID) ?? uuid()
+    const pseudoUserId =
+      localStorage.getItem(LocalStorageKeys.PSEUDO_USER_ID) ?? uuid()
     this.setPseudoUserId(pseudoUserId)
   }
 

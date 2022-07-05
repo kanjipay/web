@@ -1,23 +1,25 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
-import { getStorage } from "firebase/storage";
+import { initializeApp } from "firebase/app"
+import { getFirestore } from "firebase/firestore"
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions"
+import { getStorage } from "firebase/storage"
 // import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
-import Environment from "../enums/Environment";
-import { getAuth } from "firebase/auth";
+import Environment from "../enums/Environment"
+import { getAuth } from "firebase/auth"
 
-const firebaseApp = initializeApp(JSON.parse(process.env.REACT_APP_FIREBASE_OPTIONS));
+const firebaseApp = initializeApp(
+  JSON.parse(process.env.REACT_APP_FIREBASE_OPTIONS)
+)
 
 console.log(JSON.parse(process.env.REACT_APP_FIREBASE_OPTIONS))
 
-const db = getFirestore();
-const storage = getStorage();
+const db = getFirestore()
+const storage = getStorage()
 const auth = getAuth()
-const functions = getFunctions(firebaseApp);
+const functions = getFunctions(firebaseApp)
 
 if (process.env.REACT_APP_ENV_NAME === Environment.DEV_LOCAL) {
   // window.FIREBASE_APPCHECK_DEBUG_TOKEN = true
-  connectFunctionsEmulator(functions, "localhost", 5000);
+  connectFunctionsEmulator(functions, "localhost", 5000)
 }
 
 // initializeAppCheck(firebaseApp, {
@@ -27,4 +29,4 @@ if (process.env.REACT_APP_ENV_NAME === Environment.DEV_LOCAL) {
 //   isTokenAutoRefreshEnabled: true,
 // });
 
-export { firebaseApp, db, storage, auth, functions };
+export { firebaseApp, db, storage, auth, functions }

@@ -11,10 +11,15 @@ export async function isVisible(page: Page, selector: string) {
   }
 }
 
-export async function getText(element): Promise<string> { return await element.evaluate(e => e.textContent) }
+export async function getText(element): Promise<string> {
+  return await element.evaluate((e) => e.textContent)
+}
 
 export async function uploadImage(page: Page, selector: string) {
   const imagePickerInput = await page.$(selector)
-  const filePath = path.relative(process.cwd(), __dirname.replace("/utils", "/assets") + "/festival_stage.jpg")
+  const filePath = path.relative(
+    process.cwd(),
+    __dirname.replace("/utils", "/assets") + "/festival_stage.jpg"
+  )
   await imagePickerInput.uploadFile(filePath)
 }

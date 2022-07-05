@@ -3,4 +3,4 @@ enum MerchantStatus {
   CLOSED = "CLOSED",
 }
 
-export default MerchantStatus;
+export default MerchantStatus

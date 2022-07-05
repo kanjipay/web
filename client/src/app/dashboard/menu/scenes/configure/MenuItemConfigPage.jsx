@@ -1,31 +1,31 @@
-import { useParams } from "react-router-dom";
-import NavBar from "../../../../../components/NavBar";
-import Spacer from "../../../../../components/Spacer";
-import AsyncImage from "../../../../../components/AsyncImage";
-import { Helmet } from "react-helmet-async";
-import { getMenuItemStorageRef } from "../../../../../utils/helpers/storage";
-import Details from "../../../../../assets/icons/Details";
-import TextLine from "../../../../../components/TextLine";
-import MainButton from "../../../../../components/MainButton";
-import CircleIcon from "../../../../../components/CircleIcon";
-import "./MenuItemConfigPage.css";
-import DietaryAttribute from "../../../../customer/menu/menu/DietaryAttribute";
-import { formatCurrency } from "../../../../../utils/helpers/money";
-import { Colors } from "../../../../../enums/Colors";
+import { useParams } from "react-router-dom"
+import NavBar from "../../../../../components/NavBar"
+import Spacer from "../../../../../components/Spacer"
+import AsyncImage from "../../../../../components/AsyncImage"
+import { Helmet } from "react-helmet-async"
+import { getMenuItemStorageRef } from "../../../../../utils/helpers/storage"
+import Details from "../../../../../assets/icons/Details"
+import TextLine from "../../../../../components/TextLine"
+import MainButton from "../../../../../components/MainButton"
+import CircleIcon from "../../../../../components/CircleIcon"
+import "./MenuItemConfigPage.css"
+import DietaryAttribute from "../../../../customer/menu/menu/DietaryAttribute"
+import { formatCurrency } from "../../../../../utils/helpers/money"
+import { Colors } from "../../../../../enums/Colors"
 
 // TODO DietaryAttribute should be a common component
 // TODO Better way of filtering local data
 
 function MenuItemConfigPage(props) {
-  const { menuItems, menuSections } = props;
-  const { menuItemId } = useParams();
-  const filteredMenuItems = menuItems.filter((item) => item.id === menuItemId);
-  const menuItem = filteredMenuItems[0];
+  const { menuItems, menuSections } = props
+  const { menuItemId } = useParams()
+  const filteredMenuItems = menuItems.filter((item) => item.id === menuItemId)
+  const menuItem = filteredMenuItems[0]
   const filteredSections = menuSections.filter(
     (secion) => secion.id === menuItem.sectionId
-  );
-  const section = filteredSections[0];
-  const dietaryBubbles = [];
+  )
+  const section = filteredSections[0]
+  const dietaryBubbles = []
 
   for (var attr of DietaryAttribute.allItems) {
     if (menuItem.dietaryAttributes.includes(attr.name)) {
@@ -40,7 +40,7 @@ function MenuItemConfigPage(props) {
         >
           {attr.displayNameLong}
         </div>
-      );
+      )
     }
   }
 
@@ -110,7 +110,7 @@ function MenuItemConfigPage(props) {
         <Spacer y={2} />
       </div>
     </div>
-  );
+  )
 }
 
-export default MenuItemConfigPage;
+export default MenuItemConfigPage

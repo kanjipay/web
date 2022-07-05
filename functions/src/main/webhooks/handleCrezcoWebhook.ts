@@ -1,22 +1,24 @@
-import Collection from "../../shared/enums/Collection";
-import PaymentAttemptStatus from "../../shared/enums/PaymentAttemptStatus";
-import { fetchDocument } from "../../shared/utils/fetchDocument";
-import LoggingController from "../../shared/utils/loggingClient";
-import { verifyMercadoSignature } from "../../shared/utils/verifyMercadoSignature";
-import { processPaymentUpdate } from "./processPaymentUpdate";
+import Collection from "../../shared/enums/Collection"
+import PaymentAttemptStatus from "../../shared/enums/PaymentAttemptStatus"
+import { fetchDocument } from "../../shared/utils/fetchDocument"
+import LoggingController from "../../shared/utils/loggingClient"
+import { verifyMercadoSignature } from "../../shared/utils/verifyMercadoSignature"
+import { processPaymentUpdate } from "./processPaymentUpdate"
 
 const crezcoPaymentStatuses = {
   PaymentCompleted: PaymentAttemptStatus.SUCCESSFUL,
   PaymentPending: PaymentAttemptStatus.PENDING,
   PaymentFailed: PaymentAttemptStatus.FAILED,
   PaymentError: PaymentAttemptStatus.FAILED,
-  PaymentAccepted: PaymentAttemptStatus.ACCEPTED
+  PaymentAccepted: PaymentAttemptStatus.ACCEPTED,
 }
 
 export const handleCrezcoWebhook = async (req, res, next) => {
   try {
-    const loggingClient = new LoggingController("Crezco Webhook");
-    loggingClient.log("Handing crezco payment update", { payload: JSON.stringify(req.body[0]) })
+    const loggingClient = new LoggingController("Crezco Webhook")
+    loggingClient.log("Handing crezco payment update", {
+      payload: JSON.stringify(req.body[0]),
+    })
 
     const signature = req.body[0].partnerMetadata?.signature
 
@@ -40,31 +42,44 @@ export const handleCrezcoWebhook = async (req, res, next) => {
     const { paymentAttemptId, environment } = payload
 
     if (environment !== process.env.ENVIRONMENT) {
-      loggingClient.log(`Webhook is for ${environment} whereas current environment is ${process.env.ENVIRONMENT}`)
+      loggingClient.log(
+        `Webhook is for ${environment} whereas current environment is ${process.env.ENVIRONMENT}`
+      )
       return res.sendStatus(200)
     }
 
     loggingClient.log("Got payment attempt id", {}, { paymentAttemptId })
 
     if (!eventType || !(eventType in crezcoPaymentStatuses)) {
-      loggingClient.log("Crezco eventType undefined or not recognised", { eventType })
+      loggingClient.log("Crezco eventType undefined or not recognised", {
+        eventType,
+      })
       return res.sendStatus(200)
     }
 
     const paymentAttemptStatus = crezcoPaymentStatuses[eventType]
 
-    if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) { 
+    if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) {
       return res.sendStatus(200)
     }
 
-    const { paymentAttempt, paymentAttemptError } = await fetchDocument(Collection.PAYMENT_ATTEMPT, paymentAttemptId)
+    const { paymentAttempt, paymentAttemptError } = await fetchDocument(
+      Collection.PAYMENT_ATTEMPT,
+      paymentAttemptId
+    )
 
     if (paymentAttemptError) {
-      loggingClient.log("An error occured", { message: paymentAttemptError.message })
+      loggingClient.log("An error occured", {
+        message: paymentAttemptError.message,
+      })
       return res.sendStatus(200)
     }
 
-    const [, error] = await processPaymentUpdate(paymentAttempt.id, paymentAttemptStatus, paymentAttempt.orderId)
+    const [, error] = await processPaymentUpdate(
+      paymentAttempt.id,
+      paymentAttemptStatus,
+      paymentAttempt.orderId
+    )
 
     if (error) {
       loggingClient.log("An error occured", { message: error.message })

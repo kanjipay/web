@@ -1,59 +1,62 @@
-import React, { useState, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
-import MerchantLogin from "./scenes/login/MerchantLoginPage";
-import MerchantOrderPage from "./scenes/order/MerchantOrderPage";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import MerchantOrderList from "./scenes/orderlist/MerchantOrderListPage";
-import LoadingPage from "../../../components/LoadingPage";
-import MerchantConfigurePage from "./scenes/configure/MerchantConfigurePage";
-import MerchantAccountPage from "./scenes/account/MerchantAccountPage";
-import MenuItemConfigPage from "./scenes/configure/MenuItemConfigPage";
-import MerchantForgotPasswordPage from "./scenes/login/MerchantForgotPasswordPage";
+import React, { useState, useEffect } from "react"
+import { Route, Routes } from "react-router-dom"
+import MerchantLogin from "./scenes/login/MerchantLoginPage"
+import MerchantOrderPage from "./scenes/order/MerchantOrderPage"
+import { getAuth, onAuthStateChanged } from "firebase/auth"
+import MerchantOrderList from "./scenes/orderlist/MerchantOrderListPage"
+import LoadingPage from "../../../components/LoadingPage"
+import MerchantConfigurePage from "./scenes/configure/MerchantConfigurePage"
+import MerchantAccountPage from "./scenes/account/MerchantAccountPage"
+import MenuItemConfigPage from "./scenes/configure/MenuItemConfigPage"
+import MerchantForgotPasswordPage from "./scenes/login/MerchantForgotPasswordPage"
 import {
   fetchMerchantByUserId,
   fetchMerchantOrders,
-} from "../../../utils/services/MerchantService";
-import { auth } from "../../../utils/FirebaseUtils";
-import Collection from "../../../enums/Collection";
-import { orderBy, where } from "firebase/firestore";
+} from "../../../utils/services/MerchantService"
+import { auth } from "../../../utils/FirebaseUtils"
+import Collection from "../../../enums/Collection"
+import { orderBy, where } from "firebase/firestore"
 
 function MerchantApp() {
-  const [merchantId, setMerchantId] = useState("");
-  const [merchantData, setMerchantData] = useState("");
-  const [userId, setUserId] = useState("");
-  const [orderList, setOrderList] = useState("");
-  const [menuItems, setMenuItems] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [merchantMenuSections, setMerchantMenuSections] = useState("");
-  const [openingHours, setOpeningHours] = useState("");
+  const [merchantId, setMerchantId] = useState("")
+  const [merchantData, setMerchantData] = useState("")
+  const [userId, setUserId] = useState("")
+  const [orderList, setOrderList] = useState("")
+  const [menuItems, setMenuItems] = useState("")
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [merchantMenuSections, setMerchantMenuSections] = useState("")
+  const [openingHours, setOpeningHours] = useState("")
 
   useEffect(() => {
     // When user becomes logged in/out, update local variables
     const authUnsub = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUserId(user.uid);
-        setIsAuthenticated(true);
-        console.log("User authenticated");
+        setUserId(user.uid)
+        setIsAuthenticated(true)
+        console.log("User authenticated")
       } else {
-        console.log("No user currently authenticated");
-        setMerchantId(null);
-        setIsAuthenticated(false);
+        console.log("No user currently authenticated")
+        setMerchantId(null)
+        setIsAuthenticated(false)
       }
-    });
+    })
 
     //Fetch Orders
     const orderUnsub = fetchMerchantOrders(merchantId, (snapshot) => {
       if (snapshot) {
         const items = snapshot.docs.map((doc) => {
-          return { id: doc.id, ...doc.data() };
-        });
-        setOrderList(items);
+          return { id: doc.id, ...doc.data() }
+        })
+        setOrderList(items)
       }
-    });
+    })
 
     //Fetch Menu Items
 
-    const merchantUnsub = Collection.MERCHANT.onChange(merchantId, setMerchantData)
+    const merchantUnsub = Collection.MERCHANT.onChange(
+      merchantId,
+      setMerchantData
+    )
 
     const menuSectionUnsub = Collection.MENU_SECTION.queryOnChange(
       setMerchantMenuSections,
@@ -73,14 +76,14 @@ function MerchantApp() {
     )
 
     return () => {
-      authUnsub();
-      merchantUnsub();
-      orderUnsub();
-      menuItemUnsub();
-      menuSectionUnsub();
-      openingHoursUnsub();
-    };
-  }, [userId, merchantId]);
+      authUnsub()
+      merchantUnsub()
+      orderUnsub()
+      menuItemUnsub()
+      menuSectionUnsub()
+      openingHoursUnsub()
+    }
+  }, [userId, merchantId])
 
   // TODO make this loading screen work at a scene level rather than for the global app - should be faster :)
   const isLoadedAndAuthenticated =
@@ -88,7 +91,7 @@ function MerchantApp() {
     menuItems.length > 0 &&
     merchantMenuSections.length > 0 &&
     openingHours.length > 0 &&
-    isAuthenticated;
+    isAuthenticated
 
   //  render a scene based on the current state
   if (isLoadedAndAuthenticated) {
@@ -142,13 +145,13 @@ function MerchantApp() {
           }
         />
       </Routes>
-    );
+    )
   } else if (isAuthenticated) {
     return (
       <div>
         <LoadingPage />
       </div>
-    );
+    )
   }
   return (
     // Display the logon screen
@@ -162,7 +165,7 @@ function MerchantApp() {
         <Route path="*" element={<MerchantLogin />} />
       </Routes>
     </div>
-  );
+  )
 }
 
-export default MerchantApp;
+export default MerchantApp

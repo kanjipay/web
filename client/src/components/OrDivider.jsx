@@ -1,4 +1,4 @@
-import { Colors } from "../enums/Colors";
+import { Colors } from "../enums/Colors"
 
 export default function OrDivider() {
   return (
@@ -13,5 +13,5 @@ export default function OrDivider() {
         style={{ height: 1, backgroundColor: Colors.OFF_WHITE }}
       />
     </div>
-  );
+  )
 }

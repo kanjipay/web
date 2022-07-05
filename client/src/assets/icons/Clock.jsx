@@ -16,5 +16,5 @@ export default function Clock({ length = 32, color = "black" }) {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }

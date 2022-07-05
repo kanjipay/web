@@ -2,7 +2,7 @@ import { logger } from "firebase-functions/v1"
 import { abandonOldOrders } from "./abandonOldOrders"
 import { deleteTicketsForIncompletePayments } from "./deleteTicketsForIncompletePayments"
 
-export const cronFunction = async context => {
+export const cronFunction = async (context) => {
   try {
     logger.log("Running cron function")
 

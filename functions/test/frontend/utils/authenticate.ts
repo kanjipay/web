@@ -9,13 +9,13 @@ export async function authenticate(page: Page) {
 
   await page.waitForSelector('input[type="email"]')
   await page.type('input[type="email"]', process.env.GOOGLE_AUTH_EMAIL)
-  await page.waitForSelector('#identifierNext')
-  await page.click('#identifierNext')
+  await page.waitForSelector("#identifierNext")
+  await page.click("#identifierNext")
 
   await sleep(1500)
 
   await page.waitForSelector('input[type="password"]')
   await page.type('input[type="password"]', process.env.GOOGLE_AUTH_PASSWORD)
-  await page.waitForSelector('#passwordNext')
-  await page.click('#passwordNext')
+  await page.waitForSelector("#passwordNext")
+  await page.click("#passwordNext")
 }

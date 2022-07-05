@@ -32,5 +32,5 @@ export default function Settings({ length = 32, color = "black" }) {
         fill={color}
       />
     </svg>
-  );
+  )
 }

@@ -1,10 +1,10 @@
-import { firestore } from "firebase-admin";
-import Collection from "../enums/Collection";
-import { db } from "./admin";
-import LoggingController from "./loggingClient";
-import { v4 as uuid } from "uuid" 
-import { fetchDocument } from "./fetchDocument";
-import { sendTicketReceipt } from "./sendEmail";
+import { firestore } from "firebase-admin"
+import Collection from "../enums/Collection"
+import { db } from "./admin"
+import LoggingController from "./loggingClient"
+import { v4 as uuid } from "uuid"
+import { fetchDocument } from "./fetchDocument"
+import { sendTicketReceipt } from "./sendEmail"
 
 export async function processSuccessfulTicketsOrder(
   merchantId: string,
@@ -45,13 +45,11 @@ export async function processSuccessfulTicketsOrder(
     if (i == 0) {
       logger.log("Generated ticket data", {
         ticketData,
-        quantity
+        quantity,
       })
     }
 
-    const ticketRef = db()
-      .collection(Collection.TICKET)
-      .doc(ticketId)
+    const ticketRef = db().collection(Collection.TICKET).doc(ticketId)
 
     batch.set(ticketRef, ticketData)
   }
@@ -62,29 +60,27 @@ export async function processSuccessfulTicketsOrder(
     .collection(Collection.PRODUCT)
     .doc(productId)
     .update({
-      soldCount: firestore.FieldValue.increment(quantity)
+      soldCount: firestore.FieldValue.increment(quantity),
     })
 
-  const [
-    { user },
-  ] = await Promise.all([
+  const [{ user }] = await Promise.all([
     fetchDocument(Collection.USER, userId),
     addTickets,
-    updateProduct
+    updateProduct,
   ])
 
   const { email, firstName } = user
   const boughtAt = new Date()
 
   await sendTicketReceipt(
-    email, 
-    firstName, 
-    eventTitle, 
-    productTitle, 
-    productPrice, 
-    quantity, 
-    boughtAt, 
-    currency, 
+    email,
+    firstName,
+    eventTitle,
+    productTitle,
+    productPrice,
+    quantity,
+    boughtAt,
+    currency,
     ticketIds,
     customerFee
   )

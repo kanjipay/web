@@ -1,6 +1,6 @@
-import Spacer from "../../components/Spacer";
-import MainButton from "../../components/MainButton";
-import "./PaymentOption.css";
+import Spacer from "../../components/Spacer"
+import MainButton from "../../components/MainButton"
+import "./PaymentOption.css"
 
 export default function PaymentOption({
   title,
@@ -19,5 +19,5 @@ export default function PaymentOption({
       <Spacer y={2} />
       <MainButton title="Choose" buttonTheme={buttonTheme} />
     </div>
-  );
+  )
 }

@@ -1,18 +1,18 @@
-import { formatCurrency } from "../../../../utils/helpers/money";
-import { getMenuItemStorageRef } from "../../../../utils/helpers/storage";
-import DietaryAttribute from "./DietaryAttribute";
-import "./MenuItem.css";
-import Listing from "../../../../components/Listing";
+import { formatCurrency } from "../../../../utils/helpers/money"
+import { getMenuItemStorageRef } from "../../../../utils/helpers/storage"
+import DietaryAttribute from "./DietaryAttribute"
+import "./MenuItem.css"
+import Listing from "../../../../components/Listing"
 
 export default function MenuItemListing({ item, basketCount = 0 }) {
-  const merchantId = item.merchantId;
-  const dietaryAttrs = item.dietaryAttributes;
-  const dietaryBubbles = [];
+  const merchantId = item.merchantId
+  const dietaryAttrs = item.dietaryAttributes
+  const dietaryBubbles = []
 
   if (item.spiceLevel > 0) {
-    const chilliCount = Math.min(3, item.spiceLevel);
+    const chilliCount = Math.min(3, item.spiceLevel)
 
-    const chilliImages = [];
+    const chilliImages = []
 
     for (let i = 0; i < chilliCount; i++) {
       chilliImages.push(
@@ -22,14 +22,14 @@ export default function MenuItemListing({ item, basketCount = 0 }) {
           alt="Chilli icon"
           className="chilli"
         />
-      );
+      )
     }
 
     dietaryBubbles.push(
       <div key="SPICE" className="MenuItem__spiceLevel bubble">
         {chilliImages}
       </div>
-    );
+    )
   }
 
   for (var attr of DietaryAttribute.allItems) {
@@ -45,18 +45,20 @@ export default function MenuItemListing({ item, basketCount = 0 }) {
         >
           {attr.displayName}
         </div>
-      );
+      )
     }
   }
 
-  return <Listing
-    imageRef={getMenuItemStorageRef(merchantId, item.id, item.photo)}
-    title={item.title}
-    description={item.description}
-    rightBubbleText={formatCurrency(item.price)}
-    isAvailable={item.isAvailable}
-    linkPath={`items/${item.id}`}
-    linkState={{ item }}
-    flexItems={dietaryBubbles}
-  />
+  return (
+    <Listing
+      imageRef={getMenuItemStorageRef(merchantId, item.id, item.photo)}
+      title={item.title}
+      description={item.description}
+      rightBubbleText={formatCurrency(item.price)}
+      isAvailable={item.isAvailable}
+      linkPath={`items/${item.id}`}
+      linkState={{ item }}
+      flexItems={dietaryBubbles}
+    />
+  )
 }

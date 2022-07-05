@@ -1,11 +1,11 @@
-import * as sendgrid from "@sendgrid/mail";
+import * as sendgrid from "@sendgrid/mail"
 
-let sendgridInstance;
+let sendgridInstance
 
 function getSendgrid() {
-  sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
-  sendgridInstance = sendgrid;
-  return sendgridInstance;
+  sendgrid.setApiKey(process.env.SENDGRID_API_KEY)
+  sendgridInstance = sendgrid
+  return sendgridInstance
 }
 
-export const sendgridClient = () => sendgridInstance || getSendgrid();
+export const sendgridClient = () => sendgridInstance || getSendgrid()

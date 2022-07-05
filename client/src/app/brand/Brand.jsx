@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { Link, Route, Routes } from "react-router-dom";
-import { ButtonTheme } from "../../components/ButtonTheme";
-import SmallButton from "../../components/SmallButton";
-import { Colors } from "../../enums/Colors";
-import useWindowSize from "../../utils/helpers/useWindowSize";
-import NotFound from "../shared/NotFoundPage";
-import BlockButton from "./BlockButton";
-import HomePage from "./HomePage";
-import "./HomePageOld.css";
+import { useEffect, useState } from "react"
+import { Link, Route, Routes } from "react-router-dom"
+import { ButtonTheme } from "../../components/ButtonTheme"
+import SmallButton from "../../components/SmallButton"
+import { Colors } from "../../enums/Colors"
+import useWindowSize from "../../utils/helpers/useWindowSize"
+import NotFound from "../shared/NotFoundPage"
+import BlockButton from "./BlockButton"
+import HomePage from "./HomePage"
+import "./HomePageOld.css"
 
 export function opacityToAlphaHex(opacity) {
   let boundedOpacity
@@ -33,32 +33,32 @@ export function opacityToAlphaHex(opacity) {
 }
 
 export function Brand() {
-  const { width } = useWindowSize();
+  const { width } = useWindowSize()
   const isMobile = width < 750
-  const [opacity, setOpacity] = useState(0);
+  const [opacity, setOpacity] = useState(0)
 
   useEffect(() => {
     const handleScroll = () => {
       const opaqueDepth = 0
       const transparentDepth = 20
-      const yOffset = window.scrollY;
+      const yOffset = window.scrollY
       const newOpacity = Math.max(
         Math.min(
           (yOffset - transparentDepth) / (opaqueDepth - transparentDepth),
           1
         ),
         0
-      );
+      )
 
-      setOpacity(newOpacity);
-    };
+      setOpacity(newOpacity)
+    }
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll)
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
 
   // useEffect(() => {
   //   var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
@@ -71,69 +71,85 @@ export function Brand() {
 
   const calendlyLink = "https://calendly.com/matt-at-mercado/demo"
 
-  return <div>
-    <header style={{ 
-      padding: 16, 
-      boxSizing: "border-box", 
-      position: "fixed", 
-      zIndex: 100, 
-      width: "100%", 
-      backgroundColor: Colors.BLACK + opacityToAlphaHex(opacity)
-    }}>
-      <div style={{ 
-        margin: "auto",
-        columnGap: 16,
-        maxWidth: 1200,
-        display: "flex", 
-        alignItems: "center"
-      }}>
-        <Link to="/">
-          <h2 style={{
-            fontFamily: "Oswald, Roboto, sans-serif",
-            fontWeight: 600,
-            fontSize: isMobile ? "2rem" : "2rem",
-            color: Colors.WHITE
-          }}>Mercado</h2>
-        </Link>
-        
-        <div className="flex-spacer"></div>
+  return (
+    <div>
+      <header
+        style={{
+          padding: 16,
+          boxSizing: "border-box",
+          position: "fixed",
+          zIndex: 100,
+          width: "100%",
+          backgroundColor: Colors.BLACK + opacityToAlphaHex(opacity),
+        }}
+      >
+        <div
+          style={{
+            margin: "auto",
+            columnGap: 16,
+            maxWidth: 1200,
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Link to="/">
+            <h2
+              style={{
+                fontFamily: "Oswald, Roboto, sans-serif",
+                fontWeight: 600,
+                fontSize: isMobile ? "2rem" : "2rem",
+                color: Colors.WHITE,
+              }}
+            >
+              Mercado
+            </h2>
+          </Link>
 
-        <Link to="/dashboard/o/create">
-          <SmallButton
-            title="Become an organiser"
-            buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
-          />
-        </Link>
+          <div className="flex-spacer"></div>
 
-        <Link to="/dashboard">
-          <SmallButton
-            title="Sign in"
-            buttonTheme={ButtonTheme.MONOCHROME_OUTLINED_REVERSE}
-          />
-        </Link>
-        
+          <Link to="/dashboard/o/create">
+            <SmallButton
+              title="Become an organiser"
+              buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
+            />
+          </Link>
+
+          <Link to="/dashboard">
+            <SmallButton
+              title="Sign in"
+              buttonTheme={ButtonTheme.MONOCHROME_OUTLINED_REVERSE}
+            />
+          </Link>
+        </div>
+      </header>
+
+      <div
+        style={{
+          margin: "auto",
+          minHeight: "90vh",
+        }}
+      >
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/:customerSegmentId" element={<HomePage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </div>
-    </header>
 
-    <div style={{
-      margin: "auto",
-      minHeight: "90vh"
-    }}>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/:customerSegmentId" element={<HomePage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <footer style={{ backgroundColor: Colors.BLACK }}>
+        <div
+          style={{
+            margin: "auto",
+            maxWidth: 1200,
+            padding: "64px 16px",
+          }}
+        >
+          <p style={{ color: Colors.WHITE }}>
+            Copyright 2022 Kanjipay Ltd. All rights reserved. Company number:
+            13931899.
+          </p>
+        </div>
+      </footer>
     </div>
-
-    <footer style={{ backgroundColor: Colors.BLACK }}>
-      <div style={{
-        margin: "auto",
-        maxWidth: 1200,
-        padding: "64px 16px"
-      }}>
-        <p style={{ color: Colors.WHITE}}>Copyright 2022 Kanjipay Ltd. All rights reserved. Company number: 13931899.</p>
-      </div>
-    </footer>
-  </div>
+  )
 }

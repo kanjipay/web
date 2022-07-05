@@ -1,8 +1,8 @@
-import { IdentityManager } from "../IdentityManager";
-import { NetworkManager } from "../NetworkManager";
+import { IdentityManager } from "../IdentityManager"
+import { NetworkManager } from "../NetworkManager"
 
 export async function createMenuOrder(merchantId, basketItems) {
-  const deviceId = IdentityManager.main.getDeviceId();
+  const deviceId = IdentityManager.main.getDeviceId()
   const userId = IdentityManager.main.getPseudoUserId()
 
   const requestedItems = basketItems
@@ -17,12 +17,12 @@ export async function createMenuOrder(merchantId, basketItems) {
     merchantId,
     deviceId,
     userId,
-    requestedItems
+    requestedItems,
   })
 
   const { orderId } = res.data
 
-  return { orderId };
+  return { orderId }
 }
 
 export async function createTicketOrder(productId, quantity, attributionItem) {
@@ -32,7 +32,7 @@ export async function createTicketOrder(productId, quantity, attributionItem) {
     productId,
     quantity,
     deviceId,
-    attributionData: attributionItem?.attributionData
+    attributionData: attributionItem?.attributionData,
   })
 
   const { orderId, redirectPath } = res.data

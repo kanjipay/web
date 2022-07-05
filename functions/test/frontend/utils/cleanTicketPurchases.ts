@@ -14,12 +14,9 @@ export async function cleanTicketPurchases(merchantId: string) {
     .where("orderType", "==", OrderType.TICKETS)
     .get()
 
-  const [
-    ticketsToDelete,
-    ordersToDelete
-  ] = await Promise.all([
+  const [ticketsToDelete, ordersToDelete] = await Promise.all([
     fetchTicketsToDelete,
-    fetchOrdersToDelete
+    fetchOrdersToDelete,
   ])
 
   const batch = db.batch()

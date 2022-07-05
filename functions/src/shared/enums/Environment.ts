@@ -2,7 +2,7 @@ enum Environment {
   DEV = "DEV",
   DEV_LOCAL = "DEV_LOCAL",
   PROD = "PROD",
-  STAGING = "STAGING"
+  STAGING = "STAGING",
 }
 
-export default Environment;
+export default Environment

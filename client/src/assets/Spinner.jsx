@@ -1,5 +1,5 @@
-import { Colors } from "../enums/Colors";
-import "./Spinner.css";
+import { Colors } from "../enums/Colors"
+import "./Spinner.css"
 
 export default function Spinner({
   color = Colors.BLACK,
@@ -23,5 +23,5 @@ export default function Spinner({
         strokeLinecap="square"
       />
     </svg>
-  );
+  )
 }
