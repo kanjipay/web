@@ -37,14 +37,10 @@ export class HttpError extends Error {
   args: any[];
   statusCode: number;
 
-  constructor(
-    statusCode,
-    clientMessage = "An error occured",
-    ...args: any[]
-  ) {
+  constructor(statusCode, clientMessage = "An error occured", ...args: any[]) {
     super(clientMessage);
 
-    this.args = args
+    this.args = args;
     this.clientMessage = clientMessage;
     this.statusCode = statusCode;
   }

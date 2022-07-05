@@ -18,32 +18,32 @@ const createOrderWithMenuItemsSchema: AllowedSchema = {
         required: ["quantity", "id", "title"],
         properties: {
           id: {
-            type: "string"
+            type: "string",
           },
           quantity: {
             type: "integer",
             minimum: 1,
-            maximum: 100
+            maximum: 100,
           },
           title: {
-            type: "string"
+            type: "string",
           },
-        }
+        },
       },
       minItems: 1,
-      maxItems: 100
+      maxItems: 100,
     },
     merchantId: {
       type: "string",
     },
     deviceId: {
-      type: "string"
+      type: "string",
     },
     userId: {
-      type: "string"
-    }
-  }
-}
+      type: "string",
+    },
+  },
+};
 
 ordersRoutes.post(
   "/menu",
@@ -56,22 +56,18 @@ const createOrderWithTicketsSchema: AllowedSchema = {
   required: ["productId", "quantity", "deviceId"],
   properties: {
     productId: {
-      type: "string"
+      type: "string",
     },
     quantity: {
-      type: "integer"
+      type: "integer",
     },
     deviceId: {
-      type: "string"
-    }
-  }
-}
+      type: "string",
+    },
+  },
+};
 
-ordersRoutes.put(
-  "/o/:orderId/enrich",
-  authenticate,
-  ordersController.enrich
-)
+ordersRoutes.put("/o/:orderId/enrich", authenticate, ordersController.enrich);
 
 ordersRoutes.post(
   "/tickets",
@@ -86,13 +82,13 @@ const sendEmailSchema: AllowedSchema = {
   properties: {
     email: {
       type: "string",
-      format: "email"
+      format: "email",
     },
     orderId: {
-      type: "string"
-    }
-  }
-}
+      type: "string",
+    },
+  },
+};
 
 ordersRoutes.post(
   "/email-receipt",

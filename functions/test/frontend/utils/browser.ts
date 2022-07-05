@@ -1,10 +1,10 @@
-import { Page, Browser } from "puppeteer"
+import { Page, Browser } from "puppeteer";
 
-const puppeteer = require("puppeteer-extra")
-const PuppeteerStealth = require("puppeteer-extra-plugin-stealth")
-puppeteer.use(PuppeteerStealth())
+const puppeteer = require("puppeteer-extra");
+const PuppeteerStealth = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(PuppeteerStealth());
 
-let browser: Browser | null = null
+let browser: Browser | null = null;
 
 export async function getBrowser(): Promise<Browser> {
   if (!browser) {
@@ -12,20 +12,19 @@ export async function getBrowser(): Promise<Browser> {
       headless: false,
       args: [
         "--no-sandbox",
-        '--disable-web-security',
+        "--disable-web-security",
         "--disable-features=IsolateOrigins",
-        "--disable-site-isolation-trials"
+        "--disable-site-isolation-trials",
       ],
-    })
+    });
   }
 
-  return browser
+  return browser;
 }
 
 export async function openNewPage(): Promise<Page> {
-  const browser = await getBrowser()
-  const page = await browser.newPage()
+  const browser = await getBrowser();
+  const page = await browser.newPage();
 
-  return page
+  return page;
 }
-

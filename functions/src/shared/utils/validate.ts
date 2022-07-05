@@ -1,3 +1,3 @@
 import { Validator } from "express-json-validator-middleware";
 
-export const { validate } = new Validator({})
+export const { validate } = new Validator({});

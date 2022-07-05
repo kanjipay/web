@@ -10,36 +10,43 @@ const merchantsController = new MerchantsController();
 const merchantsRoutes = Router({ mergeParams: true });
 const createMerchantSchema: AllowedSchema = {
   type: "object",
-  required: ["accountNumber", "address", "companyName", "displayName", "sortCode", "description", "photo"],
+  required: [
+    "accountNumber",
+    "address",
+    "companyName",
+    "displayName",
+    "sortCode",
+    "description",
+    "photo",
+  ],
   properties: {
     accountNumber: {
-      type: "string"
+      type: "string",
     },
     address: {
-      type: "string"
+      type: "string",
     },
     companyName: {
-      type: "string"
+      type: "string",
     },
     currency: {
       type: "string",
-      enum: ["GBP", "EUR"]
+      enum: ["GBP", "EUR"],
     },
     displayName: {
-      type: "string"
+      type: "string",
     },
     sortCode: {
-      type: "string"
+      type: "string",
     },
     description: {
-      type: "string"
+      type: "string",
     },
     photo: {
       type: "string",
-    }
-
-  }
-}
+    },
+  },
+};
 
 merchantsRoutes.post(
   "/create",
@@ -48,6 +55,11 @@ merchantsRoutes.post(
   merchantsController.create
 );
 
-merchantsRoutes.use("/m/:merchantId", authenticate, authenticateMerchant, merchantRoutes)
+merchantsRoutes.use(
+  "/m/:merchantId",
+  authenticate,
+  authenticateMerchant,
+  merchantRoutes
+);
 
 export default merchantsRoutes;

@@ -1,35 +1,39 @@
-import { format } from "date-fns"
-import { formatCurrency } from "./formatCurrency"
-import LoggingController from "./loggingClient"
-import { sendgridClient } from "./sendgridClient"
+import { format } from "date-fns";
+import { formatCurrency } from "./formatCurrency";
+import LoggingController from "./loggingClient";
+import { sendgridClient } from "./sendgridClient";
 
-const fromEmail = "team@mercadopay.co"
+const fromEmail = "team@mercadopay.co";
 
 enum TemplateName {
   TICKET_RECEIPT = "TICKET_RECEIPT",
   MENU_RECEIPT = "MENU_RECEIPT",
-  INVITE="INVITE"
+  INVITE = "INVITE",
 }
 
-async function sendEmail(toEmail: string, templateName: TemplateName, data: unknown) {
-  const logger = new LoggingController("sendEmail")
-  const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
+async function sendEmail(
+  toEmail: string,
+  templateName: TemplateName,
+  data: unknown
+) {
+  const logger = new LoggingController("sendEmail");
+  const templateIds = JSON.parse(process.env.TEMPLATE_IDS);
 
-  const templateId = templateIds[templateName]
+  const templateId = templateIds[templateName];
 
   logger.log("Sending email", {
     toEmail,
     fromEmail,
     data,
-    templateId
-  })
+    templateId,
+  });
 
   return sendgridClient().send({
     to: toEmail,
     from: fromEmail,
     dynamic_template_data: data,
-    template_id: templateId
-  })
+    template_id: templateId,
+  });
 }
 
 export async function sendMenuReceiptEmail(
@@ -40,33 +44,33 @@ export async function sendMenuReceiptEmail(
   total: number,
   currency: string
 ) {
-  const logger = new LoggingController("sendMenuReceipt")
+  const logger = new LoggingController("sendMenuReceipt");
 
   const data = {
     merchantName,
     orderNumber,
-    orderItems: orderItems.map(item => {
-      item.price = formatCurrency(item.price, currency)
-      return item
+    orderItems: orderItems.map((item) => {
+      item.price = formatCurrency(item.price, currency);
+      return item;
     }),
-    total: formatCurrency(total, currency)
-  }
+    total: formatCurrency(total, currency),
+  };
 
   logger.log("Sending menu receipt", {
     toEmail,
-    data
-  })
+    data,
+  });
 
-  return sendEmail(toEmail, TemplateName.MENU_RECEIPT, data)
+  return sendEmail(toEmail, TemplateName.MENU_RECEIPT, data);
 }
 
 export async function sendInvites(
   inviteData: any[],
   inviterFirstName: string,
-  organisationName: string,
+  organisationName: string
 ) {
-  const personalisations = inviteData.map(datum => {
-    const { email, name, inviteId } = datum
+  const personalisations = inviteData.map((datum) => {
+    const { email, name, inviteId } = datum;
 
     return {
       to: email,
@@ -74,31 +78,31 @@ export async function sendInvites(
         inviteId,
         organisationName,
         inviterFirstName,
-        inviteeFirstName: name
-      }
-    }
-  })
+        inviteeFirstName: name,
+      },
+    };
+  });
 
   return sendgridClient().send({
     from: fromEmail,
     template_id: TemplateName.INVITE,
-    personalisations
-  })
+    personalisations,
+  });
 }
 
 export async function sendTicketReceipt(
-  toEmail: string, 
+  toEmail: string,
   firstName: string,
   eventTitle: string,
-  productTitle: string, 
-  productPrice: number, 
+  productTitle: string,
+  productPrice: number,
   quantity: number,
   boughtAt: Date,
   currency: string,
   ticketIds: string[],
   customerFee: number
 ) {
-  const logger = new LoggingController("sendTicketReceipt")
+  const logger = new LoggingController("sendTicketReceipt");
 
   logger.log("Sending ticket receipt", {
     toEmail,
@@ -108,26 +112,32 @@ export async function sendTicketReceipt(
     productPrice,
     quantity,
     boughtAt,
-    ticketIds
-  })
+    ticketIds,
+  });
 
-  const fee = formatCurrency(Math.round(productPrice * quantity * customerFee), currency)
-  const total = formatCurrency(Math.round(productPrice * quantity * (1 + customerFee)), currency)
+  const fee = formatCurrency(
+    Math.round(productPrice * quantity * customerFee),
+    currency
+  );
+  const total = formatCurrency(
+    Math.round(productPrice * quantity * (1 + customerFee)),
+    currency
+  );
 
   const tickets = ticketIds.map((ticketId, index) => {
-    let ticketNumber = (index + 1).toString()
+    let ticketNumber = (index + 1).toString();
 
     while (ticketNumber.length < 3) {
-      ticketNumber = "0" + ticketNumber
+      ticketNumber = "0" + ticketNumber;
     }
 
     return {
       id: ticketId,
       productTitle,
       boughtAt: format(boughtAt, "HH:mm dd-MM-yy"),
-      number: ticketNumber
-    }
-  })
+      number: ticketNumber,
+    };
+  });
 
   const data = {
     firstName,
@@ -136,13 +146,13 @@ export async function sendTicketReceipt(
       {
         productTitle,
         price: formatCurrency(productPrice, currency),
-        quantity
-      }
+        quantity,
+      },
     ],
     total,
     fee,
-    tickets
-  }
+    tickets,
+  };
 
-  return sendEmail(toEmail, TemplateName.TICKET_RECEIPT, data)
+  return sendEmail(toEmail, TemplateName.TICKET_RECEIPT, data);
 }

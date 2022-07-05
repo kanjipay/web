@@ -11,20 +11,17 @@ const checkTicketBodySchema: AllowedSchema = {
   required: ["eventId"],
   properties: {
     eventId: {
-      type: "string"
-    }
-  }
-}
+      type: "string",
+    },
+  },
+};
 
 merchantTicketsRoutes.post(
   "/:ticketId/check",
   validate({ body: checkTicketBodySchema }),
   merchantTicketsController.check
-)
+);
 
-merchantTicketsRoutes.get(
-  "/sales-data",
-  merchantTicketsController.salesData
-)
+merchantTicketsRoutes.get("/sales-data", merchantTicketsController.salesData);
 
 export default merchantTicketsRoutes;

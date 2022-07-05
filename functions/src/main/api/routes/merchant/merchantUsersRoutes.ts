@@ -20,23 +20,20 @@ const sendInvitesSchema: AllowedSchema = {
             type: "string",
           },
           name: {
-            type: "string"
-          }
-        }
-      }
-    }
-  }
-}
+            type: "string",
+          },
+        },
+      },
+    },
+  },
+};
 
 merchantUsersRoutes.post(
   "/invites",
   validate({ body: sendInvitesSchema }),
   merchantUsersController.sendInvites
-)
+);
 
-merchantUsersRoutes.get(
-  "/",
-  merchantUsersController.getUsers
-)
+merchantUsersRoutes.get("/", merchantUsersController.getUsers);
 
 export default merchantUsersRoutes;

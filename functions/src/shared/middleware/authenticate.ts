@@ -10,12 +10,12 @@ export const authenticate = async (req, res, next) => {
     idToken = req.headers.authorization.split("Bearer ")[1];
   } else {
     res.status(403).send("Unauthorized");
-    return
+    return;
   }
 
   try {
     const decodedIdToken = await auth().verifyIdToken(idToken);
-    const { uid, email, name } = decodedIdToken
+    const { uid, email, name } = decodedIdToken;
     req.user = { id: uid, email, name };
     next();
   } catch (err) {

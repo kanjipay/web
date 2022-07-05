@@ -1,12 +1,15 @@
-import * as cors from "cors"
-import { Express } from "express"
-import * as express from "express"
+import * as cors from "cors";
+import { Express } from "express";
+import * as express from "express";
 import { isStrictEnvironment } from "./isStrictEnvironment";
 
-export function setCors(app: Express, allowAll: boolean = !isStrictEnvironment(process.env.ENVIRONMENT)) {
+export function setCors(
+  app: Express,
+  allowAll: boolean = !isStrictEnvironment(process.env.ENVIRONMENT)
+) {
   // const origin = allowAll ? "*" : process.env.CLIENT_URL
-  
-  const corsInstance = cors({ origin: "*" })
+
+  const corsInstance = cors({ origin: "*" });
 
   app.use(corsInstance);
   app.options("*", corsInstance);
@@ -15,5 +18,5 @@ export function setCors(app: Express, allowAll: boolean = !isStrictEnvironment(p
 export function setBodyParser(app: Express) {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(express.raw({ type: "application/jwt" }))
+  app.use(express.raw({ type: "application/jwt" }));
 }
