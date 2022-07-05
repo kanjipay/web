@@ -15,5 +15,5 @@ export default function Minus({ length = 32, color = "black" }) {
         strokeLinejoin="miter"
       />
     </svg>
-  );
+  )
 }

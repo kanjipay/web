@@ -5,9 +5,13 @@ import { Colors } from "../../../../../enums/Colors"
 import IconActionPage from "../../../../../components/IconActionPage"
 import LoadingPage from "../../../../../components/LoadingPage"
 import OrderType from "../../../../../enums/OrderType"
-import { AnalyticsEvent, AnalyticsManager } from "../../../../../utils/AnalyticsManager"
+import {
+  AnalyticsEvent,
+  AnalyticsManager,
+} from "../../../../../utils/AnalyticsManager"
 import { createTicketOrder } from "../../../../../utils/services/OrdersService"
 import { getLatestItem } from "../../../../shared/attribution/AttributionReducer"
+import { NetworkManager } from "../../../../../utils/NetworkManager"
 
 export default function OrderTicketsPage() {
   const { state } = useLocation()
@@ -22,37 +26,42 @@ export default function OrderTicketsPage() {
 
   useEffect(() => {
     const attributionItem = getLatestItem({ eventId })
-    
+
     createTicketOrder(productId, quantity, attributionItem)
       .then(({ orderId, redirectPath }) => {
-        console.log("redirectPath: ", redirectPath)
-        AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_ORDER, { orderId, orderType: OrderType.TICKETS });
+        AnalyticsManager.main.logEvent(AnalyticsEvent.CREATE_ORDER, {
+          orderId,
+          orderType: OrderType.TICKETS,
+        })
+        NetworkManager.put(`/orders/o/${orderId}/enrich`).then(() => {})
 
         navigate(redirectPath)
       })
-      .catch(error => {
+      .catch((error) => {
         setError({
           title: "The order failed",
-          description: error?.response?.data?.error
+          description: error?.response?.data?.error,
         })
       })
-  }, [productId, quantity, navigate])
+  }, [productId, eventId, quantity, navigate])
 
   const handleError = () => {
     navigate(backPath)
   }
 
   if (error) {
-    return <IconActionPage
-      Icon={Cross}
-      iconBackgroundColor={Colors.RED_LIGHT}
-      iconForegroundColor={Colors.RED}
-      title={error.title}
-      body={error.description}
-      primaryActionTitle="Go back"
-      primaryAction={handleError}
-    />
+    return (
+      <IconActionPage
+        Icon={Cross}
+        iconBackgroundColor={Colors.RED_LIGHT}
+        iconForegroundColor={Colors.RED}
+        title={error.title}
+        body={error.description}
+        primaryActionTitle="Go back"
+        primaryAction={handleError}
+      />
+    )
   } else {
     return <LoadingPage />
-  } 
+  }
 }

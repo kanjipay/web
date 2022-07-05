@@ -1,6 +1,6 @@
-import * as functions from "firebase-functions";
-import mainApp from "./main/mainApp";
-import { cronFunction } from "./cron/cron";
+import * as functions from "firebase-functions"
+import mainApp from "./main/mainApp"
+import { cronFunction } from "./cron/cron"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 const euFunctions = functions.region("europe-west2")
@@ -17,9 +17,11 @@ export const main = euFunctions
       "SENDGRID_API_KEY",
       "CREZCO_API_KEY",
       "STRIPE_CLIENT_SECRET",
-      "STRIPE_PAYMENT_WEBHOOK_SECRET"
+      "STRIPE_PAYMENT_WEBHOOK_SECRET",
+      "IP_GEOLOCATION_API_KEY",
+      "GOOGLE_MAPS_API_KEY",
     ],
-    minInstances: envProjectId === "mercadopay" ? 1 : 0
+    minInstances: envProjectId === "mercadopay" ? 1 : 0,
   })
   .https.onRequest(mainApp)
 

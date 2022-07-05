@@ -37,5 +37,5 @@ export default function Cutlery({ length = 32, color = "black" }) {
         </clipPath>
       </defs>
     </svg>
-  );
+  )
 }

@@ -1,0 +1,42 @@
+[
+  {
+    "bankCode": "bankofscotland-sandbox",
+    "bankName": "Bank of Scotland",
+    "logoUrl": "https://images.yapily.com/image/a3dd4033-9179-4cb5-b2fa-2a7e25f43b46?size=0"
+  },
+  {
+    "bankCode": "barclays-sandbox",
+    "bankName": "Barclays",
+    "logoUrl": "https://images.yapily.com/image/3dfbd21b-3d6c-4972-8fa6-f705abfb5feb?size=0"
+  },
+  {
+    "bankCode": "halifax-sandbox",
+    "bankName": "Halifax",
+    "logoUrl": "https://images.yapily.com/image/7f8022c1-f489-4166-86d7-e98ced5ceca5?size=0"
+  },
+  {
+    "bankCode": "modelo-sandbox",
+    "bankName": "Modelo",
+    "logoUrl": "https://images.yapily.com/image/ce2bfdbf-1ae2-4919-ab7b-e8b3d5e93b36?size=0"
+  },
+  {
+    "bankCode": "natwest-sandbox",
+    "bankName": "Natwest Bank",
+    "logoUrl": "https://images.yapily.com/image/4c28e551-1a56-4631-be2c-260105ba687b?size=0"
+  },
+  {
+    "bankCode": "rbs-sandbox",
+    "bankName": "Royal Bank of Scotland",
+    "logoUrl": "https://images.yapily.com/image/33543712-4ef8-49af-9836-dd8aadfb478a?size=0"
+  },
+  {
+    "bankCode": "yapily-mock",
+    "bankName": "Yapily Mock",
+    "logoUrl": "https://images.yapily.com/image/4bbb9c1b-29e0-4cc9-8d01-b2ad2fcd57a3?size=0"
+  },
+  {
+    "bankCode": "mock-payments-gb-redirect",
+    "bankName": "Mock Payments",
+    "logoUrl": "https://truelayer-provider-assets.s3.amazonaws.com/uk/icons/mock-payments-gb-redirect.svg"
+  }
+]

@@ -1,31 +1,37 @@
-import AttributionAction from "./AttributionAction";
-import { loadAttributionState } from "./AttributionContext";
+import AttributionAction from "./AttributionAction"
+import { loadAttributionState } from "./AttributionContext"
 import { addDays } from "date-fns"
 
 function storeItems(items) {
-  localStorage.setItem("attributionItems", JSON.stringify(items ?? []))
+  localStorage.setItem("attributionItems", JSON.stringify(items ?? []) ?? [])
 }
 
 function filterObjectArray(objArray, filterObj, isPositive = true) {
   const keys = Object.keys(filterObj)
-  return objArray.filter(obj => keys.every(key => isPositive ? filterObj[key] === obj[key] : filterObj[key] !== obj[key]))
+  return objArray.filter((obj) =>
+    keys.every((key) =>
+      isPositive ? filterObj[key] === obj[key] : filterObj[key] !== obj[key]
+    )
+  )
 }
 
 export function getLatestItem(filters) {
   const items = loadAttributionState().attributionItems
   const twoDaysAgo = addDays(new Date(), -2)
-  const eligibleItems = filterObjectArray(items.filter(item => item.addedAt > twoDaysAgo), filters)
+  const eligibleItems = filterObjectArray(
+    items.filter((item) => item.addedAt > twoDaysAgo),
+    filters
+  )
   eligibleItems.sort((item1, item2) => item2.addedAt - item1.addedAt) // Sort latest first
-  return eligibleItems.find(item => item)
+  return eligibleItems.find((item) => item)
 }
 
 export default function AttributionReducer(state, action) {
   switch (action.type) {
     case AttributionAction.ADD_ITEM:
-      console.log("attribution reducer add got payload: ", action.payload)
       const item = {
         ...action.payload,
-        addedAt: new Date()
+        addedAt: new Date(),
       }
 
       state.attributionItems.push(item)
@@ -38,15 +44,12 @@ export default function AttributionReducer(state, action) {
     case AttributionAction.CLEAR:
       const filters = action.payload
 
-      console.log("Reducer clearItems")
-      console.log(filterObjectArray(state.attributionItems, filters, false))
-
       const newItems = filterObjectArray(state.attributionItems, filters, false)
 
       storeItems(newItems)
 
       return {
-        attributionItems: newItems
+        attributionItems: newItems,
       }
     default:
       return state

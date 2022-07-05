@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { Colors } from "../enums/Colors";
-import { InputGroup } from "./Input";
-import { Field } from "./input/IntField";
-import MainButton from "./MainButton";
-import ResultBanner, { ResultType } from "./ResultBanner";
-import Spacer from "./Spacer";
+import { useEffect, useState } from "react"
+import { Colors } from "../enums/Colors"
+import { InputGroup } from "./Input"
+import { Field } from "./input/IntField"
+import MainButton from "./MainButton"
+import ResultBanner, { ResultType } from "./ResultBanner"
+import Spacer from "./Spacer"
 
 function camelCaseToWords(string) {
   const lowercaseWords = string
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, str => str.toLowerCase())
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toLowerCase())
 
   return lowercaseWords[0].toUpperCase() + lowercaseWords.slice(1)
 }
@@ -20,7 +20,7 @@ export function generateValidator(validatorFunc, message) {
 
     return {
       isValid,
-      message: isValid ? null : message
+      message: isValid ? null : message,
     }
   }
 }
@@ -32,7 +32,9 @@ export default function Form({
   onSubmit,
   submitTitle,
 }) {
-  const allItems = formGroupData.flatMap(formGroupDatum => formGroupDatum.items)
+  const allItems = formGroupData.flatMap(
+    (formGroupDatum) => formGroupDatum.items
+  )
 
   const initialData = allItems.reduce((groupInitialData, item) => {
     const { name } = item
@@ -45,7 +47,10 @@ export default function Form({
   const [data, setData] = useState(initialData)
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState(null)
-  const [isShowingValidationErrors, setIsShowingValidationErrors] = useState(false)
+  const [isShowingValidationErrors, setIsShowingValidationErrors] =
+    useState(false)
+
+  console.log(data)
 
   useEffect(() => {
     const formMessage = validators.reduce((formMessage, validator) => {
@@ -62,24 +67,28 @@ export default function Form({
   }, [data, validators])
 
   function areValidationErrors() {
-    const areItemLevelValidationErrors = allItems.some(item => {
+    const areItemLevelValidationErrors = allItems.some((item) => {
       const { name, validators } = item
       const value = data[name]
 
-      return (validators && validators.some(validator => !validator(value).isValid))
+      return (
+        validators && validators.some((validator) => !validator(value).isValid)
+      )
     })
 
-    const areFormLevelValidationErrors = validators.some(validator => !validator(data).isValid)
+    const areFormLevelValidationErrors = validators.some(
+      (validator) => !validator(data).isValid
+    )
 
     return areItemLevelValidationErrors || areFormLevelValidationErrors
   }
 
   function areAllRequiredFieldsPopulated() {
-    return allItems.every(item => {
+    return allItems.every((item) => {
       const { name, required } = item
       const value = data[name]
 
-      return ((value != null && value !== "") || required === false)
+      return (value != null && value !== "") || required === false
     })
   }
 
@@ -89,8 +98,9 @@ export default function Form({
   }
 
   const handleSubmit = (e) => {
-    console.log(data)
-    if (!areAllRequiredFieldsPopulated()) { return }
+    if (!areAllRequiredFieldsPopulated()) {
+      return
+    }
 
     if (areValidationErrors()) {
       console.log("are validation errors")
@@ -98,7 +108,7 @@ export default function Form({
 
       showResultBanner({
         resultType: ResultType.ERROR,
-        message: "One or more incorrect values (see above)"
+        message: "One or more incorrect values (see above)",
       })
 
       return
@@ -112,86 +122,109 @@ export default function Form({
     })
   }
 
-  const onChange = event => {
+  const onChange = (event) => {
     const { name, value } = event.target
     setData({ ...data, [name]: value })
   }
 
-  return <div>
-    {
-      formGroupData.map((formGroupDatum, i) => {
-        return <FormGroup key={i} formGroupDatum={formGroupDatum} onSubmit={(event) => handleSubmit(data)} data={data} isShowingValidationErrors={isShowingValidationErrors} onChange={onChange} />
-      })
-    }
-    <MainButton
-      title={submitTitle}
-      onClick={handleSubmit}
-      disabled={!areAllRequiredFieldsPopulated()}
-      isLoading={isLoading}
-      type="submit"
-    />
-    { 
-      result && <div>
-        <Spacer y={3} />
-        <ResultBanner resultType={result.resultType} message={result.message} />
-      </div> 
-    }
-    { 
-      validationMessage.length > 0 && isShowingValidationErrors && <div>
-        <Spacer y={3} />
-        <p className="text-body" style={{ color: Colors.RED }}>{validationMessage}</p>
-      </div>
-    }
-  </div>
+  return (
+    <div>
+      {formGroupData.map((formGroupDatum, i) => {
+        return (
+          <FormGroup
+            key={i}
+            formGroupDatum={formGroupDatum}
+            onSubmit={(event) => handleSubmit(data)}
+            data={data}
+            isShowingValidationErrors={isShowingValidationErrors}
+            onChange={onChange}
+          />
+        )
+      })}
+      <MainButton
+        title={submitTitle}
+        onClick={handleSubmit}
+        disabled={!areAllRequiredFieldsPopulated()}
+        isLoading={isLoading}
+        test-id={`form-submit-${submitTitle.toLowerCase().replace(" ", "-")}`}
+        type="submit"
+      />
+      {result && (
+        <div>
+          <Spacer y={3} />
+          <ResultBanner
+            resultType={result.resultType}
+            message={result.message}
+          />
+        </div>
+      )}
+      {validationMessage.length > 0 && isShowingValidationErrors && (
+        <div>
+          <Spacer y={3} />
+          <p className="text-body" style={{ color: Colors.RED }}>
+            {validationMessage}
+          </p>
+        </div>
+      )}
+    </div>
+  )
 }
 
-function FormGroup({ formGroupDatum, data, isShowingValidationErrors, onChange, onSubmit }) {
+function FormGroup({
+  formGroupDatum,
+  data,
+  isShowingValidationErrors,
+  onChange,
+  onSubmit,
+}) {
   const { title, explanation, items } = formGroupDatum
 
-  return <div>
-    {
-      title && <div>
-        <h2 className="header-s">{title}</h2>
-        <Spacer y={3} />
-      </div>
-    }
+  return (
+    <div>
+      {title && (
+        <div>
+          <h2 className="header-s">{title}</h2>
+          <Spacer y={3} />
+        </div>
+      )}
 
-    {
-      explanation && <div>
-        <p className="text-body-faded">{explanation}</p>
-        <Spacer y={3} />
-      </div>
-    }
-    
-    {
-      items.map(item => {
-        const { 
-          name, 
+      {explanation && (
+        <div>
+          <p className="text-body-faded">{explanation}</p>
+          <Spacer y={3} />
+        </div>
+      )}
+
+      {items.map((item) => {
+        const {
+          name,
           label,
           explanation,
           input,
           validators,
           decorator,
           required,
-          disabled
+          disabled,
         } = item
 
-        return <InputGroup
-          key={item.name}
-          onSubmit={onSubmit}
-          name={name}
-          label={label ?? camelCaseToWords(name)}
-          validators={validators ?? []}
-          isShowingValidationErrors={isShowingValidationErrors}
-          explanation={explanation}
-          input={input ?? <Field />}
-          value={data[name]}
-          disabled={disabled ?? false}
-          decorator={decorator}
-          onChange={onChange}
-          required={required ?? true}
-        />
-      })
-    }
-  </div>
+        return (
+          <InputGroup
+            key={item.name}
+            onSubmit={onSubmit}
+            name={name}
+            label={label ?? camelCaseToWords(name)}
+            validators={validators ?? []}
+            isShowingValidationErrors={isShowingValidationErrors}
+            explanation={explanation}
+            input={input ?? <Field />}
+            value={data[name]}
+            disabled={disabled ?? false}
+            decorator={decorator}
+            onChange={onChange}
+            required={required ?? true}
+          />
+        )
+      })}
+    </div>
+  )
 }

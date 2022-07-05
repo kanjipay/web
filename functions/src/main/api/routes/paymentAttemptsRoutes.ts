@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { validate } from "../../../shared/utils/validate";
-import { PaymentAttemptsController } from "../controllers/PaymentAttemptsController";
-import { AllowedSchema } from "express-json-validator-middleware";
+import { Router } from "express"
+import { validate } from "../../../shared/utils/validate"
+import { PaymentAttemptsController } from "../controllers/PaymentAttemptsController"
+import { AllowedSchema } from "express-json-validator-middleware"
 
-const paymentAttemptsController = new PaymentAttemptsController();
-const paymentAttemptsRoutes = Router();
+const paymentAttemptsController = new PaymentAttemptsController()
+const paymentAttemptsRoutes = Router()
 
 const createCrezcoPaymentAttemptSchema: AllowedSchema = {
   type: "object",
@@ -14,13 +14,13 @@ const createCrezcoPaymentAttemptSchema: AllowedSchema = {
       type: "string",
     },
     crezcoBankCode: {
-      type: "string"
+      type: "string",
     },
     countryCode: {
-      type: "string"
+      type: "string",
     },
     deviceId: {
-      type: "string"
+      type: "string",
     },
   },
 }
@@ -36,12 +36,12 @@ const checkCrezcoSchema: AllowedSchema = {
   required: ["paymentAttemptId", "paymentDemandId"],
   properties: {
     paymentAttemptId: {
-      type: "string"
+      type: "string",
     },
     paymentDemandId: {
-      type: "string"
-    }
-  }
+      type: "string",
+    },
+  },
 }
 
 paymentAttemptsRoutes.post(
@@ -55,12 +55,12 @@ const createStripePaymentAttemptSchema: AllowedSchema = {
   required: ["orderId", "deviceId"],
   properties: {
     orderId: {
-      type: "string"
+      type: "string",
     },
     deviceId: {
-      type: "string"
-    }
-  }
+      type: "string",
+    },
+  },
 }
 
 paymentAttemptsRoutes.post(
@@ -69,4 +69,4 @@ paymentAttemptsRoutes.post(
   paymentAttemptsController.createStripe
 )
 
-export default paymentAttemptsRoutes;
+export default paymentAttemptsRoutes

@@ -1,16 +1,25 @@
-import BaseController from "../../../shared/BaseController";
-import Collection from "../../../shared/enums/Collection";
-import OrderStatus from "../../../shared/enums/OrderStatus";
-import { fetchDocument } from "../../../shared/utils/fetchDocument";
-import LoggingController from "../../../shared/utils/loggingClient";
+import BaseController from "../../../shared/BaseController"
+import Collection from "../../../shared/enums/Collection"
+import OrderStatus from "../../../shared/enums/OrderStatus"
+import { fetchDocument } from "../../../shared/utils/fetchDocument"
+import LoggingController from "../../../shared/utils/loggingClient"
 import { v4 as uuid } from "uuid"
-import { createPayment, createPaymentDemand, getPaymentStatus } from "../../../shared/utils/crezcoClient";
-import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus";
-import { firestore } from "firebase-admin";
-import { db } from "../../../shared/utils/admin";
-import { ErrorHandler, HttpError, HttpStatusCode } from "../../../shared/utils/errors";
-import stripe from "../../../shared/utils/stripeClient";
-import { processPaymentUpdate } from "../../webhooks/processPaymentUpdate";
+import {
+  createPayment,
+  createPaymentDemand,
+  getPaymentStatus,
+} from "../../../shared/utils/crezcoClient"
+import PaymentAttemptStatus from "../../../shared/enums/PaymentAttemptStatus"
+import { firestore } from "firebase-admin"
+import { db } from "../../../shared/utils/admin"
+import {
+  ErrorHandler,
+  HttpError,
+  HttpStatusCode,
+} from "../../../shared/utils/errors"
+import stripe from "../../../shared/utils/stripeClient"
+import { processPaymentUpdate } from "../../webhooks/processPaymentUpdate"
+import { StripeStatus } from "../../../shared/enums/StripeStatus"
 
 const crezcoPaymentStatuses = {
   New: PaymentAttemptStatus.PENDING, // Payment has been created internally, authorisation has not been attempted
@@ -21,20 +30,24 @@ const crezcoPaymentStatuses = {
   Accepted: PaymentAttemptStatus.ACCEPTED, // Payment accepted but funds have not yet transferred
   Blocked: PaymentAttemptStatus.PENDING, // ??? is this the right PaymentAttemptStatus // Payment accepted by Bank, but awaiting further authorisations (multi-auth, or other approval flows)
   Declined: PaymentAttemptStatus.FAILED, // Bank declined the payment
-  Completed: PaymentAttemptStatus.SUCCESSFUL
+  Completed: PaymentAttemptStatus.SUCCESSFUL,
 }
 
 export class PaymentAttemptsController extends BaseController {
   createStripe = async (req, res, next) => {
     try {
       const logger = new LoggingController("Create payment attempt with stripe")
-      const { orderId, deviceId } = req.body;
+      const { orderId, deviceId } = req.body
 
       logger.log("Creating payment attempt with stripe", { orderId, deviceId })
 
-      const { order, orderError } = await fetchDocument(Collection.ORDER, orderId, {
-        status: OrderStatus.PENDING
-      })
+      const { order, orderError } = await fetchDocument(
+        Collection.ORDER,
+        orderId,
+        {
+          status: OrderStatus.PENDING,
+        }
+      )
 
       if (orderError) {
         next(orderError)
@@ -47,7 +60,10 @@ export class PaymentAttemptsController extends BaseController {
 
       logger.log(`Retrieving merchant with id ${merchantId}`)
 
-      const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
+      const { merchant, merchantError } = await fetchDocument(
+        Collection.MERCHANT,
+        merchantId
+      )
 
       if (merchantError) {
         next(merchantError)
@@ -58,10 +74,17 @@ export class PaymentAttemptsController extends BaseController {
 
       const stripeAccountId = merchant.stripe?.accountId
 
-      if (!stripeAccountId || !merchant.stripe.areChargesEnabled) {
-        logger.log("Merchant not set up for stripe", { stripe: merchant.stripe})
+      if (
+        !stripeAccountId ||
+        merchant.stripe.status !== StripeStatus.CHARGES_ENABLED
+      ) {
+        logger.error("Merchant not set up for stripe", {
+          stripe: merchant.stripe,
+        })
         const errorMessage = "Merchant is not set up for Stripe"
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        next(
+          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+        )
         return
       }
 
@@ -73,9 +96,15 @@ export class PaymentAttemptsController extends BaseController {
         },
       }
 
-      logger.log("Creating stripe payment intent", { stripeAccountId, stripePaymentIntentData })
+      logger.log("Creating stripe payment intent", {
+        stripeAccountId,
+        stripePaymentIntentData,
+      })
 
-      const paymentIntent = await stripe.paymentIntents.create(stripePaymentIntentData, { stripeAccount: stripeAccountId })
+      const paymentIntent = await stripe.paymentIntents.create(
+        stripePaymentIntentData,
+        { stripeAccount: stripeAccountId }
+      )
 
       logger.log("Stripe payment intent created", { paymentIntent })
 
@@ -96,17 +125,19 @@ export class PaymentAttemptsController extends BaseController {
         currency,
       }
 
-      logger.log("Creating payment attempt", { paymentAttemptData, paymentAttemptId })
+      logger.log("Creating payment attempt", {
+        paymentAttemptData,
+        paymentAttemptId,
+      })
 
       await db()
         .collection(Collection.PAYMENT_ATTEMPT)
         .doc(paymentAttemptId)
         .set(paymentAttemptData)
 
-      logger.log("Payment attempt added");
+      logger.log("Payment attempt added")
 
       return res.status(200).json({ clientSecret, stripeAccountId })
-
     } catch (err) {
       next(err)
     }
@@ -116,13 +147,22 @@ export class PaymentAttemptsController extends BaseController {
     try {
       const logger = new LoggingController("Create payment attempt with crezco")
 
-      const { orderId, crezcoBankCode, countryCode, deviceId } = req.body;
+      const { orderId, crezcoBankCode, countryCode, deviceId } = req.body
 
-      logger.log("Creating Crezco payment attempt", { orderId, crezcoBankCode, countryCode, deviceId })
-
-      const { order, orderError } = await fetchDocument(Collection.ORDER, orderId, {
-        status: OrderStatus.PENDING
+      logger.log("Creating Crezco payment attempt", {
+        orderId,
+        crezcoBankCode,
+        countryCode,
+        deviceId,
       })
+
+      const { order, orderError } = await fetchDocument(
+        Collection.ORDER,
+        orderId,
+        {
+          status: OrderStatus.PENDING,
+        }
+      )
 
       if (orderError) {
         next(orderError)
@@ -133,7 +173,10 @@ export class PaymentAttemptsController extends BaseController {
 
       logger.log("Got order", { order })
 
-      const { merchant, merchantError } = await fetchDocument(Collection.MERCHANT, merchantId)
+      const { merchant, merchantError } = await fetchDocument(
+        Collection.MERCHANT,
+        merchantId
+      )
 
       logger.log(`Retrieving merchant with id ${merchantId}`)
 
@@ -157,7 +200,7 @@ export class PaymentAttemptsController extends BaseController {
         orderId,
         companyName: companyName.replace(/[^a-zA-Z0-9 \.\-]/, ""),
         total,
-        currency
+        currency,
       })
 
       const { paymentDemandId, payDemandError } = await createPaymentDemand(
@@ -195,7 +238,7 @@ export class PaymentAttemptsController extends BaseController {
         orderId,
         crezco: {
           bankCode: crezcoBankCode,
-          paymentDemandId
+          paymentDemandId,
         },
         merchantId,
         status: PaymentAttemptStatus.PENDING,
@@ -203,17 +246,19 @@ export class PaymentAttemptsController extends BaseController {
         deviceId,
         amount: total,
         currency,
-      };
+      }
 
       await db()
         .collection(Collection.PAYMENT_ATTEMPT)
         .doc(paymentAttemptId)
         .set(paymentAttemptData)
-        .catch(new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle)
+        .catch(
+          new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
+        )
 
-      logger.log("Payment attempt doc added", { paymentAttemptData });
+      logger.log("Payment attempt doc added", { paymentAttemptData })
 
-      return res.status(200).json({ redirectUrl });
+      return res.status(200).json({ redirectUrl })
     } catch (err) {
       console.log(err.data?.errors)
       next(err)
@@ -230,14 +275,17 @@ export class PaymentAttemptsController extends BaseController {
       const isPending = paymentAttemptStatus === PaymentAttemptStatus.PENDING
 
       if (!isPending) {
-        const [, error] = await processPaymentUpdate(paymentAttemptId, paymentAttemptStatus)
+        const [, error] = await processPaymentUpdate(
+          paymentAttemptId,
+          paymentAttemptStatus
+        )
 
         if (error) {
           next(error)
           return
         }
       }
-      
+
       return res.status(200).json({ isPending })
     } catch (err) {
       next(err)

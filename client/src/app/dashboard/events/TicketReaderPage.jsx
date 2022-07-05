@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react';
-import { QrReader } from 'react-qr-reader';
+import { useEffect, useState } from "react"
+import { QrReader } from "react-qr-reader"
 
 export default function TicketReaderPage() {
   const [data, setData] = useState("")
 
-  const [wasAskedForCameraPermission, setWasAskedForCameraPermission] = useState(false)
+  const [wasAskedForCameraPermission, setWasAskedForCameraPermission] =
+    useState(false)
   const [hasAllowedCamera, setHasAllowedCamera] = useState(false)
 
   useEffect(() => {
     if (!wasAskedForCameraPermission) {
       setWasAskedForCameraPermission(true)
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(stream => {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
           setHasAllowedCamera(true)
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
         })
     }
@@ -30,9 +32,5 @@ export default function TicketReaderPage() {
     setData(result?.text)
   }
 
-  return <div>
-    {
-      hasAllowedCamera && <QrReader onResult={onResult} />
-    }
-  </div>
+  return <div>{hasAllowedCamera && <QrReader onResult={onResult} />}</div>
 }

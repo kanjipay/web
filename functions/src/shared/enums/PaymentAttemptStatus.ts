@@ -6,4 +6,4 @@ enum PaymentAttemptStatus {
   SUCCESSFUL = "SUCCESSFUL",
 }
 
-export default PaymentAttemptStatus;
+export default PaymentAttemptStatus

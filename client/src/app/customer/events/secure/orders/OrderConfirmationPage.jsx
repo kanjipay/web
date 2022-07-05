@@ -4,7 +4,9 @@ import { useNavigate, useParams } from "react-router-dom"
 import LoadingPage from "../../../../../components/LoadingPage"
 import MainButton from "../../../../../components/MainButton"
 import { OrderSummary } from "../../../../../components/OrderSummary"
-import ResultBanner, { ResultType } from "../../../../../components/ResultBanner"
+import ResultBanner, {
+  ResultType,
+} from "../../../../../components/ResultBanner"
 import Spacer from "../../../../../components/Spacer"
 import Collection from "../../../../../enums/Collection"
 import { AnalyticsManager } from "../../../../../utils/AnalyticsManager"
@@ -28,7 +30,9 @@ export default function OrderConfirmationPage() {
   }, [orderId])
 
   useEffect(() => {
-    if (!order || wasAttributionCleared) { return }
+    if (!order || wasAttributionCleared) {
+      return
+    }
 
     const { eventId } = order
 
@@ -38,53 +42,58 @@ export default function OrderConfirmationPage() {
   }, [order, wasAttributionCleared, clearItems])
 
   const currUser = auth.currentUser
-  
+
   if (order) {
-    return <div className="container">
-      <EventsAppNavBar 
-        title="Your tickets"
-      />
+    return (
+      <div className="container">
+        <EventsAppNavBar title="Your tickets" />
 
-      <div className="content">
-        <Spacer y={9} />
+        <div className="content">
+          <Spacer y={9} />
 
-        <ResultBanner
-          resultType={ResultType.SUCCESS}
-          message="Your payment was successful"
-        />
-        <Spacer y={3} />
-        <h1 className="header-l">Enjoy your event!</h1>
-        <Spacer y={2} />
-        <p className="text-body-faded">
-          We just emailed your tickets to your email address
-          <span className="text-body-faded" style={{ fontWeight: 500 }}>{` ${currUser.email}`}</span>
-          . The email may take a few moments to go through.
-        </p>
-        <Spacer y={2} />
-        <p className="text-body-faded">
-          Alternatively, you can access your tickets by clicking the icon in the top right, which takes you to your profile page.
-        </p>
+          <ResultBanner
+            resultType={ResultType.SUCCESS}
+            message="Your payment was successful"
+          />
+          <Spacer y={3} />
+          <h1 className="header-l">Enjoy your event!</h1>
+          <Spacer y={2} />
+          <p className="text-body-faded">
+            We just emailed your tickets to your email address
+            <span
+              className="text-body-faded"
+              style={{ fontWeight: 500 }}
+            >{` ${currUser.email}`}</span>
+            . The email may take a few moments to go through.
+          </p>
+          <Spacer y={2} />
+          <p className="text-body-faded">
+            Alternatively, you can access your tickets by clicking the icon in
+            the top right, which takes you to your profile page.
+          </p>
 
-        <Spacer y={3} />
-        <h3 className="header-s">Order summary</h3>
-        <Spacer y={2} />
-        <OrderSummary
-          lineItems={order.orderItems}
-          currency={order.currency}
-          feePercentage={order.customerFee}
-        />
-      </div>
-
-      <div className="anchored-bottom">
-        <div style={{ margin: "16px" }}>
-          <MainButton
-            title="Done"
-            style={{ boxSizing: "borderBox" }}
-            onClick={() => navigate(`/events/s/tickets`)}
+          <Spacer y={3} />
+          <h3 className="header-s">Order summary</h3>
+          <Spacer y={2} />
+          <OrderSummary
+            lineItems={order.orderItems}
+            currency={order.currency}
+            feePercentage={order.customerFee}
           />
         </div>
+
+        <div className="anchored-bottom">
+          <div style={{ margin: "16px" }}>
+            <MainButton
+              title="Done"
+              test-id="ticket-order-confirmation-done-button"
+              style={{ boxSizing: "borderBox" }}
+              onClick={() => navigate(`/events/s/tickets`)}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+    )
   } else {
     return <LoadingPage />
   }

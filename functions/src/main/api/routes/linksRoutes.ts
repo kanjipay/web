@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { AllowedSchema } from "express-json-validator-middleware";
-import { validate } from "../../../shared/utils/validate";
-import { LinksController } from "../controllers/LinksController";
+import { Router } from "express"
+import { AllowedSchema } from "express-json-validator-middleware"
+import { validate } from "../../../shared/utils/validate"
+import { LinksController } from "../controllers/LinksController"
 
-const linksController = new LinksController();
-const linksRoutes = Router();
+const linksController = new LinksController()
+const linksRoutes = Router()
 
 const createLinkSchema: AllowedSchema = {
   type: "object",
@@ -14,19 +14,19 @@ const createLinkSchema: AllowedSchema = {
       type: "string",
     },
     stateId: {
-      type: "string"
-    }
-  }
+      type: "string",
+    },
+  },
 }
 
 linksRoutes.post(
   "/",
   validate({ body: createLinkSchema }),
   linksController.create
-);
+)
 
 linksRoutes.get("/l/:linkId", linksController.get)
 
 linksRoutes.put("/l/:linkId/accept", linksController.accept)
 
-export default linksRoutes;
+export default linksRoutes

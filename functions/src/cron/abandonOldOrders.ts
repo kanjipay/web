@@ -6,7 +6,7 @@ import OrderStatus from "../shared/enums/OrderStatus"
 import { OrderType } from "../shared/enums/OrderType"
 import { db } from "../shared/utils/admin"
 
-export const abandonOldOrders = async context => {
+export const abandonOldOrders = async (context) => {
   try {
     logger.log("Fetching pending ticket orders")
 
@@ -20,13 +20,15 @@ export const abandonOldOrders = async context => {
       .where("createdAt", "<", tenMinutesAgo)
       .get()
 
-    const orders: any[] = snapshot.docs.map(doc => {
+    const orders: any[] = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() }
     })
 
     logger.log("Got orders", { orderCount: orders.length })
 
-    if (orders.length === 0) { return }
+    if (orders.length === 0) {
+      return
+    }
 
     const batch = db().batch()
 
@@ -36,11 +38,13 @@ export const abandonOldOrders = async context => {
       const orderRef = db().collection(Collection.ORDER).doc(order.id)
       const productRef = db().collection(Collection.PRODUCT).doc(productId)
       batch.update(orderRef, { status: OrderStatus.ABANDONED })
-      batch.update(productRef, { reservedCount: firestore.FieldValue.increment(-quantity) })
+      batch.update(productRef, {
+        reservedCount: firestore.FieldValue.increment(-quantity),
+      })
     }
 
     await batch.commit()
   } catch (err) {
-    logger.log(err)
+    logger.error(err)
   }
 }

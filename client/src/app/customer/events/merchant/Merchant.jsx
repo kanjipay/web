@@ -15,10 +15,15 @@ export default function Merchant({ user }) {
   }, [merchantId])
 
   if (merchant) {
-    return <Routes>
-      <Route path=":eventId/*" element={<Event merchant={merchant} user={user} />} />
-      <Route path="/" element={<MerchantPage merchant={merchant} />} />
-    </Routes>
+    return (
+      <Routes>
+        <Route
+          path=":eventId/*"
+          element={<Event merchant={merchant} user={user} />}
+        />
+        <Route path="/" element={<MerchantPage merchant={merchant} />} />
+      </Routes>
+    )
   } else {
     return <LoadingPage />
   }

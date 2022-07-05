@@ -1,47 +1,47 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import AsyncImage from "../../../../components/AsyncImage";
-import IconButton from "../../../../components/IconButton";
-import { ButtonTheme } from "../../../../components/ButtonTheme";
-import Spacer from "../../../../components/Spacer";
-import "./MenuItemPage.css";
-import NavBar from "../../../../components/NavBar";
-import { Helmet } from "react-helmet-async";
-import Plus from "../../../../assets/icons/Plus";
-import Minus from "../../../../assets/icons/Minus";
-import useBasket from "../basket/useBasket";
-import MainButton from "../../../../components/MainButton";
-import { formatCurrency } from "../../../../utils/helpers/money";
-import DietaryAttribute from "./DietaryAttribute";
-import { getMenuItemStorageRef } from "../../../../utils/helpers/storage";
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
+import AsyncImage from "../../../../components/AsyncImage"
+import IconButton from "../../../../components/IconButton"
+import { ButtonTheme } from "../../../../components/ButtonTheme"
+import Spacer from "../../../../components/Spacer"
+import "./MenuItemPage.css"
+import NavBar from "../../../../components/NavBar"
+import { Helmet } from "react-helmet-async"
+import Plus from "../../../../assets/icons/Plus"
+import Minus from "../../../../assets/icons/Minus"
+import useBasket from "../basket/useBasket"
+import MainButton from "../../../../components/MainButton"
+import { formatCurrency } from "../../../../utils/helpers/money"
+import DietaryAttribute from "./DietaryAttribute"
+import { getMenuItemStorageRef } from "../../../../utils/helpers/storage"
 import {
   AnalyticsEvent,
   AnalyticsManager,
   PageName,
-} from "../../../../utils/AnalyticsManager";
+} from "../../../../utils/AnalyticsManager"
 
 export default function MenuItemPage({ merchant }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { merchantId, itemId } = useParams();
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { merchantId, itemId } = useParams()
   const { addItem, basketItems, changeQuantity, removeItem, changeMerchant } =
-    useBasket();
-  const { item } = location.state;
+    useBasket()
+  const { item } = location.state
   const itemInBasket = basketItems.find(
     (basketItem) => basketItem.id === item.id
-  );
-  const isInCart = !!itemInBasket;
-  const itemCountInBasket = itemInBasket ? itemInBasket.quantity : 0;
+  )
+  const isInCart = !!itemInBasket
+  const itemCountInBasket = itemInBasket ? itemInBasket.quantity : 0
 
-  const maxQuantity = 20;
-  const minQuantity = isInCart ? 0 : 1;
+  const maxQuantity = 20
+  const minQuantity = isInCart ? 0 : 1
 
-  const initialQuantity = isInCart ? itemCountInBasket : 1;
-  const [quantity, setQuantity] = useState(initialQuantity);
+  const initialQuantity = isInCart ? itemCountInBasket : 1
+  const [quantity, setQuantity] = useState(initialQuantity)
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage(PageName.MENU_ITEM, { merchantId, itemId });
-  }, [merchantId, itemId]);
+    AnalyticsManager.main.viewPage(PageName.MENU_ITEM, { merchantId, itemId })
+  }, [merchantId, itemId])
 
   const handleAddToBasket = () => {
     if (
@@ -49,55 +49,55 @@ export default function MenuItemPage({ merchant }) {
         (basketItem) => basketItem.merchantId === item.merchantId
       ).length === 0
     ) {
-      changeMerchant(merchant);
+      changeMerchant(merchant)
     }
 
     if (isInCart) {
       if (quantity === 0) {
-        removeItem(item);
+        removeItem(item)
         AnalyticsManager.main.logEvent(AnalyticsEvent.REMOVE_FROM_BASKET, {
           itemId,
           location: PageName.MENU_ITEM,
-        });
+        })
       } else {
-        changeQuantity({ itemId: item.id, quantity });
+        changeQuantity({ itemId: item.id, quantity })
         AnalyticsManager.main.logEvent(AnalyticsEvent.CHANGE_BASKET_AMOUNT, {
           itemId,
           quantity,
           location: PageName.MENU_ITEM,
-        });
+        })
       }
     } else {
-      addItem(item);
-      changeQuantity({ itemId: item.id, quantity });
+      addItem(item)
+      changeQuantity({ itemId: item.id, quantity })
       AnalyticsManager.main.logEvent(AnalyticsEvent.ADD_TO_BASKET, {
         itemId,
         quantity,
         location: PageName.MENU_ITEM,
-      });
+      })
     }
 
-    navigate(-1);
-  };
+    navigate(-1)
+  }
 
   const incrementQuantity = () => {
     if (quantity < maxQuantity) {
-      setQuantity(quantity + 1);
+      setQuantity(quantity + 1)
     }
-  };
+  }
 
   const decrementQuantity = () => {
     if (quantity > minQuantity) {
-      setQuantity(quantity - 1);
+      setQuantity(quantity - 1)
     }
-  };
+  }
 
-  const dietaryBubbles = [];
+  const dietaryBubbles = []
 
   if (item.spiceLevel > 0) {
-    const chilliCount = Math.min(3, item.spiceLevel);
+    const chilliCount = Math.min(3, item.spiceLevel)
 
-    const chilliImages = [];
+    const chilliImages = []
 
     for (let i = 0; i < chilliCount; i++) {
       chilliImages.push(
@@ -107,14 +107,14 @@ export default function MenuItemPage({ merchant }) {
           alt="Chilli icon"
           className="chilli"
         />
-      );
+      )
     }
 
     dietaryBubbles.push(
       <div key="SPICE" className="MenuItem__spiceLevel bubble">
         {chilliImages}
       </div>
-    );
+    )
   }
 
   DietaryAttribute.allItems.forEach((attr) => {
@@ -132,9 +132,9 @@ export default function MenuItemPage({ merchant }) {
         >
           {attr.displayNameLong}
         </div>
-      );
+      )
     }
-  });
+  })
 
   return (
     <div className="MenuItemPage container">
@@ -212,5 +212,5 @@ export default function MenuItemPage({ merchant }) {
         </div>
       </div>
     </div>
-  );
+  )
 }

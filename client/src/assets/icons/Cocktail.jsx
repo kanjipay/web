@@ -19,5 +19,5 @@ export default function Cocktail({ length = 32, color = "black" }) {
       <rect x="74.0005" y="80.0001" width="12" height="40" fill={color} />
       <ellipse cx="79.9993" cy="122" rx="26" ry="6" fill={color} />
     </svg>
-  );
+  )
 }

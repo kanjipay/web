@@ -1,14 +1,18 @@
 import { logger } from "firebase-functions/v1"
 import { abandonOldOrders } from "./abandonOldOrders"
 import { deleteTicketsForIncompletePayments } from "./deleteTicketsForIncompletePayments"
+import { publishScheduledEvents } from "./publishScheduledEvents"
 
-export const cronFunction = async context => {
+export const cronFunction = async (context) => {
   try {
     logger.log("Running cron function")
 
-    await abandonOldOrders(context)
-    await deleteTicketsForIncompletePayments(context)
+    await Promise.all([
+      abandonOldOrders(context),
+      deleteTicketsForIncompletePayments(context),
+      publishScheduledEvents(context)
+    ])
   } catch (err) {
-    console.log(err)
+    logger.error(err)
   }
 }

@@ -1,31 +1,31 @@
-import { Helmet } from "react-helmet-async";
-import AsyncImage from "../../../../components/AsyncImage";
-import CircleIcon from "../../../../components/CircleIcon";
-import NavBar from "../../../../components/NavBar";
-import Spacer from "../../../../components/Spacer";
-import { formatMinutes, getWeekdays } from "../../../../utils/helpers/time";
-import Clock from "../../../../assets/icons/Clock";
-import Location from "../../../../assets/icons/Location";
-import "./MerchantAboutPage.css";
-import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { AnalyticsManager, PageName } from "../../../../utils/AnalyticsManager";
-import { Colors } from "../../../../enums/Colors";
+import { Helmet } from "react-helmet-async"
+import AsyncImage from "../../../../components/AsyncImage"
+import CircleIcon from "../../../../components/CircleIcon"
+import NavBar from "../../../../components/NavBar"
+import Spacer from "../../../../components/Spacer"
+import { formatMinutes, getWeekdays } from "../../../../utils/helpers/time"
+import Clock from "../../../../assets/icons/Clock"
+import Location from "../../../../assets/icons/Location"
+import "./MerchantAboutPage.css"
+import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
+import { useParams } from "react-router-dom"
+import { useEffect } from "react"
+import { AnalyticsManager, PageName } from "../../../../utils/AnalyticsManager"
+import { Colors } from "../../../../enums/Colors"
 
 export default function MerchantAboutPage({ merchant, openHourRanges }) {
-  const weekdays = getWeekdays("en-GB");
-  const { merchantId } = useParams();
-  const openingHourGridItems = [];
+  const weekdays = getWeekdays("en-GB")
+  const { merchantId } = useParams()
+  const openingHourGridItems = []
 
   useEffect(() => {
     AnalyticsManager.main.viewPage(PageName.ABOUT_MERCHANT, { merchantId })
-  }, [merchantId]);
+  }, [merchantId])
 
   openHourRanges
     .sort((range1, range2) => range1.dayOfWeek - range2.dayOfWeek)
     .forEach((range, index) => {
-      const weekday = weekdays[range.dayOfWeek - 1];
+      const weekday = weekdays[range.dayOfWeek - 1]
 
       openingHourGridItems.push(
         <div
@@ -34,7 +34,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         >
           {weekday}
         </div>
-      );
+      )
 
       openingHourGridItems.push(
         <div
@@ -45,8 +45,8 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
             range.closeTime
           )}`}
         </div>
-      );
-    });
+      )
+    })
 
   return merchant ? (
     <div className="container">
@@ -70,7 +70,11 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         <Spacer y={3} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Location} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
+          <CircleIcon
+            Icon={Location}
+            style={{ marginRight: 8 }}
+            backgroundColor={Colors.CLEAR}
+          />
           <div className="header-s">Address</div>
         </div>
         <Spacer y={2} />
@@ -78,7 +82,11 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         <Spacer y={3} />
 
         <div style={{ display: "flex", alignItems: "center" }}>
-          <CircleIcon Icon={Clock} style={{ marginRight: 8 }} backgroundColor={Colors.CLEAR} />
+          <CircleIcon
+            Icon={Clock}
+            style={{ marginRight: 8 }}
+            backgroundColor={Colors.CLEAR}
+          />
           <div className="header-s">Opening hours</div>
         </div>
         <Spacer y={2} />
@@ -92,5 +100,5 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
     </div>
   ) : (
     <div />
-  );
+  )
 }

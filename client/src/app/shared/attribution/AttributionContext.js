@@ -1,33 +1,40 @@
-import { createContext, useReducer } from "react";
-import { LocalStorageKeys } from "../../../utils/IdentityManager";
-import AttributionAction from "./AttributionAction";
-import AttributionReducer from "./AttributionReducer";
+import { createContext, useReducer } from "react"
+import { LocalStorageKeys } from "../../../utils/IdentityManager"
+import AttributionAction from "./AttributionAction"
+import AttributionReducer from "./AttributionReducer"
 
 export const AttributionContext = createContext()
 
 export function loadAttributionState() {
-  const attributionItemsString = localStorage.getItem(LocalStorageKeys.ATTRIBUTION_ITEMS)
-  const attributionItemsWithStringDates = attributionItemsString ? JSON.parse(attributionItemsString) : []
+  const attributionItemsString = localStorage.getItem(
+    LocalStorageKeys.ATTRIBUTION_ITEMS
+  )
+  console.log(attributionItemsString)
+  const attributionItemsWithStringDates =
+    attributionItemsString && attributionItemsString !== "null"
+      ? JSON.parse(attributionItemsString)
+      : []
+  console.log(attributionItemsWithStringDates)
 
-  const attributionItems = attributionItemsWithStringDates.map(item => {
-    return {
-      ...item,
-      addedAt: Date.parse(item.addedAt)
-    }
-  })
+  const attributionItems =
+    attributionItemsWithStringDates?.map((item) => {
+      return {
+        ...item,
+        addedAt: Date.parse(item.addedAt),
+      }
+    }) ?? []
 
   return {
-    attributionItems
+    attributionItems,
   }
 }
 
 const initialState = loadAttributionState()
 
 export default function AttributionContextProvider({ children }) {
-  const [state, dispatch] = useReducer(AttributionReducer, initialState);
+  const [state, dispatch] = useReducer(AttributionReducer, initialState)
 
   const addItem = (payload) => {
-    console.log("addItem. payload: ", payload)
     dispatch({ type: AttributionAction.ADD_ITEM, payload })
   }
 
@@ -43,10 +50,12 @@ export default function AttributionContextProvider({ children }) {
     addItem,
     clearItems,
     loadItems,
-    ...state
+    ...state,
   }
 
-  return <AttributionContext.Provider value={contextValues}>
-    {children}
-  </AttributionContext.Provider>
+  return (
+    <AttributionContext.Provider value={contextValues}>
+      {children}
+    </AttributionContext.Provider>
+  )
 }

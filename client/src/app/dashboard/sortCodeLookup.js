@@ -1,5 +1,5 @@
 // function sortCodeToBank(sortCode) {
-  
+
 //   switch (sortCode.slice(0, 2)) {
 //     case "01": return "National Westminster Bank"
 //     case "05": return "Yorkshire Bank"
@@ -41,7 +41,7 @@
 // 08 - 90 to 08 - 99
 // 08 - 30 to 08 - 39	Citibank	08 - 31 to 08 - 32 for UK Government banking(NS & I, HMRC etc.)
 // 09 - 00 to 09 - 19	Santander UK	Formerly Abbey National(2010)
-// 09 - 01 - 31 to 09 - 01 - 36 for 
+// 09 - 01 - 31 to 09 - 01 - 36 for
 // 09 - 01 - 39 to 09 - 01 - 49 for Alliance & Leicester
 // 09 - 01 - 51 to 09 - 01 - 56 migrated accounts
 
@@ -127,11 +127,11 @@
 // 90	Bank of Ireland
 // 91	Northern Bank	trading as Danske Bank since 2012
 // formerly Belfast Bank(1970)
-// 93	Allied Irish Banks(UK)	for AIB(Northern Ireland) 
-// formerly First Trust Bank 
+// 93	Allied Irish Banks(UK)	for AIB(Northern Ireland)
+// formerly First Trust Bank
 // formerly TSB Northern Ireland(1991)
 // 94	Bank of Ireland
-// 95	Northern Bank	trading as Danske Bank since 2012 
+// 95	Northern Bank	trading as Danske Bank since 2012
 // former Midland Bank subsidiary(1965)
 // 98	Ulster Bank	subsidiary of National Westminster Bank(1917)
 
@@ -159,7 +159,7 @@
 // 99 - 02 - 31 for HSBC Bank
 // 99 - 02 - 40 for ING Bank
 // 99 - 02 - 60 for Rabobank International
-// 99 - 02 - 70 for KBC Bank Ireland 
+// 99 - 02 - 70 for KBC Bank Ireland
 
 // 99 - 04	Bank of Scotland
 // 99 - 06 to 99 - 07	Permanent TSB

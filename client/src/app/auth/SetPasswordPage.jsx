@@ -1,3 +1,1 @@
-export default function SetPasswordPage() {
-  
-}
+export default function SetPasswordPage() {}

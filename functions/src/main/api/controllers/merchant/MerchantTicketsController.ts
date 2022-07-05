@@ -5,19 +5,25 @@ import OrderStatus from "../../../../shared/enums/OrderStatus"
 import { db } from "../../../../shared/utils/admin"
 import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
-import LoggingController from "../../../../shared/utils/loggingClient"
-import { dateFromTimestamp, longFormat } from "../../../../shared/utils/time"
+import { dateFromTimestamp } from "../../../../shared/utils/time"
+import { logger } from "firebase-functions/v1"
 
 export class MerchantTicketsController extends BaseController {
   check = async (req, res, next) => {
     try {
-      const logger = new LoggingController("Check ticket")
       const { ticketId, merchantId } = req.params
       const { eventId: checkedEventId } = req.body
 
-      logger.log(`Checking ticket with id ${ticketId}`, { ticketId, merchantId, checkedEventId })
+      logger.log(`Checking ticket with id ${ticketId}`, {
+        ticketId,
+        merchantId,
+        checkedEventId,
+      })
 
-      const { ticket, ticketError } = await fetchDocument(Collection.TICKET, ticketId)
+      const { ticket, ticketError } = await fetchDocument(
+        Collection.TICKET,
+        ticketId
+      )
 
       if (ticketError) {
         next(ticketError)
@@ -28,32 +34,44 @@ export class MerchantTicketsController extends BaseController {
 
       const { eventId, productId, userId, wasUsed, usedAt } = ticket
 
-      if (wasUsed) {
-        let errorMessage = "This ticket was already used"
+      if (!eventId || !productId || !userId) {
+        const errorMessage =
+          "This ticket is invalid. The event, product or customer is missing."
+        next(
+          new HttpError(
+            HttpStatusCode.INTERNAL_SERVER_ERROR,
+            errorMessage,
+            errorMessage
+          )
+        )
+        return
+      }
 
-        if (usedAt) {
-          errorMessage += ` on ${longFormat(dateFromTimestamp(usedAt))}`
+      if (eventId !== checkedEventId || merchantId !== ticket.merchantId) {
+        const [
+          { event: ticketEvent, eventError: ticketEventError },
+          { event: checkedEvent, eventError: checkedEventError },
+        ] = await Promise.all([
+          fetchDocument(Collection.EVENT, eventId),
+          fetchDocument(Collection.EVENT, checkedEventId),
+        ])
+
+        let errorMessage: string
+
+        if (!ticketEvent || ticketEventError) {
+          errorMessage = "Couldn't find the event this ticket is for."
+        } else if (!checkedEvent || checkedEventError) {
+          errorMessage = "The event you're scanning for doesn't exist"
+        } else {
+          const { title: ticketEventTitle } = ticketEvent
+          const { title: checkedEventTitle } = checkedEvent
+
+          errorMessage = `This ticket is for ${ticketEventTitle} but you're checking tickets for ${checkedEventTitle}.`
         }
 
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
-        return
-      }
-
-      if (!eventId || !productId || !userId) {
-        const errorMessage = "This ticket is invalid ticket. The event, product or customer is missing."
-        next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, errorMessage, errorMessage))
-        return
-      }
-
-      if (merchantId !== ticket.merchantId) {
-        const errorMessage = "This ticket isn't for this organisation."
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
-        return
-      }
-
-      if (eventId !== checkedEventId) {
-        const errorMessage = "This ticket is for another event"
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
+        next(
+          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+        )
         return
       }
 
@@ -64,7 +82,7 @@ export class MerchantTicketsController extends BaseController {
       ] = await Promise.all([
         fetchDocument(Collection.PRODUCT, productId),
         fetchDocument(Collection.EVENT, eventId),
-        fetchDocument(Collection.USER, userId)
+        fetchDocument(Collection.USER, userId),
       ])
 
       for (const error of [productError, eventError, userError]) {
@@ -74,55 +92,46 @@ export class MerchantTicketsController extends BaseController {
         }
       }
 
-      const { latestEntryAt, earliestEntryAt } = product
-
       logger.log("Got product, event and user", { product, event, user })
+
+      const { latestEntryAt, earliestEntryAt } = product
 
       const currentDate = new Date()
 
-      if (currentDate > latestEntryAt || currentDate < earliestEntryAt) {
-        let errorMessage = "This ticket can't be used right now"
-
-        if (currentDate > latestEntryAt) {
-          errorMessage = `This ticket is only valid until ${longFormat(dateFromTimestamp(latestEntryAt))}`
-        } else if (currentDate < earliestEntryAt) {
-          errorMessage = `This ticket is only valid from ${longFormat(dateFromTimestamp(earliestEntryAt))}`
-        }
-
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
-        return
-      }
-
-      if (product.eventId != checkedEventId) {
-        const errorMessage = "This ticket is invalid. The product doesn't match the event."
-        next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, errorMessage, errorMessage))
-        return
-      }
+      const isTooEarly =
+        earliestEntryAt && currentDate < dateFromTimestamp(earliestEntryAt)
+      const isTooLate =
+        latestEntryAt && currentDate > dateFromTimestamp(latestEntryAt)
 
       const { firstName, lastName } = user
 
-      await db()
-        .collection(Collection.TICKET)
-        .doc(ticketId)
-        .update({
+      if (!wasUsed) {
+        await db().collection(Collection.TICKET).doc(ticketId).update({
           wasUsed: true,
-          usedAt: firestore.FieldValue.serverTimestamp()
+          usedAt: firestore.FieldValue.serverTimestamp(),
         })
 
-      logger.log("Updated ticket")
+        logger.log("Updated ticket")
+      }
 
       return res.status(200).json({
         product: {
-          title: product.title
+          title: product.title,
         },
         event: {
           title: event.title,
-          photo: event.photo
+          photo: event.photo,
         },
         user: {
           firstName,
-          lastName
-        }
+          lastName,
+        },
+        wasUsed,
+        usedAt,
+        isTooEarly,
+        isTooLate,
+        earliestEntryAt,
+        latestEntryAt,
       })
     } catch (err) {
       next(err)
@@ -148,27 +157,33 @@ export class MerchantTicketsController extends BaseController {
       const getProducts = db()
         .collection(Collection.PRODUCT)
         .where("merchantId", "==", merchantId)
-        .where("isPublished", "==", true)
         .get()
 
-      const [
-        eventSnapshot,
-        productSnapshot,
-        ordersSnapshot
-      ] = await Promise.all([
-        getEvents,
-        getProducts,
-        getOrders
-      ])
+      const [eventSnapshot, productSnapshot, ordersSnapshot] =
+        await Promise.all([getEvents, getProducts, getOrders])
 
-      const sales = ordersSnapshot.docs.flatMap(doc => {
+      const sales = ordersSnapshot.docs.flatMap((doc) => {
         const order: any = { id: doc.id, ...doc.data() }
 
-        const { eventId, attributionData, type, createdAt, currency } = order
+        const {
+          eventId,
+          attributionData,
+          type,
+          createdAt,
+          currency,
+          sessionData,
+        } = order
+        const strongSessionData = sessionData ?? {}
 
-        return order.orderItems.map(item => {
-          const { productId, title: productTitle, eventTitle, quantity, price } = item
-          return { 
+        return order.orderItems.map((item) => {
+          const {
+            productId,
+            title: productTitle,
+            eventTitle,
+            quantity,
+            price,
+          } = item
+          return {
             orderId: order.id,
             amount: price * quantity,
             quantity,
@@ -179,16 +194,17 @@ export class MerchantTicketsController extends BaseController {
             type,
             createdAt,
             attributionData,
-            currency
+            currency,
+            ...strongSessionData,
           }
         })
       })
 
-      const events = eventSnapshot.docs.map(doc => {
+      const events = eventSnapshot.docs.map((doc) => {
         return { id: doc.id, ...doc.data() }
       })
 
-      const products = productSnapshot.docs.map(doc => {
+      const products = productSnapshot.docs.map((doc) => {
         return { id: doc.id, ...doc.data() }
       })
 

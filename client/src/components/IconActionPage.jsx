@@ -1,9 +1,9 @@
-import CircleIcon from "./CircleIcon";
-import MainButton from "./MainButton";
-import Spacer from "./Spacer";
-import { ButtonTheme } from "./ButtonTheme";
-import { Colors } from "../enums/Colors";
-import { isMobile } from "react-device-detect";
+import CircleIcon from "./CircleIcon"
+import MainButton from "./MainButton"
+import Spacer from "./Spacer"
+import { ButtonTheme } from "./ButtonTheme"
+import { Colors } from "../enums/Colors"
+import { isMobile } from "react-device-detect"
 
 export default function IconActionPage({
   Icon,
@@ -17,32 +17,36 @@ export default function IconActionPage({
   secondaryActionTitle,
   secondaryAction,
   secondaryIsLoading = false,
+  name = "",
 }) {
-  const buttons = <div style={{ margin: "16px" }}>
-    {
-      primaryActionTitle && primaryAction && <MainButton
-        title={primaryActionTitle}
-        style={{ boxSizing: "borderBox" }}
-        isLoading={primaryIsLoading}
-        onClick={primaryAction}
-        buttonTheme={ButtonTheme.MONOCHROME}
-      />
-    }
-    
-
-    {
-      secondaryActionTitle && secondaryAction && <div>
-        <Spacer y={1} />
+  const buttons = (
+    <div style={{ margin: "16px" }}>
+      {primaryActionTitle && primaryAction && (
         <MainButton
-          title={secondaryActionTitle}
+          title={primaryActionTitle}
           style={{ boxSizing: "borderBox" }}
-          isLoading={secondaryIsLoading}
-          onClick={secondaryAction}
-          buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+          test-id={`icon-primary-button-${name}`}
+          isLoading={primaryIsLoading}
+          onClick={primaryAction}
+          buttonTheme={ButtonTheme.MONOCHROME}
         />
-      </div>
-    }
-  </div>;
+      )}
+
+      {secondaryActionTitle && secondaryAction && (
+        <div>
+          <Spacer y={1} />
+          <MainButton
+            title={secondaryActionTitle}
+            style={{ boxSizing: "borderBox" }}
+            test-id={`icon-secondary-button-${name}`}
+            isLoading={secondaryIsLoading}
+            onClick={secondaryAction}
+            buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+          />
+        </div>
+      )}
+    </div>
+  )
 
   return (
     <div className="container">
@@ -59,17 +63,10 @@ export default function IconActionPage({
         <Spacer y={2} />
         <div className="text-body-faded">{body}</div>
 
-        {
-          !isMobile && buttons
-        }
+        {!isMobile && buttons}
       </div>
 
-      {
-        isMobile && <div className="anchored-bottom">
-          {buttons}
-        </div>
-      }
-      
+      {isMobile && <div className="anchored-bottom">{buttons}</div>}
     </div>
-  );
+  )
 }

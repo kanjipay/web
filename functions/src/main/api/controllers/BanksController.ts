@@ -1,6 +1,6 @@
-import BaseController from "../../../shared/BaseController";
-import { fetchBankData } from "../../../shared/utils/crezcoClient";
-import LoggingController from "../../../shared/utils/loggingClient";
+import BaseController from "../../../shared/BaseController"
+import { fetchBankData } from "../../../shared/utils/crezcoClient"
+import LoggingController from "../../../shared/utils/loggingClient"
 
 export class BanksController extends BaseController {
   index = async (req, res, next) => {
@@ -14,7 +14,7 @@ export class BanksController extends BaseController {
 
       logger.log(`Retrieved ${bankData.length} banks`)
 
-      return res.status(200).json(bankData);
+      return res.status(200).json(bankData)
     } catch (err) {
       next(err)
     }

@@ -15,5 +15,5 @@ export default function Back({ length = 32, color = "black" }) {
         strokeLinejoin="miter"
       />
     </svg>
-  );
+  )
 }

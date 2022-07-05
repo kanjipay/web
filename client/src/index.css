@@ -11,7 +11,7 @@
   color: white;
 }
 
-input[type='number'] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -55,10 +55,10 @@ a {
   --color-text-body-faded: #666;
   --color-clear: #ffffff00;
 
-  --font-brand-title: 600 "Rubik", "Roboto",sans-serif;
-  --font-header-l: 700 2em "Oswald", "Roboto",sans-serif;
-  --font-header-m: 700 1.5em "Oswald", "Roboto",sans-serif;
-  --font-header-s: 500 1.25em "Oswald", "Roboto",sans-serif;
+  --font-brand-title: 600 "Rubik", "Roboto", sans-serif;
+  --font-header-l: 700 2em "Oswald", "Roboto", sans-serif;
+  --font-header-m: 700 1.5em "Oswald", "Roboto", sans-serif;
+  --font-header-s: 500 1.25em "Oswald", "Roboto", sans-serif;
   --font-header-xs: 500 1em "Roboto", sans-serif;
   --font-body: 400 1em "Roboto", sans-serif;
   --font-caption: 0.88em "Roboto", sans-serif;

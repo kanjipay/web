@@ -1,4 +1,4 @@
-import { Colors } from "../enums/Colors";
+import { Colors } from "../enums/Colors"
 
 export default function OrDivider() {
   return (
@@ -7,11 +7,11 @@ export default function OrDivider() {
         className="flex-spacer"
         style={{ height: 1, backgroundColor: Colors.OFF_WHITE }}
       />
-      <div className="text-caption">or</div>
+      <div className="text-body-faded">or</div>
       <div
         className="flex-spacer"
         style={{ height: 1, backgroundColor: Colors.OFF_WHITE }}
       />
     </div>
-  );
+  )
 }

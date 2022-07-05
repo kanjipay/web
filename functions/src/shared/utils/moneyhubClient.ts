@@ -6,8 +6,12 @@ let moneyhubInstance = null
 
 async function getMoneyhub() {
   const isLocal = process.env.ENVIRONMENT === Environment.DEV_LOCAL
-  const client_id = isLocal ? process.env.MONEYHUB_CLIENT_ID_LOCAL : process.env.MONEYHUB_CLIENT_ID
-  const client_secret = isLocal ? process.env.MONEYHUB_CLIENT_SECRET_LOCAL : process.env.MONEYHUB_CLIENT_SECRET
+  const client_id = isLocal
+    ? process.env.MONEYHUB_CLIENT_ID_LOCAL
+    : process.env.MONEYHUB_CLIENT_ID
+  const client_secret = isLocal
+    ? process.env.MONEYHUB_CLIENT_SECRET_LOCAL
+    : process.env.MONEYHUB_CLIENT_SECRET
   const redirect_uri = `${process.env.CLIENT_URL}/checkout/mh-redirect`
   const response_type = isLocal ? "code" : "code id_token"
   const keysString = process.env.MONEYHUB_PRIVATE_JWKS
@@ -24,24 +28,24 @@ async function getMoneyhub() {
       id_token_signed_response_alg: "RS256",
       redirect_uri,
       response_type,
-      keys
-    }
+      keys,
+    },
   }
 
   const moneyhub = await Moneyhub(config)
   moneyhubInstance = moneyhub
-  
+
   return moneyhub
 }
 
-const getMoneyhubClient = async () => moneyhubInstance || await getMoneyhub();
+const getMoneyhubClient = async () => moneyhubInstance || (await getMoneyhub())
 
 export async function processAuthSuccess(
-  code: string, 
-  state: string, 
-  idToken: string, 
-  paymentAttemptId: string, 
-  stateId: string, 
+  code: string,
+  state: string,
+  idToken: string,
+  paymentAttemptId: string,
+  stateId: string,
   clientState: string
 ) {
   const logger = new LoggingController("Moneyhub process auth success")
@@ -52,7 +56,7 @@ export async function processAuthSuccess(
   logger.log("States", {
     localState,
     state,
-    idToken
+    idToken,
   })
 
   try {
@@ -96,7 +100,12 @@ export async function getPayees() {
   }
 }
 
-export async function createPayee(accountNumber: string, sortCode: string, companyName: string, id: string) {
+export async function createPayee(
+  accountNumber: string,
+  sortCode: string,
+  companyName: string,
+  id: string
+) {
   try {
     const moneyhub = await getMoneyhubClient()
 
@@ -104,7 +113,7 @@ export async function createPayee(accountNumber: string, sortCode: string, compa
       accountNumber,
       sortCode,
       name: companyName,
-      externalId: id
+      externalId: id,
     })
 
     return res.data
@@ -123,13 +132,13 @@ export async function fetchMoneyhubPayment(paymentId: string) {
   const errorCode = res.code
 
   if (errorCode) {
-    return { 
-      exists: false
+    return {
+      exists: false,
     }
   } else {
     return {
       exists: true,
-      paymentData: res
+      paymentData: res,
     }
   }
 }
@@ -141,7 +150,7 @@ export async function generateMoneyhubPaymentAuthUrl(
   stateId: string,
   clientState: string,
   amount: number,
-  paymentAttemptId: string,
+  paymentAttemptId: string
 ): Promise<string> {
   const state = `${paymentAttemptId}.${stateId}.${clientState}`
   const nonce = paymentAttemptId
@@ -178,11 +187,11 @@ export async function generateMoneyhubPaymentAuthUrl(
               payerType: null,
               payerName: null,
               payerEmail: null,
-              readRefundAccount: false
+              readRefundAccount: false,
             },
           },
         },
-      }
+      },
     })
   } catch (err) {
     console.log(err)
@@ -190,7 +199,7 @@ export async function generateMoneyhubPaymentAuthUrl(
 }
 
 export async function generateMoneyhubReversePaymentAuthUrl(
-  bankId: string, 
+  bankId: string,
   paymentId: string,
   stateId: string,
   clientState: string,
@@ -198,7 +207,7 @@ export async function generateMoneyhubReversePaymentAuthUrl(
 ) {
   const state = `${paymentAttemptId}.${stateId}.${clientState}`
   const nonce = paymentAttemptId
-  
+
   try {
     const moneyhub = await getMoneyhubClient()
 
@@ -208,8 +217,5 @@ export async function generateMoneyhubReversePaymentAuthUrl(
       state,
       nonce,
     })
-  } catch (err) {
-
-  }
-  
+  } catch (err) {}
 }

@@ -13,5 +13,5 @@ export default function User({ length = 32, color = "black" }) {
       />
       <circle cx="32" cy="18" r="10" fill={color} />
     </svg>
-  );
+  )
 }

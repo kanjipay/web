@@ -1,5 +1,7 @@
 export function parseHashParams(hash) {
-  if (hash === "") { return {} }
+  if (hash === "") {
+    return {}
+  }
 
   const hashParams = hash
     .replace("#", "")

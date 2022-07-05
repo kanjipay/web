@@ -1,16 +1,16 @@
-import { Link, useParams } from "react-router-dom";
-import AsyncImage from "../../../../components/AsyncImage";
-import MenuItemListing from "./MenuItemListing";
-import Spacer from "../../../../components/Spacer";
-import { formatMinutes } from "../../../../utils/helpers/time";
-import NavBar from "../../../../components/NavBar";
-import { Helmet } from "react-helmet-async";
-import useBasket from "../basket/useBasket";
-import LoadingPage from "../../../../components/LoadingPage";
-import MainButton from "../../../../components/MainButton";
-import { getMerchantStorageRef } from "../../../../utils/helpers/storage";
-import { useEffect } from "react";
-import { AnalyticsManager, PageName } from "../../../../utils/AnalyticsManager";
+import { Link, useParams } from "react-router-dom"
+import AsyncImage from "../../../../components/AsyncImage"
+import MenuItemListing from "./MenuItemListing"
+import Spacer from "../../../../components/Spacer"
+import { formatMinutes } from "../../../../utils/helpers/time"
+import NavBar from "../../../../components/NavBar"
+import { Helmet } from "react-helmet-async"
+import useBasket from "../basket/useBasket"
+import LoadingPage from "../../../../components/LoadingPage"
+import MainButton from "../../../../components/MainButton"
+import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
+import { useEffect } from "react"
+import { AnalyticsManager, PageName } from "../../../../utils/AnalyticsManager"
 
 export default function MenuPage({
   merchant,
@@ -19,54 +19,54 @@ export default function MenuPage({
   openHourRanges = [],
   orders = [],
 }) {
-  const { itemCount } = useBasket();
-  const { merchantId } = useParams();
+  const { itemCount } = useBasket()
+  const { merchantId } = useParams()
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage(PageName.MENU, { merchantId });
-  }, [merchantId]);
+    AnalyticsManager.main.viewPage(PageName.MENU, { merchantId })
+  }, [merchantId])
 
-  const groupedMenuItems = {};
+  const groupedMenuItems = {}
 
   menuItems.forEach((menuItem) => {
-    const menuSectionId = menuItem.sectionId;
-    const currValue = groupedMenuItems[menuSectionId];
+    const menuSectionId = menuItem.sectionId
+    const currValue = groupedMenuItems[menuSectionId]
 
     if (currValue) {
-      groupedMenuItems[menuSectionId].push(menuItem);
+      groupedMenuItems[menuSectionId].push(menuItem)
     } else {
-      groupedMenuItems[menuSectionId] = [menuItem];
+      groupedMenuItems[menuSectionId] = [menuItem]
     }
-  });
+  })
 
   function generateOpenHourText() {
-    const now = new Date();
-    let dayOfWeek = now.getDay();
+    const now = new Date()
+    let dayOfWeek = now.getDay()
 
     // The above defines day of week as 0 - 6 Sun - Sat
     // We want 1 - 7 Mon - Sun
     if (dayOfWeek === 0) {
-      dayOfWeek = 7;
+      dayOfWeek = 7
     }
 
-    const minutes = now.getHours() * 60 + now.getMinutes();
+    const minutes = now.getHours() * 60 + now.getMinutes()
 
     const todayRanges = openHourRanges
       .filter((range) => range.dayOfWeek === dayOfWeek)
-      .sort((range1, range2) => range1.closeTime - range2.closeTime);
+      .sort((range1, range2) => range1.closeTime - range2.closeTime)
 
-    const openRanges = todayRanges.filter((range) => range.closeTime > minutes);
+    const openRanges = todayRanges.filter((range) => range.closeTime > minutes)
 
     if (openRanges.length === 0) {
       if (todayRanges.length === 0) {
-        return "Closed today";
+        return "Closed today"
       } else {
-        const mins = todayRanges[todayRanges.length - 1].closeTime;
-        return `Closed at ${formatMinutes(mins)}`;
+        const mins = todayRanges[todayRanges.length - 1].closeTime
+        return `Closed at ${formatMinutes(mins)}`
       }
     } else {
-      const mins = openRanges[openRanges.length - 1].closeTime;
-      return `Open until ${formatMinutes(mins)}`;
+      const mins = openRanges[openRanges.length - 1].closeTime
+      return `Open until ${formatMinutes(mins)}`
     }
   }
 
@@ -74,7 +74,7 @@ export default function MenuPage({
     !merchant ||
     menuSections.length === 0 ||
     menuItems.length === 0 ||
-    openHourRanges.length === 0;
+    openHourRanges.length === 0
 
   return isLoading ? (
     <LoadingPage message="Loading" />
@@ -146,5 +146,5 @@ export default function MenuPage({
         </div>
       )}
     </div>
-  );
+  )
 }

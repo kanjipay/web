@@ -22,5 +22,5 @@ export default function Discover({ length = 32, color = "black" }) {
         strokeWidth="6"
       />
     </svg>
-  );
+  )
 }

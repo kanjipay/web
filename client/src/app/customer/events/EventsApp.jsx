@@ -1,14 +1,14 @@
-import { Route, Routes } from "react-router-dom";
-import Secure from "./secure/Secure";
-import Merchant from "./merchant/Merchant";
-import RedirectPageMercado from "./RedirectPageMercado";
-import { useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../../utils/FirebaseUtils";
-import Collection from "../../../enums/Collection";
-import { Colors } from "../../../enums/Colors";
-import LoadingPage from "../../../components/LoadingPage";
-import ArtistPage from "../ArtistPage";
+import { Route, Routes } from "react-router-dom"
+import Secure from "./secure/Secure"
+import Merchant from "./merchant/Merchant"
+import RedirectPageMercado from "./RedirectPageMercado"
+import { useEffect, useState } from "react"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "../../../utils/FirebaseUtils"
+import Collection from "../../../enums/Collection"
+import { Colors } from "../../../enums/Colors"
+import LoadingPage from "../../../components/LoadingPage"
+import ArtistPage from "../ArtistPage"
 
 export default function EventsApp() {
   const [authUser, setAuthUser] = useState(null)
@@ -17,19 +17,21 @@ export default function EventsApp() {
   const [hasRetrievedAuthUser, setHasRetrievedAuthUser] = useState(false)
 
   useEffect(() => {
-    return onAuthStateChanged(auth, authUser => {
+    return onAuthStateChanged(auth, (authUser) => {
       setAuthUser(authUser)
       setHasRetrievedAuthUser(true)
     })
   }, [])
 
   useEffect(() => {
-    if (!hasRetrievedAuthUser) { return }
+    if (!hasRetrievedAuthUser) {
+      return
+    }
 
     if (authUser) {
       const userId = authUser.uid
 
-      return Collection.USER.onChange(userId, user => {
+      return Collection.USER.onChange(userId, (user) => {
         setUser(user)
         setIsLoading(false)
       })
@@ -39,8 +41,9 @@ export default function EventsApp() {
     }
   }, [authUser, hasRetrievedAuthUser])
 
-  return isLoading ?
-    <LoadingPage /> :
+  return isLoading ? (
+    <LoadingPage />
+  ) : (
     <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT }}>
       <Routes>
         <Route path="s/*" element={<Secure user={user} />} />
@@ -49,5 +52,5 @@ export default function EventsApp() {
         <Route path="mcp-redirect" element={<RedirectPageMercado />} />
       </Routes>
     </div>
-  
+  )
 }
