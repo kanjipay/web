@@ -20,7 +20,7 @@ describe("Add Crezco UserId", () => {
         const res = await api.put(`/merchants/m/${merchantId}/crezco`)
             .auth(userToken, { type: 'bearer' })
             .send({crezcoUserId})
-        const merchantDoc = await db.collection(Collection.MERCHANT).doc(merchantId).get()
+        const merchantDoc = await db.collection(Collection.MERCHANT).doc(merchantId).get();
         expect(res).to.have.status(200);
         expect(merchantDoc.exists).to.eql(true);
         expect(merchantDoc.data().crezco.userId).to.eql(crezcoUserId);                
