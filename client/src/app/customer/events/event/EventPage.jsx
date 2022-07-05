@@ -146,7 +146,6 @@ export default function EventPage({ merchant, event, products, artists }) {
             <h1 className="header-m">Get tickets</h1>
             <Spacer y={2} />
             {products
-              .filter((product) => product.isPublished)
               .map((product) => {
                 return (
                   <div key={product.id}>

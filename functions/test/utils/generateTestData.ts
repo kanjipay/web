@@ -68,7 +68,6 @@ export async function createProduct(
   productId: string,
   // Essential fields
   {
-    isPublished = true,
     isAvailable = true,
     reservedCount = 0,
     soldCount = 0,
@@ -85,7 +84,6 @@ export async function createProduct(
       // variable properties
       merchantId,
       eventId,
-      isPublished,
       isAvailable,
       reservedCount,
       soldCount,

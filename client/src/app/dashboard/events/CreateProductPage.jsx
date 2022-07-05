@@ -32,7 +32,6 @@ export default function CreateProductPage({ event, products, merchant }) {
       eventId: event.id,
       merchantId,
       isAvailable: true,
-      isPublished: false,
       title,
       description,
       price,
@@ -110,7 +109,7 @@ export default function CreateProductPage({ event, products, merchant }) {
                     label: "Earliest entry",
                     explanation:
                       "Optionally set the earliest time event goers will be admitted with this ticket.",
-                    input: <DatePicker required={false} />,
+                    input: <DatePicker />,
                     required: false,
                   },
                   {
@@ -118,7 +117,7 @@ export default function CreateProductPage({ event, products, merchant }) {
                     label: "Latest entry",
                     explanation:
                       "Optionally set the latest time event goers will be admitted with this ticket.",
-                    input: <DatePicker required={false} />,
+                    input: <DatePicker />,
                     required: false,
                   },
                 ],

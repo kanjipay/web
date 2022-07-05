@@ -96,6 +96,7 @@ export default function EventPage({ merchant, event, products }) {
         ...data,
         photo: file ? file.name : event.photo,
         maxTicketsPerPerson: parseInt(data.maxTicketsPerPerson, 10),
+        publishScheduledAt: data.publishScheduledAt ?? null
       })
     )
 
@@ -118,8 +119,6 @@ export default function EventPage({ merchant, event, products }) {
   const eventLink = new URL(window.location.href)
   eventLink.pathname = `/events/${event.merchantId}/${event.id}`
   const eventLinkString = eventLink.href
-
-  const hasPublishedProducts = products.filter((p) => p.isPublished).length > 0
 
   useEffect(() => {
     Collection.ATTRIBUTION_LINK.queryOnChange(
@@ -252,6 +251,7 @@ export default function EventPage({ merchant, event, products }) {
               ...event,
               startsAt: dateFromTimestamp(event.startsAt) ?? new Date(),
               endsAt: dateFromTimestamp(event.endsAt) ?? new Date(),
+              publishScheduledAt: dateFromTimestamp(event.publishScheduledAt),
               photo: {
                 storageRef: getEventStorageRef(
                   event.merchantId,
@@ -299,6 +299,15 @@ export default function EventPage({ merchant, event, products }) {
                     input: <DatePicker />,
                     disabled: !!event.isPublished,
                   },
+                  {
+                    name: "publishScheduledAt",
+                    label: "Scheduled publish date",
+                    explanation:
+                      "Optionally set the time you want to publish this event to customers.",
+                    input: <DatePicker />,
+                    required: false,
+                    disabled: !!event.isPublished,
+                  },
                 ],
               },
             ]}
@@ -312,7 +321,7 @@ export default function EventPage({ merchant, event, products }) {
                 trigger={
                   <div>
                     <MainButton
-                      title="Publish"
+                      title={event.publishScheduledAt ? "Publish early" : "Publish"}
                       test-id="publish-event-button"
                       buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
                     />
@@ -320,50 +329,31 @@ export default function EventPage({ merchant, event, products }) {
                 }
                 modal
               >
-                {(close) =>
-                  hasPublishedProducts ? (
-                    <Modal>
-                      <h2 className="header-m">Are you sure?</h2>
-                      <Spacer y={2} />
-                      <p className="text-body-faded">
-                        Once you publish an event, it'll become visible to
-                        customers, and you won't be able to edit the start and
-                        end date or address.
-                      </p>
-                      <Spacer y={4} />
-                      <MainButton
-                        title="Publish event"
-                        test-id="confirm-publish-event-button"
-                        onClick={() => {
-                          handlePublishEvent()
-                          close()
-                        }}
-                      />
-                      <Spacer y={2} />
-                      <MainButton
-                        title="Cancel"
-                        buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                        test-id="cancel-publish-event-button"
-                        onClick={close}
-                      />
-                    </Modal>
-                  ) : (
-                    <Modal>
-                      <h2 className="header-m">Can't publish event</h2>
-                      <Spacer y={2} />
-                      <p className="text-body-faded">
-                        You need to create and publish at least one product for
-                        this event before you can publish the event itself.
-                      </p>
-                      <Spacer y={4} />
-                      <MainButton
-                        title="OK"
-                        buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                        onClick={close}
-                      />
-                    </Modal>
-                  )
-                }
+                {(close) => <Modal>
+                  <h2 className="header-m">Are you sure?</h2>
+                  <Spacer y={2} />
+                  <p className="text-body-faded">
+                    Once you publish an event, it'll become visible to
+                    customers, and you won't be able to edit the start and
+                    end date or address.
+                  </p>
+                  <Spacer y={4} />
+                  <MainButton
+                    title="Publish event"
+                    test-id="confirm-publish-event-button"
+                    onClick={() => {
+                      handlePublishEvent()
+                      close()
+                    }}
+                  />
+                  <Spacer y={2} />
+                  <MainButton
+                    title="Cancel"
+                    buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                    test-id="cancel-publish-event-button"
+                    onClick={close}
+                  />
+                </Modal>}
               </Popup>
 
               <Spacer y={2} />

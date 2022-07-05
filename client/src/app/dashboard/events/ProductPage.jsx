@@ -24,11 +24,12 @@ export default function ProductPage({ event, products, merchant }) {
   const navigate = useNavigate()
   const product = products.find((p) => p.id === productId)
   const docRef = Collection.PRODUCT.docRef(productId)
+  const isPublished = event.isPublished
 
   const handleUpdateProduct = async (data) => {
     let update
 
-    if (product.isPublished) {
+    if (isPublished) {
       const { title, description, isAvailable } = data
       update = { title, description, isAvailable }
     } else {
@@ -44,12 +45,6 @@ export default function ProductPage({ event, products, merchant }) {
   const handleDeleteProduct = async () => {
     await deleteDoc(docRef)
     navigate("../..")
-  }
-
-  const handlePublishProduct = async () => {
-    await updateDoc(docRef, {
-      isPublished: true,
-    })
   }
 
   return (
@@ -85,8 +80,8 @@ export default function ProductPage({ event, products, merchant }) {
             }}
             formGroupData={[
               {
-                explanation: product.isPublished
-                  ? "This product is published, so some fields can't be edited, and it can't be deleted."
+                explanation: isPublished
+                  ? "This event is published, so some fields can't be edited, and it can't be deleted."
                   : null,
                 items: [
                   { name: "title" },
@@ -102,18 +97,18 @@ export default function ProductPage({ event, products, merchant }) {
                         prefix={getCurrencySymbol(merchant.currency)}
                       />
                     ),
-                    disabled: !!product.isPublished,
+                    disabled: !!isPublished,
                   },
                   {
                     name: "capacity",
                     input: <IntField />,
-                    disabled: !!product.isPublished,
+                    disabled: !!isPublished,
                   },
                   {
                     name: "releasesAt",
                     label: "Release date",
                     input: <DatePicker />,
-                    disabled: !!product.isPublished,
+                    disabled: !!isPublished,
                   },
                   {
                     name: "earliestEntryAt",
@@ -122,7 +117,7 @@ export default function ProductPage({ event, products, merchant }) {
                       "Optionally set the earliest time event goers will be admitted with this ticket.",
                     input: <DatePicker />,
                     required: false,
-                    disabled: !!product.isPublished,
+                    disabled: !!isPublished,
                   },
                   {
                     name: "latestEntryAt",
@@ -131,7 +126,7 @@ export default function ProductPage({ event, products, merchant }) {
                       "Optionally set the latest time event goers will be admitted with this ticket.",
                     input: <DatePicker />,
                     required: false,
-                    disabled: !!product.isPublished,
+                    disabled: !!isPublished,
                   },
                   {
                     name: "isAvailable",
@@ -146,50 +141,8 @@ export default function ProductPage({ event, products, merchant }) {
             onSubmit={handleUpdateProduct}
             submitTitle="Save"
           />
-          {!product.isPublished && (
+          {!isPublished && (
             <div>
-              <Spacer y={2} />
-              <Popup
-                trigger={
-                  <div>
-                    <MainButton
-                      title="Publish"
-                      test-id="publish-product-button"
-                      buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                    />
-                  </div>
-                }
-                modal
-              >
-                {(close) => (
-                  <Modal>
-                    <h2 className="header-m">Are you sure?</h2>
-                    <Spacer y={2} />
-                    <p className="text-body-faded">
-                      Once you publish a product, it'll become visible to
-                      customers, and you won't be able to edit the price,
-                      release date or capacity.
-                    </p>
-                    <Spacer y={4} />
-                    <MainButton
-                      title="Publish product"
-                      test-id="confirm-publish-product-button"
-                      onClick={() => {
-                        handlePublishProduct()
-                        close()
-                      }}
-                    />
-                    <Spacer y={2} />
-                    <MainButton
-                      title="Cancel"
-                      test-id="cancel-publish-product-button"
-                      buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                      onClick={close}
-                    />
-                  </Modal>
-                )}
-              </Popup>
-
               <Spacer y={2} />
               <Popup
                 trigger={

@@ -12,12 +12,7 @@ export default function ProductListing({ product, currency }) {
   const { title, releasesAt, soldCount, capacity, price } = product
   const releaseDate = dateFromTimestamp(releasesAt)
   const hasReleased = releaseDate < new Date()
-  const label = product.isPublished
-    ? `Release${hasReleased ? "d" : "s"} on ${format(
-        releaseDate,
-        "do MMM"
-      )} at ${format(releaseDate, "HH:mm")}`
-    : "Not published yet"
+  const label = `Release${hasReleased ? "d" : "s"} on ${format(releaseDate, "do MMM")} at ${format(releaseDate, "HH:mm")}`
 
   return (
     <Link to={`p/${product.id}`}>
