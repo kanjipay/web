@@ -37,67 +37,6 @@ const popupProps = {
   },
 }
 
-function GroupingControl({ value, onChange, groupingsListData }) {
-  const labelStyle = {
-    height: "100%",
-    backgroundColor: Colors.OFF_WHITE,
-    padding: "0 8px",
-    cursor: "pointer"
-  }
-
-  return <div style={{
-    height: 48,
-    backgroundColor: Colors.OFF_WHITE_LIGHT,
-    boxSizing: "border-box",
-    alignItems: "center",
-    padding: "8px 0px 8px 8px",
-    display: "flex",
-    columnGap: 8
-  }}>
-    Group by
-    <Popup
-      trigger={
-        <button className="text-caption" style={labelStyle}>
-          {value ?? "Select property"}
-        </button>
-      }
-      {...popupProps}
-    >
-      {
-        close => {
-          return groupingsListData.map(groupingsListDatum => {
-            const { name, isSelected } = groupingsListDatum
-            return <MenuItem key={name} title={name} onClick={isSelected ? null : () => {
-              onChange(name)
-              close()
-            }} />
-          })
-        }
-      }
-      
-      
-    </Popup>
-
-    <div className="flex-spacer"></div>
-
-    <div
-      style={{
-        width: 48,
-        height: 48,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer"
-      }}
-      onClick={() => onChange(null)}
-    >
-      <Cross length={16} color={Colors.GRAY} />
-    </div>
-
-
-  </div>
-}
-
 function FilterControl({ filterDatum, onChange, filtersListData }) {
   const labelStyle = {
     height: "100%", 
@@ -205,30 +144,6 @@ function FilterControl({ filterDatum, onChange, filtersListData }) {
   </div>
 }
 
-function MenuCloseItem({ title, handleClose }) {
-  return <div style={{
-    height: 48,
-    display: "flex",
-    padding: "0 16px",
-    cursor: "pointer",
-    alignItems: "center",
-    boxSizing: "border-box",
-    borderBottom: `1px solid ${Colors.OFF_WHITE}`,
-  }}>
-    {title}
-    <div className="flex-spacer"></div>
-    <div onClick={handleClose} style={{
-      height: "100%",
-      width: 48,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }}>
-      <Forward length={16} color={Colors.GRAY} />
-    </div>
-  </div>
-}
-
 export function MenuItem({ title, onClick, style, showsSeparator = true, showsArrow = false, isSelected = false, ...props }) {
   const [isHovering, setIsHovering] = useState(false)
   return <div 
@@ -276,6 +191,7 @@ export default function AnalyticsPage({ merchant }) {
 
   useEffect(() => {
     NetworkManager.get(`/merchants/m/${merchantId}/tickets/sales-data`).then(res => {
+      console.log(res.data)
       setSalesData(res.data)
     })
 
@@ -314,6 +230,8 @@ export default function AnalyticsPage({ merchant }) {
       newData.push(emptyFilterDatum)
       setFilterData([...newData])
     }
+
+    
 
     const filtersListData = [
       {
@@ -373,6 +291,11 @@ export default function AnalyticsPage({ merchant }) {
     // First need to get an array of the groups, then map through each group and construct the array element
 
     function getGroupingValuesFromDatum(datum, grouping) {
+      function defaultValue(attributeName) {
+        const value = datum[attributeName] ?? "Not determined"
+        return { value, label: value, sortValue: value }
+      }
+
       switch (grouping) {
         case "Product":
           return { value: datum.productId, label: datum.productTitle, sortValue: datum.productTitle }
@@ -385,11 +308,28 @@ export default function AnalyticsPage({ merchant }) {
           })
           const dateString = format(intervalDate, "do MMM")
           return { value: intervalDate.toString(), label: dateString, sortValue: intervalDate }
+        case "Returning user":
+          const val = datum.isExistingUser ? "Returning user" : "New user"
+          return { value: val, label: val, sortValue: val }
+        case "Location":
+          return defaultValue("locationName")
+        case "Gender":
+          return defaultValue("gender")
+        case "Device type":
+          return defaultValue("deviceType")
+        case "Browser":
+          return defaultValue("browser")
+        case "Platform":
+          return defaultValue("platform")
+        case "Operating system":
+          return defaultValue("os")
         default:
           const value = datum.attributionData ? datum.attributionData[grouping.toLowerCase()] : "None"
           return { value, label: value, sortValue: value }
       }
     }
+
+    console.log(filteredSalesData)
 
     const duplicatedGroupingValueStrings = filteredSalesData.map(datum => {
       const groupingValues = getGroupingValuesFromDatum(datum, grouping)
@@ -402,8 +342,6 @@ export default function AnalyticsPage({ merchant }) {
     const groupingValues = groupingValueStrings.map(str => JSON.parse(str))
 
     const groupedSalesData = groupingValues.map(({ value, label }) => {
-      console.log(value)
-      console.log(getGroupingValuesFromDatum(filteredSalesData[0], grouping).value)
       const groupSalesData = filteredSalesData.filter(datum => getGroupingValuesFromDatum(datum, grouping).value === value)
 
       const { amount, quantity } = groupSalesData.reduce((aggregateData, datum) => {
@@ -462,9 +400,16 @@ export default function AnalyticsPage({ merchant }) {
           <Dropdown value={grouping} onChange={event => setGrouping(event.target.value)} optionList={[
             { value: "Event" },
             { value: "Product" },
+            { value: "Time" },
             { value: "Source" },
             { value: "Campaign" },
-            { value: "Time" }
+            { value: "Returning user" },
+            { value: "Gender" },
+            { value: "Location" },
+            { value: "Browser" },
+            { value: "Device type" },
+            { value: "Platform" },
+            { value: "Operating system" },
           ]} />
           <Spacer y={2} />
         </div>
