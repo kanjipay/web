@@ -315,14 +315,6 @@ export class OrdersController extends BaseController {
         return
       }
 
-      if (!product.isPublished) {
-        const errorMessage = "This ticket hasn't been published yet"
-        next(
-          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
-        )
-        return
-      }
-
       const fetchExistingTickets = db()
         .collection(Collection.TICKET)
         .where("userId", "==", userId)

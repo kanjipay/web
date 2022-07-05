@@ -17,14 +17,6 @@ export default function Product({ merchant, event, user }) {
 
   if (!product) {
     return <LoadingPage />
-  } else if (!product.isPublished) {
-    return (
-      <IconPage
-        Icon={Discover}
-        title="Coming soon"
-        body="The event organiser hasn't published this ticket type yet. Try checking back later."
-      />
-    )
   } else {
     return (
       <Routes>

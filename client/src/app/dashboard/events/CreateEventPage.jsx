@@ -24,6 +24,7 @@ export default function CreateEventPage() {
       startsAt,
       endsAt,
       maxTicketsPerPerson,
+      publishScheduledAt
     } = data
 
     const eventRef = await addDoc(Collection.EVENT.ref, {
@@ -36,6 +37,7 @@ export default function CreateEventPage() {
       endsAt,
       maxTicketsPerPerson: parseInt(maxTicketsPerPerson, 10),
       isPublished: false,
+      publishScheduledAt: publishScheduledAt ?? null
     })
 
     const eventId = eventRef.id
@@ -113,6 +115,14 @@ export default function CreateEventPage() {
                   {
                     name: "maxTicketsPerPerson",
                     input: <IntField maxChars={3} />,
+                  },
+                  {
+                    name: "publishScheduledAt",
+                    label: "Scheduled publish date",
+                    explanation:
+                      "Optionally set the time you want to publish this event to customers.",
+                    input: <DatePicker />,
+                    required: false,
                   },
                 ],
               },

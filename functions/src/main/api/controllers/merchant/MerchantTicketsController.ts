@@ -158,7 +158,6 @@ export class MerchantTicketsController extends BaseController {
       const getProducts = db()
         .collection(Collection.PRODUCT)
         .where("merchantId", "==", merchantId)
-        .where("isPublished", "==", true)
         .get()
 
       const [eventSnapshot, productSnapshot, ordersSnapshot] =
