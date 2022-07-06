@@ -1,7 +1,7 @@
-import OrderItem from "./MerchantOrder";
-import Spacer from "../../../../../components/Spacer";
-import BottomNavBar from "../../../../../components/BottomNavBar";
-import NavBar from "../../../../../components/NavBar";
+import OrderItem from "./MerchantOrder"
+import Spacer from "../../../../../components/Spacer"
+import BottomNavBar from "../../../../../components/BottomNavBar"
+import NavBar from "../../../../../components/NavBar"
 
 function MerchantOrderList({ orderList, menuItems }) {
   return (
@@ -25,7 +25,7 @@ function MerchantOrderList({ orderList, menuItems }) {
         <BottomNavBar />
       </div>
     </div>
-  );
+  )
 }
 
-export default MerchantOrderList;
+export default MerchantOrderList

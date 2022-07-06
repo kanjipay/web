@@ -7,7 +7,7 @@ export async function saveState(additionalData = {}) {
     LocalStorageKeys.MONEYHUB_BANK_ID,
     LocalStorageKeys.CREZCO_BANK_CODE,
     LocalStorageKeys.PSEUDO_USER_ID,
-    LocalStorageKeys.ATTRIBUTION_ITEMS
+    LocalStorageKeys.ATTRIBUTION_ITEMS,
   ]
 
   const localStorageData = localStorageKeys.reduce((currState, key) => {
@@ -15,8 +15,10 @@ export async function saveState(additionalData = {}) {
     return currState
   }, {})
 
-  const stateDoc = await addDoc(Collection.STATE.ref, { localStorageData, additionalData })
-
+  const stateDoc = await addDoc(Collection.STATE.ref, {
+    localStorageData,
+    additionalData,
+  })
 
   console.log("saved state id: ", stateDoc.id)
   const stateId = stateDoc.id
@@ -30,7 +32,9 @@ export async function restoreState(stateId, shouldDelete = true) {
     const docRef = Collection.STATE.docRef(stateId)
     const stateDoc = await getDoc(docRef)
 
-    if (!stateDoc.exists()) { return null }
+    if (!stateDoc.exists()) {
+      return null
+    }
 
     const { localStorageData } = stateDoc.data()
 
@@ -46,5 +50,4 @@ export async function restoreState(stateId, shouldDelete = true) {
   } catch (err) {
     console.log(err)
   }
-  
 }

@@ -15,5 +15,5 @@ export default function Tick({ length = 32, color = "black" }) {
         strokeLinejoin="miter"
       />
     </svg>
-  );
+  )
 }

@@ -19,10 +19,16 @@ export default function Events({ merchant }) {
     )
   }, [merchantId])
 
-  return events ? <Routes>
-    <Route path="/" element={<EventsPage events={events} />} />
-    <Route path="create" element={<CreateEventPage />} />
-    <Route path="e/:eventId/*" element={<Event events={events} merchant={merchant} />} />
-  </Routes> :
-  <LoadingPage />
+  return events ? (
+    <Routes>
+      <Route path="/" element={<EventsPage events={events} />} />
+      <Route path="create" element={<CreateEventPage />} />
+      <Route
+        path="e/:eventId/*"
+        element={<Event events={events} merchant={merchant} />}
+      />
+    </Routes>
+  ) : (
+    <LoadingPage />
+  )
 }

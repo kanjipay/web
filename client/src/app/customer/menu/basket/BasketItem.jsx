@@ -1,43 +1,43 @@
-import { formatCurrency } from "../../../../utils/helpers/money";
-import "./BasketItem.css";
-import IconButton from "../../../../components/IconButton";
-import { ButtonTheme } from "../../../../components/ButtonTheme";
-import Minus from "../../../../assets/icons/Minus";
-import Plus from "../../../../assets/icons/Plus";
-import Cross from "../../../../assets/icons/Cross";
-import useBasket from "./useBasket";
+import { formatCurrency } from "../../../../utils/helpers/money"
+import "./BasketItem.css"
+import IconButton from "../../../../components/IconButton"
+import { ButtonTheme } from "../../../../components/ButtonTheme"
+import Minus from "../../../../assets/icons/Minus"
+import Plus from "../../../../assets/icons/Plus"
+import Cross from "../../../../assets/icons/Cross"
+import useBasket from "./useBasket"
 import {
   AnalyticsEvent,
   AnalyticsManager,
   PageName,
-} from "../../../../utils/AnalyticsManager";
+} from "../../../../utils/AnalyticsManager"
 
 export default function BasketItem({ item, currency, isEditing = false }) {
-  const { changeQuantity, removeItem } = useBasket();
+  const { changeQuantity, removeItem } = useBasket()
 
-  const minQuantity = 1;
-  const maxQuantity = 20;
+  const minQuantity = 1
+  const maxQuantity = 20
 
   const removeBasketItem = () => {
-    removeItem(item);
+    removeItem(item)
     AnalyticsManager.main.logEvent(AnalyticsEvent.REMOVE_FROM_BASKET, {
       itemId: item.id,
       location: PageName.BASKET,
-    });
-  };
+    })
+  }
 
   function changeBasketQuantity(increment) {
-    const quantity = item.quantity + increment;
+    const quantity = item.quantity + increment
     AnalyticsManager.main.logEvent(AnalyticsEvent.CHANGE_BASKET_AMOUNT, {
       itemId: item.id,
       quantity,
       location: PageName.BASKET,
-    });
-    changeQuantity({ itemId: item.id, quantity });
+    })
+    changeQuantity({ itemId: item.id, quantity })
   }
 
-  const incrementQuantity = () => changeBasketQuantity(1);
-  const decrementQuantity = () => changeBasketQuantity(-1);
+  const incrementQuantity = () => changeBasketQuantity(1)
+  const decrementQuantity = () => changeBasketQuantity(-1)
 
   return (
     <div className="BasketItem flex-container">
@@ -82,5 +82,5 @@ export default function BasketItem({ item, currency, isEditing = false }) {
         {formatCurrency(item.price * item.quantity, currency)}
       </div>
     </div>
-  );
+  )
 }

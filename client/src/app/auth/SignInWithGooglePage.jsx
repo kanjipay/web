@@ -1,19 +1,21 @@
-import { getRedirectResult, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import LoadingPage from "../../components/LoadingPage";
+import {
+  getRedirectResult,
+  GoogleAuthProvider,
+  signInWithRedirect,
+} from "firebase/auth"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import LoadingPage from "../../components/LoadingPage"
 import * as base64 from "base-64"
-import IconActionPage from "../../components/IconActionPage";
-import Cross from "../../assets/icons/Cross";
-import { Colors } from "../../enums/Colors";
-import { auth } from "../../utils/FirebaseUtils";
-import { processUserCredential } from "../../utils/services/UsersService";
-import { AnalyticsManager } from "../../utils/AnalyticsManager";
+import IconActionPage from "../../components/IconActionPage"
+import Cross from "../../assets/icons/Cross"
+import { Colors } from "../../enums/Colors"
+import { auth } from "../../utils/FirebaseUtils"
+import { processUserCredential } from "../../utils/services/UsersService"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
 
 export default function SignInWithGooglePage() {
-  useEffect(() => {
-
-  })
+  useEffect(() => {})
   const navigate = useNavigate()
   const { search } = useLocation()
 
@@ -29,15 +31,16 @@ export default function SignInWithGooglePage() {
   }
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("GoogleAuth", { isAuthInProgress: isAuthInProgress() })
+    AnalyticsManager.main.viewPage("GoogleAuth", {
+      isAuthInProgress: isAuthInProgress(),
+    })
   })
 
   useEffect(() => {
     console.log("google page useEffect. isAuthInProgess: ", isAuthInProgress())
     if (isAuthInProgress()) {
-
       getRedirectResult(auth)
-        .then(credential => {
+        .then((credential) => {
           if (credential) {
             const displayName = credential?.user?.displayName
 
@@ -48,7 +51,7 @@ export default function SignInWithGooglePage() {
               const names = displayName.split(" ")
 
               if (names.length >= 2) {
-                [firstName, lastName] = names
+                ;[firstName, lastName] = names
               } else {
                 firstName = displayName ?? ""
               }
@@ -60,25 +63,25 @@ export default function SignInWithGooglePage() {
             })
           } else {
             localStorage.setItem(isAuthInProgressKey, "false")
-            
+
             setError({
               title: "Something went wrong",
-              body: "We're sorry, but we couldn't log you in. Try checking back later."
+              body: "We're sorry, but we couldn't log you in. Try checking back later.",
             })
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error)
           localStorage.setItem(isAuthInProgressKey, "false")
           setError({
             title: "Something went wrong",
-            body: "We're sorry, but we couldn't log you in. Try checking back later."
+            body: "We're sorry, but we couldn't log you in. Try checking back later.",
           })
         })
     } else {
       localStorage.setItem(isAuthInProgressKey, "true")
-      const provider = new GoogleAuthProvider();
-      provider.addScope('email');
+      const provider = new GoogleAuthProvider()
+      provider.addScope("email")
       signInWithRedirect(auth, provider)
     }
   }, [navigate, successPath, successState])
@@ -88,15 +91,17 @@ export default function SignInWithGooglePage() {
   }
 
   if (error) {
-    return <IconActionPage
-      Icon={Cross}
-      iconBackgroundColor={Colors.RED_LIGHT}
-      iconForegroundColor={Colors.RED}
-      title={error.title}
-      body={error.body}
-      primaryActionTitle="Try another way"
-      primaryAction={handleTryAnotherWay}
-    />
+    return (
+      <IconActionPage
+        Icon={Cross}
+        iconBackgroundColor={Colors.RED_LIGHT}
+        iconForegroundColor={Colors.RED}
+        title={error.title}
+        body={error.body}
+        primaryActionTitle="Try another way"
+        primaryAction={handleTryAnotherWay}
+      />
+    )
   } else {
     return <LoadingPage message="Signing you in" />
   }

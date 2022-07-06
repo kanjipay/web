@@ -4,12 +4,14 @@ import merchantTicketsRoutes from "./merchantTicketsRoutes"
 import { AllowedSchema } from "express-json-validator-middleware"
 import { validate } from "../../../../shared/utils/validate"
 import merchantUsersRoutes from "./merchantUsersRoutes"
+import merchantEventAttendeesRoutes from "./merchantEventAttendeesRoutes"
 
 const merchantController = new MerchantController()
 const merchantRoutes = Router({ mergeParams: true })
 
 merchantRoutes.use("/tickets", merchantTicketsRoutes)
 merchantRoutes.use("/users", merchantUsersRoutes)
+merchantRoutes.use("/eventAttendees", merchantEventAttendeesRoutes)
 
 const addCrezcoUserIdSchema: AllowedSchema = {
   type: "object",

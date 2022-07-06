@@ -1,17 +1,17 @@
 export function formatCurrency(int, currencyCode = "GBP") {
-  return getCurrencySymbol(currencyCode) + (int / 100).toFixed(2).toString();
+  return getCurrencySymbol(currencyCode) + (int / 100).toFixed(2).toString()
 }
 
 const languageCodeToCurrencyCode = {
   "en-gb": "GBP",
   "en-ie": "EUR",
-  "en": "GBP"
+  en: "GBP",
 }
 
 const languageCodeToCountryCode = {
   "en-gb": "GB",
   "en-ie": "IE",
-  "en": "GB"
+  en: "GB",
 }
 
 export function getCountryCode(languageCode) {
@@ -19,11 +19,11 @@ export function getCountryCode(languageCode) {
 }
 
 const currencyCodeToCurrencySymbol = {
-  "GBP": "£",
-  "EUR": "€"
+  GBP: "£",
+  EUR: "€",
 }
 
-export function getCurrencySymbol(currencyCode) { 
+export function getCurrencySymbol(currencyCode) {
   return currencyCodeToCurrencySymbol[currencyCode.toUpperCase()] ?? ""
 }
 

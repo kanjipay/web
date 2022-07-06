@@ -1,4 +1,4 @@
-import SecureNavBar from "./SecureNavBar";
+import SecureNavBar from "./SecureNavBar"
 
 export default function EventsAppNavBar({
   showsBackButton = true,
@@ -21,8 +21,8 @@ export default function EventsAppNavBar({
     rightElements,
     transparentDepth,
     opaqueDepth,
-    profilePath: "/events/s/tickets"
+    profilePath: "/events/s/tickets",
   }
-  
+
   return <SecureNavBar {...props} />
 }

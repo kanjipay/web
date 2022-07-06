@@ -92,12 +92,15 @@ service cloud.firestore {
       	isAdminForMerchant(existingData().merchantId) && 
         (
           hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity"]) ||
-          (!existingData().isPublished && !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"]))
+          (
+            !get(/databases/$(database)/documents/Event/$(existingData().eventId)).isPublished && 
+            !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"])
+          )
         )
       )
       allow delete: if (
         isAdminForMerchant(existingData().merchantId) &&
-        !existingData().isPublished
+        !get(/databases/$(database)/documents/Event/$(existingData().eventId)).isPublished
       );
     }
     

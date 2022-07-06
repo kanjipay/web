@@ -1,7 +1,7 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import Button from "./Button";
+import * as React from "react"
+import Box from "@mui/material/Box"
+import TextField from "@mui/material/TextField"
+import Button from "./Button"
 export default function BasicTextFields({
   title,
   setPassword,
@@ -38,5 +38,5 @@ export default function BasicTextFields({
 
       <Button title={title} handleAction={handleAction} />
     </div>
-  );
+  )
 }

@@ -1,4 +1,4 @@
-import { Colors } from "../enums/Colors";
+import { Colors } from "../enums/Colors"
 
 export default function CircleIcon({
   Icon,
@@ -17,7 +17,7 @@ export default function CircleIcon({
     alignItems: "center",
     justifyContent: "center",
     ...style,
-  };
+  }
 
   return (
     <div style={backgroundStyle} {...props}>
@@ -27,5 +27,5 @@ export default function CircleIcon({
         style={{ height: length, width: length, objectFit: "contain" }}
       />
     </div>
-  );
+  )
 }

@@ -1,73 +1,72 @@
-import { useState } from "react";
-import TextField from "../../../../../components/Input";
-import NavBar from "../../../../../components/NavBar";
-import Spacer from "../../../../../components/Spacer";
-import MainButton from "../../../../../components/MainButton";
-import { validateEmail } from "../../../../../utils/helpers/validation";
+import { useState } from "react"
+import TextField from "../../../../../components/Input"
+import NavBar from "../../../../../components/NavBar"
+import Spacer from "../../../../../components/Spacer"
+import MainButton from "../../../../../components/MainButton"
+import { validateEmail } from "../../../../../utils/helpers/validation"
 import {
   fetchSignInMethodsForEmail,
   signInWithEmailAndPassword,
-} from "firebase/auth";
-import { Authentication } from "../../../../../utils/services/FirestoreAuth";
-import { useNavigate } from "react-router-dom";
-import ResultBanner, { ResultType } from "../../../../../components/ResultBanner";
-import { Colors } from "../../../../../enums/Colors";
+} from "firebase/auth"
+import { Authentication } from "../../../../../utils/services/FirestoreAuth"
+import { useNavigate } from "react-router-dom"
+import ResultBanner, {
+  ResultType,
+} from "../../../../../components/ResultBanner"
+import { Colors } from "../../../../../enums/Colors"
 
 function MerchantLogin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [validEmail, setValidEmail] = useState(false);
-  const [showPasswordInput, setShowPasswordInput] = useState(false);
-  const [wrongPassword, setWrongPassword] = useState(false);
-  let navigate = useNavigate();
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [validEmail, setValidEmail] = useState(false)
+  const [showPasswordInput, setShowPasswordInput] = useState(false)
+  const [wrongPassword, setWrongPassword] = useState(false)
+  let navigate = useNavigate()
 
-  const auth = Authentication();
+  const auth = Authentication()
 
   function handleEmailFieldChange(event) {
-    setEmail(event.target.value);
-    setValidEmail(validateEmail(email));
+    setEmail(event.target.value)
+    setValidEmail(validateEmail(email))
   }
   function handlePasswordFieldChange(event) {
-    setPassword(event.target.value);
+    setPassword(event.target.value)
   }
 
   function handleEmailSubmission() {
-    setIsLoading(true);
+    setIsLoading(true)
     fetchSignInMethodsForEmail(auth, email)
       .then((response) => {
-        setIsLoading(false);
+        setIsLoading(false)
         if (response.includes("password")) {
-          setShowPasswordInput(true);
+          setShowPasswordInput(true)
         } else if (response.length > 0) {
-          console.log("Unsupported account, please contact support");
+          console.log("Unsupported account, please contact support")
         } else {
-          navigate("/merchant/signup");
+          navigate("/merchant/signup")
         }
       })
       .catch((err) => {
-        setIsLoading(false);
-        console.log("Error", err);
-      });
+        setIsLoading(false)
+        console.log("Error", err)
+      })
   }
 
   function handlePasswordSubmission() {
-    setIsLoading(true);
+    setIsLoading(true)
     signInWithEmailAndPassword(auth, email, password)
       .then((response) => {
-        setIsLoading(false);
-        setWrongPassword(false);
-        localStorage.setItem(
-          "Auth_Token",
-          response._tokenResponse.refreshToken
-        );
-        navigate("/merchant/dashboard");
+        setIsLoading(false)
+        setWrongPassword(false)
+        localStorage.setItem("Auth_Token", response._tokenResponse.refreshToken)
+        navigate("/merchant/dashboard")
       })
       .catch((err) => {
-        setIsLoading(false);
-        setWrongPassword(true);
-        console.log("Authentication error");
-      });
+        setIsLoading(false)
+        setWrongPassword(true)
+        console.log("Authentication error")
+      })
   }
 
   return (
@@ -145,7 +144,7 @@ function MerchantLogin() {
         ></MainButton>
       </div>
     </div>
-  );
+  )
 }
 
-export default MerchantLogin;
+export default MerchantLogin

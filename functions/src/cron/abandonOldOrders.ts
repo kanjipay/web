@@ -45,6 +45,6 @@ export const abandonOldOrders = async (context) => {
 
     await batch.commit()
   } catch (err) {
-    logger.log(err)
+    logger.error(err)
   }
 }

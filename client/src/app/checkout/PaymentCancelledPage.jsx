@@ -1,6 +1,6 @@
-import Back from "../../assets/icons/Back";
-import { PageName } from "../../utils/AnalyticsManager";
-import PaymentUnsuccessfulPage from "./PaymentUnsuccessfulPage";
+import Back from "../../assets/icons/Back"
+import { PageName } from "../../utils/AnalyticsManager"
+import PaymentUnsuccessfulPage from "./PaymentUnsuccessfulPage"
 
 export default function PaymentCancelledPage({ order }) {
   return (
@@ -11,5 +11,5 @@ export default function PaymentCancelledPage({ order }) {
       pageName={PageName.PAYMENT_CANCELLED}
       order={order}
     />
-  );
+  )
 }
