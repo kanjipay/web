@@ -41,5 +41,16 @@ describe("Payment attempts", () => {
   after(async () => {
     await db.collection(Collection.ORDER).doc(orderIdCrezco).delete()
     await db.collection(Collection.ORDER).doc(orderIdStripe).delete()
+    const TestPayments = await db
+      .collection(Collection.PAYMENT_ATTEMPT)
+      .where("deviceId", "==", "123")
+      .get()
+    TestPayments.forEach(
+      async (paymentAttempt) =>
+        await db
+          .collection(Collection.PAYMENT_ATTEMPT)
+          .doc(paymentAttempt.id)
+          .delete()
+    )
   })
 })
