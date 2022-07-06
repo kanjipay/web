@@ -5,7 +5,6 @@ import { db } from "../../utils/admin"
 import Collection from "../../../src/shared/enums/Collection"
 import { openNewPage } from "../utils/browser"
 import { uploadImage } from "../utils/puppeteer"
-import { fetchDocumentsInArray } from "../../../src/cron/deleteTicketsForIncompletePayments"
 
 require("dotenv").config()
 

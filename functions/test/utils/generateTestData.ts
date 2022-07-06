@@ -5,7 +5,12 @@ import { addHours } from "date-fns"
 
 export async function createMerchant(
   merchantId: string,
-  { currency = "GBP", customerFee = 0.1, approvalStatus = "APPROVED" } = {}
+  {
+    currency = "GBP",
+    customerFee = 0.1,
+    approvalStatus = "APPROVED",
+    addCrezcoId = true,
+  } = {}
 ) {
   const name = `test merchant`
 
@@ -26,9 +31,11 @@ export async function createMerchant(
       testData: true,
       sortCode: "000000",
       accountNumber: "12341234",
-      crezco: {
-        userId: "6c8a6c40-b2eb-4538-b833-8d24a86208ff",
-      },
+      ...(addCrezcoId && {
+        crezco: {
+          userId: "6c8a6c40-b2eb-4538-b833-8d24a86208ff",
+        },
+      }),
       stripe: {
         accountId: "acct_1L8MJV2Yi582Wuz1",
         status: StripeStatus.CHARGES_ENABLED,
@@ -97,4 +104,80 @@ export async function createProduct(
       description: "Some description",
       testData: true,
     })
+}
+
+export async function createLink(
+  ticketId: string,
+  wasUsed: boolean,
+  expiresAt
+) {
+  await db.collection(Collection.LINK).doc(ticketId).create({
+    createdAt: new Date(),
+    expiresAt: expiresAt,
+    path: "/myPath",
+    stateid: "abc123",
+    wasUsed: wasUsed,
+  })
+}
+
+export async function createUser(userId: string) {
+  await db.collection(Collection.USER).doc(userId).create({
+    email: "test@test.com",
+    firstName: "test",
+    lastName: "test",
+    marketingConsentStatus: "APPROVED",
+  })
+}
+
+export async function createTicket(
+  ticketId: string,
+  userId: string,
+  eventId: string,
+  merchantId: string
+) {
+  await db.collection(Collection.TICKET).doc(ticketId).create({
+    createdAt: new Date(),
+    eventEndsAt: new Date(),
+    eventId: eventId,
+    hash: "1234",
+    merchantId,
+    orderId: "1234",
+    productId: "1234",
+    userId,
+    wasUsed: false,
+  })
+}
+
+export async function createMembership(
+  merchantId: string,
+  userId: string,
+  membershipId: string
+) {
+  await db.collection(Collection.MEMBERSHIP).doc(membershipId).create({
+    merchantId,
+    userId,
+    merchantName: "Test",
+    role: "ADMIN",
+    lastUsedAt: new Date(),
+  })
+}
+
+export async function createTicketOrder(
+  orderId: string,
+  total: number,
+  merchantId: string
+) {
+  await db.collection(Collection.ORDER).doc(orderId).create({
+    createdAt: new Date(),
+    currency: "GBP",
+    customerFee: 0.1,
+    deviceId: "123-abc",
+    eventId: "test",
+    merchantId,
+    status: "PENDING",
+    total,
+    type: "TICKETS",
+    userId: "test",
+    wereTicketsCreated: false,
+  })
 }
