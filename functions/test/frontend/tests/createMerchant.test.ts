@@ -6,6 +6,7 @@ import Collection from "../../../src/shared/enums/Collection"
 import { openNewPage } from "../utils/browser"
 import { uploadImage } from "../utils/puppeteer"
 
+
 require("dotenv").config()
 
 describe("Create merchant", () => {
@@ -87,11 +88,7 @@ describe("Create merchant", () => {
       .where("displayName", "==", "Test merchant")
       .get();
 
-<<<<<<< HEAD
     const merchantIds = merchantsToDelete.docs.map((doc) => doc.id)
-=======
-    const merchantIds = merchantsToDelete.docs.map((doc) => doc.id);
->>>>>>> 4417ad6bfaf759c07a75a9540329100abc3b83bf
 
     const membershipsToDelete = await fetchDocumentsInArray(
       db.collection(Collection.MEMBERSHIP),
@@ -109,12 +106,6 @@ describe("Create merchant", () => {
       batch.delete(db.collection(Collection.MEMBERSHIP).doc(membership.id));
     }
 
-<<<<<<< HEAD
     await batch.commit()
   })
 })
-=======
-    await batch.commit();
-  });
-});
->>>>>>> 4417ad6bfaf759c07a75a9540329100abc3b83bf
