@@ -9,6 +9,7 @@ enum TemplateName {
   TICKET_RECEIPT = "TICKET_RECEIPT",
   MENU_RECEIPT = "MENU_RECEIPT",
   INVITE = "INVITE",
+  TICKET_SALE_ALERT = "TICKET_SALE_ALERT",
 }
 
 async function sendEmail(
@@ -155,4 +156,55 @@ export async function sendTicketReceipt(
   }
 
   return sendEmail(toEmail, TemplateName.TICKET_RECEIPT, data)
+}
+
+export async function sendTicketSaleAlert(
+  toEmail: string,
+  customerName: string,
+  eventTitle: string,
+  productTitle: string,
+  productPrice: number,
+  quantity: number,
+  boughtAt: Date,
+  currency: string,
+  ticketIds: string[],
+  customerFee: number
+) {
+  const logger = new LoggingController("sendTicketReceipt")
+
+  logger.log("Sending ticket sale alert", {
+    toEmail,
+    customerName,
+    eventTitle,
+    productTitle,
+    productPrice,
+    quantity,
+    boughtAt,
+    ticketIds,
+  })
+
+  const fee = formatCurrency(
+    Math.round(productPrice * quantity * customerFee),
+    currency
+  )
+  const total = formatCurrency(
+    Math.round(productPrice * quantity * (1 + customerFee)),
+    currency
+  )
+
+  const data = {
+    customerName,
+    eventTitle,
+    lineItems: [
+      {
+        productTitle,
+        price: formatCurrency(productPrice, currency),
+        quantity,
+      },
+    ],
+    total,
+    fee,
+  }
+
+  return sendEmail(toEmail, TemplateName.TICKET_SALE_ALERT, data)
 }

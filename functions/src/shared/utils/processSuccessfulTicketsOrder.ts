@@ -4,7 +4,7 @@ import { db } from "./admin"
 import LoggingController from "./loggingClient"
 import { v4 as uuid } from "uuid"
 import { fetchDocument } from "./fetchDocument"
-import { sendTicketReceipt } from "./sendEmail"
+import { sendTicketReceipt, sendTicketSaleAlert } from "./sendEmail"
 
 export async function processSuccessfulTicketsOrder(
   merchantId: string,
@@ -69,7 +69,7 @@ export async function processSuccessfulTicketsOrder(
     updateProduct,
   ])
 
-  const { email, firstName } = user
+  const { email, firstName, lastName } = user
   const boughtAt = new Date()
 
   await sendTicketReceipt(
@@ -85,5 +85,24 @@ export async function processSuccessfulTicketsOrder(
     customerFee
   )
 
+  const { sendTicketAlert, contactEmail } = await fetchDocument(
+    Collection.MERCHANT,
+    merchantId
+  )
+  if (sendTicketAlert) {
+    const customerName = firstName + " " + lastName
+    await sendTicketSaleAlert(
+      contactEmail,
+      customerName,
+      eventTitle,
+      productTitle,
+      productPrice,
+      quantity,
+      boughtAt,
+      currency,
+      ticketIds,
+      customerFee
+    )
+  }
   return
 }
