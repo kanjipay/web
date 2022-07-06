@@ -10,7 +10,7 @@ export const cronFunction = async (context) => {
     await Promise.all([
       abandonOldOrders(context),
       deleteTicketsForIncompletePayments(context),
-      publishScheduledEvents(context)
+      publishScheduledEvents(context),
     ])
   } catch (err) {
     logger.error(err)

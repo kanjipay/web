@@ -11,7 +11,7 @@ import LoggingController from "../../../shared/utils/loggingClient"
 import { sendMenuReceiptEmail } from "../../../shared/utils/sendEmail"
 import { v4 as uuid } from "uuid"
 import MerchantStatus from "../../../shared/enums/MerchantStatus"
-import { fetchDocumentsInArray } from '../../../shared/utils/fetchDocumentsInArray'
+import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
 import axios from "axios"
 import { logger } from "firebase-functions/v1"
 
