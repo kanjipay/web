@@ -8,13 +8,13 @@ import { dateFromTimestamp } from "../../../shared/utils/time"
 export class TicketsController extends BaseController {
   index = async (req, res, next) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user.id
 
       const ticketSnapshot = await db()
         .collection(Collection.TICKET)
         .where("userId", "==", userId)
         .limit(1000)
-        .get();
+        .get()
 
       const tickets = ticketSnapshot.docs.map((doc) => {
         const { eventId, productId, createdAt, hash } = doc.data()
@@ -22,7 +22,7 @@ export class TicketsController extends BaseController {
       })
 
       if (tickets.length === 0) {
-        return res.status(200).json({ events: [] });
+        return res.status(200).json({ events: [] })
       }
 
       const eventIds = [...new Set(tickets.map((t) => t.eventId))]
@@ -32,13 +32,13 @@ export class TicketsController extends BaseController {
         db().collection(Collection.EVENT),
         firestore.FieldPath.documentId(),
         eventIds
-      );
+      )
 
       const productDocs = await fetchDocumentsInArray(
         db().collection(Collection.PRODUCT),
         firestore.FieldPath.documentId(),
         productIds
-      );
+      )
 
       const products = productDocs
         .map((doc) => {
@@ -97,7 +97,7 @@ export class TicketsController extends BaseController {
 
       return res.status(200).json({ events })
     } catch (err) {
-      next(err);
+      next(err)
     }
   }
 }

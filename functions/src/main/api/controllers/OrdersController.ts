@@ -29,62 +29,62 @@ enum Gender {
 }
 
 async function getGender(userId: string) {
-  logger.log("Retrieving gender of user", { userId });
-  const { user, userError } = await fetchDocument(Collection.USER, userId);
+  logger.log("Retrieving gender of user", { userId })
+  const { user, userError } = await fetchDocument(Collection.USER, userId)
 
   if (userError) {
-    return [null, userError];
+    return [null, userError]
   }
 
-  logger.log("Retrieved user", { user });
+  logger.log("Retrieved user", { user })
 
-  const { firstName, gender: existingUserGender } = user;
+  const { firstName, gender: existingUserGender } = user
 
-  let gender: Gender;
+  let gender: Gender
 
   if (existingUserGender) {
-    logger.log("Gender exists on user", { existingUserGender });
-    gender = existingUserGender;
+    logger.log("Gender exists on user", { existingUserGender })
+    gender = existingUserGender
   } else {
-    const url = "https://api.genderize.io";
-    logger.log("No gender on user, retrieving from endpoint", { url });
+    const url = "https://api.genderize.io"
+    logger.log("No gender on user, retrieving from endpoint", { url })
     const { data: genderResData } = await axios.get(url, {
       params: {
         name: firstName,
       },
     })
 
-    const { gender: genderFromApi, probability } = genderResData;
+    const { gender: genderFromApi, probability } = genderResData
 
-    logger.log("Got response from gender api", { ...genderResData });
+    logger.log("Got response from gender api", { ...genderResData })
 
     if (probability > 0.95) {
-      gender = genderFromApi === "male" ? Gender.MALE : Gender.FEMALE;
+      gender = genderFromApi === "male" ? Gender.MALE : Gender.FEMALE
     } else {
-      gender = Gender.NOT_DETERMINED;
+      gender = Gender.NOT_DETERMINED
     }
 
-    logger.log("Updating user with gender", { gender, userId });
+    logger.log("Updating user with gender", { gender, userId })
 
     await db().collection(Collection.USER).doc(userId).update({ gender })
   }
 
-  return [gender, null];
+  return [gender, null]
 }
 
 function getUserAgentData(userAgent: any) {
-  let deviceType: DeviceType;
+  let deviceType: DeviceType
 
   const { browser, platform, os, isMobile, isDesktop, isTablet } = userAgent
 
   if (isMobile) {
-    deviceType = DeviceType.MOBILE;
+    deviceType = DeviceType.MOBILE
   } else if (isTablet) {
-    deviceType = DeviceType.TABLET;
+    deviceType = DeviceType.TABLET
   } else if (isDesktop) {
-    deviceType = DeviceType.DESKTOP;
+    deviceType = DeviceType.DESKTOP
   } else {
-    deviceType = DeviceType.OTHER;
+    deviceType = DeviceType.OTHER
   }
 
   return {
@@ -96,18 +96,18 @@ function getUserAgentData(userAgent: any) {
 }
 
 async function getLocationData(ip: string) {
-  logger.log("Getting location from ip", { ip });
+  logger.log("Getting location from ip", { ip })
 
   const { ipGeolocation: existingIpGeolocation } = await fetchDocument(
     Collection.IP_GEOLOCATION,
     ip
   )
 
-  let ipGeolocation: any;
+  let ipGeolocation: any
 
   if (existingIpGeolocation) {
-    logger.log("Found existing geolocation data for ip");
-    ipGeolocation = existingIpGeolocation;
+    logger.log("Found existing geolocation data for ip")
+    ipGeolocation = existingIpGeolocation
   } else {
     logger.log("No existing data for ip, calling geolocation from ip endpoint")
     const { data: geolocationResData } = await axios.get(
@@ -123,13 +123,13 @@ async function getLocationData(ip: string) {
     const { latitude: latitudeString, longitude: longitudeString } =
       geolocationResData
 
-    logger.log("Got location from ip", { latitudeString, longitudeString });
+    logger.log("Got location from ip", { latitudeString, longitudeString })
 
-    const latitude = parseFloat(latitudeString);
-    const longitude = parseFloat(longitudeString);
-    const coordinates = new firestore.GeoPoint(latitude, longitude);
+    const latitude = parseFloat(latitudeString)
+    const longitude = parseFloat(longitudeString)
+    const coordinates = new firestore.GeoPoint(latitude, longitude)
 
-    logger.log("Calling reverse geocoding endpoint");
+    logger.log("Calling reverse geocoding endpoint")
 
     const { data: geocodingResData } = await axios.get(
       "https://maps.googleapis.com/maps/api/geocode/json",
@@ -141,7 +141,7 @@ async function getLocationData(ip: string) {
       }
     )
 
-    logger.log("Got geocoding data", { ...geocodingResData });
+    logger.log("Got geocoding data", { ...geocodingResData })
 
     const relevantLocationTypes = [
       "neighborhood",
@@ -158,35 +158,35 @@ async function getLocationData(ip: string) {
       .filter((addressComponents) => addressComponents.length > 0)
       .reduce((selectedAddressComponents, addressComponents) => {
         if (addressComponents.length > selectedAddressComponents.length) {
-          return addressComponents;
+          return addressComponents
         } else {
-          return selectedAddressComponents;
+          return selectedAddressComponents
         }
       }, [])
       .map((addressComponent) => addressComponent.long_name)
       .slice(0, 2)
-      .join(", ");
+      .join(", ")
 
-    logger.log("Imputed location name", { locationName });
+    logger.log("Imputed location name", { locationName })
 
     const geolocationData = {
       locationName,
       coordinates,
     }
 
-    logger.log("Saving data to IP geolocation object", { geolocationData });
+    logger.log("Saving data to IP geolocation object", { geolocationData })
 
     await db()
       .collection(Collection.IP_GEOLOCATION)
       .doc(ip)
-      .set(geolocationData);
+      .set(geolocationData)
 
-    ipGeolocation = geolocationData;
+    ipGeolocation = geolocationData
   }
 
-  const { coordinates, locationName } = ipGeolocation;
+  const { coordinates, locationName } = ipGeolocation
 
-  return { coordinates, locationName };
+  return { coordinates, locationName }
 }
 
 async function isExistingUser(userId: string, merchantId: string) {
@@ -195,18 +195,18 @@ async function isExistingUser(userId: string, merchantId: string) {
     .where("userId", "==", userId)
     .where("merchantId", "==", merchantId)
     .where("status", "in", [OrderStatus.PAID, OrderStatus.FULFILLED])
-    .get();
+    .get()
 
-  return paidOrderSnapshot.docs.length > 0;
+  return paidOrderSnapshot.docs.length > 0
 }
 
 export class OrdersController extends BaseController {
   enrich = async (req, res, next) => {
     try {
-      const { orderId } = req.params;
-      const userId: string = req.user.id;
+      const { orderId } = req.params
+      const userId: string = req.user.id
 
-      logger.log("Enriching order data", { orderId, userId });
+      logger.log("Enriching order data", { orderId, userId })
 
       const { order, orderError } = await fetchDocument(
         Collection.ORDER,
@@ -214,11 +214,11 @@ export class OrdersController extends BaseController {
       )
 
       if (orderError) {
-        next(orderError);
-        return;
+        next(orderError)
+        return
       }
 
-      const { merchantId } = order;
+      const { merchantId } = order
 
       const [isExisting, [gender, genderError]] = await Promise.all([
         isExistingUser(userId, merchantId),
@@ -226,15 +226,15 @@ export class OrdersController extends BaseController {
       ])
 
       if (genderError) {
-        next(genderError);
-        return;
+        next(genderError)
+        return
       }
 
-      logger.log("Imputed gender from user's name", { gender });
+      logger.log("Imputed gender from user's name", { gender })
 
-      const userAgentData = getUserAgentData(req.useragent);
+      const userAgentData = getUserAgentData(req.useragent)
 
-      logger.log("Got data from user agent", { ...userAgentData });
+      logger.log("Got data from user agent", { ...userAgentData })
 
       const orderUpdate = {
         gender,
@@ -246,31 +246,31 @@ export class OrdersController extends BaseController {
         req.headers["x-appengine-user-ip"] ?? req.headers["x-forwarded-for"]
 
       if (ip) {
-        const { coordinates, locationName } = await getLocationData(ip);
-        orderUpdate["coordinates"] = coordinates;
-        orderUpdate["locationName"] = locationName;
+        const { coordinates, locationName } = await getLocationData(ip)
+        orderUpdate["coordinates"] = coordinates
+        orderUpdate["locationName"] = locationName
       }
 
-      logger.log("Updating order with data", { sessionData: orderUpdate });
+      logger.log("Updating order with data", { sessionData: orderUpdate })
 
       await db().collection(Collection.ORDER).doc(orderId).update({
         sessionData: orderUpdate,
       })
 
-      logger.log("Order updated");
+      logger.log("Order updated")
 
-      return res.sendStatus(200);
+      return res.sendStatus(200)
     } catch (err) {
-      next(err);
+      next(err)
     }
-  };
+  }
 
   createWithTickets = async (req, res, next) => {
     try {
-      const logger = new LoggingController("Create ticket order");
+      const logger = new LoggingController("Create ticket order")
 
-      const userId = req.user.id;
-      const { productId, quantity, deviceId, attributionData } = req.body;
+      const userId = req.user.id
+      const { productId, quantity, deviceId, attributionData } = req.body
       logger.log("Read initial variables", {
         userId,
         productId,
@@ -284,8 +284,8 @@ export class OrdersController extends BaseController {
       )
 
       if (productError) {
-        next(productError);
-        return;
+        next(productError)
+        return
       }
 
       const {
@@ -298,7 +298,7 @@ export class OrdersController extends BaseController {
         title,
       } = product
 
-      logger.log("Got product", { product });
+      logger.log("Got product", { product })
 
       if (soldCount + reservedCount + quantity >= capacity) {
         const errorMessage = "This ticket is sold out."
@@ -318,7 +318,7 @@ export class OrdersController extends BaseController {
         .collection(Collection.TICKET)
         .where("userId", "==", userId)
         .where("eventId", "==", eventId)
-        .get();
+        .get()
 
       const [
         { event, eventError },
@@ -332,12 +332,12 @@ export class OrdersController extends BaseController {
 
       for (const error of [eventError, merchantError]) {
         if (error) {
-          next(eventError);
-          return;
+          next(eventError)
+          return
         }
       }
 
-      const currentTicketCount = existingTicketDocs.docs.length;
+      const currentTicketCount = existingTicketDocs.docs.length
 
       logger.log("Got event, merchant and existing tickets", {
         event,
@@ -345,7 +345,7 @@ export class OrdersController extends BaseController {
         currentTicketCount,
       })
 
-      const { maxTicketsPerPerson, endsAt } = event;
+      const { maxTicketsPerPerson, endsAt } = event
 
       if (!event.isPublished) {
         const errorMessage = "This event hasn't been published yet"
@@ -356,12 +356,12 @@ export class OrdersController extends BaseController {
       }
 
       if (currentTicketCount + quantity > maxTicketsPerPerson) {
-        let errorMessage: string;
+        let errorMessage: string
 
         if (currentTicketCount > 0) {
-          errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person. You currently have ${currentTicketCount} and tried to order ${quantity}.`;
+          errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person. You currently have ${currentTicketCount} and tried to order ${quantity}.`
         } else {
-          errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person.`;
+          errorMessage = `You can only order ${maxTicketsPerPerson} tickets per person.`
         }
 
         logger.log("Order violates max tickets per person policy", {
@@ -380,9 +380,9 @@ export class OrdersController extends BaseController {
         merchant.emailDomain ?? event.emailDomain ?? product.emailDomain
 
       if (emailDomain) {
-        logger.log("Got required email domain for ticket: ", emailDomain);
+        logger.log("Got required email domain for ticket: ", emailDomain)
 
-        const { email } = req.user;
+        const { email } = req.user
 
         logger.log("Checking email domain", {
           emailDomain,
@@ -401,10 +401,10 @@ export class OrdersController extends BaseController {
           return
         }
       } else {
-        logger.log("No required email domain found for ticket");
+        logger.log("No required email domain found for ticket")
       }
 
-      const { currency, customerFee } = merchant;
+      const { currency, customerFee } = merchant
 
       const total = Math.round(price * quantity * (1 + customerFee))
 
@@ -416,7 +416,7 @@ export class OrdersController extends BaseController {
       })
       const orderId = uuid()
 
-      const isFree = total === 0;
+      const isFree = total === 0
 
       const orderData = {
         createdAt: firestore.FieldValue.serverTimestamp(),
@@ -444,15 +444,15 @@ export class OrdersController extends BaseController {
       }
 
       if (attributionData) {
-        orderData["attributionData"] = attributionData;
+        orderData["attributionData"] = attributionData
       }
 
-      logger.log("Formulated order data", { orderData });
+      logger.log("Formulated order data", { orderData })
 
-      const promises: Promise<any>[] = [];
+      const promises: Promise<any>[] = []
 
       if (isFree) {
-        logger.log("Event is free, processing successful order");
+        logger.log("Event is free, processing successful order")
 
         promises.push(
           processSuccessfulTicketsOrder(
@@ -469,7 +469,7 @@ export class OrdersController extends BaseController {
             quantity,
             customerFee
           )
-        );
+        )
       }
 
       const createOrder = db()
@@ -484,30 +484,30 @@ export class OrdersController extends BaseController {
           reservedCount: firestore.FieldValue.increment(quantity),
         })
 
-      promises.push(createOrder);
-      promises.push(updateProduct);
+      promises.push(createOrder)
+      promises.push(updateProduct)
 
-      logger.log("Formulated order data to save", { orderData });
+      logger.log("Formulated order data to save", { orderData })
 
-      await Promise.all(promises);
+      await Promise.all(promises)
 
-      let redirectPath: string;
+      let redirectPath: string
 
       if (isFree) {
-        redirectPath = `/events/s/orders/${orderId}/confirmation`;
+        redirectPath = `/events/s/orders/${orderId}/confirmation`
       } else if (currency === "EUR") {
-        redirectPath = `/checkout/o/${orderId}/payment-stripe`;
+        redirectPath = `/checkout/o/${orderId}/payment-stripe`
       } else {
-        redirectPath = `/checkout/o/${orderId}/choose-bank`;
+        redirectPath = `/checkout/o/${orderId}/choose-bank`
       }
 
-      logger.log("Function successful", { orderId, redirectPath });
+      logger.log("Function successful", { orderId, redirectPath })
 
-      return res.status(200).json({ orderId, redirectPath });
+      return res.status(200).json({ orderId, redirectPath })
     } catch (err) {
-      next(err);
+      next(err)
     }
-  };
+  }
 
   private async fetchMenuItems(
     requestedItems: { id: string; quantity: number; title: string }[],
@@ -525,7 +525,7 @@ export class OrdersController extends BaseController {
       requestedMenuItemIds
     )
 
-    return menuItems;
+    return menuItems
   }
 
   private checkMenuItemsForErrors(
@@ -573,7 +573,7 @@ export class OrdersController extends BaseController {
       )
     }
 
-    return null;
+    return null
   }
 
   private calculateOrderTotal(
@@ -590,7 +590,7 @@ export class OrdersController extends BaseController {
       return currTotal + item.quantity * price
     }, 0)
 
-    return total;
+    return total
   }
 
   private async generateOrderNumber(
@@ -625,7 +625,7 @@ export class OrdersController extends BaseController {
 
     loggingClient.log("Order number set", {}, { orderNumber })
 
-    return orderNumber;
+    return orderNumber
   }
 
   private generateOrderItems(
@@ -694,8 +694,8 @@ export class OrdersController extends BaseController {
       const { currency } = merchant
 
       if (merchantError) {
-        next(merchantError);
-        return;
+        next(merchantError)
+        return
       }
 
       const menuItems = await this.fetchMenuItems(requestedItems, merchantId)
@@ -705,8 +705,8 @@ export class OrdersController extends BaseController {
       )
 
       if (menuItemError) {
-        next(menuItemError);
-        return;
+        next(menuItemError)
+        return
       }
 
       const total = this.calculateOrderTotal(requestedItems, menuItems)
@@ -734,15 +734,15 @@ export class OrdersController extends BaseController {
 
       loggingClient.log("Order document creation complete", {}, { orderId })
 
-      await this.createOrderItems(orderId, orderItems);
+      await this.createOrderItems(orderId, orderItems)
 
       loggingClient.log("Order subcollection creation complete")
 
       return res.status(200).json({ orderId })
     } catch (err) {
-      next(err);
+      next(err)
     }
-  };
+  }
 
   sendMenuReceipt = async (req, res, next) => {
     try {
@@ -755,11 +755,11 @@ export class OrdersController extends BaseController {
       )
 
       if (orderError) {
-        next(orderError);
-        return;
+        next(orderError)
+        return
       }
 
-      const { merchantId, orderNumber, orderItems, total } = order;
+      const { merchantId, orderNumber, orderItems, total } = order
 
       const { merchant, merchantError } = await fetchDocument(
         Collection.MERCHANT,
@@ -767,11 +767,11 @@ export class OrdersController extends BaseController {
       )
 
       if (merchantError) {
-        next(merchantError);
-        return;
+        next(merchantError)
+        return
       }
 
-      const { displayName, currency } = merchant;
+      const { displayName, currency } = merchant
 
       const sendEmail = sendMenuReceiptEmail(
         email,
@@ -785,13 +785,13 @@ export class OrdersController extends BaseController {
       const updateOrder = db()
         .collection(Collection.ORDER)
         .doc(orderId)
-        .update({ receiptSent: true });
+        .update({ receiptSent: true })
 
       await Promise.all([sendEmail, updateOrder])
 
       return res.sendStatus(200)
     } catch (err) {
-      next(err);
+      next(err)
     }
   }
 }

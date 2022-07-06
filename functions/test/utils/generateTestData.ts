@@ -12,7 +12,7 @@ export async function createMerchant(
     addCrezcoId = true,
   } = {}
 ) {
-  const name = `test merchant`;
+  const name = `test merchant`
 
   await db
     .collection(Collection.MERCHANT)
@@ -103,7 +103,7 @@ export async function createProduct(
       title: `test product`,
       description: "Some description",
       testData: true,
-    });
+    })
 }
 
 export async function createLink(

@@ -14,9 +14,9 @@ export const handleVonageWebhook = async (req, res, next) => {
     // todo send a comment
     // todo parse stop and deactive
     // todo check if number aready exists
-    return res.sendStatus(200);
+    return res.sendStatus(200)
   } catch (err) {
-    console.log(err);
-    return res.sendStatus(500);
+    console.log(err)
+    return res.sendStatus(500)
   }
 }

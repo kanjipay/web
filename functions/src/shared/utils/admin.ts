@@ -7,12 +7,12 @@ let authInstance: admin.auth.Auth | null = null
 let storageInstance: admin.storage.Storage | null = null
 
 function getStorageBucket() {
-  const environment = process.env.ENVIRONMENT;
+  const environment = process.env.ENVIRONMENT
 
   if (environment === Environment.DEV_LOCAL) {
-    return "mercadopay-dev.appspot.com";
+    return "mercadopay-dev.appspot.com"
   } else {
-    return `mercadopay-${environment.toLowerCase()}.appspot.com`;
+    return `mercadopay-${environment.toLowerCase()}.appspot.com`
   }
 }
 

@@ -4,12 +4,12 @@ import { handleCrezcoWebhook } from "./handleCrezcoWebhook"
 import { handleStripeWebhook } from "./handleStripeWebhook"
 import { handleVonageWebhook } from "./handleVonageWebhook"
 
-const mainWebhooksApp = express();
+const mainWebhooksApp = express()
 
-setCors(mainWebhooksApp, true);
+setCors(mainWebhooksApp, true)
 
-mainWebhooksApp.post("/crezco", handleCrezcoWebhook);
-mainWebhooksApp.post("/stripe", handleStripeWebhook);
-mainWebhooksApp.post("/vonage", handleVonageWebhook);
+mainWebhooksApp.post("/crezco", handleCrezcoWebhook)
+mainWebhooksApp.post("/stripe", handleStripeWebhook)
+mainWebhooksApp.post("/vonage", handleVonageWebhook)
 
 export default mainWebhooksApp

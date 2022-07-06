@@ -29,7 +29,7 @@ export async function createMembership(
   const membershipSnapshot = await db()
     .collection(Collection.MEMBERSHIP)
     .where("userId", "==", userId)
-    .get();
+    .get()
 
   const memberships: any[] = membershipSnapshot.docs.map((doc) => ({
     id: doc.id,
@@ -37,10 +37,10 @@ export async function createMembership(
   }))
 
   const claims = memberships.reduce((claims, membership) => {
-    const { role, merchantId } = membership;
-    claims[merchantId] = role;
-    return claims;
-  }, {});
+    const { role, merchantId } = membership
+    claims[merchantId] = role
+    return claims
+  }, {})
 
   await auth().setCustomUserClaims(userId, claims)
 }

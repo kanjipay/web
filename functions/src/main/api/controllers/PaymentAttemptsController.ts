@@ -39,7 +39,7 @@ export class PaymentAttemptsController extends BaseController {
       const logger = new LoggingController("Create payment attempt with stripe")
       const { orderId, deviceId } = req.body
 
-      logger.log("Creating payment attempt with stripe", { orderId, deviceId });
+      logger.log("Creating payment attempt with stripe", { orderId, deviceId })
 
       const { order, orderError } = await fetchDocument(
         Collection.ORDER,
@@ -50,15 +50,15 @@ export class PaymentAttemptsController extends BaseController {
       )
 
       if (orderError) {
-        next(orderError);
-        return;
+        next(orderError)
+        return
       }
 
-      logger.log("Got order", { order });
+      logger.log("Got order", { order })
 
-      const { total, currency, merchantId } = order;
+      const { total, currency, merchantId } = order
 
-      logger.log(`Retrieving merchant with id ${merchantId}`);
+      logger.log(`Retrieving merchant with id ${merchantId}`)
 
       const { merchant, merchantError } = await fetchDocument(
         Collection.MERCHANT,
@@ -66,8 +66,8 @@ export class PaymentAttemptsController extends BaseController {
       )
 
       if (merchantError) {
-        next(merchantError);
-        return;
+        next(merchantError)
+        return
       }
 
       logger.log("Got merchant", { merchant })
@@ -94,7 +94,7 @@ export class PaymentAttemptsController extends BaseController {
         automatic_payment_methods: {
           enabled: true,
         },
-      };
+      }
 
       logger.log("Creating stripe payment intent", {
         stripeAccountId,
@@ -106,11 +106,11 @@ export class PaymentAttemptsController extends BaseController {
         { stripeAccount: stripeAccountId }
       )
 
-      logger.log("Stripe payment intent created", { paymentIntent });
+      logger.log("Stripe payment intent created", { paymentIntent })
 
-      const paymentAttemptId = uuid();
+      const paymentAttemptId = uuid()
 
-      const clientSecret = paymentIntent.client_secret;
+      const clientSecret = paymentIntent.client_secret
 
       const paymentAttemptData = {
         orderId,
@@ -123,7 +123,7 @@ export class PaymentAttemptsController extends BaseController {
         deviceId,
         amount: total,
         currency,
-      };
+      }
 
       logger.log("Creating payment attempt", {
         paymentAttemptData,
@@ -133,21 +133,19 @@ export class PaymentAttemptsController extends BaseController {
       await db()
         .collection(Collection.PAYMENT_ATTEMPT)
         .doc(paymentAttemptId)
-        .set(paymentAttemptData);
+        .set(paymentAttemptData)
 
       logger.log("Payment attempt added")
 
       return res.status(200).json({ clientSecret, stripeAccountId })
     } catch (err) {
-      next(err);
+      next(err)
     }
-  };
+  }
 
   createCrezco = async (req, res, next) => {
     try {
-      const logger = new LoggingController(
-        "Create payment attempt with crezco"
-      );
+      const logger = new LoggingController("Create payment attempt with crezco")
 
       const { orderId, crezcoBankCode, countryCode, deviceId } = req.body
 
@@ -167,11 +165,11 @@ export class PaymentAttemptsController extends BaseController {
       )
 
       if (orderError) {
-        next(orderError);
-        return;
+        next(orderError)
+        return
       }
 
-      const { total, currency, merchantId } = order;
+      const { total, currency, merchantId } = order
 
       logger.log("Got order", { order })
       const { merchant, merchantError } = await fetchDocument(
@@ -179,21 +177,21 @@ export class PaymentAttemptsController extends BaseController {
         merchantId
       )
 
-      logger.log(`Retrieving merchant with id ${merchantId}`);
+      logger.log(`Retrieving merchant with id ${merchantId}`)
 
       if (merchantError) {
-        next(merchantError);
-        return;
+        next(merchantError)
+        return
       }
 
-      logger.log("Got merchant", { merchant });
+      logger.log("Got merchant", { merchant })
 
-      const { crezco, companyName } = merchant;
-      const crezcoUserId = crezco.userId;
+      const { crezco, companyName } = merchant
+      const crezcoUserId = crezco.userId
 
-      const paymentAttemptId = uuid();
+      const paymentAttemptId = uuid()
 
-      logger.log("Created paymentAttemptId", { paymentAttemptId });
+      logger.log("Created paymentAttemptId", { paymentAttemptId })
 
       logger.log("Creating Crezco payment demand", {
         crezcoUserId,
@@ -210,27 +208,27 @@ export class PaymentAttemptsController extends BaseController {
         companyName.replace(/[^a-zA-Z0-9 \.\-]/, ""),
         total,
         currency
-      );
+      )
 
       if (payDemandError) {
-        next(payDemandError);
-        return;
+        next(payDemandError)
+        return
       }
 
-      logger.log("Created crezco paymentDemandId", {}, { paymentDemandId });
+      logger.log("Created crezco paymentDemandId", {}, { paymentDemandId })
       const { redirectUrl, paymentError } = await createPayment(
         crezcoUserId,
         paymentDemandId,
         paymentAttemptId,
         crezcoBankCode,
         countryCode
-      );
+      )
       if (paymentError) {
-        next(paymentError);
-        return;
+        next(paymentError)
+        return
       }
 
-      logger.log("Got crezco redirect url", {}, { redirectUrl });
+      logger.log("Got crezco redirect url", {}, { redirectUrl })
 
       const paymentAttemptData = {
         orderId,
@@ -257,19 +255,19 @@ export class PaymentAttemptsController extends BaseController {
       logger.log("Payment attempt doc added", { paymentAttemptData })
       return res.status(200).json({ redirectUrl })
     } catch (err) {
-      console.log(err.data?.errors);
-      next(err);
+      console.log(err.data?.errors)
+      next(err)
     }
-  };
+  }
 
   checkCrezcoPayment = async (req, res, next) => {
     try {
-      const { paymentAttemptId, paymentDemandId } = req.body;
+      const { paymentAttemptId, paymentDemandId } = req.body
 
-      const crezcoPaymentStatus = await getPaymentStatus(paymentDemandId);
+      const crezcoPaymentStatus = await getPaymentStatus(paymentDemandId)
 
-      const paymentAttemptStatus = crezcoPaymentStatuses[crezcoPaymentStatus];
-      const isPending = paymentAttemptStatus === PaymentAttemptStatus.PENDING;
+      const paymentAttemptStatus = crezcoPaymentStatuses[crezcoPaymentStatus]
+      const isPending = paymentAttemptStatus === PaymentAttemptStatus.PENDING
 
       if (!isPending) {
         const [, error] = await processPaymentUpdate(
@@ -277,14 +275,14 @@ export class PaymentAttemptsController extends BaseController {
           paymentAttemptStatus
         )
         if (error) {
-          next(error);
-          return;
+          next(error)
+          return
         }
       }
 
       return res.status(200).json({ isPending })
     } catch (err) {
-      next(err);
+      next(err)
     }
   }
 }

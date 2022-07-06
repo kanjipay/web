@@ -5,10 +5,10 @@ export function formatCurrency(int: number, currencyCode: string) {
 export function currencySymbol(currencyCode: string) {
   switch (currencyCode) {
     case "GBP":
-      return "£";
+      return "£"
     case "EUR":
-      return "€";
+      return "€"
     default:
-      return "";
+      return ""
   }
 }

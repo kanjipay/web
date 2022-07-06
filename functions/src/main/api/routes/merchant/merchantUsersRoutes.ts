@@ -32,7 +32,7 @@ merchantUsersRoutes.post(
   "/invites",
   validate({ body: sendInvitesSchema }),
   merchantUsersController.sendInvites
-);
+)
 
 merchantUsersRoutes.get("/", merchantUsersController.getUsers)
 

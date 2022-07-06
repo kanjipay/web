@@ -1,9 +1,9 @@
-import { format } from "date-fns";
-import { formatCurrency } from "./formatCurrency";
-import LoggingController from "./loggingClient";
-import { sendgridClient } from "./sendgridClient";
+import { format } from "date-fns"
+import { formatCurrency } from "./formatCurrency"
+import LoggingController from "./loggingClient"
+import { sendgridClient } from "./sendgridClient"
 
-const fromEmail = "team@mercadopay.co";
+const fromEmail = "team@mercadopay.co"
 
 enum TemplateName {
   TICKET_RECEIPT = "TICKET_RECEIPT",
@@ -19,7 +19,7 @@ async function sendEmail(
   const logger = new LoggingController("sendEmail")
   const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
 
-  const templateId = templateIds[templateName];
+  const templateId = templateIds[templateName]
 
   logger.log("Sending email", {
     toEmail,
@@ -44,7 +44,7 @@ export async function sendMenuReceiptEmail(
   total: number,
   currency: string
 ) {
-  const logger = new LoggingController("sendMenuReceipt");
+  const logger = new LoggingController("sendMenuReceipt")
 
   const data = {
     merchantName,
@@ -61,7 +61,7 @@ export async function sendMenuReceiptEmail(
     data,
   })
 
-  return sendEmail(toEmail, TemplateName.MENU_RECEIPT, data);
+  return sendEmail(toEmail, TemplateName.MENU_RECEIPT, data)
 }
 
 export async function sendInvites(
@@ -102,7 +102,7 @@ export async function sendTicketReceipt(
   ticketIds: string[],
   customerFee: number
 ) {
-  const logger = new LoggingController("sendTicketReceipt");
+  const logger = new LoggingController("sendTicketReceipt")
 
   logger.log("Sending ticket receipt", {
     toEmail,
@@ -125,10 +125,10 @@ export async function sendTicketReceipt(
   )
 
   const tickets = ticketIds.map((ticketId, index) => {
-    let ticketNumber = (index + 1).toString();
+    let ticketNumber = (index + 1).toString()
 
     while (ticketNumber.length < 3) {
-      ticketNumber = "0" + ticketNumber;
+      ticketNumber = "0" + ticketNumber
     }
 
     return {

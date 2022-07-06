@@ -10,15 +10,15 @@ import * as userAgent from "express-useragent"
 
 const mainApiApp = express()
 
-setCors(mainApiApp);
+setCors(mainApiApp)
 
-mainApiApp.use(userAgent.express());
+mainApiApp.use(userAgent.express())
 
-mainApiApp.use("/banks", banksRoutes);
-mainApiApp.use("/links", linksRoutes);
-mainApiApp.use("/merchants", merchantsRoutes);
-mainApiApp.use("/tickets", ticketsRoutes);
-mainApiApp.use("/orders", ordersRoutes);
-mainApiApp.use("/payment-attempts", paymentAttemptsRoutes);
+mainApiApp.use("/banks", banksRoutes)
+mainApiApp.use("/links", linksRoutes)
+mainApiApp.use("/merchants", merchantsRoutes)
+mainApiApp.use("/tickets", ticketsRoutes)
+mainApiApp.use("/orders", ordersRoutes)
+mainApiApp.use("/payment-attempts", paymentAttemptsRoutes)
 
 export default mainApiApp

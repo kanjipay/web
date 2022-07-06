@@ -48,7 +48,7 @@ export class MerchantsController extends BaseController {
       const createMerchant = db()
         .collection(Collection.MERCHANT)
         .doc(merchantId)
-        .set(merchantData);
+        .set(merchantData)
 
       await Promise.all([
         createMerchant,

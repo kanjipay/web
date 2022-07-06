@@ -5,7 +5,7 @@ import { publishScheduledEvents } from "./publishScheduledEvents"
 
 export const cronFunction = async (context) => {
   try {
-    logger.log("Running cron function");
+    logger.log("Running cron function")
 
     await Promise.all([
       abandonOldOrders(context),

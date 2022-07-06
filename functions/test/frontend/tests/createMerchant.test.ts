@@ -6,7 +6,6 @@ import Collection from "../../../src/shared/enums/Collection"
 import { openNewPage } from "../utils/browser"
 import { uploadImage } from "../utils/puppeteer"
 
-
 require("dotenv").config()
 
 describe("Create merchant", () => {
@@ -86,7 +85,7 @@ describe("Create merchant", () => {
     const merchantsToDelete = await db
       .collection(Collection.MERCHANT)
       .where("displayName", "==", "Test merchant")
-      .get();
+      .get()
 
     const merchantIds = merchantsToDelete.docs.map((doc) => doc.id)
 
@@ -94,16 +93,16 @@ describe("Create merchant", () => {
       db.collection(Collection.MEMBERSHIP),
       "merchantId",
       merchantIds
-    );
+    )
 
-    const batch = db.batch();
+    const batch = db.batch()
 
     for (const merchantId of merchantIds) {
-      batch.delete(db.collection(Collection.MERCHANT).doc(merchantId));
+      batch.delete(db.collection(Collection.MERCHANT).doc(merchantId))
     }
 
     for (const membership of membershipsToDelete) {
-      batch.delete(db.collection(Collection.MEMBERSHIP).doc(membership.id));
+      batch.delete(db.collection(Collection.MEMBERSHIP).doc(membership.id))
     }
 
     await batch.commit()
