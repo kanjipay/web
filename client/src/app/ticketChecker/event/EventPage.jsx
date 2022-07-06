@@ -6,6 +6,7 @@ import AsyncImage from "../../../components/AsyncImage"
 import { getEventStorageRef } from "../../../utils/helpers/storage"
 import Spinner from "../../../assets/Spinner"
 import { formatCurrency } from "../../../utils/helpers/money"
+import TicketCheckerNavBar from "../TicketCheckerNavBar"
 
 export default function EventPage({ event, products, merchant }) {
   const navigate = useNavigate()
@@ -29,17 +30,21 @@ export default function EventPage({ event, products, merchant }) {
 
   return (
     <div className="container">
+      <TicketCheckerNavBar 
+        title={event.title}
+        backPath="../.."
+      />
+      <Spacer y={6} />
       <AsyncImage
         imageRef={getEventStorageRef(merchantId, eventId, photo)}
         className="headerImage"
         alt={title}
       />
 
-      <Spacer y={4} />
-
       <div className="content">
-        <h1 className="header-l">{event.title}</h1>
         <Spacer y={3} />
+        <h1 className="header-l">{event.title}</h1>
+        <Spacer y={2} />
         {products ? (
           <div>
             <p>Tickets sold: {getSoldCount(products)}</p>

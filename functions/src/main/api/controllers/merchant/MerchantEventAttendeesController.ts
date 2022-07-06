@@ -46,21 +46,22 @@ export class MerchantEventAttendeesController extends BaseController {
       logger.log("products", { orderProducts })
       const ticketDetails = orderDocs.docs.map((doc) => {
         const orderId = doc.id
-        const { createdAt, merchantId, orderItems, total, userId } = doc.data()
+        const { createdAt, merchantId, orderItems, userId } = doc.data()
+        const { eventEndsAt, productId, quantity, title: productTitle } = orderItems[0]
         const { earliestEntryAt, lastestEntryAt, description } =
           orderProducts.find((product) => product.id === productId)
         const { email, firstName, lastName } = orderUsers.find(
           (user) => user.id === userId
         )
-        const { eventEndsAt, productId, quantity } = orderItems[0]
+        
         return {
           createdAt,
           eventEndsAt,
+          productTitle,
           merchantId,
           orderId,
           productId,
           userId,
-          total,
           email,
           firstName,
           lastName,

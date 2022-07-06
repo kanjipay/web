@@ -21,13 +21,12 @@ export default function GuestlistPage() {
     setSearchName(newSearchName)
 
     const filteredData = guestlistData.filter((datum) => {
-      const { firstName, lastName, ticketId } = datum
+      const { firstName, lastName, email } = datum
 
       const name = `${firstName} ${lastName}`
 
       return (
-        name.includes(newSearchName) ||
-        ticketId.replace("-", "").includes(newSearchName.replace("-", ""))
+        name.toLowerCase().includes(newSearchName.toLowerCase()) || email.toLowerCase().includes(newSearchName.toLowerCase())
       )
     })
 
@@ -35,18 +34,17 @@ export default function GuestlistPage() {
   }
 
   useEffect(() => {
-    NetworkManager.get(`/merchants/m/${merchantId}/tickets/guestlist`, {
-      eventId,
-    }).then((res) => {
+    NetworkManager.get(`/merchants/m/${merchantId}/eventAttendees/${eventId}`).then((res) => {
+      console.log(res.data)
       setGuestlistData(res.data)
       setFilteredGuestlistData(res.data)
     })
   }, [eventId, merchantId])
 
-  if (guestlistData) {
+  if (filteredGuestlistData) {
     return (
       <div className="container">
-        <TicketCheckerNavBar title="Guestlist" backPath="../.." />
+        <TicketCheckerNavBar title="Guestlist" backPath=".." />
 
         <div className="content">
           <Spacer y={9} />
@@ -66,7 +64,7 @@ export default function GuestlistPage() {
             <input
               value={searchName}
               onChange={handleSearchNameChange}
-              placeholder="Search name or ticket ID"
+              placeholder="Search name or email"
               style={{
                 flexGrow: 10,
                 height: "100%",
@@ -82,6 +80,7 @@ export default function GuestlistPage() {
               quantity,
               firstName,
               lastName,
+              email,
               ticketId,
               earliestEntryAt,
               latestEntryAt,
@@ -124,10 +123,10 @@ export default function GuestlistPage() {
                   </h4>
                   <Spacer y={2} />
                   <p>{productTitle}</p>
+                  <Spacer y={2} />
+                  <p>Tickets sent to {email}</p>
                   <Spacer y={1} />
                   {entryTimeMessage && <p>{entryTimeMessage}</p>}
-                  <Spacer y={1} />
-                  <p>Ticket ID: {ticketId}</p>
                 </div>
                 <Spacer y={2} />
               </div>
