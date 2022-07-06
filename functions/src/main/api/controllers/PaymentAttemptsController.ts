@@ -172,7 +172,6 @@ export class PaymentAttemptsController extends BaseController {
       const { total, currency, merchantId } = order
 
       logger.log("Got order", { order })
-
       const { merchant, merchantError } = await fetchDocument(
         Collection.MERCHANT,
         merchantId
@@ -202,7 +201,6 @@ export class PaymentAttemptsController extends BaseController {
         total,
         currency,
       })
-
       const { paymentDemandId, payDemandError } = await createPaymentDemand(
         crezcoUserId,
         paymentAttemptId,
@@ -218,7 +216,6 @@ export class PaymentAttemptsController extends BaseController {
       }
 
       logger.log("Created crezco paymentDemandId", {}, { paymentDemandId })
-
       const { redirectUrl, paymentError } = await createPayment(
         crezcoUserId,
         paymentDemandId,
@@ -226,7 +223,6 @@ export class PaymentAttemptsController extends BaseController {
         crezcoBankCode,
         countryCode
       )
-
       if (paymentError) {
         next(paymentError)
         return
@@ -257,7 +253,6 @@ export class PaymentAttemptsController extends BaseController {
         )
 
       logger.log("Payment attempt doc added", { paymentAttemptData })
-
       return res.status(200).json({ redirectUrl })
     } catch (err) {
       console.log(err.data?.errors)
@@ -279,7 +274,6 @@ export class PaymentAttemptsController extends BaseController {
           paymentAttemptId,
           paymentAttemptStatus
         )
-
         if (error) {
           next(error)
           return

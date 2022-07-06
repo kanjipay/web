@@ -1,5 +1,4 @@
 import BaseController from "../../../shared/BaseController"
-import LoggingController from "../../../shared/utils/loggingClient"
 import { v4 as uuid } from "uuid"
 import { db } from "../../../shared/utils/admin"
 import Collection from "../../../shared/enums/Collection"
@@ -8,14 +7,12 @@ import {
   createMembership,
   OrganisationRole,
 } from "../../../shared/utils/membership"
+import { logger } from "firebase-functions/v1"
 
 export class MerchantsController extends BaseController {
   create = async (req, res, next) => {
     try {
       const userId = req.user.id
-
-      const logger = new LoggingController("Merchant Controller")
-
       logger.log("Merchant creation started")
 
       const {
@@ -43,7 +40,6 @@ export class MerchantsController extends BaseController {
         createdAt: firestore.FieldValue.serverTimestamp(),
         approvalStatus: "PENDING",
       }
-
       logger.log("Creating merchant and membership", {
         merchantId,
         merchantData,
@@ -68,6 +64,7 @@ export class MerchantsController extends BaseController {
 
       return res.status(200).json({ merchantId })
     } catch (err) {
+      logger.log(err)
       next(err)
     }
   }

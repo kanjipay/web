@@ -2,7 +2,7 @@ import { logger } from "firebase-functions/v1"
 import Collection from "../shared/enums/Collection"
 import { db } from "../shared/utils/admin"
 
-export const publishScheduledEvents = async context => {
+export const publishScheduledEvents = async (context) => {
   try {
     logger.log("Publishing scheduled events")
 
@@ -12,7 +12,9 @@ export const publishScheduledEvents = async context => {
       .where("isPublished", "==", false)
       .get()
 
-    logger.log("Got events scheduled to be published, publishing them", { eventCount: eventsSnapshot.docs.length })
+    logger.log("Got events scheduled to be published, publishing them", {
+      eventCount: eventsSnapshot.docs.length,
+    })
 
     const batch = db().batch()
 

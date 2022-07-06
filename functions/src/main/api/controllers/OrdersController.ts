@@ -11,7 +11,7 @@ import LoggingController from "../../../shared/utils/loggingClient"
 import { sendMenuReceiptEmail } from "../../../shared/utils/sendEmail"
 import { v4 as uuid } from "uuid"
 import MerchantStatus from "../../../shared/enums/MerchantStatus"
-import { fetchDocumentsInArray } from "../../../cron/deleteTicketsForIncompletePayments"
+import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
 import axios from "axios"
 import { logger } from "firebase-functions/v1"
 
@@ -271,7 +271,6 @@ export class OrdersController extends BaseController {
 
       const userId = req.user.id
       const { productId, quantity, deviceId, attributionData } = req.body
-
       logger.log("Read initial variables", {
         userId,
         productId,
