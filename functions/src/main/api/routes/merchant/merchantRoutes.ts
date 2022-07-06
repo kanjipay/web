@@ -5,30 +5,36 @@ import { AllowedSchema } from "express-json-validator-middleware";
 import { validate } from "../../../../shared/utils/validate";
 import merchantUsersRoutes from "./merchantUsersRoutes";
 
-const merchantController = new MerchantController()
+const merchantController = new MerchantController();
 const merchantRoutes = Router({ mergeParams: true });
 
-merchantRoutes.use("/tickets", merchantTicketsRoutes)
-merchantRoutes.use("/users", merchantUsersRoutes)
+merchantRoutes.use("/tickets", merchantTicketsRoutes);
+merchantRoutes.use("/users", merchantUsersRoutes);
 
 const addCrezcoUserIdSchema: AllowedSchema = {
   type: "object",
   required: ["crezcoUserId"],
   properties: {
     crezcoUserId: {
-      type: "string"
-    }
-  }
-}
+      type: "string",
+    },
+  },
+};
 
 merchantRoutes.put(
   "/crezco",
   validate({ body: addCrezcoUserIdSchema }),
   merchantController.addCrezcoUserId
-)
+);
 
-merchantRoutes.post("/create-stripe-account-link", merchantController.createStripeAccountLink)
+merchantRoutes.post(
+  "/create-stripe-account-link",
+  merchantController.createStripeAccountLink
+);
 
-merchantRoutes.put("/update-stripe-status", merchantController.updateStripeStatusIfNeeded)
+merchantRoutes.put(
+  "/update-stripe-status",
+  merchantController.updateStripeStatusIfNeeded
+);
 
 export default merchantRoutes;

@@ -14,59 +14,59 @@ const createCrezcoPaymentAttemptSchema: AllowedSchema = {
       type: "string",
     },
     crezcoBankCode: {
-      type: "string"
+      type: "string",
     },
     countryCode: {
-      type: "string"
+      type: "string",
     },
     deviceId: {
-      type: "string"
+      type: "string",
     },
   },
-}
+};
 
 paymentAttemptsRoutes.post(
   "/crezco",
   validate({ body: createCrezcoPaymentAttemptSchema }),
   paymentAttemptsController.createCrezco
-)
+);
 
 const checkCrezcoSchema: AllowedSchema = {
   type: "object",
   required: ["paymentAttemptId", "paymentDemandId"],
   properties: {
     paymentAttemptId: {
-      type: "string"
+      type: "string",
     },
     paymentDemandId: {
-      type: "string"
-    }
-  }
-}
+      type: "string",
+    },
+  },
+};
 
 paymentAttemptsRoutes.post(
   "/crezco/check",
   validate({ body: checkCrezcoSchema }),
   paymentAttemptsController.checkCrezcoPayment
-)
+);
 
 const createStripePaymentAttemptSchema: AllowedSchema = {
   type: "object",
   required: ["orderId", "deviceId"],
   properties: {
     orderId: {
-      type: "string"
+      type: "string",
     },
     deviceId: {
-      type: "string"
-    }
-  }
-}
+      type: "string",
+    },
+  },
+};
 
 paymentAttemptsRoutes.post(
   "/stripe",
   validate({ body: createStripePaymentAttemptSchema }),
   paymentAttemptsController.createStripe
-)
+);
 
 export default paymentAttemptsRoutes;

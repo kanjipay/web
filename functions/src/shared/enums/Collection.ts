@@ -23,7 +23,7 @@ enum Collection {
   PRODUCT = "Product",
   EVENT = "Event",
   USER = "User",
-  MEMBERSHIP = "Membership"
+  MEMBERSHIP = "Membership",
 }
 
 export default Collection;

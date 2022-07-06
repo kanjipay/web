@@ -2,7 +2,7 @@ import { firestore } from "firebase-admin";
 import Collection from "../enums/Collection";
 import { db } from "./admin";
 import LoggingController from "./loggingClient";
-import { v4 as uuid } from "uuid" 
+import { v4 as uuid } from "uuid";
 import { fetchDocument } from "./fetchDocument";
 import { sendTicketReceipt } from "./sendEmail";
 
@@ -20,16 +20,16 @@ export async function processSuccessfulTicketsOrder(
   quantity: number,
   customerFee: number
 ) {
-  const logger = new LoggingController("processSuccessfulTicketsOrder")
+  const logger = new LoggingController("processSuccessfulTicketsOrder");
 
-  logger.log("Creating tickets", { quantity })
+  logger.log("Creating tickets", { quantity });
 
-  const ticketIds = []
-  const batch = db().batch()
+  const ticketIds = [];
+  const batch = db().batch();
 
   for (let i = 0; i < quantity; i++) {
-    const ticketId = uuid()
-    ticketIds.push(ticketId)
+    const ticketId = uuid();
+    ticketIds.push(ticketId);
 
     const ticketData = {
       createdAt: firestore.FieldValue.serverTimestamp(),
@@ -40,54 +40,50 @@ export async function processSuccessfulTicketsOrder(
       userId,
       orderId,
       wasUsed: false,
-    }
+    };
 
     if (i == 0) {
       logger.log("Generated ticket data", {
         ticketData,
-        quantity
-      })
+        quantity,
+      });
     }
 
-    const ticketRef = db()
-      .collection(Collection.TICKET)
-      .doc(ticketId)
+    const ticketRef = db().collection(Collection.TICKET).doc(ticketId);
 
-    batch.set(ticketRef, ticketData)
+    batch.set(ticketRef, ticketData);
   }
 
-  const addTickets = batch.commit()
+  const addTickets = batch.commit();
 
   const updateProduct = db()
     .collection(Collection.PRODUCT)
     .doc(productId)
     .update({
-      soldCount: firestore.FieldValue.increment(quantity)
-    })
+      soldCount: firestore.FieldValue.increment(quantity),
+    });
 
-  const [
-    { user },
-  ] = await Promise.all([
+  const [{ user }] = await Promise.all([
     fetchDocument(Collection.USER, userId),
     addTickets,
-    updateProduct
-  ])
+    updateProduct,
+  ]);
 
-  const { email, firstName } = user
-  const boughtAt = new Date()
+  const { email, firstName } = user;
+  const boughtAt = new Date();
 
   await sendTicketReceipt(
-    email, 
-    firstName, 
-    eventTitle, 
-    productTitle, 
-    productPrice, 
-    quantity, 
-    boughtAt, 
-    currency, 
+    email,
+    firstName,
+    eventTitle,
+    productTitle,
+    productPrice,
+    quantity,
+    boughtAt,
+    currency,
     ticketIds,
     customerFee
-  )
+  );
 
-  return
+  return;
 }

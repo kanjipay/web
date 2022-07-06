@@ -1,5 +1,5 @@
 import { isStrictEnvironment } from "./isStrictEnvironment";
 
 export function shouldInitiateRealPayment() {
-  return isStrictEnvironment(process.env.ENVIRONMENT)
+  return isStrictEnvironment(process.env.ENVIRONMENT);
 }

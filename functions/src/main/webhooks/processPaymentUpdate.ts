@@ -7,88 +7,113 @@ import PaymentAttemptStatus from "../../shared/enums/PaymentAttemptStatus";
 import { db } from "../../shared/utils/admin";
 import { fetchDocument } from "../../shared/utils/fetchDocument";
 
-export async function processPaymentUpdate(paymentAttemptId: string, paymentAttemptStatus: PaymentAttemptStatus, orderId: string | null = null) {
+export async function processPaymentUpdate(
+  paymentAttemptId: string,
+  paymentAttemptStatus: PaymentAttemptStatus,
+  orderId: string | null = null
+) {
   if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) {
-    return [true, null]
+    return [true, null];
   }
 
   const updatePaymentAttempt = db()
     .collection(Collection.PAYMENT_ATTEMPT)
     .doc(paymentAttemptId)
     .update({
-      status: paymentAttemptStatus
-    })
+      status: paymentAttemptStatus,
+    });
 
-  const promises: Promise<any>[] = [updatePaymentAttempt]
+  const promises: Promise<any>[] = [updatePaymentAttempt];
 
-  if ([PaymentAttemptStatus.SUCCESSFUL, PaymentAttemptStatus.ACCEPTED].includes(paymentAttemptStatus)) {
+  if (
+    [PaymentAttemptStatus.SUCCESSFUL, PaymentAttemptStatus.ACCEPTED].includes(
+      paymentAttemptStatus
+    )
+  ) {
     if (!orderId) {
-      const { paymentAttempt, paymentAttemptError } = await fetchDocument(Collection.PAYMENT_ATTEMPT, paymentAttemptId)
+      const { paymentAttempt, paymentAttemptError } = await fetchDocument(
+        Collection.PAYMENT_ATTEMPT,
+        paymentAttemptId
+      );
 
       if (paymentAttemptError) {
-        return [false, paymentAttemptError]
+        return [false, paymentAttemptError];
       }
 
-      orderId = paymentAttempt.orderId
+      orderId = paymentAttempt.orderId;
     }
-    
-    const { order, orderError } = await fetchDocument(Collection.ORDER, orderId)
+
+    const { order, orderError } = await fetchDocument(
+      Collection.ORDER,
+      orderId
+    );
 
     if (orderError) {
-      return [false, orderError]
+      return [false, orderError];
     }
 
-    const { type, orderItems, wereTicketsCreated, merchantId, userId, currency, status, customerFee } = order
+    const {
+      type,
+      orderItems,
+      wereTicketsCreated,
+      merchantId,
+      userId,
+      currency,
+      status,
+      customerFee,
+    } = order;
 
     // Only update the order if it's still pending
     if (status === OrderStatus.PENDING) {
       const orderUpdate = {
         status: OrderStatus.PAID,
-        paidAt: firestore.FieldValue.serverTimestamp()
-      }
+        paidAt: firestore.FieldValue.serverTimestamp(),
+      };
 
       if (type === OrderType.TICKETS && !wereTicketsCreated) {
-        const { productId, eventId, eventEndsAt, quantity } = orderItems[0]
+        const { productId, eventId, eventEndsAt, quantity } = orderItems[0];
 
         const updateProduct = db()
           .collection(Collection.PRODUCT)
           .doc(productId)
           .update({
-            reservedCount: firestore.FieldValue.increment(-quantity)
-          })
+            reservedCount: firestore.FieldValue.increment(-quantity),
+          });
 
-        promises.push(updateProduct)
+        promises.push(updateProduct);
 
-        orderUpdate["wereTicketsCreated"] = true
+        orderUpdate["wereTicketsCreated"] = true;
 
-        const orderItem = orderItems[0]
+        const orderItem = orderItems[0];
 
-        promises.push(processSuccessfulTicketsOrder(
-          merchantId,
-          eventId,
-          orderItem.eventTitle,
-          productId,
-          orderItem.title,
-          orderItem.price,
-          orderId,
-          userId,
-          eventEndsAt,
-          currency,
-          quantity,
-          customerFee
-        ))
+        promises.push(
+          processSuccessfulTicketsOrder(
+            merchantId,
+            eventId,
+            orderItem.eventTitle,
+            productId,
+            orderItem.title,
+            orderItem.price,
+            orderId,
+            userId,
+            eventEndsAt,
+            currency,
+            quantity,
+            customerFee
+          )
+        );
       }
 
       const updateOrder = db()
         .collection(Collection.ORDER)
         .doc(orderId)
-        .update(orderUpdate)
+        .update(orderUpdate);
 
-      promises.push(updateOrder)
+      promises.push(updateOrder);
     }
   }
 
-  await Promise.all(promises)
+  await Promise.all(promises);
 
-  return [true, null]
+  return [true, null];
 }

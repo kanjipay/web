@@ -1,66 +1,82 @@
-import { firestore } from "firebase-admin"
-import BaseController from "../../../../shared/BaseController"
-import Collection from "../../../../shared/enums/Collection"
-import OrderStatus from "../../../../shared/enums/OrderStatus"
-import { db } from "../../../../shared/utils/admin"
-import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
-import { fetchDocument } from "../../../../shared/utils/fetchDocument"
-import LoggingController from "../../../../shared/utils/loggingClient"
-import { dateFromTimestamp } from "../../../../shared/utils/time"
+import { firestore } from "firebase-admin";
+import BaseController from "../../../../shared/BaseController";
+import Collection from "../../../../shared/enums/Collection";
+import OrderStatus from "../../../../shared/enums/OrderStatus";
+import { db } from "../../../../shared/utils/admin";
+import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors";
+import { fetchDocument } from "../../../../shared/utils/fetchDocument";
+import LoggingController from "../../../../shared/utils/loggingClient";
+import { dateFromTimestamp } from "../../../../shared/utils/time";
 
 export class MerchantTicketsController extends BaseController {
   check = async (req, res, next) => {
     try {
-      const logger = new LoggingController("Check ticket")
-      const { ticketId, merchantId } = req.params
-      const { eventId: checkedEventId } = req.body
+      const logger = new LoggingController("Check ticket");
+      const { ticketId, merchantId } = req.params;
+      const { eventId: checkedEventId } = req.body;
 
-      logger.log(`Checking ticket with id ${ticketId}`, { ticketId, merchantId, checkedEventId })
+      logger.log(`Checking ticket with id ${ticketId}`, {
+        ticketId,
+        merchantId,
+        checkedEventId,
+      });
 
-      const { ticket, ticketError } = await fetchDocument(Collection.TICKET, ticketId)
+      const { ticket, ticketError } = await fetchDocument(
+        Collection.TICKET,
+        ticketId
+      );
 
       if (ticketError) {
-        next(ticketError)
-        return
+        next(ticketError);
+        return;
       }
 
-      logger.log("Retrieved ticket from db", { ticket })
+      logger.log("Retrieved ticket from db", { ticket });
 
-      const { eventId, productId, userId, wasUsed, usedAt } = ticket
+      const { eventId, productId, userId, wasUsed, usedAt } = ticket;
 
       if (!eventId || !productId || !userId) {
-        const errorMessage = "This ticket is invalid. The event, product or customer is missing."
-        next(new HttpError(HttpStatusCode.INTERNAL_SERVER_ERROR, errorMessage, errorMessage))
-        return
+        const errorMessage =
+          "This ticket is invalid. The event, product or customer is missing.";
+        next(
+          new HttpError(
+            HttpStatusCode.INTERNAL_SERVER_ERROR,
+            errorMessage,
+            errorMessage
+          )
+        );
+        return;
       }
 
       if (eventId !== checkedEventId || merchantId !== ticket.merchantId) {
         const [
           { event: ticketEvent, eventError: ticketEventError },
-          { event: checkedEvent, eventError: checkedEventError }
+          { event: checkedEvent, eventError: checkedEventError },
         ] = await Promise.all([
           fetchDocument(Collection.EVENT, eventId),
-          fetchDocument(Collection.EVENT, checkedEventId)
-        ])
+          fetchDocument(Collection.EVENT, checkedEventId),
+        ]);
 
-        let errorMessage: string
+        let errorMessage: string;
 
         if (!ticketEvent || ticketEventError) {
-          errorMessage = "Couldn't find the event this ticket is for."
+          errorMessage = "Couldn't find the event this ticket is for.";
         } else if (!checkedEvent || checkedEventError) {
-          errorMessage = "The event you're scanning for doesn't exist"
+          errorMessage = "The event you're scanning for doesn't exist";
         } else if (merchantId !== ticket.merchantId) {
           console.log(merchantId);
           console.log(ticket.merchantId);
-          errorMessage = 'This ticket is for another organiser.'
+          errorMessage = "This ticket is for another organiser.";
         } else {
-          const { title: ticketEventTitle } = ticketEvent
-          const { title: checkedEventTitle } = checkedEvent
-          errorMessage = `This ticket is for ${ticketEventTitle} but you're checking tickets for ${checkedEventTitle}.`
+          const { title: ticketEventTitle } = ticketEvent;
+          const { title: checkedEventTitle } = checkedEvent;
+          errorMessage = `This ticket is for ${ticketEventTitle} but you're checking tickets for ${checkedEventTitle}.`;
         }
 
-        next(new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage))
-        return
+        next(
+          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
+        );
+        return;
       }
 
       const [
@@ -70,104 +86,109 @@ export class MerchantTicketsController extends BaseController {
       ] = await Promise.all([
         fetchDocument(Collection.PRODUCT, productId),
         fetchDocument(Collection.EVENT, eventId),
-        fetchDocument(Collection.USER, userId)
-      ])
+        fetchDocument(Collection.USER, userId),
+      ]);
 
       for (const error of [productError, eventError, userError]) {
         if (error) {
-          next(error)
-          return
+          next(error);
+          return;
         }
       }
 
-      logger.log("Got product, event and user", { product, event, user })
+      logger.log("Got product, event and user", { product, event, user });
 
-      const { latestEntryAt, earliestEntryAt } = product
+      const { latestEntryAt, earliestEntryAt } = product;
 
-      const currentDate = new Date()
+      const currentDate = new Date();
 
-      const isTooEarly = earliestEntryAt && currentDate < dateFromTimestamp(earliestEntryAt)
-      const isTooLate = latestEntryAt && currentDate > dateFromTimestamp(latestEntryAt)
+      const isTooEarly =
+        earliestEntryAt && currentDate < dateFromTimestamp(earliestEntryAt);
+      const isTooLate =
+        latestEntryAt && currentDate > dateFromTimestamp(latestEntryAt);
 
-      const { firstName, lastName } = user
+      const { firstName, lastName } = user;
 
       if (!wasUsed) {
-        await db()
-          .collection(Collection.TICKET)
-          .doc(ticketId)
-          .update({
-            wasUsed: true,
-            usedAt: firestore.FieldValue.serverTimestamp()
-          })
+        await db().collection(Collection.TICKET).doc(ticketId).update({
+          wasUsed: true,
+          usedAt: firestore.FieldValue.serverTimestamp(),
+        });
 
-        logger.log("Updated ticket")
+        logger.log("Updated ticket");
       }
 
       return res.status(200).json({
         product: {
-          title: product.title
+          title: product.title,
         },
         event: {
           title: event.title,
-          photo: event.photo
+          photo: event.photo,
         },
         user: {
           firstName,
-          lastName
+          lastName,
         },
         wasUsed,
         usedAt,
         isTooEarly,
         isTooLate,
         earliestEntryAt,
-        latestEntryAt
-      })
+        latestEntryAt,
+      });
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   salesData = async (req, res, next) => {
     try {
-      const { merchantId } = req.params
+      const { merchantId } = req.params;
 
       const getOrders = db()
         .collection(Collection.ORDER)
         .where("merchantId", "==", merchantId)
         .where("status", "==", OrderStatus.PAID)
-        .get()
+        .get();
 
       const getEvents = db()
         .collection(Collection.EVENT)
         .where("merchantId", "==", merchantId)
         .where("isPublished", "==", true)
-        .get()
+        .get();
 
       const getProducts = db()
         .collection(Collection.PRODUCT)
         .where("merchantId", "==", merchantId)
         .where("isPublished", "==", true)
-        .get()
+        .get();
 
-      const [
-        eventSnapshot,
-        productSnapshot,
-        ordersSnapshot
-      ] = await Promise.all([
-        getEvents,
-        getProducts,
-        getOrders
-      ])
+      const [eventSnapshot, productSnapshot, ordersSnapshot] =
+        await Promise.all([getEvents, getProducts, getOrders]);
 
-      const sales = ordersSnapshot.docs.flatMap(doc => {
-        const order: any = { id: doc.id, ...doc.data() }
+      const sales = ordersSnapshot.docs.flatMap((doc) => {
+        const order: any = { id: doc.id, ...doc.data() };
 
-        const { eventId, attributionData, type, createdAt, currency, sessionData } = order
-        const strongSessionData = sessionData ?? {}
+        const {
+          eventId,
+          attributionData,
+          type,
+          createdAt,
+          currency,
+          sessionData,
+        } = order;
+        const strongSessionData = sessionData ?? {};
 
-        return order.orderItems.map(item => {
-          const { productId, title: productTitle, eventTitle, quantity, price } = item
-          return { 
+        return order.orderItems.map((item) => {
+          const {
+            productId,
+            title: productTitle,
+            eventTitle,
+            quantity,
+            price,
+          } = item;
+          return {
             orderId: order.id,
             amount: price * quantity,
             quantity,
@@ -179,22 +200,22 @@ export class MerchantTicketsController extends BaseController {
             createdAt,
             attributionData,
             currency,
-            ...strongSessionData
-          }
-        })
-      })
+            ...strongSessionData,
+          };
+        });
+      });
 
-      const events = eventSnapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
+      const events = eventSnapshot.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      });
 
-      const products = productSnapshot.docs.map(doc => {
-        return { id: doc.id, ...doc.data() }
-      })
+      const products = productSnapshot.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      });
 
-      res.status(200).json({ events, products, sales })
+      res.status(200).json({ events, products, sales });
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 }
