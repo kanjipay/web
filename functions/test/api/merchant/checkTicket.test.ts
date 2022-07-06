@@ -9,6 +9,7 @@ import {
   createMembership,
   createTicket,
   createEvent,
+  createProduct,
 } from "../../utils/generateTestData"
 import { createUserToken } from "../../utils/user"
 
@@ -21,6 +22,7 @@ describe("Check tickets", () => {
   const otherMerchantEventTicket = "otherMerchantEventTicket"
   const eventId = "testEvent"
   const otherMerchantEventId = "otherMerchantEvent"
+  const productId = "1234"
 
   before(async () => {
     await createTicket(validTicketId, userId, eventId, merchantId)
@@ -40,6 +42,7 @@ describe("Check tickets", () => {
     await createEvent(merchantId, eventId)
     await createEvent("otherMerchant", otherMerchantEventId)
     await createMembership(merchantId, userId, membershipId)
+    await createProduct(merchantId, eventId, productId)
   })
   it("Should accept valid ticket", async () => {
     const userToken = await createUserToken(userId)
@@ -47,7 +50,6 @@ describe("Check tickets", () => {
       .post(`/merchants/m/${merchantId}/tickets/${validTicketId}/check`)
       .auth(userToken, { type: "bearer" })
       .send({ eventId })
-    console.log(res.body)
     expect(res).to.have.status(200)
   })
   it("Should reject nonexistent event id", async () => {
@@ -58,11 +60,7 @@ describe("Check tickets", () => {
       )
       .auth(userToken, { type: "bearer" })
       .send({ eventId })
-    console.log(res.body)
     expect(res).to.have.status(400)
-    expect(res.body.message).to.eql(
-      "Couldn't find the event this ticket is for."
-    )
   })
 
   it("Should reject ticket for other merchantt", async () => {
@@ -73,9 +71,7 @@ describe("Check tickets", () => {
       )
       .auth(userToken, { type: "bearer" })
       .send({ eventId })
-    console.log(res.body)
     expect(res).to.have.status(400)
-    expect(res.body.message).to.eql("This ticket is for another organiser.")
   })
 
   after(async () => {
@@ -87,6 +83,7 @@ describe("Check tickets", () => {
     db.collection(Collection.TICKET).doc(otherMerchantEventTicket).delete()
     db.collection(Collection.EVENT).doc(eventId).delete()
     db.collection(Collection.EVENT).doc(otherMerchantEventId).delete()
+    db.collection(Collection.PRODUCT).doc(productId).delete()
     await batch.commit()
   })
 })
