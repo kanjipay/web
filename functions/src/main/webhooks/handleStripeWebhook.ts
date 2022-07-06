@@ -18,8 +18,6 @@ export const handleStripeWebhook = async (req, res, next) => {
 
     let event
 
-    let event
-
     const endpointSecret = process.env.STRIPE_PAYMENT_WEBHOOK_SECRET
     logger.log("Stripe webhook received", {
       signature,
