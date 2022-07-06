@@ -1,21 +1,21 @@
-import * as express from "express";
-import { errorHandler } from "../shared/middleware/errorHandler";
-import { logRequest } from "../shared/middleware/logRequest";
-import { statusHandler } from "../shared/middleware/statusHandler";
-import { setBodyParser } from "../shared/utils/express";
-import mainApiApp from "./api/mainApiApp";
-import mainWebhooksApp from "./webhooks/mainWebhooksApp";
+import * as express from "express"
+import { errorHandler } from "../shared/middleware/errorHandler"
+import { logRequest } from "../shared/middleware/logRequest"
+import { statusHandler } from "../shared/middleware/statusHandler"
+import { setBodyParser } from "../shared/utils/express"
+import mainApiApp from "./api/mainApiApp"
+import mainWebhooksApp from "./webhooks/mainWebhooksApp"
 
-const mainApp = express();
+const mainApp = express()
 
-setBodyParser(mainApp);
+setBodyParser(mainApp)
 
-mainApp.use(logRequest);
+mainApp.use(logRequest)
 
-mainApp.use("/api/v1", mainApiApp);
-mainApp.use("/webhooks/v1", mainWebhooksApp);
-mainApp.get("/status", statusHandler);
+mainApp.use("/api/v1", mainApiApp)
+mainApp.use("/webhooks/v1", mainWebhooksApp)
+mainApp.get("/status", statusHandler)
 
-mainApp.use(errorHandler);
+mainApp.use(errorHandler)
 
-export default mainApp;
+export default mainApp

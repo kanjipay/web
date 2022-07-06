@@ -1,9 +1,9 @@
-import * as functions from "firebase-functions";
-import mainApp from "./main/mainApp";
-import { cronFunction } from "./cron/cron";
+import * as functions from "firebase-functions"
+import mainApp from "./main/mainApp"
+import { cronFunction } from "./cron/cron"
 
-const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId;
-const euFunctions = functions.region("europe-west2");
+const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
+const euFunctions = functions.region("europe-west2")
 
 export const main = euFunctions
   .runWith({
@@ -23,9 +23,9 @@ export const main = euFunctions
     ],
     minInstances: envProjectId === "mercadopay" ? 1 : 0,
   })
-  .https.onRequest(mainApp);
+  .https.onRequest(mainApp)
 
 export const cron = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
   .pubsub.schedule("every 10 minutes")
-  .onRun(cronFunction);
+  .onRun(cronFunction)

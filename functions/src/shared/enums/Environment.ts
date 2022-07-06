@@ -5,4 +5,4 @@ enum Environment {
   STAGING = "STAGING",
 }
 
-export default Environment;
+export default Environment

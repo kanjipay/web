@@ -1,7 +1,7 @@
-import Collection from "../../src/shared/enums/Collection";
-import { db } from "./admin";
-import { StripeStatus } from "../../src/shared/enums/StripeStatus";
-import { addHours } from "date-fns";
+import Collection from "../../src/shared/enums/Collection"
+import { db } from "./admin"
+import { StripeStatus } from "../../src/shared/enums/StripeStatus"
+import { addHours } from "date-fns"
 
 export async function createMerchant(
   merchantId: string,
@@ -12,7 +12,7 @@ export async function createMerchant(
     addCrezcoId = true,
   } = {}
 ) {
-  const name = `test merchant`;
+  const name = `test merchant`
 
   await db
     .collection(Collection.MERCHANT)
@@ -40,7 +40,7 @@ export async function createMerchant(
         accountId: "acct_1L8MJV2Yi582Wuz1",
         status: StripeStatus.CHARGES_ENABLED,
       },
-    });
+    })
 }
 
 export async function createEvent(
@@ -66,7 +66,7 @@ export async function createEvent(
     address: "28 Paragon, Bath",
     description: "Some description",
     testData: true,
-  });
+  })
 }
 
 export async function createProduct(
@@ -105,7 +105,7 @@ export async function createProduct(
       title: `test product`,
       description: "Some description",
       testData: true,
-    });
+    })
 }
 
 export async function createLink(
@@ -119,7 +119,7 @@ export async function createLink(
     path: "/myPath",
     stateid: "abc123",
     wasUsed: wasUsed,
-  });
+  })
 }
 
 export async function createUser(userId: string) {
@@ -128,7 +128,7 @@ export async function createUser(userId: string) {
     firstName: "test",
     lastName: "test",
     marketingConsentStatus: "APPROVED",
-  });
+  })
 }
 
 export async function createTicket(
@@ -147,7 +147,7 @@ export async function createTicket(
     productId: "1234",
     userId,
     wasUsed: false,
-  });
+  })
 }
 
 export async function createMembership(
@@ -161,7 +161,7 @@ export async function createMembership(
     merchantName: "Test",
     role: "ADMIN",
     lastUsedAt: new Date(),
-  });
+  })
 }
 
 export async function createTicketOrder(
@@ -181,5 +181,5 @@ export async function createTicketOrder(
     type: "TICKETS",
     userId: "test",
     wereTicketsCreated: false,
-  });
+  })
 }

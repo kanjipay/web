@@ -1,6 +1,6 @@
-import { firestore } from "firebase-admin";
-import Collection from "../enums/Collection";
-import { auth, db } from "./admin";
+import { firestore } from "firebase-admin"
+import Collection from "../enums/Collection"
+import { auth, db } from "./admin"
 
 export enum OrganisationRole {
   ADMIN = "ADMIN",
@@ -24,23 +24,23 @@ export async function createMembership(
       merchantName,
       lastUsedAt: firestore.FieldValue.serverTimestamp(),
       role,
-    });
+    })
 
   const membershipSnapshot = await db()
     .collection(Collection.MEMBERSHIP)
     .where("userId", "==", userId)
-    .get();
+    .get()
 
   const memberships: any[] = membershipSnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
-  }));
+  }))
 
   const claims = memberships.reduce((claims, membership) => {
-    const { role, merchantId } = membership;
-    claims[merchantId] = role;
-    return claims;
-  }, {});
+    const { role, merchantId } = membership
+    claims[merchantId] = role
+    return claims
+  }, {})
 
-  await auth().setCustomUserClaims(userId, claims);
+  await auth().setCustomUserClaims(userId, claims)
 }

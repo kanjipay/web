@@ -1,22 +1,22 @@
-import { v4 as uuid } from "uuid";
-import * as functions from "firebase-functions";
+import { v4 as uuid } from "uuid"
+import * as functions from "firebase-functions"
 
 //Whenever a function is called, initialize a new Logging Controller
 //You can then use the methods to log events with different severities
 //You can log event data as a one off or add additional process information
 //which will be included in all future log method calls.
 export default class LoggingController {
-  process;
-  persistentData;
+  process
+  persistentData
 
   constructor(process: string) {
-    const correlationId = uuid();
-    const processStartTime = new Date();
+    const correlationId = uuid()
+    const processStartTime = new Date()
     this.persistentData = {
       correlationId,
       process,
       processStartTime,
-    };
+    }
   }
 
   enrichProcessData(additionalPersistantData: object) {
@@ -24,12 +24,12 @@ export default class LoggingController {
       {},
       this.persistentData,
       additionalPersistantData
-    );
+    )
   }
 
   createLogBody(eventData: object) {
-    eventData["eventTime"] = new Date();
-    return Object.assign({}, this.persistentData, eventData);
+    eventData["eventTime"] = new Date()
+    return Object.assign({}, this.persistentData, eventData)
   }
 
   log(
@@ -37,9 +37,9 @@ export default class LoggingController {
     eventData: object = {},
     additionalPersistantData: object = {}
   ) {
-    this.enrichProcessData(additionalPersistantData);
-    const eventBody = this.createLogBody(eventData);
-    functions.logger.log(eventName, eventBody);
+    this.enrichProcessData(additionalPersistantData)
+    const eventBody = this.createLogBody(eventData)
+    functions.logger.log(eventName, eventBody)
   }
 
   warn(
@@ -47,9 +47,9 @@ export default class LoggingController {
     eventData: object = {},
     additionalPersistantData: object = {}
   ) {
-    this.enrichProcessData(additionalPersistantData);
-    const eventBody = this.createLogBody(eventData);
-    functions.logger.warn(eventName, eventBody);
+    this.enrichProcessData(additionalPersistantData)
+    const eventBody = this.createLogBody(eventData)
+    functions.logger.warn(eventName, eventBody)
   }
 
   info(
@@ -57,9 +57,9 @@ export default class LoggingController {
     eventData: object = {},
     additionalPersistantData: object = {}
   ) {
-    this.enrichProcessData(additionalPersistantData);
-    const eventBody = this.createLogBody(eventData);
-    functions.logger.info(eventName, eventBody);
+    this.enrichProcessData(additionalPersistantData)
+    const eventBody = this.createLogBody(eventData)
+    functions.logger.info(eventName, eventBody)
   }
 
   error(
@@ -67,8 +67,8 @@ export default class LoggingController {
     eventData: object = {},
     additionalPersistantData: object = {}
   ) {
-    this.enrichProcessData(additionalPersistantData);
-    const eventBody = this.createLogBody(eventData);
-    functions.logger.error(eventName, eventBody);
+    this.enrichProcessData(additionalPersistantData)
+    const eventBody = this.createLogBody(eventData)
+    functions.logger.error(eventName, eventBody)
   }
 }

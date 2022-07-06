@@ -6,4 +6,4 @@ enum OrderStatus {
   ABANDONED = "ABANDONED",
 }
 
-export default OrderStatus;
+export default OrderStatus

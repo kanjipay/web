@@ -1,16 +1,16 @@
-import axios from "axios";
-import { createSignature } from "./createSignature";
-import { isStrictEnvironment } from "./isStrictEnvironment";
-import LoggingController from "./loggingClient";
+import axios from "axios"
+import { createSignature } from "./createSignature"
+import { isStrictEnvironment } from "./isStrictEnvironment"
+import LoggingController from "./loggingClient"
 
 const defaultHeaders = {
   "X-Crezco-Key": process.env.CREZCO_API_KEY,
-};
+}
 
 const subdomain = isStrictEnvironment(process.env.ENVIRONMENT)
   ? "api"
-  : "api.sandbox";
-const baseUrl = `https://${subdomain}.crezco.com`;
+  : "api.sandbox"
+const baseUrl = `https://${subdomain}.crezco.com`
 
 export async function fetchBankData(countryCode: string) {
   const { data } = await axios.get(
@@ -18,9 +18,9 @@ export async function fetchBankData(countryCode: string) {
     {
       headers: defaultHeaders,
     }
-  );
+  )
 
-  return data;
+  return data
 }
 
 export async function createPaymentDemand(
@@ -32,13 +32,13 @@ export async function createPaymentDemand(
   currency: string
 ) {
   try {
-    const logger = new LoggingController("Create Crezco payment demand");
+    const logger = new LoggingController("Create Crezco payment demand")
 
-    logger.log("Creating Crezco payment demand");
+    logger.log("Creating Crezco payment demand")
 
-    const expireSeconds = currency === "GBP" ? 60 * 10 : 60 * 60 * 24 * 3;
+    const expireSeconds = currency === "GBP" ? 60 * 10 : 60 * 60 * 24 * 3
 
-    logger.log("Set jwt expiry for webhook", { expireSeconds });
+    logger.log("Set jwt expiry for webhook", { expireSeconds })
 
     const { signature, signatureError } = createSignature(
       {
@@ -46,14 +46,14 @@ export async function createPaymentDemand(
         environment: process.env.ENVIRONMENT,
       },
       expireSeconds
-    );
+    )
 
     if (signatureError) {
-      logger.log("Error when creating webhook signature", { signatureError });
-      return { payDemandError: signatureError };
+      logger.log("Error when creating webhook signature", { signatureError })
+      return { payDemandError: signatureError }
     }
 
-    logger.log("Created signature for webhook");
+    logger.log("Created signature for webhook")
 
     const paymentDemandData = {
       request: {
@@ -67,28 +67,28 @@ export async function createPaymentDemand(
       },
       idempotencyId: paymentAttemptId,
       idemPayDemand: paymentAttemptId,
-    };
+    }
 
-    const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands`;
+    const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands`
 
     logger.log("Calling create pay demand endpoint", {
       url,
       body: paymentDemandData,
       headers: defaultHeaders,
-    });
+    })
 
     const res = await axios.post(url, paymentDemandData, {
       headers: defaultHeaders,
-    });
+    })
 
-    const paymentDemandId = res.data;
+    const paymentDemandId = res.data
 
-    logger.log("Got payment demand id", { paymentDemandId });
+    logger.log("Got payment demand id", { paymentDemandId })
 
-    return { paymentDemandId };
+    return { paymentDemandId }
   } catch (err) {
-    console.log(err.response);
-    return { payDemandError: err };
+    console.log(err.response)
+    return { payDemandError: err }
   }
 }
 
@@ -100,13 +100,13 @@ export async function createPayment(
   countryCode: string
 ) {
   try {
-    const logger = new LoggingController("Create Crezco payment");
+    const logger = new LoggingController("Create Crezco payment")
 
-    logger.log("Creating Crezco payment");
+    logger.log("Creating Crezco payment")
 
-    const mercadoRedirectUrl = `${process.env.CLIENT_URL}/checkout/cr-redirect?paymentAttemptId=${paymentAttemptId}`;
+    const mercadoRedirectUrl = `${process.env.CLIENT_URL}/checkout/cr-redirect?paymentAttemptId=${paymentAttemptId}`
 
-    logger.log("Formulated redirect url", { mercadoRedirectUrl });
+    logger.log("Formulated redirect url", { mercadoRedirectUrl })
 
     const params = {
       bankId,
@@ -115,15 +115,15 @@ export async function createPayment(
       failureRedirectUri: mercadoRedirectUrl,
       initialScreen: "ContinueToBank",
       finalScreen: "PaymentStatus",
-    };
+    }
 
-    const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment`;
+    const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment`
 
     logger.log("Calling Crezco create payment endpoint", {
       url,
       params,
       headers: defaultHeaders,
-    });
+    })
 
     const res = await axios.post(
       `${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment`,
@@ -132,16 +132,16 @@ export async function createPayment(
         headers: defaultHeaders,
         params,
       }
-    );
+    )
 
-    logger.log("Got response", { ...res.data });
+    logger.log("Got response", { ...res.data })
 
-    const redirectUrl = res.data.redirect;
+    const redirectUrl = res.data.redirect
 
-    return { redirectUrl };
+    return { redirectUrl }
   } catch (err) {
-    console.log(err.response);
-    return { paymentError: err };
+    console.log(err.response)
+    return { paymentError: err }
   }
 }
 
@@ -149,8 +149,8 @@ export async function getPaymentStatus(paymentDemandId: string) {
   const paymentsRes = await axios.get(
     `${baseUrl}/v1/pay-demands/${paymentDemandId}/payments`,
     { headers: defaultHeaders }
-  );
-  const paymentStatus = paymentsRes.data[0].status.code;
+  )
+  const paymentStatus = paymentsRes.data[0].status.code
 
-  return paymentStatus;
+  return paymentStatus
 }

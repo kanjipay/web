@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { validate } from "../../../shared/utils/validate";
-import { PaymentAttemptsController } from "../controllers/PaymentAttemptsController";
-import { AllowedSchema } from "express-json-validator-middleware";
+import { Router } from "express"
+import { validate } from "../../../shared/utils/validate"
+import { PaymentAttemptsController } from "../controllers/PaymentAttemptsController"
+import { AllowedSchema } from "express-json-validator-middleware"
 
-const paymentAttemptsController = new PaymentAttemptsController();
-const paymentAttemptsRoutes = Router();
+const paymentAttemptsController = new PaymentAttemptsController()
+const paymentAttemptsRoutes = Router()
 
 const createCrezcoPaymentAttemptSchema: AllowedSchema = {
   type: "object",
@@ -23,13 +23,13 @@ const createCrezcoPaymentAttemptSchema: AllowedSchema = {
       type: "string",
     },
   },
-};
+}
 
 paymentAttemptsRoutes.post(
   "/crezco",
   validate({ body: createCrezcoPaymentAttemptSchema }),
   paymentAttemptsController.createCrezco
-);
+)
 
 const checkCrezcoSchema: AllowedSchema = {
   type: "object",
@@ -42,13 +42,13 @@ const checkCrezcoSchema: AllowedSchema = {
       type: "string",
     },
   },
-};
+}
 
 paymentAttemptsRoutes.post(
   "/crezco/check",
   validate({ body: checkCrezcoSchema }),
   paymentAttemptsController.checkCrezcoPayment
-);
+)
 
 const createStripePaymentAttemptSchema: AllowedSchema = {
   type: "object",
@@ -61,12 +61,12 @@ const createStripePaymentAttemptSchema: AllowedSchema = {
       type: "string",
     },
   },
-};
+}
 
 paymentAttemptsRoutes.post(
   "/stripe",
   validate({ body: createStripePaymentAttemptSchema }),
   paymentAttemptsController.createStripe
-);
+)
 
-export default paymentAttemptsRoutes;
+export default paymentAttemptsRoutes

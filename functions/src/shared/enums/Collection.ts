@@ -26,4 +26,4 @@ enum Collection {
   MEMBERSHIP = "Membership",
 }
 
-export default Collection;
+export default Collection

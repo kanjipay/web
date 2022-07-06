@@ -1,11 +1,11 @@
-import { firestore } from "firebase-admin";
-import { processSuccessfulTicketsOrder } from "../../shared/utils/processSuccessfulTicketsOrder";
-import Collection from "../../shared/enums/Collection";
-import OrderStatus from "../../shared/enums/OrderStatus";
-import { OrderType } from "../../shared/enums/OrderType";
-import PaymentAttemptStatus from "../../shared/enums/PaymentAttemptStatus";
-import { db } from "../../shared/utils/admin";
-import { fetchDocument } from "../../shared/utils/fetchDocument";
+import { firestore } from "firebase-admin"
+import { processSuccessfulTicketsOrder } from "../../shared/utils/processSuccessfulTicketsOrder"
+import Collection from "../../shared/enums/Collection"
+import OrderStatus from "../../shared/enums/OrderStatus"
+import { OrderType } from "../../shared/enums/OrderType"
+import PaymentAttemptStatus from "../../shared/enums/PaymentAttemptStatus"
+import { db } from "../../shared/utils/admin"
+import { fetchDocument } from "../../shared/utils/fetchDocument"
 
 export async function processPaymentUpdate(
   paymentAttemptId: string,
@@ -13,7 +13,7 @@ export async function processPaymentUpdate(
   orderId: string | null = null
 ) {
   if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) {
-    return [true, null];
+    return [true, null]
   }
 
   const updatePaymentAttempt = db()
@@ -21,9 +21,9 @@ export async function processPaymentUpdate(
     .doc(paymentAttemptId)
     .update({
       status: paymentAttemptStatus,
-    });
+    })
 
-  const promises: Promise<any>[] = [updatePaymentAttempt];
+  const promises: Promise<any>[] = [updatePaymentAttempt]
 
   if (
     [PaymentAttemptStatus.SUCCESSFUL, PaymentAttemptStatus.ACCEPTED].includes(
@@ -34,22 +34,19 @@ export async function processPaymentUpdate(
       const { paymentAttempt, paymentAttemptError } = await fetchDocument(
         Collection.PAYMENT_ATTEMPT,
         paymentAttemptId
-      );
+      )
 
       if (paymentAttemptError) {
-        return [false, paymentAttemptError];
+        return [false, paymentAttemptError]
       }
 
-      orderId = paymentAttempt.orderId;
+      orderId = paymentAttempt.orderId
     }
 
-    const { order, orderError } = await fetchDocument(
-      Collection.ORDER,
-      orderId
-    );
+    const { order, orderError } = await fetchDocument(Collection.ORDER, orderId)
 
     if (orderError) {
-      return [false, orderError];
+      return [false, orderError]
     }
 
     const {
@@ -61,30 +58,30 @@ export async function processPaymentUpdate(
       currency,
       status,
       customerFee,
-    } = order;
+    } = order
 
     // Only update the order if it's still pending
     if (status === OrderStatus.PENDING) {
       const orderUpdate = {
         status: OrderStatus.PAID,
         paidAt: firestore.FieldValue.serverTimestamp(),
-      };
+      }
 
       if (type === OrderType.TICKETS && !wereTicketsCreated) {
-        const { productId, eventId, eventEndsAt, quantity } = orderItems[0];
+        const { productId, eventId, eventEndsAt, quantity } = orderItems[0]
 
         const updateProduct = db()
           .collection(Collection.PRODUCT)
           .doc(productId)
           .update({
             reservedCount: firestore.FieldValue.increment(-quantity),
-          });
+          })
 
-        promises.push(updateProduct);
+        promises.push(updateProduct)
 
-        orderUpdate["wereTicketsCreated"] = true;
+        orderUpdate["wereTicketsCreated"] = true
 
-        const orderItem = orderItems[0];
+        const orderItem = orderItems[0]
 
         promises.push(
           processSuccessfulTicketsOrder(
@@ -101,19 +98,19 @@ export async function processPaymentUpdate(
             quantity,
             customerFee
           )
-        );
+        )
       }
 
       const updateOrder = db()
         .collection(Collection.ORDER)
         .doc(orderId)
-        .update(orderUpdate);
+        .update(orderUpdate)
 
-      promises.push(updateOrder);
+      promises.push(updateOrder)
     }
   }
 
-  await Promise.all(promises);
+  await Promise.all(promises)
 
-  return [true, null];
+  return [true, null]
 }

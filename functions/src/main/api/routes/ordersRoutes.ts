@@ -1,11 +1,11 @@
-import { Router } from "express";
-import { OrdersController } from "../controllers/OrdersController";
-import { validate } from "../../../shared/utils/validate";
-import { AllowedSchema } from "express-json-validator-middleware";
-import { authenticate } from "../../../shared/middleware/authenticate";
+import { Router } from "express"
+import { OrdersController } from "../controllers/OrdersController"
+import { validate } from "../../../shared/utils/validate"
+import { AllowedSchema } from "express-json-validator-middleware"
+import { authenticate } from "../../../shared/middleware/authenticate"
 
-const ordersController = new OrdersController();
-const ordersRoutes = Router();
+const ordersController = new OrdersController()
+const ordersRoutes = Router()
 
 const createOrderWithMenuItemsSchema: AllowedSchema = {
   type: "object",
@@ -43,13 +43,13 @@ const createOrderWithMenuItemsSchema: AllowedSchema = {
       type: "string",
     },
   },
-};
+}
 
 ordersRoutes.post(
   "/menu",
   validate({ body: createOrderWithMenuItemsSchema }),
   ordersController.createWithMenu
-);
+)
 
 const createOrderWithTicketsSchema: AllowedSchema = {
   type: "object",
@@ -65,16 +65,16 @@ const createOrderWithTicketsSchema: AllowedSchema = {
       type: "string",
     },
   },
-};
+}
 
-ordersRoutes.put("/o/:orderId/enrich", authenticate, ordersController.enrich);
+ordersRoutes.put("/o/:orderId/enrich", authenticate, ordersController.enrich)
 
 ordersRoutes.post(
   "/tickets",
   validate({ body: createOrderWithTicketsSchema }),
   authenticate,
   ordersController.createWithTickets
-);
+)
 
 const sendEmailSchema: AllowedSchema = {
   type: "object",
@@ -88,12 +88,12 @@ const sendEmailSchema: AllowedSchema = {
       type: "string",
     },
   },
-};
+}
 
 ordersRoutes.post(
   "/email-receipt",
   validate({ body: sendEmailSchema }),
   ordersController.sendMenuReceipt
-);
+)
 
-export default ordersRoutes;
+export default ordersRoutes
