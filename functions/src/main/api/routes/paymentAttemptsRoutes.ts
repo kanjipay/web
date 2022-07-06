@@ -23,13 +23,13 @@ const createCrezcoPaymentAttemptSchema: AllowedSchema = {
       type: "string",
     },
   },
-}
+};
 
 paymentAttemptsRoutes.post(
   "/crezco",
   validate({ body: createCrezcoPaymentAttemptSchema }),
   paymentAttemptsController.createCrezco
-)
+);
 
 const checkCrezcoSchema: AllowedSchema = {
   type: "object",
@@ -48,7 +48,7 @@ paymentAttemptsRoutes.post(
   "/crezco/check",
   validate({ body: checkCrezcoSchema }),
   paymentAttemptsController.checkCrezcoPayment
-)
+);
 
 const createStripePaymentAttemptSchema: AllowedSchema = {
   type: "object",
@@ -67,6 +67,6 @@ paymentAttemptsRoutes.post(
   "/stripe",
   validate({ body: createStripePaymentAttemptSchema }),
   paymentAttemptsController.createStripe
-)
+);
 
 export default paymentAttemptsRoutes

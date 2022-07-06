@@ -1,5 +1,5 @@
-import Collection from "../enums/Collection"
-import { db } from "./admin"
+import Collection from "../enums/Collection";
+import { db } from "./admin";
 
 export async function addDocument(collectionName: Collection, data: any) {
   const camelCaseName =

@@ -1,8 +1,8 @@
-import { format } from "date-fns"
+import { format } from "date-fns";
 
 export function dateFromTimestamp(timestamp) {
-  const seconds = timestamp.seconds ?? timestamp._seconds
-  return new Date(seconds * 1000)
+  const seconds = timestamp.seconds ?? timestamp._seconds;
+  return new Date(seconds * 1000);
 }
 
 export function longFormat(date: Date) {

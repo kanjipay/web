@@ -25,8 +25,8 @@ linksRoutes.post(
   linksController.create
 )
 
-linksRoutes.get("/l/:linkId", linksController.get)
+linksRoutes.get("/l/:linkId", linksController.get);
 
-linksRoutes.put("/l/:linkId/accept", linksController.accept)
+linksRoutes.put("/l/:linkId/accept", linksController.accept);
 
 export default linksRoutes

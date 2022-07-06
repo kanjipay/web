@@ -11,7 +11,7 @@ export async function fetchDocument(
     collectionName[0].toLowerCase() + collectionName.slice(1)
 
   function generateErrorObject(error: HttpError) {
-    return { [camelCaseName + "Error"]: error }
+    return { [camelCaseName + "Error"]: error };
   }
 
   const doc = await db().collection(collectionName).doc(docId).get()
@@ -27,7 +27,7 @@ export async function fetchDocument(
   }
 
   for (const [fieldName, requiredValue] of Object.entries(checks)) {
-    const actualValue = doc.data()[fieldName]
+    const actualValue = doc.data()[fieldName];
 
     if (actualValue !== requiredValue) {
       const errorMessage = `${collectionName} has incorrect ${fieldName}.`

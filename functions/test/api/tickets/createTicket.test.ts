@@ -12,7 +12,7 @@ import { firestore } from "firebase-admin"
 import { addHours } from "date-fns"
 import { createUserToken } from "../../utils/user"
 
-import { HttpStatusCode } from "../../../src/shared/utils/errors"
+import { HttpStatusCode } from "../../../src/shared/utils/errors";
 
 describe("Create ticket", () => {
   const validTicketId = "valid-ticket"
@@ -74,8 +74,8 @@ describe("Create ticket", () => {
         eventId: "nonexistent-id",
       }),
       generateTicketCreationPromise(usedTicketId, { wasUsed: true, usedAt }),
-    ])
-  })
+    ]);
+  });
 
   it("Should accept a valid ticket", async () => {
     const userToken = await createUserToken(userId)
@@ -104,8 +104,8 @@ describe("Create ticket", () => {
       .auth(userToken, { type: "bearer" })
       .send({ eventId })
 
-    expect(res.status).to.eql(HttpStatusCode.BAD_REQUEST)
-  })
+    expect(res.status).to.eql(HttpStatusCode.BAD_REQUEST);
+  });
 
   it("Should report was used if already used", async () => {
     const userToken = await createUserToken(userId)
@@ -118,7 +118,7 @@ describe("Create ticket", () => {
   })
 
   after(async () => {
-    const batch = db.batch()
+    const batch = db.batch();
 
     const deleteMap = {
       [Collection.MERCHANT]: [merchantId],
@@ -136,11 +136,11 @@ describe("Create ticket", () => {
 
     for (const [collectionName, ids] of Object.entries(deleteMap)) {
       for (const id of ids) {
-        const docRef = db.collection(collectionName).doc(id)
-        batch.delete(docRef)
+        const docRef = db.collection(collectionName).doc(id);
+        batch.delete(docRef);
       }
     }
 
-    await batch.commit()
-  })
-})
+    await batch.commit();
+  });
+});

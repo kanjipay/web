@@ -5,7 +5,6 @@ import { db } from "../../utils/admin"
 import Collection from "../../../src/shared/enums/Collection"
 import { openNewPage } from "../utils/browser"
 import { uploadImage } from "../utils/puppeteer"
-import { fetchDocumentsInArray } from "../../../src/cron/deleteTicketsForIncompletePayments"
 
 require("dotenv").config()
 
@@ -86,26 +85,36 @@ describe("Create merchant", () => {
     const merchantsToDelete = await db
       .collection(Collection.MERCHANT)
       .where("displayName", "==", "Test merchant")
-      .get()
+      .get();
 
+<<<<<<< HEAD
     const merchantIds = merchantsToDelete.docs.map((doc) => doc.id)
+=======
+    const merchantIds = merchantsToDelete.docs.map((doc) => doc.id);
+>>>>>>> 4417ad6bfaf759c07a75a9540329100abc3b83bf
 
     const membershipsToDelete = await fetchDocumentsInArray(
       db.collection(Collection.MEMBERSHIP),
       "merchantId",
       merchantIds
-    )
+    );
 
-    const batch = db.batch()
+    const batch = db.batch();
 
     for (const merchantId of merchantIds) {
-      batch.delete(db.collection(Collection.MERCHANT).doc(merchantId))
+      batch.delete(db.collection(Collection.MERCHANT).doc(merchantId));
     }
 
     for (const membership of membershipsToDelete) {
-      batch.delete(db.collection(Collection.MEMBERSHIP).doc(membership.id))
+      batch.delete(db.collection(Collection.MEMBERSHIP).doc(membership.id));
     }
 
+<<<<<<< HEAD
     await batch.commit()
   })
 })
+=======
+    await batch.commit();
+  });
+});
+>>>>>>> 4417ad6bfaf759c07a75a9540329100abc3b83bf

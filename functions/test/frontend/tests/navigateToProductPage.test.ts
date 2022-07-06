@@ -10,18 +10,18 @@ const expect = chai.expect
 
 describe("Navigate to product page", () => {
   it("Should navigate to product page", async () => {
-    const page = await openNewPage()
+    const page = await openNewPage();
 
     await page.goto(`${baseUrl}/events/trinity`)
 
-    await page.waitForSelector(testName("event-listing"))
-    const eventListings = await page.$$(testName("event-listing"))
-    expect(eventListings.length).to.eql(1)
-    await eventListings[0].click()
+    await page.waitForSelector(testName("event-listing"));
+    const eventListings = await page.$$(testName("event-listing"));
+    expect(eventListings.length).to.eql(1);
+    await eventListings[0].click();
 
-    await page.waitForSelector(testName("product-listing"))
-    const productListings = await page.$$(testName("product-listing"))
-    expect(productListings.length).to.eql(4)
+    await page.waitForSelector(testName("product-listing"));
+    const productListings = await page.$$(testName("product-listing"));
+    expect(productListings.length).to.eql(4);
 
     // Check the order of the listings
     const firstListingTitle = await productListings[0].$(

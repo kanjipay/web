@@ -13,8 +13,8 @@ import { dateFromTimestamp } from "../../../shared/utils/time"
 export class InvitesController extends BaseController {
   acceptInvite = async (req, res, next) => {
     try {
-      const { inviteId } = req.params
-      const userId = req.user.id
+      const { inviteId } = req.params;
+      const userId = req.user.id;
 
       const { invite, inviteError } = await fetchDocument(
         Collection.INVITE,
@@ -23,8 +23,8 @@ export class InvitesController extends BaseController {
       )
 
       if (inviteError) {
-        next(inviteError)
-        return
+        next(inviteError);
+        return;
       }
 
       if (dateFromTimestamp(invite.expiresAt) < new Date()) {
@@ -35,7 +35,7 @@ export class InvitesController extends BaseController {
         return
       }
 
-      const { merchantId } = invite
+      const { merchantId } = invite;
 
       const { merchant, merchantError } = await fetchDocument(
         Collection.MERCHANT,
@@ -43,11 +43,11 @@ export class InvitesController extends BaseController {
       )
 
       if (merchantError) {
-        next(merchantError)
-        return
+        next(merchantError);
+        return;
       }
 
-      const { displayName } = merchant
+      const { displayName } = merchant;
 
       const updateInvite = db()
         .collection(Collection.INVITE)
@@ -67,9 +67,9 @@ export class InvitesController extends BaseController {
         ),
       ])
 
-      return res.sendStatus(200)
+      return res.sendStatus(200);
     } catch (err) {
-      next(err)
+      next(err);
     }
   }
 }

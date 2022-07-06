@@ -1,13 +1,13 @@
-import { Page } from "puppeteer"
-import * as path from "path"
+import { Page } from "puppeteer";
+import * as path from "path";
 
 export async function isVisible(page: Page, selector: string) {
   try {
-    await page.$(selector)
+    await page.$(selector);
 
-    return true
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
 

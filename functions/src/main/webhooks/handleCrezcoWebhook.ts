@@ -20,26 +20,26 @@ export const handleCrezcoWebhook = async (req, res, next) => {
       payload: JSON.stringify(req.body[0]),
     })
 
-    const signature = req.body[0].partnerMetadata?.signature
+    const signature = req.body[0].partnerMetadata?.signature;
 
     if (!signature) {
-      loggingClient.log("signature not present in metadata")
-      return res.sendStatus(200)
+      loggingClient.log("signature not present in metadata");
+      return res.sendStatus(200);
     }
 
-    const { isVerified, payload } = await verifyMercadoSignature(signature)
+    const { isVerified, payload } = await verifyMercadoSignature(signature);
 
     if (!isVerified) {
-      loggingClient.log("signature could not be verified")
-      return res.sendStatus(200)
+      loggingClient.log("signature could not be verified");
+      return res.sendStatus(200);
     }
 
-    const { eventType, metadata } = req.body[0]
-    const { payDemandId } = metadata
+    const { eventType, metadata } = req.body[0];
+    const { payDemandId } = metadata;
 
-    loggingClient.log("Got Crezco data", {}, { eventType, payDemandId })
+    loggingClient.log("Got Crezco data", {}, { eventType, payDemandId });
 
-    const { paymentAttemptId, environment } = payload
+    const { paymentAttemptId, environment } = payload;
 
     if (environment !== process.env.ENVIRONMENT) {
       loggingClient.log(
@@ -48,7 +48,7 @@ export const handleCrezcoWebhook = async (req, res, next) => {
       return res.sendStatus(200)
     }
 
-    loggingClient.log("Got payment attempt id", {}, { paymentAttemptId })
+    loggingClient.log("Got payment attempt id", {}, { paymentAttemptId });
 
     if (!eventType || !(eventType in crezcoPaymentStatuses)) {
       loggingClient.log("Crezco eventType undefined or not recognised", {
@@ -57,7 +57,7 @@ export const handleCrezcoWebhook = async (req, res, next) => {
       return res.sendStatus(200)
     }
 
-    const paymentAttemptStatus = crezcoPaymentStatuses[eventType]
+    const paymentAttemptStatus = crezcoPaymentStatuses[eventType];
 
     if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) {
       return res.sendStatus(200)
@@ -82,13 +82,13 @@ export const handleCrezcoWebhook = async (req, res, next) => {
     )
 
     if (error) {
-      loggingClient.log("An error occured", { message: error.message })
-      return res.sendStatus(200)
+      loggingClient.log("An error occured", { message: error.message });
+      return res.sendStatus(200);
     }
 
-    return res.sendStatus(200)
+    return res.sendStatus(200);
   } catch (err) {
-    console.log(err)
-    return res.sendStatus(200)
+    console.log(err);
+    return res.sendStatus(200);
   }
 }

@@ -2,7 +2,7 @@ require("dotenv").config()
 import * as chai from "chai"
 import chaiHttp = require("chai-http")
 
-chai.use(chaiHttp)
+chai.use(chaiHttp);
 
 export const expect = chai.expect
 export const main = chai.request(process.env.BASE_SERVER_URL + "/main")

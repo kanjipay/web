@@ -27,7 +27,7 @@ merchantRoutes.put(
   "/crezco",
   validate({ body: addCrezcoUserIdSchema }),
   merchantController.addCrezcoUserId
-)
+);
 
 merchantRoutes.post(
   "/create-stripe-account-link",

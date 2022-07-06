@@ -15,8 +15,8 @@ export function createSignature(payload: any, expireSeconds: number = 60 * 10) {
       algorithm: "RS256",
     })
 
-    return { signature }
+    return { signature };
   } catch (err) {
-    return { signatureError: err }
+    return { signatureError: err };
   }
 }

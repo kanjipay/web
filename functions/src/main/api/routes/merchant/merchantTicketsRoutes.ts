@@ -20,7 +20,7 @@ merchantTicketsRoutes.post(
   "/:ticketId/check",
   validate({ body: checkTicketBodySchema }),
   merchantTicketsController.check
-)
+);
 
 merchantTicketsRoutes.get("/sales-data", merchantTicketsController.salesData)
 

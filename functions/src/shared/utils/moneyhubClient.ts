@@ -1,8 +1,8 @@
-import Environment from "../enums/Environment"
-import LoggingController from "./loggingClient"
+import Environment from "../enums/Environment";
+import LoggingController from "./loggingClient";
 
-const Moneyhub = require("@mft/moneyhub-api-client")
-let moneyhubInstance = null
+const Moneyhub = require("@mft/moneyhub-api-client");
+let moneyhubInstance = null;
 
 async function getMoneyhub() {
   const isLocal = process.env.ENVIRONMENT === Environment.DEV_LOCAL
@@ -48,10 +48,10 @@ export async function processAuthSuccess(
   stateId: string,
   clientState: string
 ) {
-  const logger = new LoggingController("Moneyhub process auth success")
+  const logger = new LoggingController("Moneyhub process auth success");
 
-  const localState = `${paymentAttemptId}.${stateId}.${clientState}`
-  const nonce = paymentAttemptId
+  const localState = `${paymentAttemptId}.${stateId}.${clientState}`;
+  const nonce = paymentAttemptId;
 
   logger.log("States", {
     localState,
@@ -60,15 +60,15 @@ export async function processAuthSuccess(
   })
 
   try {
-    const moneyhub = await getMoneyhubClient()
+    const moneyhub = await getMoneyhubClient();
 
     const paramsFromCallback = {
       code,
       state,
-    }
+    };
 
     if (process.env.ENVIRONMENT !== Environment.DEV_LOCAL) {
-      paramsFromCallback["id_token"] = idToken
+      paramsFromCallback["id_token"] = idToken;
     }
 
     return await moneyhub.exchangeCodeForTokens({
@@ -77,26 +77,26 @@ export async function processAuthSuccess(
         state: localState,
       },
       paramsFromCallback,
-    })
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
 
 export async function getMoneyhubPayment(paymentId: string) {
-  const moneyhub = await getMoneyhubClient()
-  const { data } = await moneyhub.getPayment({ id: paymentId })
+  const moneyhub = await getMoneyhubClient();
+  const { data } = await moneyhub.getPayment({ id: paymentId });
 
-  return data
+  return data;
 }
 
 export async function getPayees() {
   try {
-    const moneyhub = await getMoneyhubClient()
+    const moneyhub = await getMoneyhubClient();
 
-    return await moneyhub.getPayees()
+    return await moneyhub.getPayees();
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
 
@@ -107,7 +107,7 @@ export async function createPayee(
   id: string
 ) {
   try {
-    const moneyhub = await getMoneyhubClient()
+    const moneyhub = await getMoneyhubClient();
 
     const res = await moneyhub.addPayee({
       accountNumber,
@@ -116,20 +116,20 @@ export async function createPayee(
       externalId: id,
     })
 
-    return res.data
+    return res.data;
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
 
 export async function fetchMoneyhubPayment(paymentId: string) {
-  const moneyhub = await getMoneyhubClient()
+  const moneyhub = await getMoneyhubClient();
 
   const res = await moneyhub.getPayment({
     id: paymentId,
-  })
+  });
 
-  const errorCode = res.code
+  const errorCode = res.code;
 
   if (errorCode) {
     return {
@@ -152,13 +152,13 @@ export async function generateMoneyhubPaymentAuthUrl(
   amount: number,
   paymentAttemptId: string
 ): Promise<string> {
-  const state = `${paymentAttemptId}.${stateId}.${clientState}`
-  const nonce = paymentAttemptId
+  const state = `${paymentAttemptId}.${stateId}.${clientState}`;
+  const nonce = paymentAttemptId;
 
   try {
-    const moneyhub = await getMoneyhubClient()
-    const payeeRef = "Mercado"
-    const payeeType = "api-payee"
+    const moneyhub = await getMoneyhubClient();
+    const payeeRef = "Mercado";
+    const payeeType = "api-payee";
 
     return await moneyhub.getPaymentAuthorizeUrl({
       bankId,
@@ -194,7 +194,7 @@ export async function generateMoneyhubPaymentAuthUrl(
       },
     })
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
 
@@ -209,7 +209,7 @@ export async function generateMoneyhubReversePaymentAuthUrl(
   const nonce = paymentAttemptId
 
   try {
-    const moneyhub = await getMoneyhubClient()
+    const moneyhub = await getMoneyhubClient();
 
     return await moneyhub.getReversePaymentAuthorizeUrl({
       bankId,

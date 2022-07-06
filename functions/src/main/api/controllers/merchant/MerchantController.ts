@@ -18,7 +18,7 @@ export class MerchantController extends BaseController {
       const { crezcoUserId } = req.body
       const { merchantId } = req.params
 
-      const logger = new LoggingController("Add Crezco user id")
+      const logger = new LoggingController("Add Crezco user id");
 
       await db()
         .collection(Collection.MERCHANT)
@@ -33,11 +33,11 @@ export class MerchantController extends BaseController {
         `Updated merchant with id ${merchantId} with crezco user id ${crezcoUserId}`
       )
 
-      res.sendStatus(200)
+      res.sendStatus(200);
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   createStripeAccountLink = async (req, res, next) => {
     try {
@@ -56,15 +56,15 @@ export class MerchantController extends BaseController {
       )
 
       if (merchantError) {
-        logger.log("Failed to retrieve merchant", { merchantError })
-        next(merchantError)
-        return
+        logger.log("Failed to retrieve merchant", { merchantError });
+        next(merchantError);
+        return;
       }
 
-      logger.log("Retrieved merchant", { merchant })
+      logger.log("Retrieved merchant", { merchant });
 
       if (merchant.stripe?.areChargesEnabled) {
-        logger.log("Merchant already has charges enabled for Stripe")
+        logger.log("Merchant already has charges enabled for Stripe");
 
         const errorMessage = "You have already onboarded with Stripe."
         next(
@@ -73,18 +73,18 @@ export class MerchantController extends BaseController {
         return
       }
 
-      let stripeAccountId: string
+      let stripeAccountId: string;
 
       if (merchant.stripe?.accountId) {
-        stripeAccountId = merchant.stripe.accountId
+        stripeAccountId = merchant.stripe.accountId;
       } else {
         logger.log(
           "Merchant doesn't have an associated Stripe account, creating one"
         )
 
-        const account = await stripe.accounts.create({ type: "standard" })
+        const account = await stripe.accounts.create({ type: "standard" });
 
-        stripeAccountId = account.id
+        stripeAccountId = account.id;
 
         const merchantUpdate = {
           stripe: {
@@ -100,10 +100,10 @@ export class MerchantController extends BaseController {
         await db()
           .collection(Collection.MERCHANT)
           .doc(merchantId)
-          .update(merchantUpdate)
+          .update(merchantUpdate);
       }
 
-      const baseUrl = `${process.env.CLIENT_URL}/dashboard/o/${merchantId}`
+      const baseUrl = `${process.env.CLIENT_URL}/dashboard/o/${merchantId}`;
 
       const accountLinkCreateBody: any = {
         account: stripeAccountId,
@@ -112,27 +112,27 @@ export class MerchantController extends BaseController {
         type: "account_onboarding",
       }
 
-      logger.log("Creating account link", { accountLinkCreateBody })
+      logger.log("Creating account link", { accountLinkCreateBody });
 
       const accountLink = await stripe.accountLinks.create(
         accountLinkCreateBody
       )
 
-      logger.log("Account link created", { accountLink })
+      logger.log("Account link created", { accountLink });
 
-      const redirectUrl = accountLink.url
+      const redirectUrl = accountLink.url;
 
-      return res.status(200).json({ redirectUrl })
+      return res.status(200).json({ redirectUrl });
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   updateStripeStatusIfNeeded = async (req, res, next) => {
     try {
-      const logger = new LoggingController("Check Stripe status")
+      const logger = new LoggingController("Check Stripe status");
 
-      const { merchantId } = req.params
+      const { merchantId } = req.params;
 
       const { merchant, merchantError } = await fetchDocument(
         Collection.MERCHANT,
@@ -140,12 +140,12 @@ export class MerchantController extends BaseController {
       )
 
       if (merchantError) {
-        logger.log("Failed to retrieve merchant", { merchantError })
-        next(merchantError)
-        return
+        logger.log("Failed to retrieve merchant", { merchantError });
+        next(merchantError);
+        return;
       }
 
-      logger.log("Retrieved merchant", { merchant })
+      logger.log("Retrieved merchant", { merchant });
 
       if (!merchant.stripe) {
         logger.log("No account for merchant, returning")
@@ -161,31 +161,31 @@ export class MerchantController extends BaseController {
           .json({ stripeStatus: StripeStatus.CHARGES_ENABLED })
       }
 
-      const account = await stripe.accounts.retrieve(merchant.stripe.accountId)
+      const account = await stripe.accounts.retrieve(merchant.stripe.accountId);
 
-      logger.log("Stripe account retrieved", { account })
+      logger.log("Stripe account retrieved", { account });
 
-      const { charges_enabled, details_submitted } = account
+      const { charges_enabled, details_submitted } = account;
 
-      let stripeStatus: StripeStatus
+      let stripeStatus: StripeStatus;
 
       if (charges_enabled) {
-        stripeStatus = StripeStatus.CHARGES_ENABLED
+        stripeStatus = StripeStatus.CHARGES_ENABLED;
       } else if (details_submitted) {
-        stripeStatus = StripeStatus.DETAILS_SUBMITTED
+        stripeStatus = StripeStatus.DETAILS_SUBMITTED;
       } else {
-        stripeStatus = StripeStatus.DETAILS_NOT_SUBMITTED
+        stripeStatus = StripeStatus.DETAILS_NOT_SUBMITTED;
       }
 
-      const update = { "stripe.status": stripeStatus }
+      const update = { "stripe.status": stripeStatus };
 
       logger.log("updating merchant", { update })
 
       await db().collection(Collection.MERCHANT).doc(merchantId).update(update)
 
-      return res.status(200).json({ stripeStatus })
+      return res.status(200).json({ stripeStatus });
     } catch (err) {
-      next(err)
+      next(err);
     }
   }
 }

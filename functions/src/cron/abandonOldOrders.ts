@@ -8,9 +8,9 @@ import { db } from "../shared/utils/admin"
 
 export const abandonOldOrders = async (context) => {
   try {
-    logger.log("Fetching pending ticket orders")
+    logger.log("Fetching pending ticket orders");
 
-    const tenMinutesAgo = addMinutes(new Date(), -10)
+    const tenMinutesAgo = addMinutes(new Date(), -10);
 
     const snapshot = await db()
       .collection(Collection.ORDER)
@@ -18,19 +18,19 @@ export const abandonOldOrders = async (context) => {
       .where("wereTicketsCreated", "==", false)
       .where("status", "==", OrderStatus.PENDING)
       .where("createdAt", "<", tenMinutesAgo)
-      .get()
+      .get();
 
     const orders: any[] = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() }
     })
 
-    logger.log("Got orders", { orderCount: orders.length })
+    logger.log("Got orders", { orderCount: orders.length });
 
     if (orders.length === 0) {
       return
     }
 
-    const batch = db().batch()
+    const batch = db().batch();
 
     for (const order of orders) {
       const { productId, quantity } = order.orderItems[0]
@@ -43,7 +43,7 @@ export const abandonOldOrders = async (context) => {
       })
     }
 
-    await batch.commit()
+    await batch.commit();
   } catch (err) {
     logger.error(err)
   }

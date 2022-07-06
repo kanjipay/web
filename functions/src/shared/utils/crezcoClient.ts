@@ -1,7 +1,7 @@
-import axios from "axios"
-import { createSignature } from "./createSignature"
-import { isStrictEnvironment } from "./isStrictEnvironment"
-import LoggingController from "./loggingClient"
+import axios from "axios";
+import { createSignature } from "./createSignature";
+import { isStrictEnvironment } from "./isStrictEnvironment";
+import LoggingController from "./loggingClient";
 
 const defaultHeaders = {
   "X-Crezco-Key": process.env.CREZCO_API_KEY,
@@ -20,7 +20,7 @@ export async function fetchBankData(countryCode: string) {
     }
   )
 
-  return data
+  return data;
 }
 
 export async function createPaymentDemand(
@@ -32,11 +32,11 @@ export async function createPaymentDemand(
   currency: string
 ) {
   try {
-    const logger = new LoggingController("Create Crezco payment demand")
+    const logger = new LoggingController("Create Crezco payment demand");
 
-    logger.log("Creating Crezco payment demand")
+    logger.log("Creating Crezco payment demand");
 
-    const expireSeconds = currency === "GBP" ? 60 * 10 : 60 * 60 * 24 * 3
+    const expireSeconds = currency === "GBP" ? 60 * 10 : 60 * 60 * 24 * 3;
 
     logger.log("Set jwt expiry for webhook", { expireSeconds })
 
@@ -49,11 +49,11 @@ export async function createPaymentDemand(
     )
 
     if (signatureError) {
-      logger.log("Error when creating webhook signature", { signatureError })
-      return { payDemandError: signatureError }
+      logger.log("Error when creating webhook signature", { signatureError });
+      return { payDemandError: signatureError };
     }
 
-    logger.log("Created signature for webhook")
+    logger.log("Created signature for webhook");
 
     const paymentDemandData = {
       request: {
@@ -69,7 +69,7 @@ export async function createPaymentDemand(
       idemPayDemand: paymentAttemptId,
     }
 
-    const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands`
+    const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands`;
 
     logger.log("Calling create pay demand endpoint", {
       url,
@@ -81,14 +81,14 @@ export async function createPaymentDemand(
       headers: defaultHeaders,
     })
 
-    const paymentDemandId = res.data
+    const paymentDemandId = res.data;
 
-    logger.log("Got payment demand id", { paymentDemandId })
+    logger.log("Got payment demand id", { paymentDemandId });
 
-    return { paymentDemandId }
+    return { paymentDemandId };
   } catch (err) {
-    console.log(err.response)
-    return { payDemandError: err }
+    console.log(err.response);
+    return { payDemandError: err };
   }
 }
 
@@ -100,13 +100,13 @@ export async function createPayment(
   countryCode: string
 ) {
   try {
-    const logger = new LoggingController("Create Crezco payment")
+    const logger = new LoggingController("Create Crezco payment");
 
-    logger.log("Creating Crezco payment")
+    logger.log("Creating Crezco payment");
 
-    const mercadoRedirectUrl = `${process.env.CLIENT_URL}/checkout/cr-redirect?paymentAttemptId=${paymentAttemptId}`
+    const mercadoRedirectUrl = `${process.env.CLIENT_URL}/checkout/cr-redirect?paymentAttemptId=${paymentAttemptId}`;
 
-    logger.log("Formulated redirect url", { mercadoRedirectUrl })
+    logger.log("Formulated redirect url", { mercadoRedirectUrl });
 
     const params = {
       bankId,
@@ -117,7 +117,7 @@ export async function createPayment(
       finalScreen: "PaymentStatus",
     }
 
-    const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment`
+    const url = `${baseUrl}/v1/users/${crezcoUserId}/pay-demands/${crezcoPayDemandId}/payment`;
 
     logger.log("Calling Crezco create payment endpoint", {
       url,
@@ -136,12 +136,12 @@ export async function createPayment(
 
     logger.log("Got response", { ...res.data })
 
-    const redirectUrl = res.data.redirect
+    const redirectUrl = res.data.redirect;
 
-    return { redirectUrl }
+    return { redirectUrl };
   } catch (err) {
-    console.log(err.response)
-    return { paymentError: err }
+    console.log(err.response);
+    return { paymentError: err };
   }
 }
 
@@ -152,5 +152,5 @@ export async function getPaymentStatus(paymentDemandId: string) {
   )
   const paymentStatus = paymentsRes.data[0].status.code
 
-  return paymentStatus
+  return paymentStatus;
 }

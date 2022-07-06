@@ -13,7 +13,7 @@ export async function processPaymentUpdate(
   orderId: string | null = null
 ) {
   if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) {
-    return [true, null]
+    return [true, null];
   }
 
   const updatePaymentAttempt = db()
@@ -23,7 +23,7 @@ export async function processPaymentUpdate(
       status: paymentAttemptStatus,
     })
 
-  const promises: Promise<any>[] = [updatePaymentAttempt]
+  const promises: Promise<any>[] = [updatePaymentAttempt];
 
   if (
     [PaymentAttemptStatus.SUCCESSFUL, PaymentAttemptStatus.ACCEPTED].includes(
@@ -37,16 +37,16 @@ export async function processPaymentUpdate(
       )
 
       if (paymentAttemptError) {
-        return [false, paymentAttemptError]
+        return [false, paymentAttemptError];
       }
 
-      orderId = paymentAttempt.orderId
+      orderId = paymentAttempt.orderId;
     }
 
     const { order, orderError } = await fetchDocument(Collection.ORDER, orderId)
 
     if (orderError) {
-      return [false, orderError]
+      return [false, orderError];
     }
 
     const {
@@ -68,7 +68,7 @@ export async function processPaymentUpdate(
       }
 
       if (type === OrderType.TICKETS && !wereTicketsCreated) {
-        const { productId, eventId, eventEndsAt, quantity } = orderItems[0]
+        const { productId, eventId, eventEndsAt, quantity } = orderItems[0];
 
         const updateProduct = db()
           .collection(Collection.PRODUCT)
@@ -104,13 +104,13 @@ export async function processPaymentUpdate(
       const updateOrder = db()
         .collection(Collection.ORDER)
         .doc(orderId)
-        .update(orderUpdate)
+        .update(orderUpdate);
 
-      promises.push(updateOrder)
+      promises.push(updateOrder);
     }
   }
 
-  await Promise.all(promises)
+  await Promise.all(promises);
 
   return [true, null]
 }

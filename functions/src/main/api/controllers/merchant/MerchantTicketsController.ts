@@ -26,13 +26,13 @@ export class MerchantTicketsController extends BaseController {
       )
 
       if (ticketError) {
-        next(ticketError)
-        return
+        next(ticketError);
+        return;
       }
 
-      logger.log("Retrieved ticket from db", { ticket })
+      logger.log("Retrieved ticket from db", { ticket });
 
-      const { eventId, productId, userId, wasUsed, usedAt } = ticket
+      const { eventId, productId, userId, wasUsed, usedAt } = ticket;
 
       if (!eventId || !productId || !userId) {
         const errorMessage =
@@ -56,20 +56,20 @@ export class MerchantTicketsController extends BaseController {
           fetchDocument(Collection.EVENT, checkedEventId),
         ])
 
-        let errorMessage: string
+        let errorMessage: string;
 
         if (!ticketEvent || ticketEventError) {
-          errorMessage = "Couldn't find the event this ticket is for."
+          errorMessage = "Couldn't find the event this ticket is for.";
         } else if (!checkedEvent || checkedEventError) {
-          errorMessage = "The event you're scanning for doesn't exist"
+          errorMessage = "The event you're scanning for doesn't exist";
         } else if (merchantId !== ticket.merchantId) {
           console.log(merchantId)
           console.log(ticket.merchantId)
           errorMessage = "This ticket is for another organiser."
         } else {
-          const { title: ticketEventTitle } = ticketEvent
-          const { title: checkedEventTitle } = checkedEvent
-          errorMessage = `This ticket is for ${ticketEventTitle} but you're checking tickets for ${checkedEventTitle}.`
+          const { title: ticketEventTitle } = ticketEvent;
+          const { title: checkedEventTitle } = checkedEvent;
+          errorMessage = `This ticket is for ${ticketEventTitle} but you're checking tickets for ${checkedEventTitle}.`;
         }
 
         next(
@@ -90,23 +90,23 @@ export class MerchantTicketsController extends BaseController {
 
       for (const error of [productError, eventError, userError]) {
         if (error) {
-          next(error)
-          return
+          next(error);
+          return;
         }
       }
 
-      logger.log("Got product, event and user", { product, event, user })
+      logger.log("Got product, event and user", { product, event, user });
 
-      const { latestEntryAt, earliestEntryAt } = product
+      const { latestEntryAt, earliestEntryAt } = product;
 
-      const currentDate = new Date()
+      const currentDate = new Date();
 
       const isTooEarly =
         earliestEntryAt && currentDate < dateFromTimestamp(earliestEntryAt)
       const isTooLate =
         latestEntryAt && currentDate > dateFromTimestamp(latestEntryAt)
 
-      const { firstName, lastName } = user
+      const { firstName, lastName } = user;
 
       if (!wasUsed) {
         await db().collection(Collection.TICKET).doc(ticketId).update({
@@ -137,25 +137,25 @@ export class MerchantTicketsController extends BaseController {
         latestEntryAt,
       })
     } catch (err) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   salesData = async (req, res, next) => {
     try {
-      const { merchantId } = req.params
+      const { merchantId } = req.params;
 
       const getOrders = db()
         .collection(Collection.ORDER)
         .where("merchantId", "==", merchantId)
         .where("status", "==", OrderStatus.PAID)
-        .get()
+        .get();
 
       const getEvents = db()
         .collection(Collection.EVENT)
         .where("merchantId", "==", merchantId)
         .where("isPublished", "==", true)
-        .get()
+        .get();
 
       const getProducts = db()
         .collection(Collection.PRODUCT)
@@ -211,9 +211,9 @@ export class MerchantTicketsController extends BaseController {
         return { id: doc.id, ...doc.data() }
       })
 
-      res.status(200).json({ events, products, sales })
+      res.status(200).json({ events, products, sales });
     } catch (err) {
-      next(err)
+      next(err);
     }
   }
 }

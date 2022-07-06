@@ -103,7 +103,7 @@ describe("Create event", () => {
     ] = await Promise.all([
       isVisible(page, testId("publish-product-button")),
       isVisible(page, testId("delete-product-button")),
-    ])
+    ]);
 
     // expect(isPublishVisible).to.eql(false, "Publish button still visible after publishing product")
     // expect(isDeleteVisible).to.eql(false, "Delete button still visible after publishing product")
@@ -117,7 +117,7 @@ describe("Create event", () => {
     )
 
     // Now go back to event page
-    await page.click(testId("breadcrumb-event"))
+    await page.click(testId("breadcrumb-event"));
 
     const publishEventButton = await page.waitForSelector(
       testId("publish-event-button")
@@ -131,17 +131,17 @@ describe("Create event", () => {
   })
 
   after(async () => {
-    const batch = db.batch()
+    const batch = db.batch();
 
     const fetchTestEvents = db
       .collection(Collection.EVENT)
       .where("title", "==", "Test event")
-      .get()
+      .get();
 
     const fetchTestProducts = db
       .collection(Collection.PRODUCT)
       .where("title", "==", "Test product")
-      .get()
+      .get();
 
     const [testEvents, testProducts] = await Promise.all([
       fetchTestEvents,
@@ -149,11 +149,11 @@ describe("Create event", () => {
     ])
 
     for (const event of testEvents.docs) {
-      batch.delete(db.collection(Collection.EVENT).doc(event.id))
+      batch.delete(db.collection(Collection.EVENT).doc(event.id));
     }
 
     for (const product of testProducts.docs) {
-      batch.delete(db.collection(Collection.PRODUCT).doc(product.id))
+      batch.delete(db.collection(Collection.PRODUCT).doc(product.id));
     }
 
     await batch.commit()

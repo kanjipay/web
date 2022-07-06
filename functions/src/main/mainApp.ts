@@ -8,14 +8,14 @@ import mainWebhooksApp from "./webhooks/mainWebhooksApp"
 
 const mainApp = express()
 
-setBodyParser(mainApp)
+setBodyParser(mainApp);
 
-mainApp.use(logRequest)
+mainApp.use(logRequest);
 
-mainApp.use("/api/v1", mainApiApp)
-mainApp.use("/webhooks/v1", mainWebhooksApp)
-mainApp.get("/status", statusHandler)
+mainApp.use("/api/v1", mainApiApp);
+mainApp.use("/webhooks/v1", mainWebhooksApp);
+mainApp.get("/status", statusHandler);
 
-mainApp.use(errorHandler)
+mainApp.use(errorHandler);
 
 export default mainApp
