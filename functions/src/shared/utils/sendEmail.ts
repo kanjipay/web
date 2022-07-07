@@ -1,6 +1,6 @@
 import { format } from "date-fns"
 import { formatCurrency } from "./formatCurrency"
-import LoggingController from "./loggingClient"
+import { logger } from "firebase-functions/v1"
 import { sendgridClient } from "./sendgridClient"
 
 const fromEmail = "team@mercadopay.co"
@@ -13,24 +13,23 @@ enum TemplateName {
 }
 
 async function sendEmail(
-  toEmail: string,
+  toEmails: Array<string>,
   templateName: TemplateName,
   data: unknown
 ) {
-  const logger = new LoggingController("sendEmail")
   const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
 
   const templateId = templateIds[templateName]
 
   logger.log("Sending email", {
-    toEmail,
+    toEmails,
     fromEmail,
     data,
     templateId,
   })
 
   return sendgridClient().send({
-    to: toEmail,
+    to: toEmails,
     from: fromEmail,
     dynamic_template_data: data,
     template_id: templateId,
@@ -45,7 +44,6 @@ export async function sendMenuReceiptEmail(
   total: number,
   currency: string
 ) {
-  const logger = new LoggingController("sendMenuReceipt")
 
   const data = {
     merchantName,
@@ -62,7 +60,7 @@ export async function sendMenuReceiptEmail(
     data,
   })
 
-  return sendEmail(toEmail, TemplateName.MENU_RECEIPT, data)
+  return sendEmail([toEmail], TemplateName.MENU_RECEIPT, data)
 }
 
 export async function sendInvites(
@@ -103,7 +101,6 @@ export async function sendTicketReceipt(
   ticketIds: string[],
   customerFee: number
 ) {
-  const logger = new LoggingController("sendTicketReceipt")
 
   logger.log("Sending ticket receipt", {
     toEmail,
@@ -155,11 +152,11 @@ export async function sendTicketReceipt(
     tickets,
   }
 
-  return sendEmail(toEmail, TemplateName.TICKET_RECEIPT, data)
+  return sendEmail([toEmail], TemplateName.TICKET_RECEIPT, data)
 }
 
 export async function sendTicketSaleAlert(
-  toEmail: string,
+  toEmails: Array<string>,
   customerName: string,
   eventTitle: string,
   productTitle: string,
@@ -170,10 +167,9 @@ export async function sendTicketSaleAlert(
   ticketIds: string[],
   customerFee: number
 ) {
-  const logger = new LoggingController("sendTicketReceipt")
 
   logger.log("Sending ticket sale alert", {
-    toEmail,
+    toEmails,
     customerName,
     eventTitle,
     productTitle,
@@ -206,5 +202,5 @@ export async function sendTicketSaleAlert(
     fee,
   }
 
-  return sendEmail(toEmail, TemplateName.TICKET_SALE_ALERT, data)
+  return sendEmail(toEmails, TemplateName.TICKET_SALE_ALERT, data)
 }
