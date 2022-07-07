@@ -12,6 +12,18 @@ enum TemplateName {
   TICKET_SALE_ALERT = "TICKET_SALE_ALERT",
 }
 
+function addFees(productPrice, quantity, customerFee, currency) {
+  const fee = formatCurrency(
+    Math.round(productPrice * quantity * customerFee),
+    currency
+  )
+  const total = formatCurrency(
+    Math.round(productPrice * quantity * (1 + customerFee)),
+    currency
+  )
+  return { fee, total }
+}
+
 async function sendEmail(
   toEmails: Array<string>,
   templateName: TemplateName,
@@ -110,16 +122,7 @@ export async function sendTicketReceipt(
     boughtAt,
     ticketIds,
   })
-
-  const fee = formatCurrency(
-    Math.round(productPrice * quantity * customerFee),
-    currency
-  )
-  const total = formatCurrency(
-    Math.round(productPrice * quantity * (1 + customerFee)),
-    currency
-  )
-
+  const { fee, total } = addFees(productPrice, quantity, customerFee, currency)
   const tickets = ticketIds.map((ticketId, index) => {
     let ticketNumber = (index + 1).toString()
 
@@ -149,7 +152,6 @@ export async function sendTicketReceipt(
     fee,
     tickets,
   }
-
   return sendEmail([toEmail], TemplateName.TICKET_RECEIPT, data)
 }
 
@@ -175,15 +177,7 @@ export async function sendTicketSaleAlert(
     boughtAt,
     ticketIds,
   })
-
-  const fee = formatCurrency(
-    Math.round(productPrice * quantity * customerFee),
-    currency
-  )
-  const total = formatCurrency(
-    Math.round(productPrice * quantity * (1 + customerFee)),
-    currency
-  )
+  const { fee, total } = addFees(productPrice, quantity, customerFee, currency)
 
   const data = {
     customerName,
@@ -198,6 +192,5 @@ export async function sendTicketSaleAlert(
     total,
     fee,
   }
-
   return sendEmail(toEmails, TemplateName.TICKET_SALE_ALERT, data)
 }
