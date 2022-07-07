@@ -44,7 +44,6 @@ export async function sendMenuReceiptEmail(
   total: number,
   currency: string
 ) {
-
   const data = {
     merchantName,
     orderNumber,
@@ -101,7 +100,6 @@ export async function sendTicketReceipt(
   ticketIds: string[],
   customerFee: number
 ) {
-
   logger.log("Sending ticket receipt", {
     toEmail,
     firstName,
@@ -167,7 +165,6 @@ export async function sendTicketSaleAlert(
   ticketIds: string[],
   customerFee: number
 ) {
-
   logger.log("Sending ticket sale alert", {
     toEmails,
     customerName,

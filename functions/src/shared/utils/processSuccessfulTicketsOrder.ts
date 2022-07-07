@@ -7,7 +7,6 @@ import { fetchDocument } from "./fetchDocument"
 import { sendTicketReceipt, sendTicketSaleAlert } from "./sendEmail"
 import { fetchDocumentsInArray } from "./fetchDocumentsInArray"
 
-
 export async function processSuccessfulTicketsOrder(
   merchantId: string,
   eventId: string,
@@ -88,14 +87,20 @@ export async function processSuccessfulTicketsOrder(
   )
 
   const customerName = firstName + " " + lastName
-  const membersToAlert = await db().collection(Collection.MEMBERSHIP).where("merchantId", "==", merchantId).where("emailAlert", "==", true) .get()
+  const membersToAlert = await db()
+    .collection(Collection.MEMBERSHIP)
+    .where("merchantId", "==", merchantId)
+    .where("emailAlert", "==", true)
+    .get()
   const userIds = membersToAlert.docs.map((doc) => doc.data().userId)
-  const userDocs = await fetchDocumentsInArray(db().collection(Collection.USER),
-  "userId",
-    userIds)
+  const userDocs = await fetchDocumentsInArray(
+    db().collection(Collection.USER),
+    "userId",
+    userIds
+  )
   const userEmails = userDocs.map((doc) => doc.data().email)
-  logger.log('users to alert', userIds)
-  if (userEmails.length > 0){
+  logger.log("users to alert", userIds)
+  if (userEmails.length > 0) {
     sendTicketSaleAlert(
       userEmails,
       customerName,
@@ -106,7 +111,8 @@ export async function processSuccessfulTicketsOrder(
       boughtAt,
       currency,
       ticketIds,
-      customerFee)
+      customerFee
+    )
   }
   return
 }
