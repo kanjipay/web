@@ -113,6 +113,7 @@ export async function processSuccessfulTicketsOrder(
       ticketIds,
       customerFee
     )
+  logger.log('alert emails sent')
   }
   return
 }
