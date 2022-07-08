@@ -15,6 +15,7 @@ import StripeStatus from "../../../enums/StripeStatus"
 import { getMerchantStorageRef } from "../../../utils/helpers/storage"
 import { uploadImage } from "../../../utils/helpers/uploadImage"
 import { NetworkManager } from "../../../utils/NetworkManager"
+import { redirectToCrezco } from "./redirectToCrezco"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
@@ -105,7 +106,7 @@ export default function SettingsPage({ merchant }) {
               },
             ]}
             onSubmit={handleSaveDetails}
-            submitTitle="Save"
+            submitTitle="Save changes"
           />
           <Spacer y={6} />
           <Form
@@ -153,28 +154,46 @@ export default function SettingsPage({ merchant }) {
             onSubmit={handleChangeBankDetails}
           />
           <Spacer y={6} />
-          {merchant.stripe?.status !== StripeStatus.CHARGES_ENABLED && (
-            <div>
-              <h2 className="header-s">Stripe</h2>
-              <Spacer y={2} />
-              <p className="text-body-faded">
-                Connect with Stripe to enable customers to pay for tickets with
-                a card. This is a useful fallback for customers with
-                international bank accounts.
-              </p>
-              <Spacer y={2} />
-              <MainButton
-                title={
-                  merchant.stripe
-                    ? "Continue your Stripe onboarding"
-                    : "Connect with Stripe"
-                }
-                onClick={handleContinueToStripe}
-                isLoading={isRedirectingToStripe}
-              />
-              <Spacer y={6} />
-            </div>
-          )}
+          <div>
+            <h2 className="header-s">Payment methods</h2>
+            <Spacer y={2} />
+            <h3 className="header-xs">Crezco</h3>
+            <Spacer y={2} />
+            <p className="text-body-faded">{
+              merchant.crezco?.userId ?
+                "You're connected with Crezco. This means your customers can pay you via bank transfer." :
+                "Connect with Crezco to enable customers to pay for tickets with an instant bank transfer."
+            }</p>
+            {
+              !merchant.crezco?.userId && <div>
+                <Spacer y={2} />
+                <MainButton
+                  title="Connect with Crezco"
+                  onClick={() => redirectToCrezco(merchantId)}
+                />
+              </div>
+            }
+            
+            <Spacer y={4} />
+            <h3 className="header-xs">Stripe</h3>
+            <Spacer y={2} />
+            <p className="text-body-faded">{
+              merchant.stripe?.status === StripeStatus.CHARGES_ENABLED ?
+                "You're connected with Stripe. This means your customers can pay you via card" :
+                "Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts."
+            }</p>
+            <Spacer y={2} />
+            <MainButton
+              title={
+                merchant.stripe
+                  ? "Continue your Stripe onboarding"
+                  : "Connect with Stripe"
+              }
+              onClick={handleContinueToStripe}
+              isLoading={isRedirectingToStripe}
+            />
+            <Spacer y={6} />
+          </div>
         </div>
 
         <div></div>
