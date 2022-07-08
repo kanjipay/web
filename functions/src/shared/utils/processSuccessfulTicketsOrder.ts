@@ -4,7 +4,9 @@ import { db } from "./admin"
 import LoggingController from "./loggingClient"
 import { v4 as uuid } from "uuid"
 import { fetchDocument } from "./fetchDocument"
-import { sendTicketReceipt } from "./sendEmail"
+import { sendTicketReceipt, sendTicketSaleAlert } from "./sendEmail"
+import { fetchDocumentsInArray } from "./fetchDocumentsInArray"
+import { FieldPath } from "@google-cloud/firestore"
 
 export async function processSuccessfulTicketsOrder(
   merchantId: string,
@@ -69,7 +71,7 @@ export async function processSuccessfulTicketsOrder(
     updateProduct,
   ])
 
-  const { email, firstName } = user
+  const { email, firstName, lastName } = user
   const boughtAt = new Date()
 
   await sendTicketReceipt(
@@ -85,5 +87,34 @@ export async function processSuccessfulTicketsOrder(
     customerFee
   )
 
+  const customerName = firstName + " " + lastName
+  const membersToAlert = await db()
+    .collection(Collection.MEMBERSHIP)
+    .where("merchantId", "==", merchantId)
+    .where("emailAlert", "==", true)
+    .get()
+  const userIds = membersToAlert.docs.map((doc) => doc.data().userId)
+  const userDocs = await fetchDocumentsInArray(
+    db().collection(Collection.USER),
+    FieldPath.documentId(),
+    userIds
+  )
+  const userEmails = userDocs.map((doc) => doc.email)
+  logger.log("users to alert", userIds)
+  if (userEmails.length > 0) {
+    await sendTicketSaleAlert(
+      userEmails,
+      customerName,
+      eventTitle,
+      productTitle,
+      productPrice,
+      quantity,
+      boughtAt,
+      currency,
+      ticketIds,
+      customerFee
+    )
+    logger.log("alert emails sent")
+  }
   return
 }

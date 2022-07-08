@@ -1,6 +1,6 @@
 import { format } from "date-fns"
 import { formatCurrency } from "./formatCurrency"
-import LoggingController from "./loggingClient"
+import { logger } from "firebase-functions/v1"
 import { sendgridClient } from "./sendgridClient"
 
 const fromEmail = "team@mercadopay.co"
@@ -9,27 +9,39 @@ enum TemplateName {
   TICKET_RECEIPT = "TICKET_RECEIPT",
   MENU_RECEIPT = "MENU_RECEIPT",
   INVITE = "INVITE",
+  TICKET_SALE_ALERT = "TICKET_SALE_ALERT",
+}
+
+function addFees(productPrice, quantity, customerFee, currency){
+  const fee = formatCurrency(
+    Math.round(productPrice * quantity * customerFee),
+    currency
+  )
+  const total = formatCurrency(
+    Math.round(productPrice * quantity * (1 + customerFee)),
+    currency
+  )
+  return {fee, total}
 }
 
 async function sendEmail(
-  toEmail: string,
+  toEmails: Array<string>,
   templateName: TemplateName,
   data: unknown
 ) {
-  const logger = new LoggingController("sendEmail")
   const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
 
   const templateId = templateIds[templateName]
 
   logger.log("Sending email", {
-    toEmail,
+    toEmails,
     fromEmail,
     data,
     templateId,
   })
 
   return sendgridClient().send({
-    to: toEmail,
+    to: toEmails,
     from: fromEmail,
     dynamic_template_data: data,
     template_id: templateId,
@@ -44,8 +56,6 @@ export async function sendMenuReceiptEmail(
   total: number,
   currency: string
 ) {
-  const logger = new LoggingController("sendMenuReceipt")
-
   const data = {
     merchantName,
     orderNumber,
@@ -61,7 +71,7 @@ export async function sendMenuReceiptEmail(
     data,
   })
 
-  return sendEmail(toEmail, TemplateName.MENU_RECEIPT, data)
+  return sendEmail([toEmail], TemplateName.MENU_RECEIPT, data)
 }
 
 export async function sendInvites(
@@ -102,8 +112,6 @@ export async function sendTicketReceipt(
   ticketIds: string[],
   customerFee: number
 ) {
-  const logger = new LoggingController("sendTicketReceipt")
-
   logger.log("Sending ticket receipt", {
     toEmail,
     firstName,
@@ -114,16 +122,7 @@ export async function sendTicketReceipt(
     boughtAt,
     ticketIds,
   })
-
-  const fee = formatCurrency(
-    Math.round(productPrice * quantity * customerFee),
-    currency
-  )
-  const total = formatCurrency(
-    Math.round(productPrice * quantity * (1 + customerFee)),
-    currency
-  )
-
+  const {fee, total} = addFees(productPrice, quantity, customerFee, currency)
   const tickets = ticketIds.map((ticketId, index) => {
     let ticketNumber = (index + 1).toString()
 
@@ -153,6 +152,45 @@ export async function sendTicketReceipt(
     fee,
     tickets,
   }
+  return sendEmail([toEmail], TemplateName.TICKET_RECEIPT, data)
+}
 
-  return sendEmail(toEmail, TemplateName.TICKET_RECEIPT, data)
+export async function sendTicketSaleAlert(
+  toEmails: Array<string>,
+  customerName: string,
+  eventTitle: string,
+  productTitle: string,
+  productPrice: number,
+  quantity: number,
+  boughtAt: Date,
+  currency: string,
+  ticketIds: string[],
+  customerFee: number
+) {
+  logger.log("Sending ticket sale alert", {
+    toEmails,
+    customerName,
+    eventTitle,
+    productTitle,
+    productPrice,
+    quantity,
+    boughtAt,
+    ticketIds,
+  })
+  const {fee, total} = addFees(productPrice, quantity, customerFee, currency)
+
+  const data = {
+    customerName,
+    eventTitle,
+    lineItems: [
+      {
+        productTitle,
+        price: formatCurrency(productPrice, currency),
+        quantity,
+      },
+    ],
+    total,
+    fee,
+  }
+  return sendEmail(toEmails, TemplateName.TICKET_SALE_ALERT, data)
 }

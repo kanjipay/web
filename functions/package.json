@@ -5,7 +5,7 @@
     "build": "tsc",
     "build:dev": "env-cmd -f ./.env.dev tsc",
     "build:prod": "env-cmd -f ./.env.prod tsc",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
