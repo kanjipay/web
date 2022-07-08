@@ -4,6 +4,7 @@
   font: var(--font-body);
   text-decoration: none;
   color: black;
+  scroll-behavior: smooth;
 }
 
 ::selection {

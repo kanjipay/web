@@ -56,11 +56,11 @@ export default function CreateProductPage({ event, products, merchant }) {
         pageData={[
           { title: "Events", path: "../.." },
           { title: event.title, path: ".." },
-          { title: "Create product" },
+          { title: "Create ticket type" },
         ]}
       />
       <Spacer y={2} />
-      <h1 className="header-l">Create product</h1>
+      <h1 className="header-l">Create ticket type</h1>
       <Spacer y={3} />
       <div
         style={{
@@ -123,7 +123,7 @@ export default function CreateProductPage({ event, products, merchant }) {
                 ],
               },
             ]}
-            submitTitle="Create product"
+            submitTitle="Create ticket type"
             onSubmit={handleCreateProduct}
           />
           <Spacer y={6} />

@@ -85,65 +85,6 @@ export default function Merchant({ user }) {
       </div>
     )
   } else if (merchant) {
-    let routes = []
-
-    if (merchant.crezco) {
-      routes.push(
-        <Route
-          path="crezco-connected"
-          element={
-            <IconActionPage
-              Icon={Tick}
-              iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
-              iconForegroundColor={Colors.BLACK}
-              title="Bank details added"
-              name="crezco-connected"
-              body="You're now all set up to receive payments by bank transfer!"
-              primaryAction={() =>
-                navigate(`/dashboard/o/${merchantId}/events`)
-              }
-              primaryActionTitle="Continue"
-            />
-          }
-        />
-      )
-
-      routes.push(
-        <Route path="stripe-connected" element={<StripeConnectRedirectPage />} />
-      )
-
-      if (
-        [StripeStatus.CHARGES_ENABLED, StripeStatus.DETAILS_SUBMITTED].includes(
-          merchant.stripe?.status
-        ) ||
-        merchant.stripe?.wasSkipped
-      ) {
-        routes.push(
-          <Route path="events/*" element={<Events merchant={merchant} />} />,
-          <Route path="/" element={<AnalyticsPage merchant={merchant} />} />,
-          <Route
-            path="analytics"
-            element={<AnalyticsPage merchant={merchant} />}
-          />,
-          <Route
-            path="settings"
-            element={<SettingsPage merchant={merchant} />}
-          />,
-          <Route path="users" element={<UsersPage merchant={merchant} />} />
-        )
-      } else {
-        routes.push(<Route path="*" element={<ConnectStripePage />} />)
-      }
-    } else {
-      routes.push(
-        <Route
-          path="crezco-connected"
-          element={<CrezcoConnectRedirectPage />}
-        />,
-        <Route path="*" element={<ConnectCrezcoPage user={user} />} />
-      )
-    }
-
     return (
       <div
         style={{
@@ -176,7 +117,23 @@ export default function Merchant({ user }) {
             right: 0,
           }}
         >
-          <Routes>{routes}</Routes>
+          <Routes>
+            <Route path="events/*" element={<Events merchant={merchant} />} />
+            <Route path="/" element={<AnalyticsPage merchant={merchant} />} />
+            <Route
+              path="analytics"
+              element={<AnalyticsPage merchant={merchant} />}
+            />
+            <Route
+              path="settings"
+              element={<SettingsPage merchant={merchant} />}
+            />
+            <Route path="users" element={<UsersPage merchant={merchant} />} />
+            <Route path="stripe-connected" element={<StripeConnectRedirectPage />} />
+            <Route path="crezco-connected" element={<CrezcoConnectRedirectPage />} />
+            <Route path="connect-stripe" element={<ConnectStripePage />} />
+            <Route path="connect-crezco" element={<ConnectCrezcoPage user={user} />} />
+          </Routes>
         </div>
       </div>
     )
