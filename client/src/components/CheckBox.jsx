@@ -14,8 +14,6 @@ export default function CheckBox({
   const checkColor = disabled ? Colors.GRAY_LIGHT : color
   const [hasClickedRecently, setHasClickedRecently] = useState(false)
 
-  console.log("rerender: ", value)
-
   const handleClick = () => {
     if (hasClickedRecently || disabled) {
       return

@@ -39,7 +39,6 @@ export default function Event({ merchant, user }) {
     return Collection.PRODUCT.queryOnChange(
       setProducts,
       where("eventId", "==", eventId),
-      where("isPublished", "==", true),
       orderBy("sortOrder", "asc")
     )
   }, [eventId])

@@ -21,7 +21,7 @@ describe("Navigate to product page", () => {
 
     await page.waitForSelector(testName("product-listing"))
     const productListings = await page.$$(testName("product-listing"))
-    expect(productListings.length).to.eql(4)
+    expect(productListings.length).to.eql(3)
 
     // Check the order of the listings
     const firstListingTitle = await productListings[0].$(

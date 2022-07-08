@@ -6,7 +6,7 @@ import { db } from "../../utils/admin"
 import Collection from "../../../src/shared/enums/Collection"
 import { sleep } from "../utils/sleep"
 import { openNewPage } from "../utils/browser"
-import { isVisible, uploadImage } from "../utils/puppeteer"
+import { uploadImage } from "../utils/puppeteer"
 
 require("dotenv").config()
 
@@ -82,14 +82,6 @@ describe("Create event", () => {
     expect(priceValue).to.eql("12")
 
     await sleep(2000)
-
-    const isPriceFieldDisabled = await priceField.evaluate((x) =>
-      x.hasAttribute("disabled")
-    )
-    expect(isPriceFieldDisabled).to.eql(
-      true,
-      "Price field not disabled after publishing product"
-    )
 
     // Now go back to event page
     await page.click(testId("breadcrumb-event"))
