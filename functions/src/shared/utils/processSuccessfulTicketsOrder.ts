@@ -6,6 +6,7 @@ import { v4 as uuid } from "uuid"
 import { fetchDocument } from "./fetchDocument"
 import { sendTicketReceipt, sendTicketSaleAlert } from "./sendEmail"
 import { fetchDocumentsInArray } from "./fetchDocumentsInArray"
+import { FieldPath } from "@google-cloud/firestore"
 
 export async function processSuccessfulTicketsOrder(
   merchantId: string,
@@ -95,13 +96,13 @@ export async function processSuccessfulTicketsOrder(
   const userIds = membersToAlert.docs.map((doc) => doc.data().userId)
   const userDocs = await fetchDocumentsInArray(
     db().collection(Collection.USER),
-    "userId",
+    FieldPath.documentId(),
     userIds
   )
-  const userEmails = userDocs.map((doc) => doc.data().email)
+  const userEmails = userDocs.map((doc) => doc.email)
   logger.log("users to alert", userIds)
   if (userEmails.length > 0) {
-    sendTicketSaleAlert(
+    await sendTicketSaleAlert(
       userEmails,
       customerName,
       eventTitle,

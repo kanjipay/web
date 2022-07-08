@@ -17,14 +17,14 @@ export async function fetchDocumentsInArray(
     const retrieveDocs = query
       .where(fieldPath, isPositive ? "in" : "not-in", valuesArray)
       .get()
-
+    console.log(retrieveDocs)
     promises.push(retrieveDocs)
 
     i += valuesArraySlice.length
   }
 
   const querySnapshots = await Promise.all(promises)
-
+  console.log(querySnapshots)
   return querySnapshots
     .map((snapshot) => snapshot.docs)
     .flat()
