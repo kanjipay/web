@@ -5,8 +5,11 @@ import { db } from "../../utils/admin"
 import Collection from "../../../src/shared/enums/Collection"
 import { openNewPage } from "../utils/browser"
 import { uploadImage } from "../utils/puppeteer"
+import { fetchDocumentsInArray } from "../../../src/shared/utils/fetchDocumentsInArray"
+import * as chai from "chai"
 
 require("dotenv").config()
+const expect = chai.expect
 
 describe("Create merchant", () => {
   it("Should create merchant", async () => {
@@ -66,18 +69,19 @@ describe("Create merchant", () => {
     await stripePasswordField.type(process.env.STRIPE_AUTH_PASSWORD)
     await page.click('button[type="submit"]')
 
-    const firstToggleBox = await page.waitForSelector(".ToggleBoxItem")
-    await firstToggleBox.click()
+    await page.waitForSelector(".ToggleBoxItem")
+    
+    // await firstToggleBox.click()
     await page.click('button[type="button"]')
-
-    const confirmButton = await page.waitForSelector(
-      'button[data-test="requirements-index-done-button"]'
-    )
-    await confirmButton.click()
 
     const stripeConnectedButton = await page.waitForSelector(
       testId("icon-primary-button-stripe-connected")
     )
+
+    const pageTitleTag = await page.$(testId("icon-title-stripe-connected"))
+    const pageTitle = pageTitleTag.evaluate(e => e.textContent)
+    expect(pageTitle).to.eql("Card payments enabled")
+    
     await stripeConnectedButton.click()
   })
 

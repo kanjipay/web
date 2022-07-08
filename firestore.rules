@@ -11,6 +11,14 @@ service cloud.firestore {
     function membershipColPath(merchantId) {
     	return /databases/$(database)/documents/Membership/$(merchantId + ":" + userId())
     }
+
+    function eventColPath(eventId) {
+      return /databases/$(database)/documents/Event/$(eventId)
+    }
+
+    function isEventPublished(eventId) {
+      return get(eventColPath(eventId)).data.isPublished
+    }
     
     function isAdminForMerchant(merchantId) {
     	return (
@@ -51,7 +59,7 @@ service cloud.firestore {
       
       allow update: if (
       	hasRequiredKeysForCollection("Merchant") &&
-        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe.wasSkipped"]) &&
+        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe"]) &&
       	isAdminForMerchant(merchantId)
       )
     }
@@ -93,14 +101,14 @@ service cloud.firestore {
         (
           hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity"]) ||
           (
-            !get(/databases/$(database)/documents/Event/$(existingData().eventId)).isPublished && 
+            !isEventPublished(existingData().eventId) && 
             !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"])
           )
         )
       )
       allow delete: if (
         isAdminForMerchant(existingData().merchantId) &&
-        !get(/databases/$(database)/documents/Event/$(existingData().eventId)).isPublished
+        !isEventPublished(existingData().eventId)
       );
     }
     

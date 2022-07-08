@@ -177,10 +177,6 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "isPublished",
-          "order": "ASCENDING"
-        },
-        {
           "fieldPath": "sortOrder",
           "order": "ASCENDING"
         }

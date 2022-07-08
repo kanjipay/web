@@ -21,7 +21,7 @@ export default function Event({ events, merchant }) {
     )
   }, [eventId])
 
-  return products ? (
+  return products && event ? (
     <Routes>
       <Route
         path="/"

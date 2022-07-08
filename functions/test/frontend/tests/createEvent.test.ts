@@ -6,7 +6,7 @@ import { db } from "../../utils/admin"
 import Collection from "../../../src/shared/enums/Collection"
 import { sleep } from "../utils/sleep"
 import { openNewPage } from "../utils/browser"
-import { isVisible, uploadImage } from "../utils/puppeteer"
+import { uploadImage } from "../utils/puppeteer"
 
 require("dotenv").config()
 
@@ -81,40 +81,7 @@ describe("Create event", () => {
 
     expect(priceValue).to.eql("12")
 
-    await page.click(testId("publish-product-button"))
-
-    const cancelPublishProductButton = await page.waitForSelector(
-      testId("cancel-publish-product-button")
-    )
-    await cancelPublishProductButton.click()
-
-    await page.click(testId("publish-product-button"))
-
-    const confirmPublishProductButton = await page.waitForSelector(
-      testId("confirm-publish-product-button")
-    )
-    await confirmPublishProductButton.click()
-
-    await sleep(3000)
-
-    const [
-      // isPublishVisible,
-      // isDeleteVisible
-    ] = await Promise.all([
-      isVisible(page, testId("publish-product-button")),
-      isVisible(page, testId("delete-product-button")),
-    ])
-
-    // expect(isPublishVisible).to.eql(false, "Publish button still visible after publishing product")
-    // expect(isDeleteVisible).to.eql(false, "Delete button still visible after publishing product")
-
-    const isPriceFieldDisabled = await priceField.evaluate((x) =>
-      x.hasAttribute("disabled")
-    )
-    expect(isPriceFieldDisabled).to.eql(
-      true,
-      "Price field not disabled after publishing product"
-    )
+    await sleep(2000)
 
     // Now go back to event page
     await page.click(testId("breadcrumb-event"))

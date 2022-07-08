@@ -12,14 +12,18 @@ export default function ConnectStripePage({ title, body }) {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSkipStripe = () => {
+  const handleSkipStripe = async () => {
     setIsLoading(true)
 
-    updateDoc(Collection.MERCHANT.docRef(merchantId), {
+    console.log("handle skip stripe")
+
+    await updateDoc(Collection.MERCHANT.docRef(merchantId), {
       "stripe.wasSkipped": true,
-    }).then(() => {
-      navigate(`/dashboard/o/${merchantId}`)
     })
+
+    console.log("updated doc")
+
+    navigate(`/dashboard/o/${merchantId}`)
   }
 
   const handleContinueToStripe = async () => {

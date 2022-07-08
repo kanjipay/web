@@ -408,8 +408,6 @@ export default function AnalyticsPage({ merchant }) {
       }
     }
 
-    console.log(filteredSalesData)
-
     const duplicatedGroupingValueStrings = filteredSalesData.map((datum) => {
       const groupingValues = getGroupingValuesFromDatum(datum, grouping)
       const groupingValuesString = JSON.stringify(groupingValues)

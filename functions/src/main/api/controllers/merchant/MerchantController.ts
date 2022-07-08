@@ -1,16 +1,11 @@
 import BaseController from "../../../../shared/BaseController"
 import Collection from "../../../../shared/enums/Collection"
+import { StripeStatus } from "../../../../shared/enums/StripeStatus"
 import { db } from "../../../../shared/utils/admin"
 import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
 import LoggingController from "../../../../shared/utils/loggingClient"
 import stripe from "../../../../shared/utils/stripeClient"
-
-enum StripeStatus {
-  DETAILS_NOT_SUBMITTED = "DETAILS_NOT_SUBMITTED",
-  DETAILS_SUBMITTED = "DETAILS_SUBMITTED",
-  CHARGES_ENABLED = "CHARGES_ENABLED",
-}
 
 export class MerchantController extends BaseController {
   addCrezcoUserId = async (req, res, next) => {

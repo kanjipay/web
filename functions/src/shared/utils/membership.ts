@@ -1,4 +1,5 @@
 import { firestore } from "firebase-admin"
+import { logger } from "firebase-functions/v1"
 import Collection from "../enums/Collection"
 import { auth, db } from "./admin"
 
@@ -15,6 +16,8 @@ export async function createMembership(
   merchantName: string,
   role: OrganisationRole
 ) {
+  logger.log("Creating membership", { userId, merchantId, role })
+
   await db()
     .collection(Collection.MEMBERSHIP)
     .doc(`${merchantId}:${userId}`)
@@ -26,10 +29,14 @@ export async function createMembership(
       role,
     })
 
+  logger.log("Membership doc created, editing user claims")
+
   const membershipSnapshot = await db()
     .collection(Collection.MEMBERSHIP)
     .where("userId", "==", userId)
     .get()
+
+  logger.log("Got user's memberships", { membershipCount: membershipSnapshot.docs.length })
 
   const memberships: any[] = membershipSnapshot.docs.map((doc) => ({
     id: doc.id,
@@ -41,6 +48,8 @@ export async function createMembership(
     claims[merchantId] = role
     return claims
   }, {})
+
+  logger.log("setting user claims", { claims })
 
   await auth().setCustomUserClaims(userId, claims)
 }
