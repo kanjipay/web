@@ -12,7 +12,7 @@ enum TemplateName {
   TICKET_SALE_ALERT = "TICKET_SALE_ALERT",
 }
 
-function addFees(productPrice, quantity, customerFee, currency) {
+function addFees(productPrice, quantity, customerFee, currency){
   const fee = formatCurrency(
     Math.round(productPrice * quantity * customerFee),
     currency
@@ -21,7 +21,7 @@ function addFees(productPrice, quantity, customerFee, currency) {
     Math.round(productPrice * quantity * (1 + customerFee)),
     currency
   )
-  return { fee, total }
+  return {fee, total}
 }
 
 async function sendEmail(
@@ -122,7 +122,7 @@ export async function sendTicketReceipt(
     boughtAt,
     ticketIds,
   })
-  const { fee, total } = addFees(productPrice, quantity, customerFee, currency)
+  const {fee, total} = addFees(productPrice, quantity, customerFee, currency)
   const tickets = ticketIds.map((ticketId, index) => {
     let ticketNumber = (index + 1).toString()
 
@@ -177,7 +177,7 @@ export async function sendTicketSaleAlert(
     boughtAt,
     ticketIds,
   })
-  const { fee, total } = addFees(productPrice, quantity, customerFee, currency)
+  const {fee, total} = addFees(productPrice, quantity, customerFee, currency)
 
   const data = {
     customerName,
