@@ -108,63 +108,8 @@ export default function Merchant({ user }) {
         />
       )
 
-      let stripeRedirectPage
-
-      switch (merchant.stripe?.status) {
-        case StripeStatus.CHARGES_ENABLED:
-          stripeRedirectPage = (
-            <IconActionPage
-              Icon={Tick}
-              iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
-              iconForegroundColor={Colors.BLACK}
-              title="Card payments enabled"
-              name="stripe-connected"
-              body="You're now all set up to receive card payments!"
-              primaryAction={() =>
-                navigate(`/dashboard/o/${merchantId}/events`)
-              }
-              primaryActionTitle="Continue"
-            />
-          )
-          break
-        case StripeStatus.DETAILS_SUBMITTED:
-          stripeRedirectPage = (
-            <IconActionPage
-              Icon={Tick}
-              iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
-              iconForegroundColor={Colors.BLACK}
-              title="Details submitted"
-              name="stripe-connected"
-              body="Stripe needs to verify some of your details before you can receive card payments. This normally only takes a few days, and they'll send you an email once it's done."
-              primaryAction={() =>
-                navigate(`/dashboard/o/${merchantId}/events`)
-              }
-              primaryActionTitle="Continue"
-            />
-          )
-          break
-        case StripeStatus.DETAILS_NOT_SUBMITTED:
-          stripeRedirectPage = (
-            <IconActionPage
-              Icon={Tick}
-              iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
-              iconForegroundColor={Colors.BLACK}
-              title="Stripe onboarding incomplete"
-              name="stripe-connected"
-              body="You haven't filled in all the details needed for your Stripe onboarding. Any details you have filled in are saved."
-              primaryAction={() =>
-                navigate(`/dashboard/o/${merchantId}/events`)
-              }
-              primaryActionTitle="Continue"
-            />
-          )
-          break
-        default:
-          stripeRedirectPage = <StripeConnectRedirectPage />
-      }
-
       routes.push(
-        <Route path="stripe-connected" element={stripeRedirectPage} />
+        <Route path="stripe-connected" element={<StripeConnectRedirectPage />} />
       )
 
       if (

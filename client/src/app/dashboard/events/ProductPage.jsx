@@ -24,7 +24,7 @@ export default function ProductPage({ event, products, merchant }) {
   const navigate = useNavigate()
   const product = products.find((p) => p.id === productId)
   const docRef = Collection.PRODUCT.docRef(productId)
-  const isPublished = event.isPublished
+  const isPublished = event?.isPublished
 
   const handleUpdateProduct = async (data) => {
     let update

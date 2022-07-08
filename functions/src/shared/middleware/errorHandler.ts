@@ -1,9 +1,14 @@
 import { HttpError } from "../utils/errors"
 import { ValidationError } from "express-json-validator-middleware"
 import { logger } from "firebase-functions/v1"
-const { ErrorReporting } = require("@google-cloud/error-reporting")
 
-const errors = new ErrorReporting({ reportMode: "always" })
+let errors
+
+if (process.env.ENVIRONMENT === "PROD") {
+  const { ErrorReporting } = require("@google-cloud/error-reporting")
+  errors = new ErrorReporting({ reportMode: "always" })
+}
+
 
 export const errorHandler = (err, req, res, next) => {
   if (err instanceof ValidationError) {
@@ -45,7 +50,10 @@ export const errorHandler = (err, req, res, next) => {
   } else {
     logger.error("Uncategorised error", err)
     // Report 500 servers error the Cloud Error Service
-    errors.report(err)
+    if (errors) {
+      errors.report(err)
+    }
+    
     return res.status(500).json({ message: "An unexpected error occured" })
   }
 }
