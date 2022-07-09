@@ -28,14 +28,16 @@ export default function Merchant({ user }) {
 
   if (merchant) {
     console.log('here!!!!')
-    const metaPixel = getDoc(Collection.MERCHANT.docRef(merchantId)).data()
-    if(doc.data().metaPixel){
-      console.log('pixelid',doc.data().metaPixel)
-      ReactPixel.init(doc.data().metaPixel, metaPixelAdvancedMatching, metaPixelOptions) // todo make this different
-      console.log('here!');
-      ReactPixel.pageView();
-    }
-  }
+    getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {
+      console.log(merchantDoc.data())
+      const metaPixel = merchantDoc.data().metaPixelId
+      if(metaPixel){
+        console.log('pixelid',metaPixel)
+        ReactPixel.init(metaPixel, metaPixelAdvancedMatching, metaPixelOptions) 
+        console.log('here!');
+        ReactPixel.pageView();
+        }  
+    })
     return (
       <Routes>
         <Route
