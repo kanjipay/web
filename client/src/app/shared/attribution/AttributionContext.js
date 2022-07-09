@@ -14,7 +14,6 @@ export function loadAttributionState() {
     attributionItemsString && attributionItemsString !== "null"
       ? JSON.parse(attributionItemsString)
       : []
-  console.log(attributionItemsWithStringDates)
 
   const attributionItems =
     attributionItemsWithStringDates?.map((item) => {
