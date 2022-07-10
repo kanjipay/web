@@ -5,21 +5,14 @@ import LoadingPage from "../../../../components/LoadingPage"
 import Collection from "../../../../enums/Collection"
 import Event from "../event/Event"
 import MerchantPage from "./MerchantPage"
-import ReactPixel from 'react-facebook-pixel';
-
-const metaPixelAdvancedMatching = { em: 'some@email.com' }; // todo add user details here
-const metaPixelOptions = {
-    autoConfig: true, // More info: https://developers.facebook.com/docs/facebook-pixel/advanced/
-    debug: true, // enable logs
-  };
-
-
-
+import ReactPixel from "react-facebook-pixel"
+import { metaPixelAdvancedMatching, metaPixelOptions } from "../../../../utils/MetaPixelConfig"
 
 
 export default function Merchant({ user }) {
   const { merchantId } = useParams()
   console.log(user)
+  console.log("here!!")
   const [merchant, setMerchant] = useState(null)
 
   useEffect(() => {
@@ -27,16 +20,15 @@ export default function Merchant({ user }) {
   }, [merchantId])
 
   if (merchant) {
-    console.log('here!!!!')
+    const advancedMatching = metaPixelAdvancedMatching(user)
     getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {
       console.log(merchantDoc.data())
       const metaPixel = merchantDoc.data().metaPixelId
-      if(metaPixel){
-        console.log('pixelid',metaPixel)
-        ReactPixel.init(metaPixel, metaPixelAdvancedMatching, metaPixelOptions) 
-        console.log('here!');
-        ReactPixel.pageView();
-        }  
+      if (metaPixel) {
+        // tracking all pageviews
+        ReactPixel.init(metaPixel, AdvancedMatching, metaPixelOptions)
+        ReactPixel.pageView()
+      }
     })
     return (
       <Routes>
