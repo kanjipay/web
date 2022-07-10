@@ -22,7 +22,7 @@ export default function App() {
     const userAgent = UAParser(navigator.userAgent)
     const browser = userAgent.browser.name
 
-    if (!["Safari", "Mobile Safari", "Chrome", "Chromium", "Edge", "Firefox", "Brave", "Kindle"].includes(browser)) {
+    if (["Instagram", "Facebook"].includes(browser)) {
       const url = new URL(window.location.href)
       url.protocol = "googlechrome"
 
