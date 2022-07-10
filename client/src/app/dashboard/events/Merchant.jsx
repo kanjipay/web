@@ -23,7 +23,6 @@ import ConnectStripePage from "./ConnectStripePage"
 import StripeConnectRedirectPage from "./StripeConnectRedirectPage"
 import Discover from "../../../assets/icons/Discover"
 import UsersPage from "./UsersPage"
-import StripeStatus from "../../../enums/StripeStatus"
 
 function SidebarItem({ title, Icon, ...props }) {
   const [isHovering, setIsHovering] = useState(false)
@@ -102,10 +101,10 @@ export default function Merchant({ user }) {
           }}
         >
           <SidebarHeader title="Manage" />
-          <SidebarItem to="events" title="Events" Icon={Clock} />
-          <SidebarItem to="analytics" title="Analytics" Icon={Analytics} />
+          <SidebarItem to="events" title="Events" Icon={Clock} test-id="nav-link-events" />
+          <SidebarItem to="analytics" title="Analytics" Icon={Analytics} test-id="nav-link-analytics" />
           <SidebarHeader title="Organisation" />
-          <SidebarItem to="settings" title="Settings" Icon={Settings} />
+          <SidebarItem to="settings" title="Settings" Icon={Settings} test-id="nav-link-settings" />
           {/* <SidebarItem to="users" title="Users" Icon={User} /> */}
         </nav>
         <div

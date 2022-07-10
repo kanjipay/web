@@ -9,32 +9,42 @@ export class MarketingConsent {
   static DECLINED = "DECLINED"
 }
 
-export async function processUserCredential(credential, firstName, lastName) {
+export async function processUserCredential(credential) {
   const user = credential.user
   const { uid, email, displayName } = user
 
-  const ref = Collection.USER.docRef(uid)
+  const userRef = Collection.USER.docRef(uid)
 
-  const promises = [getDoc(ref)]
+  const userDoc = await getDoc(userRef)
 
-  if (!displayName) {
-    promises.push(
-      updateProfile(user, { displayName: `${firstName} ${lastName}` })
-    )
-  }
+  if (userDoc.exists()) {
+    const { firstName, lastName } = userDoc.data()
 
-  const [doc] = await Promise.all(promises)
+    if (!firstName || !lastName) {
+      if (displayName && displayName.split(" ").length >= 2) {
+        const [firstName, lastName] = displayName.split(" ")
 
-  if (!doc.exists()) {
-    await setDoc(ref, {
-      firstName,
-      lastName,
+        await updateDoc(userRef, { firstName, lastName })
+
+        return true
+      } else {
+        return false
+      }
+    } else {
+      if (!displayName) {
+        await updateProfile(user, { displayName: `${firstName} ${lastName}`})
+      }
+
+      return true
+    }
+  } else {
+    await setDoc(userRef, {
       email,
-      marketingConsentStatus: MarketingConsent.PENDING,
+      marketingConsentStatus: MarketingConsent.PENDING
     })
-  }
 
-  return
+    return false
+  }
 }
 
 export async function setMarketingConsent(marketingConsentStatus) {

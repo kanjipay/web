@@ -33,8 +33,14 @@ describe("Create merchant", () => {
     await page.type(testId("field-accountNumber"), "12341234")
     await page.click(testId("form-submit-create-organisation"))
 
+    const settingsNavLink = await page.waitForSelector(
+      testId("nav-link-settings")
+    )
+
+    await settingsNavLink.click()
+
     const connectCrezcoButton = await page.waitForSelector(
-      testId("icon-primary-button-connect-crezco")
+      testId("connect-crezco-button")
     )
     await connectCrezcoButton.click()
 
@@ -49,15 +55,23 @@ describe("Create merchant", () => {
     const confirmBankButton = await page.waitForSelector(
       'button[data-test-id="confirm-onboarding"]'
     )
+    
     await confirmBankButton.click()
 
     const crezcoConnectedButton = await page.waitForSelector(
       testId("icon-primary-button-crezco-connected")
     )
+
     await crezcoConnectedButton.click()
 
+    const settingsNavLinkAgain = await page.waitForSelector(
+      testId("nav-link-settings")
+    )
+
+    await settingsNavLinkAgain.click()
+
     const connectStripeButton = await page.waitForSelector(
-      testId("icon-primary-button-connect-stripe")
+      testId("connect-stripe-button")
     )
     await connectStripeButton.click()
 
