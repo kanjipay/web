@@ -24,7 +24,7 @@ export default function CreateEventPage() {
       startsAt,
       endsAt,
       maxTicketsPerPerson,
-      publishScheduledAt
+      publishScheduledAt,
     } = data
 
     const eventRef = await addDoc(Collection.EVENT.ref, {
@@ -37,7 +37,7 @@ export default function CreateEventPage() {
       endsAt,
       maxTicketsPerPerson: parseInt(maxTicketsPerPerson, 10),
       isPublished: false,
-      publishScheduledAt: publishScheduledAt ?? null
+      publishScheduledAt: publishScheduledAt ?? null,
     })
 
     const eventId = eventRef.id

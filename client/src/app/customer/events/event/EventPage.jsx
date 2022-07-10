@@ -145,18 +145,17 @@ export default function EventPage({ merchant, event, products, artists }) {
             <Spacer y={4} />
             <h1 className="header-m">Get tickets</h1>
             <Spacer y={2} />
-            {products
-              .map((product) => {
-                return (
-                  <div key={product.id}>
-                    <ProductListing
-                      product={product}
-                      currency={merchant.currency}
-                    />
-                    <Spacer y={1} />
-                  </div>
-                )
-              })}
+            {products.map((product) => {
+              return (
+                <div key={product.id}>
+                  <ProductListing
+                    product={product}
+                    currency={merchant.currency}
+                  />
+                  <Spacer y={1} />
+                </div>
+              )
+            })}
           </div>
         )}
         <Spacer y={8} />

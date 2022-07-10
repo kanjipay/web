@@ -30,10 +30,7 @@ export default function EventPage({ event, products, merchant }) {
 
   return (
     <div className="container">
-      <TicketCheckerNavBar 
-        title={event.title}
-        backPath="../.."
-      />
+      <TicketCheckerNavBar title={event.title} backPath="../.." />
       <Spacer y={6} />
       <AsyncImage
         imageRef={getEventStorageRef(merchantId, eventId, photo)}

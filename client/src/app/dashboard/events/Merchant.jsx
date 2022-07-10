@@ -109,7 +109,10 @@ export default function Merchant({ user }) {
       )
 
       routes.push(
-        <Route path="stripe-connected" element={<StripeConnectRedirectPage />} />
+        <Route
+          path="stripe-connected"
+          element={<StripeConnectRedirectPage />}
+        />
       )
 
       if (
