@@ -35,6 +35,7 @@ export default function AuthPage() {
 
   let emailSuffix = requiredEmailDomain ? `@${requiredEmailDomain}` : ""
 
+  let isInstagram = navigator.userAgent.includes("Instagram")
   const [searchParams] = useSearchParams()
   const [backPath, successPath] = ["back", "success"].map((e) =>
     base64.decode(searchParams.get(e))
@@ -180,13 +181,15 @@ export default function AuthPage() {
           <Spacer y={9} />
 
           <div>
-            {!requiredEmailDomain && (
+            { (!requiredEmailDomain) && (!isInstagram) && (
+               
               <div>
                 <SignInWithGoogeButton onClick={handleSignInWithGoogle} />
                 <Spacer y={4} />
                 <OrDivider />
                 <Spacer y={4} />
               </div>
+              
             )}
 
             <Revealer title="Email me a sign in link" name="auth">
