@@ -2,6 +2,7 @@ import {
   getRedirectResult,
   GoogleAuthProvider,
   signInWithRedirect,
+  signInWithPopup // todo test if this works better for firefox, and chrome incognito.
 } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
