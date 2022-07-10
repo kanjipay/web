@@ -5,9 +5,9 @@ import SmallButton from "../../components/SmallButton"
 import { Colors } from "../../enums/Colors"
 import useWindowSize from "../../utils/helpers/useWindowSize"
 import NotFound from "../shared/NotFoundPage"
-import BlockButton from "./BlockButton"
 import HomePage from "./HomePage"
 import "./HomePageOld.css"
+import { UAParser } from "ua-parser-js"
 
 export function opacityToAlphaHex(opacity) {
   let boundedOpacity
@@ -70,6 +70,9 @@ export function Brand() {
   // }, [])
 
   const calendlyLink = "https://calendly.com/matt-at-mercado/demo"
+
+  const userAgent = UAParser(navigator.userAgent)
+  const browser = userAgent.browser.name
 
   return (
     <div>

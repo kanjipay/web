@@ -37,6 +37,7 @@ export default function SignInWithGooglePage() {
   })
 
   useEffect(() => {
+    if (error) { return }
     console.log("google page useEffect. isAuthInProgess: ", isAuthInProgress())
     if (isAuthInProgress()) {
       getRedirectResult(auth)
@@ -84,7 +85,7 @@ export default function SignInWithGooglePage() {
       provider.addScope("email")
       signInWithRedirect(auth, provider)
     }
-  }, [navigate, successPath, successState])
+  }, [navigate, successPath, successState, error])
 
   const handleTryAnotherWay = () => {
     navigate({ pathname: "/auth", search })
