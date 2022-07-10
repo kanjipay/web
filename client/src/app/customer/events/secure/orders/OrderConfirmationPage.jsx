@@ -14,7 +14,7 @@ import { auth } from "../../../../../utils/FirebaseUtils"
 import useAttribution from "../../../../shared/attribution/useAttribution"
 import EventsAppNavBar from "../EventsAppNavBar"
 
-export default function OrderConfirmationPage() {
+export default function OrderConfirmationPage({ user }) {
   const { orderId } = useParams()
   const navigate = useNavigate()
   const [order, setOrder] = useState(null)
