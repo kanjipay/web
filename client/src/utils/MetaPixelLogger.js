@@ -26,5 +26,3 @@ export function logMetaPixelEvent(metaPixelId, user, event, data) {
     data
   )
 }
-
-getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {})
