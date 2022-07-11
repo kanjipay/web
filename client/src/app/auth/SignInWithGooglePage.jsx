@@ -13,6 +13,10 @@ import { Colors } from "../../enums/Colors"
 import { auth } from "../../utils/FirebaseUtils"
 import { processUserCredential } from "../../utils/services/UsersService"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
+import { updateDoc } from "firebase/firestore"
+import Collection from "../../enums/Collection"
+import Spacer from "../../components/Spacer"
+import Form from "../../components/Form"
 
 export default function SignInWithGooglePage() {
   useEffect(() => {})
@@ -25,6 +29,8 @@ export default function SignInWithGooglePage() {
 
   const isAuthInProgressKey = "isGoogleAuthInProgress"
   const [error, setError] = useState(null)
+  const [userId, setUserId] = useState(null)
+  const [hasName, setHasName] = useState(null)
 
   function isAuthInProgress() {
     return localStorage.getItem(isAuthInProgressKey) === "true"
@@ -37,58 +43,56 @@ export default function SignInWithGooglePage() {
   })
 
   useEffect(() => {
-    if (error) { return }
-    console.log("google page useEffect. isAuthInProgess: ", isAuthInProgress())
-    if (isAuthInProgress()) {
-      getRedirectResult(auth)
-        .then((credential) => {
+    async function handleAuth() {
+      try {
+        if (error) { return }
+
+        if (isAuthInProgress()) {
+          const credential = await getRedirectResult(auth)
+
           if (credential) {
-            const displayName = credential?.user?.displayName
-
-            let firstName = ""
-            let lastName = ""
-
-            if (displayName) {
-              const names = displayName.split(" ")
-
-              if (names.length >= 2) {
-                ;[firstName, lastName] = names
-              } else {
-                firstName = displayName ?? ""
-              }
-            }
-
-            processUserCredential(credential, firstName, lastName).then(() => {
-              navigate(successPath, { state: successState })
-              localStorage.setItem(isAuthInProgressKey, "false")
-            })
-          } else {
-            localStorage.setItem(isAuthInProgressKey, "false")
-
-            setError({
-              title: "Something went wrong",
-              body: "We're sorry, but we couldn't log you in. Try checking back later.",
-            })
+            setUserId(credential.user.uid)
+            const hasName = await processUserCredential(credential)
+            setHasName(hasName)
           }
+        } else {
+          localStorage.setItem(isAuthInProgressKey, "true")
+          const provider = new GoogleAuthProvider()
+          provider.addScope("email")
+          signInWithRedirect(auth, provider)
+        }
+      } catch (err) {
+        console.log(err)
+        localStorage.setItem(isAuthInProgressKey, "false")
+        setError({
+          title: "Something went wrong",
+          body: "We're sorry, but we couldn't log you in. Try checking back later.",
         })
-        .catch((error) => {
-          console.log(error)
-          localStorage.setItem(isAuthInProgressKey, "false")
-          setError({
-            title: "Something went wrong",
-            body: "We're sorry, but we couldn't log you in. Try checking back later.",
-          })
-        })
-    } else {
-      localStorage.setItem(isAuthInProgressKey, "true")
-      const provider = new GoogleAuthProvider()
-      provider.addScope("email")
-      signInWithRedirect(auth, provider)
+      }
     }
+
+    handleAuth()
   }, [navigate, successPath, successState, error])
+
+  useEffect(() => {
+    if (hasName && userId) {
+      navigate(successPath, { state: successState })
+      localStorage.setItem(isAuthInProgressKey, "false")
+    }
+  }, [hasName, userId, navigate, successPath, successState])
 
   const handleTryAnotherWay = () => {
     navigate({ pathname: "/auth", search })
+  }
+
+  const handleNameSubmit = async data => {
+    const { firstName, lastName } = data
+
+    await updateDoc(Collection.USER.docRef(userId), {
+      firstName, lastName
+    })
+
+    navigate(successPath, { state: successState })
   }
 
   if (error) {
@@ -103,6 +107,27 @@ export default function SignInWithGooglePage() {
         primaryAction={handleTryAnotherWay}
       />
     )
+  } else if (hasName === false) {
+    return <div className="container">
+      <div className="content">
+        <Spacer y={4} />
+        <Form
+          formGroupData={[
+            {
+              explanation:
+                "Fill in your name to complete your profile.",
+              items: [
+                { name: "firstName" },
+                { name: "lastName" },
+              ],
+            },
+          ]}
+          onSubmit={handleNameSubmit}
+          submitTitle="Submit"
+        />
+        <Spacer y={6} />
+      </div>
+    </div>
   } else {
     return <LoadingPage message="Signing you in" />
   }

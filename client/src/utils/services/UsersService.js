@@ -17,19 +17,23 @@ export async function processUserCredential(credential) {
 
   const userDoc = await getDoc(userRef)
 
+  async function updateDocWithDisplayName() {
+    if (displayName && displayName.split(" ").length >= 2) {
+      const [firstName, lastName] = displayName.split(" ")
+
+      await updateDoc(userRef, { firstName, lastName })
+
+      return true
+    } else {
+      return false
+    }
+  }
+
   if (userDoc.exists()) {
     const { firstName, lastName } = userDoc.data()
 
     if (!firstName || !lastName) {
-      if (displayName && displayName.split(" ").length >= 2) {
-        const [firstName, lastName] = displayName.split(" ")
-
-        await updateDoc(userRef, { firstName, lastName })
-
-        return true
-      } else {
-        return false
-      }
+      return await updateDocWithDisplayName()
     } else {
       if (!displayName) {
         await updateProfile(user, { displayName: `${firstName} ${lastName}`})
@@ -43,7 +47,7 @@ export async function processUserCredential(credential) {
       marketingConsentStatus: MarketingConsent.PENDING
     })
 
-    return false
+    return await updateDocWithDisplayName()
   }
 }
 

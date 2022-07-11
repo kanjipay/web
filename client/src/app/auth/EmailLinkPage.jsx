@@ -37,16 +37,11 @@ export default function EmailLinkPage() {
   useEffect(() => {
     async function handleEmailLink() {
       try {
-        console.log("handleEmailLink")
         const currentUrl = window.location.href
-
-        console.log("email for sign in: ", emailForSignIn)
 
         if (!emailForSignIn || error || userId) { return }
 
         if (!isSignInWithEmailLink(auth, currentUrl)) {
-          console.log("invalid link")
-
           setError({
             title: "Invalid link",
             body: "This isn't a valid email sign in link.",
@@ -55,27 +50,20 @@ export default function EmailLinkPage() {
           return
         }
 
-        console.log("got past return statements")
-
         const credential = await signInWithEmailLink(auth, emailForSignIn, currentUrl)
 
         setUserId(credential.user.uid)
-
-        console.log("got credential. userId: ", credential.user.uid)
 
         localStorage.removeItem("emailForSignIn")
 
         await restoreState(stateId)
 
-        console.log("restored state")
-
         const hasName = await processUserCredential(credential)
-
-        console.log("has name: ", hasName)
 
         setHasName(hasName)
       } catch (err) {
         console.log(err)
+        
         setError({
           title: "Something went wrong",
           body: "We're sorry, but we couldn't log you in. Try checking back later.",
