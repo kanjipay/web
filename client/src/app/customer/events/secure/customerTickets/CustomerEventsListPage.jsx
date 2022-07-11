@@ -9,6 +9,7 @@ import EventListing from "../../event/EventListing"
 import EventsAppNavBar from "../EventsAppNavBar"
 import { useEffect } from "react"
 import { AnalyticsManager } from "../../../../../utils/AnalyticsManager"
+import { Helmet } from "react-helmet-async"
 
 export default function CustomerEventListPage({ events }) {
   let pageContents
@@ -70,6 +71,10 @@ export default function CustomerEventListPage({ events }) {
           />,
         ]}
       />
+
+      <Helmet>
+        <title>Your tickets | Mercado</title>
+      </Helmet>
       {pageContents}
     </div>
   )

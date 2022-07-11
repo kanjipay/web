@@ -21,6 +21,7 @@ import BankTile from "./BankTile"
 import { cancelOrder } from "./cancelOrder"
 import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
+import LoadingPage from "../../components/LoadingPage"
 
 const cachedBankFileNamePrefix = ["PROD", "STAGING"].includes(
   process.env.REACT_APP_ENV_NAME
@@ -179,6 +180,8 @@ export default function ChooseBankCrezcoPage({ order }) {
 
   if (bankCode) {
     const bankDatum = bankData.find((d) => d.bankCode === bankCode)
+
+    if (!bankDatum) return <LoadingPage />
     const { bankName, logoUrl } = bankDatum
     return (
       <div className="container">

@@ -13,6 +13,8 @@ import { auth } from "../../utils/FirebaseUtils"
 import { validateEmail } from "../../utils/helpers/validation"
 import { restoreState } from "../../utils/services/StateService"
 import { processUserCredential } from "../../utils/services/UsersService"
+import { updateDoc } from "firebase/firestore"
+import Collection from "../../enums/Collection"
 
 export default function EmailLinkPage() {
   const navigate = useNavigate()
@@ -21,60 +23,84 @@ export default function EmailLinkPage() {
   const [backPath, successPath] = ["back", "success"].map((e) =>
     base64.decode(searchParams.get(e))
   )
-  const [firstName, lastName, stateId] = ["first", "last", "stateId"].map((e) =>
-    searchParams.get(e)
-  )
+
+  const stateId = searchParams.get("stateId")
+
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
 
   const emailFromLocalStorage = localStorage.getItem("emailForSignIn")
   const [emailForSignIn, setEmailForSignIn] = useState(emailFromLocalStorage)
   const [error, setError] = useState(null)
+  const [userId, setUserId] = useState(null)
+  const [hasName, setHasName] = useState(null)
 
   useEffect(() => {
-    if (error) {
-      return
-    }
+    async function handleEmailLink() {
+      try {
+        const currentUrl = window.location.href
 
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-      if (!emailForSignIn) {
-        return
-      }
+        if (!emailForSignIn || error || userId) { return }
 
-      signInWithEmailLink(auth, emailForSignIn, window.location.href)
-        .then((credential) => {
-          localStorage.removeItem("emailForSignIn")
-
-          processUserCredential(credential, firstName, lastName).then(() => {
-            restoreState(stateId).then(() => {
-              navigate(successPath, { state: successState })
-            })
-          })
-        })
-        .catch((error) => {
+        if (!isSignInWithEmailLink(auth, currentUrl)) {
           setError({
-            title: "Something went wrong",
-            body: "We're sorry, but we couldn't log you in. Try checking back later.",
+            title: "Invalid link",
+            body: "This isn't a valid email sign in link.",
           })
+
+          return
+        }
+
+        const credential = await signInWithEmailLink(auth, emailForSignIn, currentUrl)
+
+        setUserId(credential.user.uid)
+
+        localStorage.removeItem("emailForSignIn")
+
+        await restoreState(stateId)
+
+        const hasName = await processUserCredential(credential)
+
+        setHasName(hasName)
+      } catch (err) {
+        console.log(err)
+        
+        setError({
+          title: "Something went wrong",
+          body: "We're sorry, but we couldn't log you in. Try checking back later.",
         })
-    } else {
-      setError({
-        title: "Invalid link",
-        body: "This isn't a valid email sign in link.",
-      })
+      }
     }
+
+    handleEmailLink()
   }, [
     emailForSignIn,
     navigate,
     successPath,
     successState,
-    firstName,
-    lastName,
     error,
+    stateId,
+    userId
   ])
+
+  useEffect(() => {
+    if (hasName && userId) {
+      navigate(successPath, { state: successState })
+    }
+  }, [hasName, userId, successPath, successState, navigate])
 
   const handleEmailSubmit = async (data) => {
     const { email } = data
     setEmailForSignIn(email)
+  }
+
+  const handleNameSubmit = async data => {
+    const { firstName, lastName } = data
+
+    await updateDoc(Collection.USER.docRef(userId), {
+      firstName, lastName
+    })
+
+    navigate(successPath, { state: successState })
   }
 
   const handleError = () => {
@@ -93,9 +119,28 @@ export default function EmailLinkPage() {
         primaryAction={handleError}
       />
     )
-  } else if (emailForSignIn) {
-    return <LoadingPage message="Signing you in..." />
-  } else {
+  } else if (hasName === false) {
+    return <div className="container">
+      <div className="content">
+        <Spacer y={4} />
+        <Form
+          formGroupData={[
+            {
+              explanation:
+                "Fill in your name to complete your profile.",
+              items: [
+                { name: "firstName" },
+                { name: "lastName" },
+              ],
+            },
+          ]}
+          onSubmit={handleNameSubmit}
+          submitTitle="Submit"
+        />
+        <Spacer y={6} />
+      </div>
+    </div>
+  } else if (!emailForSignIn) {
     return (
       <div className="container">
         <div className="content">
@@ -123,5 +168,7 @@ export default function EmailLinkPage() {
         </div>
       </div>
     )
+  } else {
+    return <LoadingPage message="Signing you in..." />
   }
 }

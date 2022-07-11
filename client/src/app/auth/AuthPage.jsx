@@ -2,27 +2,23 @@ import { useEffect, useState } from "react"
 import * as base64 from "base-64"
 import {
   onAuthStateChanged,
-  sendEmailVerification,
   sendSignInLinkToEmail,
-  signInWithEmailAndPassword,
 } from "firebase/auth"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Colors } from "../../enums/Colors"
-import { ButtonTheme } from "../../components/ButtonTheme"
-import MainButton from "../../components/MainButton"
 import NavBar from "../../components/NavBar"
 import OrDivider from "../../components/OrDivider"
 import Spacer from "../../components/Spacer"
-import { validateEmail, validatePassword } from "../../utils/helpers/validation"
+import { validateEmail } from "../../utils/helpers/validation"
 import LoadingPage from "../../components/LoadingPage"
 import IconActionPage from "../../components/IconActionPage"
 import Cross from "../../assets/icons/Cross"
 import { auth } from "../../utils/FirebaseUtils"
-import { processUserCredential } from "../../utils/services/UsersService"
 import Form, { generateValidator } from "../../components/Form"
 import { Field, FieldDecorator } from "../../components/input/IntField"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { saveState } from "../../utils/services/StateService"
+import { shouldShowGoogleAuth } from "./shouldShowGoogleAuth"
 import Revealer from "../../components/Revealer"
 
 export default function AuthPage() {
@@ -30,7 +26,7 @@ export default function AuthPage() {
   const location = useLocation()
   const { search } = useLocation()
 
-  const requiresPassword = location.state?.requiresPassword ?? false
+  // const requiresPassword = location.state?.requiresPassword ?? false
   const requiredEmailDomain = location.state?.requiredEmailDomain
 
   let emailSuffix = requiredEmailDomain ? `@${requiredEmailDomain}` : ""
@@ -39,7 +35,7 @@ export default function AuthPage() {
   const [backPath, successPath] = ["back", "success"].map((e) =>
     base64.decode(searchParams.get(e))
   )
-  const successState = JSON.parse(base64.decode(searchParams.get("state")))
+  // const successState = JSON.parse(base64.decode(searchParams.get("state")))
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -57,50 +53,20 @@ export default function AuthPage() {
   }, [])
 
   const handleSignInWithGoogle = () => {
-    console.log("handleSignInWithGoogle")
     navigate({ pathname: "google", search })
   }
 
   const handleTryAnotherWay = () => setError(null)
 
-  const handleSignInWithPassword = async (data) => {
-    const { firstName, lastName, email, password } = data
-
-    const redirectUrl = new URL(window.location.href)
-    redirectUrl.pathname = "/auth/redirect"
-
-    const credential = await signInWithEmailAndPassword(auth, email, password)
-    const user = credential.user
-
-    const promises = [processUserCredential(credential, firstName, lastName)]
-
-    if (!user.emailVerified) {
-      promises.push(
-        sendEmailVerification(user, {
-          url: redirectUrl.href,
-          handleCodeInApp: true,
-        })
-      )
-    }
-
-    await Promise.all(promises)
-
-    setIsLoading(false)
-
-    user.emailVerified
-      ? navigate(successPath, { state: successState })
-      : navigate("email-verification-sent")
-  }
-
   const handleSendEmailLink = async (data) => {
-    const { firstName, lastName, email } = data
+    setIsLoading(true)
+
+    const { email } = data
 
     const stateId = await saveState()
 
     const redirectUrl = new URL(window.location.href)
     redirectUrl.pathname = "/auth/email-link"
-    redirectUrl.searchParams.append("first", firstName)
-    redirectUrl.searchParams.append("last", lastName)
     redirectUrl.searchParams.append("stateId", stateId)
 
     sendSignInLinkToEmail(auth, email, {
@@ -109,7 +75,8 @@ export default function AuthPage() {
     })
       .then(() => {
         localStorage.setItem("emailForSignIn", email)
-        navigate("email-link-sent")
+        setIsLoading(false)
+        navigate({ pathname: "email-link-sent", search }, { state: { email } })
       })
       .catch((error) => {
         const errorCode = error.code
@@ -121,15 +88,6 @@ export default function AuthPage() {
         })
       })
   }
-
-  const handleForgotPassword = () => {
-    navigate({ pathname: "forgot-password", search })
-  }
-
-  const onSubmit = requiresPassword
-    ? handleSignInWithPassword
-    : handleSendEmailLink
-  const submitTitle = requiresPassword ? "Sign in" : "Send email link"
 
   if (error) {
     return (
@@ -145,32 +103,24 @@ export default function AuthPage() {
     )
   } else if (isLoading) {
     return <LoadingPage />
-  } else {
-    const formFields = [
-      { name: "firstName" },
-      { name: "lastName" },
-      {
-        name: "email",
-        validators: [generateValidator(validateEmail, "Invalid email")],
-        decorator: <FieldDecorator suffix={emailSuffix} />,
-        input: <Field type="email" />,
-      },
-    ]
-
-    if (requiresPassword) {
-      formFields.push({
-        name: "password",
-        validators: [
-          generateValidator(
-            validatePassword,
-            "Your password must be 8 characters or more and include an uppercase letter, lowercase letter and number."
-          ),
-        ],
-        explanation:
-          "Your password must be 8 characters or more and include an uppercase letter, lowercase letter and number.",
-        input: <Field type="password" />,
-      })
-    }
+  } else {    
+    const emailLinkForm = <Form
+      isFormLoading={isLoading}
+      formGroupData={[
+        {
+          items: [
+            {
+              name: "email",
+              validators: [generateValidator(validateEmail, "Invalid email")],
+              decorator: <FieldDecorator suffix={emailSuffix} />,
+              input: <Field type="email" autocomplete="email" />,
+            },
+          ],
+        },
+      ]}
+      onSubmit={handleSendEmailLink}
+      submitTitle="Send email link"
+    />
 
     return (
       <div className="container">
@@ -179,48 +129,33 @@ export default function AuthPage() {
         <div className="content">
           <Spacer y={9} />
 
-          <div>
-            {!requiredEmailDomain && (
+          {
+            shouldShowGoogleAuth() ?
               <div>
-                <SignInWithGoogeButton onClick={handleSignInWithGoogle} />
-                <Spacer y={4} />
-                <OrDivider />
-                <Spacer y={4} />
-              </div>
-            )}
+                {!requiredEmailDomain && (
+                  <div>
+                    <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
+                    <Spacer y={4} />
+                    <OrDivider />
+                    <Spacer y={4} />
+                  </div>
+                )}
 
-            <Revealer title="Email me a sign in link" name="auth">
-              <Form
-                formGroupData={[
-                  {
-                    items: formFields,
-                  },
-                ]}
-                onSubmit={onSubmit}
-                submitTitle={submitTitle}
-              />
+                <Revealer title="Email me a sign in link" name="auth">
+                  {emailLinkForm}
+                </Revealer>
 
-              {requiresPassword && (
-                <div>
-                  <Spacer y={2} />
-                  <MainButton
-                    title="Forgot password"
-                    onClick={handleForgotPassword}
-                    buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                  />
-                </div>
-              )}
-            </Revealer>
-
-            <Spacer y={6} />
-          </div>
+                <Spacer y={6} />
+              </div> :
+              emailLinkForm
+          }
         </div>
       </div>
     )
   }
 }
 
-function SignInWithGoogeButton({ style, ...props }) {
+function SignInWithGoogleButton({ style, ...props }) {
   return (
     <button
       {...props}

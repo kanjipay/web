@@ -169,6 +169,7 @@ export default function SettingsPage({ merchant }) {
                 <Spacer y={2} />
                 <MainButton
                   title="Connect with Crezco"
+                  test-id="connect-crezco-button"
                   onClick={() => redirectToCrezco(merchantId)}
                 />
               </div>
@@ -189,6 +190,7 @@ export default function SettingsPage({ merchant }) {
                   ? "Continue your Stripe onboarding"
                   : "Connect with Stripe"
               }
+              test-id="connect-stripe-button"
               onClick={handleContinueToStripe}
               isLoading={isRedirectingToStripe}
             />
