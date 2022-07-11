@@ -69,6 +69,15 @@ export default function ProductPage({ merchant, event, product, user }) {
   })
 
   useEffect(() => {
+    if (!merchantId || !productId || !user) {
+      return
+    }
+    console.log("merchant id", merchantId)
+    console.log("product id", productId)
+    console.log("user", user)
+  }, [merchantId, productId, user])
+
+  useEffect(() => {
     const attestations = getAttestations(merchant, event, product)
 
     const attestationData = attestations.reduce(

@@ -30,6 +30,16 @@ export default function OrderConfirmationPage() {
   }, [orderId])
 
   useEffect(() => {
+    if (!order) {
+      return
+    }
+    console.log("product id", order.orderItems[0].productId)
+    console.log("merchant id", order.merchantId)
+    console.log("total", order.total)
+    console.log("user", auth.currentUser)
+  }, [order])
+
+  useEffect(() => {
     if (!order || wasAttributionCleared) {
       return
     }

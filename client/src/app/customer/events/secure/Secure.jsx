@@ -26,7 +26,7 @@ export default function Secure({ user }) {
     return (
       <Routes>
         <Route path="tickets/*" element={<CustomerTickets user={user} />} />
-        <Route path="orders/*" element={<Orders />} />
+        <Route path="orders/*" element={<Orders user={user} />} />
       </Routes>
     )
   } else {

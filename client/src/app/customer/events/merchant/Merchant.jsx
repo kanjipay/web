@@ -6,13 +6,10 @@ import Collection from "../../../../enums/Collection"
 import Event from "../event/Event"
 import MerchantPage from "./MerchantPage"
 import ReactPixel from "react-facebook-pixel"
-import { metaPixelAdvancedMatching, metaPixelOptions } from "../../../../utils/MetaPixelConfig"
-
 
 export default function Merchant({ user }) {
   const { merchantId } = useParams()
   console.log(user)
-  console.log("here!!")
   const [merchant, setMerchant] = useState(null)
 
   useEffect(() => {
@@ -20,16 +17,6 @@ export default function Merchant({ user }) {
   }, [merchantId])
 
   if (merchant) {
-    const advancedMatching = metaPixelAdvancedMatching(user)
-    getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {
-      console.log(merchantDoc.data())
-      const metaPixel = merchantDoc.data().metaPixelId
-      if (metaPixel) {
-        // tracking all pageviews
-        ReactPixel.init(metaPixel, AdvancedMatching, metaPixelOptions)
-        ReactPixel.pageView()
-      }
-    })
     return (
       <Routes>
         <Route
