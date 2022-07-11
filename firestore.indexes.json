@@ -31,7 +31,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "startsAt",
+          "fieldPath": "endsAt",
           "order": "DESCENDING"
         }
       ]

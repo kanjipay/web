@@ -11,6 +11,7 @@ import EventsAppNavBar from "../secure/EventsAppNavBar"
 export default function MerchantPage({ merchant }) {
   const merchantId = merchant.id
   const [events, setEvents] = useState([])
+  const [pastEvents, setPastEvents] = useState([])
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("TicketMerchant", { merchantId })
@@ -20,9 +21,19 @@ export default function MerchantPage({ merchant }) {
     return Collection.EVENT.queryOnChange(
       setEvents,
       where("merchantId", "==", merchantId),
-      where("startsAt", ">", new Date()),
+      where("endsAt", ">", new Date()),
       where("isPublished", "==", true),
-      orderBy("startsAt", "desc")
+      orderBy("endsAt", "desc")
+    )
+  }, [merchantId])
+
+  useEffect(() => {
+    return Collection.EVENT.queryOnChange(
+      setPastEvents,
+      where("merchantId", "==", merchantId),
+      where("endsAt", "<=", new Date()),
+      where("isPublished", "==", true),
+      orderBy("endsAt", "desc")
     )
   }, [merchantId])
 
@@ -53,14 +64,37 @@ export default function MerchantPage({ merchant }) {
 
         <h2 className="header-m">Upcoming events</h2>
         <Spacer y={2} />
-        {events.map((event) => {
-          return (
-            <div key={event.id}>
-              <EventListing event={event} />
-              <Spacer y={3} />
-            </div>
-          )
-        })}
+        {
+          events.length > 0 ?
+            events.map((event) => {
+              return (
+                <div key={event.id}>
+                  <EventListing event={event} />
+                  <Spacer y={3} />
+                </div>
+              )
+            }) :
+            <p>No upcoming events</p>
+        }
+
+        <Spacer y={3} />
+
+        <h2 className="header-m">Past events</h2>
+        <Spacer y={2} />
+        {
+          pastEvents.length > 0 ?
+            pastEvents.map((event) => {
+              return (
+                <div key={event.id}>
+                  <EventListing event={event} />
+                  <Spacer y={3} />
+                </div>
+              )
+            }) :
+            <p>No past events</p>
+        }
+
+        <Spacer y={6} />
       </div>
     </div>
   )

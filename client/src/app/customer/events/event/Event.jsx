@@ -45,7 +45,6 @@ export default function Event({ merchant, user }) {
 
   if (event && products && artists) {
     if (event.isPublished) {
-      console.log(artists)
       return (
         <Routes>
           <Route

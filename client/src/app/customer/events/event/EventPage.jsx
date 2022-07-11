@@ -14,7 +14,7 @@ import ShowMoreText from "react-show-more-text"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { useEffect } from "react"
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
-import { addMinutes } from "date-fns"
+import { addMinutes, format } from "date-fns"
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return (
@@ -92,6 +92,8 @@ export default function EventPage({ merchant, event, products, artists }) {
     AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
   }, [eventId, merchantId])
 
+  const hasAlreadyHappened = new Date() >= addMinutes(dateFromTimestamp(event.endsAt), -30)
+
   return (
     <div className="container">
       <EventsAppNavBar
@@ -140,25 +142,28 @@ export default function EventPage({ merchant, event, products, artists }) {
           {event.description}
         </ShowMoreText>
 
-        {new Date() < addMinutes(dateFromTimestamp(event.endsAt), -30) && (
-          <div>
-            <Spacer y={4} />
-            <h1 className="header-m">Get tickets</h1>
-            <Spacer y={2} />
-            {products
-              .map((product) => {
-                return (
-                  <div key={product.id}>
-                    <ProductListing
-                      product={product}
-                      currency={merchant.currency}
-                    />
-                    <Spacer y={1} />
-                  </div>
-                )
-              })}
-          </div>
-        )}
+        <Spacer y={4} />
+
+        {
+          hasAlreadyHappened ?
+            <p>This event ended on {format(dateFromTimestamp(event.endsAt), "do MMM")} at {format(dateFromTimestamp(event.endsAt), "H:mm")}.</p>
+            : <div>
+                <h1 className="header-m">Get tickets</h1>
+                <Spacer y={2} />
+                {products
+                  .map((product) => {
+                    return (
+                      <div key={product.id}>
+                        <ProductListing
+                          product={product}
+                          currency={merchant.currency}
+                        />
+                        <Spacer y={1} />
+                      </div>
+                    )
+                  })}
+              </div>
+        }
         <Spacer y={8} />
       </div>
     </div>
