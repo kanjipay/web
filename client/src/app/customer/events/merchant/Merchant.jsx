@@ -5,11 +5,9 @@ import LoadingPage from "../../../../components/LoadingPage"
 import Collection from "../../../../enums/Collection"
 import Event from "../event/Event"
 import MerchantPage from "./MerchantPage"
-import ReactPixel from "react-facebook-pixel"
 
 export default function Merchant({ user }) {
   const { merchantId } = useParams()
-  console.log(user)
   const [merchant, setMerchant] = useState(null)
 
   useEffect(() => {
