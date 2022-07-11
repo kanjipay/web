@@ -8,6 +8,7 @@ import Collection from "../../enums/Collection"
 import { getArtistStorageRef } from "../../utils/helpers/storage"
 import EventListing from "./events/event/EventListing"
 import EventsAppNavBar from "./events/secure/EventsAppNavBar"
+import { Helmet } from "react-helmet-async"
 
 export default function ArtistPage() {
   const { artistId } = useParams()
@@ -37,6 +38,9 @@ export default function ArtistPage() {
           transparentDepth={50}
           opaqueDepth={100}
         />
+        <Helmet>
+          <title>{artist.name} | Mercado</title>
+        </Helmet>
 
         <AsyncImage
           imageRef={getArtistStorageRef(artistId, artist.photo)}

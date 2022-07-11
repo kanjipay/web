@@ -15,6 +15,7 @@ import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { useEffect } from "react"
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
 import { addMinutes, format } from "date-fns"
+import { Helmet } from "react-helmet-async"
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return (
@@ -108,6 +109,10 @@ export default function EventPage({ merchant, event, products, artists }) {
         className="headerImage"
         alt={merchant.displayName}
       />
+
+      <Helmet>
+        <title>{event.title} | {merchant.displayName} | Mercado</title>
+      </Helmet>
 
       <Spacer y={4} />
 

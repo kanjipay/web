@@ -7,6 +7,7 @@ import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
 import EventListing from "../event/EventListing"
 import EventsAppNavBar from "../secure/EventsAppNavBar"
+import { Helmet } from "react-helmet-async"
 
 export default function MerchantPage({ merchant }) {
   const merchantId = merchant.id
@@ -50,6 +51,10 @@ export default function MerchantPage({ merchant }) {
         className="headerImage"
         alt={merchant.displayName}
       />
+
+      <Helmet>
+        <title>{merchant.displayName} | Mercado</title>
+      </Helmet>
 
       <Spacer y={4} />
 
