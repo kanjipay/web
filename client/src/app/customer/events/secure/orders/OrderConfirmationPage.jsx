@@ -35,12 +35,10 @@ export default function OrderConfirmationPage({ user }) {
     if (!order) {
       return
     }
-    console.log("started logging payment confirmation")
     getDoc(Collection.MERCHANT.docRef(order.merchantId)).then((merchantDoc) => {
       const { metaPixelId } = merchantDoc.data()
       const purchaseData = { value: order.total, currency: "GBP" }
       logMetaPixelEvent(metaPixelId, user, "Purchase") // todo add data with productId, total // todo switch to other user
-      console.log("finished logging payment confirmation")
     })
   }, [order])
 

@@ -75,13 +75,10 @@ export default function ProductPage({ merchant, event, product, user }) {
     if (!merchantId || !productId || !user) {
       return
     }
-    console.log("started logging pixel event")
     // I think Meta does deduplication but might be cleaner to get this to run once per order
     getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {
       const { metaPixelId } = merchantDoc.data()
       logMetaPixelEvent(metaPixelId, user, "ViewContent", {}) // todo add data with productId
-
-      console.log("finishing logging pixel event")
     })
   }, [merchantId, productId, user])
 
