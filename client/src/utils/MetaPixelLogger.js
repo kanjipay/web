@@ -5,10 +5,10 @@ const metaPixelOptions = {
   debug: true, // enable logs
 }
 
-function alignFacebookGender(mercadoGender){
-  if(mercadoGender == null || mercadoGender == 'Not determined' ){
+function alignFacebookGender(mercadoGender) {
+  if (mercadoGender == null || mercadoGender == "Not determined") {
     return null
-  } else{
+  } else {
     return mercadoGender[0].toLowerCase()
   }
 }
@@ -29,13 +29,10 @@ function prepareAdvancedMatchingData(user) {
 }
 
 export async function logMetaPixelEvent(metaPixelId, user, event, data) {
-  console.log('pixel', metaPixelId)
+  console.log("pixel", metaPixelId)
   const advancedMatchingData = prepareAdvancedMatchingData(user)
-  console.log('user', user)
-  console.log('matching data', advancedMatchingData)
+  console.log("user", user)
+  console.log("matching data", advancedMatchingData)
   ReactPixel.init(metaPixelId, advancedMatchingData, metaPixelOptions)
-  ReactPixel.trackSingle(
-    event,
-    data
-  )  
+  ReactPixel.trackSingle(event, data)
 }
