@@ -33,5 +33,5 @@ export const cron = euFunctions
 
 export const backup = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
-  .pubsub.schedule("every 24 hours")
+  .pubsub.schedule("every 5 minutes")
   .onRun(backupFirestore)
