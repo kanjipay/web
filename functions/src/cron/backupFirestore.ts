@@ -3,6 +3,14 @@ import * as firestore from "@google-cloud/firestore"
 
 const client = new firestore.v1.FirestoreAdminClient()
 
+function getBucketUrl(environment){
+    if(environment in ['DEV', 'PROD', 'STAGING']){
+        return `gs://mercado-${environment.toLowerCase()}-backup`
+    }else{
+        new Error(`missing or invalid ENVIRONMENT ${environment}`)
+    }
+}
+
 export const backupFirestore = () => {
   const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT
   const databaseName = client.databasePath(projectId, "(default)")
@@ -11,7 +19,7 @@ export const backupFirestore = () => {
     .exportDocuments({
       name: databaseName,
       // todo paramterise
-      outputUriPrefix: "gs://mercado-dev-backup",
+      outputUriPrefix: getBucketUrl(process.env.ENVIRONMENT),
       // Empty array == all collections
       collectionIds: [],
     })
