@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Breadcrumb from "../../../components/Breadcrumb"
 import { TextArea } from "../../../components/Input"
@@ -9,7 +9,6 @@ import { dateFromTimestamp } from "../../../utils/helpers/time"
 import ProductListing from "./ProductListing"
 import Form from "../../../components/Form"
 import { Field, IntField } from "../../../components/input/IntField"
-import SmallButton from "../../../components/SmallButton"
 import { Colors } from "../../../enums/Colors"
 import { ButtonTheme } from "../../../components/ButtonTheme"
 import { getEventStorageRef } from "../../../utils/helpers/storage"
@@ -20,51 +19,157 @@ import { deleteObject } from "firebase/storage"
 import ArrayInput from "../../../components/ArrayInput"
 import { uploadImage } from "../../../utils/helpers/uploadImage"
 import SimpleImagePicker from "../../../components/SimpleImagePicker"
+import ResultBanner, { ResultType } from "../../../components/ResultBanner"
+import { Modal } from "../../../components/Modal"
+import { CopyToClipboardButton } from "../../../components/CopyToClipboardButton"
 
-export function Modal({ children, modalStyle }) {
-  return (
-    <div
-      style={{
-        height: "100vh",
-        width: "100vw",
-        backgroundColor: "#00000088",
-        position: "relative",
+function PublishInfoBanners({ merchant, hasProducts, publishButtonRef }) {
+  const navigate = useNavigate()
+
+  const banners = [
+    <ResultBanner
+      resultType={ResultType.INFO}
+      message="This event isn't published yet. You'll need to publish it before it shows to customers."
+    />
+  ]
+
+  if (!merchant.crezco?.userId) {
+    banners.push(<ResultBanner
+      resultType={ResultType.INFO}
+      message="You'll need to connect a payment method before you can publish this event."
+      action={() => {
+        navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
       }}
-    >
-      <div
-        className="centred"
-        style={{
-          backgroundColor: Colors.WHITE,
-          padding: 16,
-          width: 320,
-          boxSizing: "border-box",
-          ...modalStyle,
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  )
-}
-
-export function CopyToClipboardButton({ text }) {
-  const [hasCopiedToClipboard, setHasCopiedToClipboard] = useState(false)
-  const buttonTitle = hasCopiedToClipboard ? "Copied" : "Copy"
-
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(text)
-    setHasCopiedToClipboard(true)
-
-    setTimeout(() => setHasCopiedToClipboard(false), 3000)
+      actionTitle="Connect payments"
+    />)
   }
 
-  return (
-    <SmallButton
-      title={buttonTitle}
-      buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-      onClick={handleCopyToClipboard}
+  if (!hasProducts) {
+    banners.push(
+      <ResultBanner
+        resultType={ResultType.INFO}
+        message="You need to create at least one ticket type before you can publish this event."
+        action={() => {
+          navigate("p/create")
+        }}
+        actionTitle="Create"
+      />
+    )
+  }
+
+  const children = banners.flatMap((banner, index) => {
+    if (index === 0) {
+      return [banner]
+    } else {
+      return [
+        <Spacer y={2} />,
+        banner
+      ]
+    }
+  })
+
+  return <div>
+    {children}
+  </div>
+}
+
+function EventLinkSection({ eventLinkString }) {
+  return <div>
+    <h2 className="header-m">Event links</h2>
+    <Spacer y={3} />
+    <h3 className="header-s">Plain event link</h3>
+    <Spacer y={2} />
+    <p className="text-body-faded">
+      This is the link customers can use to view your event and buy
+      tickets.
+    </p>
+    <Spacer y={2} />
+    <div
+      style={{ display: "flex", alignItems: "center", columnGap: 16 }}
+    >
+      <a
+        href={eventLinkString}
+        target="_blank"
+        rel="noreferrer"
+        style={{ textDecoration: "underline", fontWeight: "400" }}
+      >
+        {eventLinkString}
+      </a>
+      <div className="flex-spacer"></div>
+      <CopyToClipboardButton text={eventLinkString} />
+    </div>
+  </div>
+}
+
+function AttributionLinkSection({ attributionLinks }) {
+  const navigate = useNavigate()
+
+  return <div>
+    <h3 className="header-s">Attribution links</h3>
+    <Spacer y={2} />
+    <p className="text-body-faded">
+      Want to see which of your marketing efforts is bringing in
+      sales? You can use attribution links to analyse where your sales
+      are coming from.
+    </p>
+    {attributionLinks && <div>
+      <Spacer y={2} />
+      {attributionLinks.length > 0 ? (
+        attributionLinks.map((link) => {
+          const linkUrl = new URL(window.location.href)
+          linkUrl.pathname = `/l/${link.id}`
+
+          const linkUrlString = linkUrl.href
+
+          return (
+            <div
+              style={{
+                padding: 16,
+                backgroundColor: Colors.OFF_WHITE_LIGHT,
+                display: "flex",
+                alignItems: "center",
+                columnGap: 16,
+                marginBottom: 16,
+              }}
+            >
+              <div>
+                <h4 className="header-xs">{link.displayName}</h4>
+                <Spacer y={2} />
+                <div style={{ display: "flex", columnGap: 8 }}>
+                  {Object.entries(link.attributionData).map(
+                    ([key, value]) => (
+                      <p
+                        style={{
+                          backgroundColor: Colors.OFF_WHITE,
+                          fontSize: 14,
+                          padding: "4px 8px",
+                        }}
+                      >
+                        {`${key} = ${value}`}
+                      </p>
+                    )
+                  )}
+                </div>
+                <Spacer y={2} />
+                <p>{linkUrlString}</p>
+              </div>
+              <div style={{ flexGrow: 100 }}></div>
+              <CopyToClipboardButton text={linkUrlString} />
+            </div>
+          )
+        })
+      ) : (
+        <p className="text-body">
+          You don't have any attribution links yet
+        </p>
+      )}
+    </div>}
+    <Spacer y={2} />
+    <MainButton
+      title="Create attribution link"
+      onClick={() => navigate("create-attribution-link")}
     />
-  )
+  </div>
 }
 
 export default function EventPage({ merchant, event, products }) {
@@ -72,6 +177,11 @@ export default function EventPage({ merchant, event, products }) {
   const docRef = Collection.EVENT.docRef(event.id)
   const { merchantId } = useParams()
   const [attributionLinks, setAttributionLinks] = useState(null)
+  const publishButtonRef = useRef(null)
+
+  function canPublishEvent() {
+    return !!merchant.crezco?.userId && products.length > 0
+  }
 
   const handleUpdateEvent = async (data) => {
     const promises = []
@@ -147,101 +257,15 @@ export default function EventPage({ merchant, event, products }) {
         }}
       >
         <div>
-          {event.isPublished && (
-            <div>
-              <h2 className="header-m">Event links</h2>
+          {event.isPublished ? <div>
+              <EventLinkSection eventLinkString={eventLinkString} />
               <Spacer y={3} />
-              <h3 className="header-s">Plain event link</h3>
-              <Spacer y={2} />
-              <p className="text-body-faded">
-                This is the link customers can use to view your event and buy
-                tickets.
-              </p>
-              <Spacer y={2} />
-              <div
-                style={{ display: "flex", alignItems: "center", columnGap: 16 }}
-              >
-                <a
-                  href={eventLinkString}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ textDecoration: "underline", fontWeight: "400" }}
-                >
-                  {eventLinkString}
-                </a>
-                <div className="flex-spacer"></div>
-                <CopyToClipboardButton text={eventLinkString} />
-              </div>
-              <Spacer y={3} />
-              <h3 className="header-s">Attribution links</h3>
-              <Spacer y={2} />
-              <p className="text-body-faded">
-                Want to see which of your marketing efforts is bringing in
-                sales? You can use attribution links to analyse where your sales
-                are coming from.
-              </p>
-              {attributionLinks && (
-                <div>
-                  <Spacer y={2} />
-                  {attributionLinks.length > 0 ? (
-                    attributionLinks.map((link) => {
-                      const linkUrl = new URL(window.location.href)
-                      linkUrl.pathname = `/l/${link.id}`
+              <AttributionLinkSection attributionLinks={attributionLinks} />
+            </div> :
+            <PublishInfoBanners merchant={merchant} publishButtonRef={publishButtonRef} hasProducts={products.length > 0} />
+          }
 
-                      const linkUrlString = linkUrl.href
-
-                      return (
-                        <div
-                          style={{
-                            padding: 16,
-                            backgroundColor: Colors.OFF_WHITE_LIGHT,
-                            display: "flex",
-                            alignItems: "center",
-                            columnGap: 16,
-                            marginBottom: 16,
-                          }}
-                        >
-                          <div>
-                            <h4 className="header-xs">{link.displayName}</h4>
-                            <Spacer y={2} />
-                            <div style={{ display: "flex", columnGap: 8 }}>
-                              {Object.entries(link.attributionData).map(
-                                ([key, value]) => (
-                                  <p
-                                    style={{
-                                      backgroundColor: Colors.OFF_WHITE,
-                                      fontSize: 14,
-                                      padding: "4px 8px",
-                                    }}
-                                  >
-                                    {`${key} = ${value}`}
-                                  </p>
-                                )
-                              )}
-                            </div>
-                            <Spacer y={2} />
-                            <p>{linkUrlString}</p>
-                          </div>
-                          <div style={{ flexGrow: 100 }}></div>
-                          <CopyToClipboardButton text={linkUrlString} />
-                        </div>
-                      )
-                    })
-                  ) : (
-                    <p className="text-body">
-                      You don't have any attribution links yet
-                    </p>
-                  )}
-                </div>
-              )}
-              <Spacer y={2} />
-              <MainButton
-                title="Create attribution link"
-                onClick={() => navigate("create-attribution-link")}
-              />
-              <Spacer y={4} />
-            </div>
-          )}
+          <Spacer y={3} />
 
           <h2 className="header-m">Event details</h2>
           <Spacer y={3} />
@@ -303,64 +327,68 @@ export default function EventPage({ merchant, event, products }) {
                     name: "publishScheduledAt",
                     label: "Scheduled publish date",
                     explanation:
-                      "Optionally set the time you want to publish this event to customers.",
+                      "Optionally set the time you want to publish this event to customers." + (!merchant.crezco ? " You can only do this after you connect a payment method." : ""),
                     input: <DatePicker />,
                     required: false,
-                    disabled: !!event.isPublished,
+                    disabled: !!event.isPublished || !canPublishEvent()
                   },
                 ],
               },
             ]}
             onSubmit={handleUpdateEvent}
-            submitTitle="Save"
+            submitTitle="Save changes"
           />
           {!event.isPublished && (
-            <div>
+            <div ref={publishButtonRef}>
               <Spacer y={2} />
-              <Popup
-                trigger={
-                  <div>
-                    <MainButton
-                      title={
-                        event.publishScheduledAt ? "Publish early" : "Publish"
-                      }
-                      test-id="publish-event-button"
-                      buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                    />
-                  </div>
-                }
-                modal
-              >
-                {(close) => (
-                  <Modal>
-                    <h2 className="header-m">Are you sure?</h2>
-                    <Spacer y={2} />
-                    <p className="text-body-faded">
-                      Once you publish an event, it'll become visible to
-                      customers, and you won't be able to edit the start and end
-                      date or address.
-                    </p>
-                    <Spacer y={4} />
-                    <MainButton
-                      title="Publish event"
-                      test-id="confirm-publish-event-button"
-                      onClick={() => {
-                        handlePublishEvent()
-                        close()
-                      }}
-                    />
-                    <Spacer y={2} />
-                    <MainButton
-                      title="Cancel"
-                      buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                      test-id="cancel-publish-event-button"
-                      onClick={close}
-                    />
-                  </Modal>
-                )}
-              </Popup>
 
-              <Spacer y={2} />
+              
+              {
+                canPublishEvent() && <div>
+                  <Popup
+                    trigger={
+                      <div>
+                        <MainButton
+                          title={event.publishScheduledAt ? "Publish early" : "Publish"}
+                          test-id="publish-event-button"
+
+                          buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                        />
+                      </div>
+                    }
+                    modal
+                  >
+                    {(close) => <Modal>
+                      <h2 className="header-m">Are you sure?</h2>
+                      <Spacer y={2} />
+                      <p className="text-body-faded">
+                        Once you publish an event, it'll become visible to
+                        customers, and you won't be able to edit the start and
+                        end date or address.
+                      </p>
+                      <Spacer y={4} />
+                      <MainButton
+                        title="Publish event"
+                        test-id="confirm-publish-event-button"
+                        onClick={() => {
+                          handlePublishEvent()
+                          close()
+                        }}
+                      />
+                      <Spacer y={2} />
+                      <MainButton
+                        title="Cancel"
+                        buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                        test-id="cancel-publish-event-button"
+                        onClick={close}
+                      />
+                    </Modal>}
+                  </Popup>
+                  <Spacer y={2} />
+                </div>
+              }
+
+              
               <Popup
                 trigger={
                   <div>
@@ -408,29 +436,38 @@ export default function EventPage({ merchant, event, products }) {
         </div>
         <div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <h2 className="header-m">Products</h2>
+            <h2 className="header-m">Ticket types</h2>
             <div className="flex-spacer"></div>
             <MainButton
-              title="Create product"
+              title="Create ticket type"
               onClick={handleCreateProduct}
               test-id="create-product-button"
               style={{ padding: "0 16px" }}
             />
           </div>
           <Spacer y={3} />
-          <p>Click to edit.</p>
-          <Spacer y={3} />
-          {products.map((product) => {
-            return (
-              <div key={product.id}>
-                <ProductListing
-                  product={product}
-                  currency={merchant.currency}
-                />
-                <Spacer y={2} />
+          {
+            products.length > 0 ?
+              <div>
+                <p>Click to edit.</p>
+                <Spacer y={3} />
+                {products.map((product) => {
+                  return (
+                    <div key={product.id}>
+                      <ProductListing
+                        product={product}
+                        currency={merchant.currency}
+                      />
+                      <Spacer y={2} />
+                    </div>
+                  )
+                })}
+              </div> :
+              <div>
+                <p>You don't have any ticket types for this event yet. You'll need at least one before you can publish the event.</p>
               </div>
-            )
-          })}
+          }
+          
         </div>
       </div>
     </div>

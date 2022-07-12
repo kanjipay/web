@@ -258,6 +258,7 @@ export default function AnalyticsPage({ merchant }) {
           Icon={Discover}
           iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
           iconForegroundColor={Colors.BLACK}
+          name="analytics-no-sales"
           title="No sales data yet"
           body="Once you start selling tickets, you'll be able to view the data here."
         />

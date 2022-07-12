@@ -31,6 +31,7 @@ export default function Form({
   formGroupData,
   onSubmit,
   submitTitle,
+  isFormLoading = false
 }) {
   const allItems = formGroupData.flatMap(
     (formGroupDatum) => formGroupDatum.items
@@ -145,7 +146,7 @@ export default function Form({
         title={submitTitle}
         onClick={handleSubmit}
         disabled={!areAllRequiredFieldsPopulated()}
-        isLoading={isLoading}
+        isLoading={isFormLoading || isLoading}
         test-id={`form-submit-${submitTitle.toLowerCase().replace(" ", "-")}`}
         type="submit"
       />

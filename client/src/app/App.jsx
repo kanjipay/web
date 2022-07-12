@@ -13,9 +13,22 @@ import { IntlProvider } from "react-intl"
 import AttributionLinkPage from "./shared/attribution/AttributionLinkPage"
 import { AnalyticsManager } from "../utils/AnalyticsManager"
 import TicketChecker from "./ticketChecker/TicketChecker"
+import { UAParser } from "ua-parser-js"
 
 export default function App() {
   console.log("language: ", navigator.language)
+
+  useEffect(() => {
+    const userAgent = UAParser(navigator.userAgent)
+    const browser = userAgent.browser.name
+
+    if (["Instagram", "Facebook"].includes(browser)) {
+      const url = new URL(window.location.href)
+      url.protocol = "googlechrome"
+
+      window.location.href = url.href
+    }
+  }, [])
 
   useEffect(() => {
     AnalyticsManager.main.logEvent("InitialiseApp")

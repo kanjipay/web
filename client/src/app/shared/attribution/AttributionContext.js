@@ -9,7 +9,7 @@ export function loadAttributionState() {
   const attributionItemsString = localStorage.getItem(
     LocalStorageKeys.ATTRIBUTION_ITEMS
   )
-  console.log(attributionItemsString)
+
   const attributionItemsWithStringDates =
     attributionItemsString && attributionItemsString !== "null"
       ? JSON.parse(attributionItemsString)

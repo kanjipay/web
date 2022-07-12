@@ -22,7 +22,7 @@ import { format } from "date-fns"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { OrderSummary } from "../../../../components/OrderSummary"
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
-import { NetworkManager } from "../../../../utils/NetworkManager"
+import { Helmet } from "react-helmet-async"
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length < 2) {
@@ -167,6 +167,10 @@ export default function ProductPage({ merchant, event, product, user }) {
         opaqueDepth={100}
         backPath="../.."
       />
+
+      <Helmet>
+        <title>{event.title} | {merchant.displayName} | Mercado</title>
+      </Helmet>
 
       <AsyncImage
         imageRef={getEventStorageRef(merchant.id, event.id, event.photo)}

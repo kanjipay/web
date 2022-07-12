@@ -1,11 +1,12 @@
+import { onAuthStateChanged } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { Link, Route, Routes } from "react-router-dom"
 import { ButtonTheme } from "../../components/ButtonTheme"
 import SmallButton from "../../components/SmallButton"
 import { Colors } from "../../enums/Colors"
+import { auth } from "../../utils/FirebaseUtils"
 import useWindowSize from "../../utils/helpers/useWindowSize"
 import NotFound from "../shared/NotFoundPage"
-import BlockButton from "./BlockButton"
 import HomePage from "./HomePage"
 import "./HomePageOld.css"
 
@@ -36,6 +37,13 @@ export function Brand() {
   const { width } = useWindowSize()
   const isMobile = width < 750
   const [opacity, setOpacity] = useState(0)
+  const [authUser, setAuthUser] = useState(null)
+
+  useEffect(() => {
+    onAuthStateChanged(auth, u => {
+      setAuthUser(u)
+    })
+  })
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,17 +67,6 @@ export function Brand() {
       window.removeEventListener("scroll", handleScroll)
     }
   }, [])
-
-  // useEffect(() => {
-  //   var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-  //   s1.async = true;
-  //   s1.src = 'https://embed.tawk.to/62457ae70bfe3f4a8770acd2/1fvfmg6kk';
-  //   s1.charset = 'UTF-8';
-  //   s1.setAttribute('crossorigin', '*');
-  //   s0.parentNode.insertBefore(s1, s0);
-  // }, [])
-
-  const calendlyLink = "https://calendly.com/matt-at-mercado/demo"
 
   return (
     <div>
@@ -109,14 +106,14 @@ export function Brand() {
 
           <Link to="/dashboard/o/create">
             <SmallButton
-              title="Become an organiser"
+              title="Sign up"
               buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
             />
           </Link>
 
           <Link to="/dashboard">
             <SmallButton
-              title="Sign in"
+              title={authUser ? "Dashboard" : "Log in"}
               buttonTheme={ButtonTheme.MONOCHROME_OUTLINED_REVERSE}
             />
           </Link>

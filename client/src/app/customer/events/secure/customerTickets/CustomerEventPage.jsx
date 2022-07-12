@@ -16,6 +16,9 @@ import {
 } from "../../event/eventHelpers"
 import EventsAppNavBar from "../EventsAppNavBar"
 import Ticket from "./Ticket"
+import { Helmet } from "react-helmet-async"
+import IconPage from "../../../../../components/IconPage"
+import Cross from "../../../../../assets/icons/Cross"
 
 export default function CustomerEventPage({ events }) {
   const { eventId } = useParams()
@@ -27,6 +30,16 @@ export default function CustomerEventPage({ events }) {
   if (events) {
     const event = events.find((event) => event.id === eventId)
 
+    if (!event) {
+      return <IconPage
+        title="Event not found"
+        body="We couldn't find this event."
+        Icon={Cross}
+        iconBackgroundColor={Colors.RED_LIGHT}
+        iconForegroundColor={Colors.RED}
+      />
+    }
+
     return (
       <div className="container">
         <EventsAppNavBar
@@ -36,11 +49,19 @@ export default function CustomerEventPage({ events }) {
           backPath=".."
         />
 
+        <Helmet>
+          <title>{event.title} | Mercado</title>
+        </Helmet>
+
         <AsyncImage
           imageRef={getEventStorageRef(event.merchantId, eventId, event.photo)}
           className="headerImage"
           alt={event.title}
         />
+
+        <Helmet>
+          <title>{} | Mercado</title>
+        </Helmet>
 
         <Spacer y={4} />
 

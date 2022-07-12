@@ -1,13 +1,14 @@
 import Tick from "../assets/icons/Tick"
 import Cross from "../assets/icons/Cross"
-import Details from "../assets/icons/Details"
 import { Colors } from "../enums/Colors"
 import CircleIcon from "./CircleIcon"
+import SmallButton from "./SmallButton"
+import Warning from "../assets/icons/Warning"
 
 export class ResultType {
   static SUCCESS = new ResultType(Colors.OFF_WHITE_LIGHT, Colors.BLACK, Tick)
   static ERROR = new ResultType(Colors.RED_LIGHT, Colors.RED, Cross)
-  static INFO = new ResultType(Colors.OFF_WHITE_LIGHT, Colors.BLACK, Details)
+  static INFO = new ResultType(Colors.OFF_WHITE_LIGHT, Colors.GRAY_LIGHT, Warning)
 
   constructor(
     backgroundColor,
@@ -22,7 +23,11 @@ export class ResultType {
   }
 }
 
-export default function ResultBanner({ resultType, message }) {
+export default function ResultBanner({ 
+  resultType, 
+  message, 
+  action = undefined, 
+  actionTitle = undefined }) {
   const bannerStyle = {
     backgroundColor: resultType.backgroundColor,
     padding: "12px 16px",
@@ -30,15 +35,21 @@ export default function ResultBanner({ resultType, message }) {
 
   return (
     <div style={bannerStyle}>
-      <div className="flex-container">
+      <div style={{ display: "flex", columnGap: 8, alignItems: "center" }}>
         <CircleIcon
           Icon={resultType.Icon}
-          length={24}
+          length={28}
           backgroundColor={resultType.foregroundColor}
           foregroundColor={Colors.WHITE}
           style={{ marginRight: 8 }}
         />
         <span style={{ color: resultType.textColor }}>{message}</span>
+        {
+          action && actionTitle && <SmallButton 
+            title={actionTitle}
+            onClick={action}
+          />
+        }
       </div>
     </div>
   )

@@ -1,4 +1,3 @@
-import { Divider } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import LoadingPage from "../../../../../components/LoadingPage"
@@ -13,8 +12,9 @@ import { AnalyticsManager } from "../../../../../utils/AnalyticsManager"
 import { auth } from "../../../../../utils/FirebaseUtils"
 import useAttribution from "../../../../shared/attribution/useAttribution"
 import EventsAppNavBar from "../EventsAppNavBar"
+import { Helmet } from "react-helmet-async"
 
-export default function OrderConfirmationPage() {
+export default function OrderConfirmationPage({ user }) {
   const { orderId } = useParams()
   const navigate = useNavigate()
   const [order, setOrder] = useState(null)
@@ -57,6 +57,10 @@ export default function OrderConfirmationPage() {
     return (
       <div className="container">
         <EventsAppNavBar title="Your tickets" />
+
+        <Helmet>
+          <ticket>Your order | Mercado</ticket>
+        </Helmet>
 
         <div className="content">
           <Spacer y={9} />

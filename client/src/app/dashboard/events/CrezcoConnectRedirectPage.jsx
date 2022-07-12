@@ -20,7 +20,6 @@ export default function CrezcoConnectRedirectPage() {
 
     NetworkManager.put(`/merchants/m/${merchantId}/crezco`, { crezcoUserId })
       .then(() => {
-        console.log("worked")
         setRegistered(true)
       })
       .catch((err) => {
@@ -39,9 +38,9 @@ export default function CrezcoConnectRedirectPage() {
         iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
         iconForegroundColor={Colors.BLACK}
         title="Bank details added"
-        body="You're now all set up to receive payments! Now let's go to your events page to create your first event."
+        body="You're now all set up to receive payments by bank transfer!"
         primaryAction={handleGoToEventsPage}
-        primaryActionTitle="Go to events page"
+        primaryActionTitle="Continue"
       />
     )
   } else {

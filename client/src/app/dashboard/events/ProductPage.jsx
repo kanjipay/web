@@ -15,7 +15,7 @@ import { dateFromTimestamp } from "../../../utils/helpers/time"
 import Popup from "reactjs-popup"
 import MainButton from "../../../components/MainButton"
 import { ButtonTheme } from "../../../components/ButtonTheme"
-import { Modal } from "./EventPage"
+import { Modal } from "../../../components/Modal"
 import { getCurrencySymbol } from "../../../utils/helpers/money"
 import CheckBox from "../../../components/CheckBox"
 
@@ -139,7 +139,7 @@ export default function ProductPage({ event, products, merchant }) {
               },
             ]}
             onSubmit={handleUpdateProduct}
-            submitTitle="Save"
+            submitTitle="Save changes"
           />
           {!isPublished && (
             <div>

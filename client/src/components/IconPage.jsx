@@ -9,6 +9,7 @@ export default function IconPage({
   iconForegroundColor = Colors.BLACK,
   title,
   body,
+  name
 }) {
   return (
     <div className="container">
@@ -21,9 +22,9 @@ export default function IconPage({
           style={{ margin: "auto" }}
         />
         <Spacer y={2} />
-        <div className="header-s">{title}</div>
+        <div className="header-s" test-id={`icon-page-title-${name}`}>{title}</div>
         <Spacer y={2} />
-        <div className="text-body-faded">{body}</div>
+        <div className="text-body-faded" test-id={`icon-page-body-${name}`}>{body}</div>
       </div>
     </div>
   )

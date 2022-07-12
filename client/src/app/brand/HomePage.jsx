@@ -5,7 +5,6 @@ import { Colors } from "../../enums/Colors"
 import Spacer from "../../components/Spacer"
 import useWindowSize from "../../utils/helpers/useWindowSize"
 import NotFound from "../shared/NotFoundPage"
-import BlockButton from "./BlockButton"
 import * as pluralize from "pluralize"
 import MainButton from "../../components/MainButton"
 import { ButtonTheme } from "../../components/ButtonTheme"
@@ -292,7 +291,7 @@ export default function HomePage() {
         <SquareImage src={`/img/${customerSegment.photo2}`} />
         <SquareTitleBody
           title="Advanced marketing analytics"
-          body="View your ticket sales by event, promoter, ticket type, social media post and more. Pinpoint and expand your customer base with our AI marketing tool."
+          body="View your ticket sales by event, promoter, ticket type, social media post and more. Drive sales with email and social media retargeting."
         />
       </div>
 
@@ -317,8 +316,9 @@ export default function HomePage() {
         </h2>
         <Spacer y={4} />
         <a href={calendlyLink} target="_blank" rel="noreferrer">
-          <BlockButton
+          <MainButton
             title="Book a demo"
+            buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
             style={{ display: "inline-block", width: 140 }}
           />
         </a>
