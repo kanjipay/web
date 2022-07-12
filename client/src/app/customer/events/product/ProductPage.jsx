@@ -23,6 +23,10 @@ import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { OrderSummary } from "../../../../components/OrderSummary"
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
 import { Helmet } from "react-helmet-async"
+import { getDoc } from "firebase/firestore"
+import {logMetaPixelEvent} from "../../../../utils/MetaPixelLogger"
+import Collection from "../../../../enums/Collection"
+
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length < 2) {
@@ -72,11 +76,13 @@ export default function ProductPage({ merchant, event, product, user }) {
     if (!merchantId || !productId || !user) {
       return
     }
+    console.log('started logging pixel event')
     // I think Meta does deduplication but might be cleaner to get this to run once per order
     getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {
       const { metaPixelId } = merchantDoc.data()
-      const purchaseData = { value: order.total, currency: "GBP" }
-      logMetaPixelEvent(metaPixelId, user, "ViewContent") // todo add data with productId
+      logMetaPixelEvent(metaPixelId, user, "ViewContent", {}) // todo add data with productId
+
+      console.log('finishing logging pixel event')
     })
   }, [merchantId, productId, user])
 

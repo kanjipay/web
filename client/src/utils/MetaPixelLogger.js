@@ -19,10 +19,13 @@ function prepareAdvancedMatchingData(user) {
   }
 }
 
-export function logMetaPixelEvent(metaPixelId, user, event, data) {
-  advancedMatchingData = prepareAdvancedMatchingData(user)
-  ReactPixel.init(metaPixelId, advancedMatchingData, metaPixelOptions).track(
+export async function logMetaPixelEvent(metaPixelId, user, event, data) {
+  console.log('pixel', metaPixelId)
+  const advancedMatchingData = prepareAdvancedMatchingData(user)
+  console.log('user', user)
+  ReactPixel.init(metaPixelId, advancedMatchingData, metaPixelOptions)
+  ReactPixel.track(
     event,
     data
-  )
+  )  
 }
