@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions"
 import mainApp from "./main/mainApp"
 import { cronFunction } from "./cron/cron"
+import { backupFirestore } from "./cron/backupFirestore"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 const euFunctions = functions.region("europe-west2")
@@ -29,3 +30,8 @@ export const cron = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
   .pubsub.schedule("every 10 minutes")
   .onRun(cronFunction)
+
+export const backup = euFunctions
+  .runWith({ secrets: ["SERVICE_ACCOUNT"] })
+  .pubsub.schedule("every 24 hours")
+  .onRun(backupFirestore)
