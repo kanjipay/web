@@ -3,12 +3,12 @@ import * as firestore from "@google-cloud/firestore"
 
 const client = new firestore.v1.FirestoreAdminClient()
 
-function getBucketUrl(environment){
-    if(environment in ['DEV', 'PROD', 'STAGING']){
-        return `gs://mercado-${environment.toLowerCase()}-backup`
-    }else{
-        new Error(`missing or invalid ENVIRONMENT ${environment}`)
-    }
+function getBucketUrl(environment) {
+  if (environment in ["DEV", "PROD", "STAGING"]) {
+    return `gs://mercado-${environment.toLowerCase()}-backup`
+  } else {
+    new Error(`missing or invalid ENVIRONMENT ${environment}`)
+  }
 }
 
 export const backupFirestore = () => {
