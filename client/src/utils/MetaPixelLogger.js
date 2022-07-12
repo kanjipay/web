@@ -18,8 +18,8 @@ function prepareAdvancedMatchingData(user) {
     // https://developers.facebook.com/docs/meta-pixel/advanced/advanced-matching
     return {
       em: user.email,
-      fn: user.firstname,
-      ln: user.lastname, //could possibly add gender using guesser
+      fn: user.firstName,
+      ln: user.lastName, 
       ge: alignFacebookGender(user.gender),
       external_id: user.email,
     }
