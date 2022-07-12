@@ -30,18 +30,20 @@ function PublishInfoBanners({ merchant, hasProducts, publishButtonRef }) {
     <ResultBanner
       resultType={ResultType.INFO}
       message="This event isn't published yet. You'll need to publish it before it shows to customers."
-    />
+    />,
   ]
 
   if (!merchant.crezco?.userId) {
-    banners.push(<ResultBanner
-      resultType={ResultType.INFO}
-      message="You'll need to connect a payment method before you can publish this event."
-      action={() => {
-        navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
-      }}
-      actionTitle="Connect payments"
-    />)
+    banners.push(
+      <ResultBanner
+        resultType={ResultType.INFO}
+        message="You'll need to connect a payment method before you can publish this event."
+        action={() => {
+          navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
+        }}
+        actionTitle="Connect payments"
+      />
+    )
   }
 
   if (!hasProducts) {
@@ -61,115 +63,112 @@ function PublishInfoBanners({ merchant, hasProducts, publishButtonRef }) {
     if (index === 0) {
       return [banner]
     } else {
-      return [
-        <Spacer y={2} />,
-        banner
-      ]
+      return [<Spacer y={2} />, banner]
     }
   })
 
-  return <div>
-    {children}
-  </div>
+  return <div>{children}</div>
 }
 
 function EventLinkSection({ eventLinkString }) {
-  return <div>
-    <h2 className="header-m">Event links</h2>
-    <Spacer y={3} />
-    <h3 className="header-s">Plain event link</h3>
-    <Spacer y={2} />
-    <p className="text-body-faded">
-      This is the link customers can use to view your event and buy
-      tickets.
-    </p>
-    <Spacer y={2} />
-    <div
-      style={{ display: "flex", alignItems: "center", columnGap: 16 }}
-    >
-      <a
-        href={eventLinkString}
-        target="_blank"
-        rel="noreferrer"
-        style={{ textDecoration: "underline", fontWeight: "400" }}
-      >
-        {eventLinkString}
-      </a>
-      <div className="flex-spacer"></div>
-      <CopyToClipboardButton text={eventLinkString} />
+  return (
+    <div>
+      <h2 className="header-m">Event links</h2>
+      <Spacer y={3} />
+      <h3 className="header-s">Plain event link</h3>
+      <Spacer y={2} />
+      <p className="text-body-faded">
+        This is the link customers can use to view your event and buy tickets.
+      </p>
+      <Spacer y={2} />
+      <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
+        <a
+          href={eventLinkString}
+          target="_blank"
+          rel="noreferrer"
+          style={{ textDecoration: "underline", fontWeight: "400" }}
+        >
+          {eventLinkString}
+        </a>
+        <div className="flex-spacer"></div>
+        <CopyToClipboardButton text={eventLinkString} />
+      </div>
     </div>
-  </div>
+  )
 }
 
 function AttributionLinkSection({ attributionLinks }) {
   const navigate = useNavigate()
 
-  return <div>
-    <h3 className="header-s">Attribution links</h3>
-    <Spacer y={2} />
-    <p className="text-body-faded">
-      Want to see which of your marketing efforts is bringing in
-      sales? You can use attribution links to analyse where your sales
-      are coming from.
-    </p>
-    {attributionLinks && <div>
+  return (
+    <div>
+      <h3 className="header-s">Attribution links</h3>
       <Spacer y={2} />
-      {attributionLinks.length > 0 ? (
-        attributionLinks.map((link) => {
-          const linkUrl = new URL(window.location.href)
-          linkUrl.pathname = `/l/${link.id}`
+      <p className="text-body-faded">
+        Want to see which of your marketing efforts is bringing in sales? You
+        can use attribution links to analyse where your sales are coming from.
+      </p>
+      {attributionLinks && (
+        <div>
+          <Spacer y={2} />
+          {attributionLinks.length > 0 ? (
+            attributionLinks.map((link) => {
+              const linkUrl = new URL(window.location.href)
+              linkUrl.pathname = `/l/${link.id}`
 
-          const linkUrlString = linkUrl.href
+              const linkUrlString = linkUrl.href
 
-          return (
-            <div
-              style={{
-                padding: 16,
-                backgroundColor: Colors.OFF_WHITE_LIGHT,
-                display: "flex",
-                alignItems: "center",
-                columnGap: 16,
-                marginBottom: 16,
-              }}
-            >
-              <div>
-                <h4 className="header-xs">{link.displayName}</h4>
-                <Spacer y={2} />
-                <div style={{ display: "flex", columnGap: 8 }}>
-                  {Object.entries(link.attributionData).map(
-                    ([key, value]) => (
-                      <p
-                        style={{
-                          backgroundColor: Colors.OFF_WHITE,
-                          fontSize: 14,
-                          padding: "4px 8px",
-                        }}
-                      >
-                        {`${key} = ${value}`}
-                      </p>
-                    )
-                  )}
+              return (
+                <div
+                  style={{
+                    padding: 16,
+                    backgroundColor: Colors.OFF_WHITE_LIGHT,
+                    display: "flex",
+                    alignItems: "center",
+                    columnGap: 16,
+                    marginBottom: 16,
+                  }}
+                >
+                  <div>
+                    <h4 className="header-xs">{link.displayName}</h4>
+                    <Spacer y={2} />
+                    <div style={{ display: "flex", columnGap: 8 }}>
+                      {Object.entries(link.attributionData).map(
+                        ([key, value]) => (
+                          <p
+                            style={{
+                              backgroundColor: Colors.OFF_WHITE,
+                              fontSize: 14,
+                              padding: "4px 8px",
+                            }}
+                          >
+                            {`${key} = ${value}`}
+                          </p>
+                        )
+                      )}
+                    </div>
+                    <Spacer y={2} />
+                    <p>{linkUrlString}</p>
+                  </div>
+                  <div style={{ flexGrow: 100 }}></div>
+                  <CopyToClipboardButton text={linkUrlString} />
                 </div>
-                <Spacer y={2} />
-                <p>{linkUrlString}</p>
-              </div>
-              <div style={{ flexGrow: 100 }}></div>
-              <CopyToClipboardButton text={linkUrlString} />
-            </div>
-          )
-        })
-      ) : (
-        <p className="text-body">
-          You don't have any attribution links yet
-        </p>
+              )
+            })
+          ) : (
+            <p className="text-body">
+              You don't have any attribution links yet
+            </p>
+          )}
+        </div>
       )}
-    </div>}
-    <Spacer y={2} />
-    <MainButton
-      title="Create attribution link"
-      onClick={() => navigate("create-attribution-link")}
-    />
-  </div>
+      <Spacer y={2} />
+      <MainButton
+        title="Create attribution link"
+        onClick={() => navigate("create-attribution-link")}
+      />
+    </div>
+  )
 }
 
 export default function EventPage({ merchant, event, products }) {
@@ -257,13 +256,19 @@ export default function EventPage({ merchant, event, products }) {
         }}
       >
         <div>
-          {event.isPublished ? <div>
+          {event.isPublished ? (
+            <div>
               <EventLinkSection eventLinkString={eventLinkString} />
               <Spacer y={3} />
               <AttributionLinkSection attributionLinks={attributionLinks} />
-            </div> :
-            <PublishInfoBanners merchant={merchant} publishButtonRef={publishButtonRef} hasProducts={products.length > 0} />
-          }
+            </div>
+          ) : (
+            <PublishInfoBanners
+              merchant={merchant}
+              publishButtonRef={publishButtonRef}
+              hasProducts={products.length > 0}
+            />
+          )}
 
           <Spacer y={3} />
 
@@ -327,10 +332,13 @@ export default function EventPage({ merchant, event, products }) {
                     name: "publishScheduledAt",
                     label: "Scheduled publish date",
                     explanation:
-                      "Optionally set the time you want to publish this event to customers." + (!merchant.crezco ? " You can only do this after you connect a payment method." : ""),
+                      "Optionally set the time you want to publish this event to customers." +
+                      (!merchant.crezco
+                        ? " You can only do this after you connect a payment method."
+                        : ""),
                     input: <DatePicker />,
                     required: false,
-                    disabled: !!event.isPublished || !canPublishEvent()
+                    disabled: !!event.isPublished || !canPublishEvent(),
                   },
                 ],
               },
@@ -342,53 +350,56 @@ export default function EventPage({ merchant, event, products }) {
             <div ref={publishButtonRef}>
               <Spacer y={2} />
 
-              
-              {
-                canPublishEvent() && <div>
+              {canPublishEvent() && (
+                <div>
                   <Popup
                     trigger={
                       <div>
                         <MainButton
-                          title={event.publishScheduledAt ? "Publish early" : "Publish"}
+                          title={
+                            event.publishScheduledAt
+                              ? "Publish early"
+                              : "Publish"
+                          }
                           test-id="publish-event-button"
-
                           buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
                         />
                       </div>
                     }
                     modal
                   >
-                    {(close) => <Modal>
-                      <h2 className="header-m">Are you sure?</h2>
-                      <Spacer y={2} />
-                      <p className="text-body-faded">
-                        Once you publish an event, it'll become visible to
-                        customers, and you won't be able to edit the start and
-                        end date or address.
-                      </p>
-                      <Spacer y={4} />
-                      <MainButton
-                        title="Publish event"
-                        test-id="confirm-publish-event-button"
-                        onClick={() => {
-                          handlePublishEvent()
-                          close()
-                        }}
-                      />
-                      <Spacer y={2} />
-                      <MainButton
-                        title="Cancel"
-                        buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                        test-id="cancel-publish-event-button"
-                        onClick={close}
-                      />
-                    </Modal>}
+                    {(close) => (
+                      <Modal>
+                        <h2 className="header-m">Are you sure?</h2>
+                        <Spacer y={2} />
+                        <p className="text-body-faded">
+                          Once you publish an event, it'll become visible to
+                          customers, and you won't be able to edit the start and
+                          end date or address.
+                        </p>
+                        <Spacer y={4} />
+                        <MainButton
+                          title="Publish event"
+                          test-id="confirm-publish-event-button"
+                          onClick={() => {
+                            handlePublishEvent()
+                            close()
+                          }}
+                        />
+                        <Spacer y={2} />
+                        <MainButton
+                          title="Cancel"
+                          buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                          test-id="cancel-publish-event-button"
+                          onClick={close}
+                        />
+                      </Modal>
+                    )}
                   </Popup>
                   <Spacer y={2} />
                 </div>
-              }
+              )}
 
-              
               <Popup
                 trigger={
                   <div>
@@ -446,28 +457,30 @@ export default function EventPage({ merchant, event, products }) {
             />
           </div>
           <Spacer y={3} />
-          {
-            products.length > 0 ?
-              <div>
-                <p>Click to edit.</p>
-                <Spacer y={3} />
-                {products.map((product) => {
-                  return (
-                    <div key={product.id}>
-                      <ProductListing
-                        product={product}
-                        currency={merchant.currency}
-                      />
-                      <Spacer y={2} />
-                    </div>
-                  )
-                })}
-              </div> :
-              <div>
-                <p>You don't have any ticket types for this event yet. You'll need at least one before you can publish the event.</p>
-              </div>
-          }
-          
+          {products.length > 0 ? (
+            <div>
+              <p>Click to edit.</p>
+              <Spacer y={3} />
+              {products.map((product) => {
+                return (
+                  <div key={product.id}>
+                    <ProductListing
+                      product={product}
+                      currency={merchant.currency}
+                    />
+                    <Spacer y={2} />
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div>
+              <p>
+                You don't have any ticket types for this event yet. You'll need
+                at least one before you can publish the event.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

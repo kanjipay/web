@@ -31,7 +31,7 @@ export default function Form({
   formGroupData,
   onSubmit,
   submitTitle,
-  isFormLoading = false
+  isFormLoading = false,
 }) {
   const allItems = formGroupData.flatMap(
     (formGroupDatum) => formGroupDatum.items

@@ -159,13 +159,13 @@ export default function SettingsPage({ merchant }) {
             <Spacer y={2} />
             <h3 className="header-xs">Crezco</h3>
             <Spacer y={2} />
-            <p className="text-body-faded">{
-              merchant.crezco?.userId ?
-                "You're connected with Crezco. This means your customers can pay you via bank transfer." :
-                "Connect with Crezco to enable customers to pay for tickets with an instant bank transfer."
-            }</p>
-            {
-              !merchant.crezco?.userId && <div>
+            <p className="text-body-faded">
+              {merchant.crezco?.userId
+                ? "You're connected with Crezco. This means your customers can pay you via bank transfer."
+                : "Connect with Crezco to enable customers to pay for tickets with an instant bank transfer."}
+            </p>
+            {!merchant.crezco?.userId && (
+              <div>
                 <Spacer y={2} />
                 <MainButton
                   title="Connect with Crezco"
@@ -173,16 +173,16 @@ export default function SettingsPage({ merchant }) {
                   onClick={() => redirectToCrezco(merchantId)}
                 />
               </div>
-            }
-            
+            )}
+
             <Spacer y={4} />
             <h3 className="header-xs">Stripe</h3>
             <Spacer y={2} />
-            <p className="text-body-faded">{
-              merchant.stripe?.status === StripeStatus.CHARGES_ENABLED ?
-                "You're connected with Stripe. This means your customers can pay you via card" :
-                "Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts."
-            }</p>
+            <p className="text-body-faded">
+              {merchant.stripe?.status === StripeStatus.CHARGES_ENABLED
+                ? "You're connected with Stripe. This means your customers can pay you via card"
+                : "Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts."}
+            </p>
             <Spacer y={2} />
             <MainButton
               title={

@@ -93,7 +93,8 @@ export default function EventPage({ merchant, event, products, artists }) {
     AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
   }, [eventId, merchantId])
 
-  const hasAlreadyHappened = new Date() >= addMinutes(dateFromTimestamp(event.endsAt), -30)
+  const hasAlreadyHappened =
+    new Date() >= addMinutes(dateFromTimestamp(event.endsAt), -30)
 
   return (
     <div className="container">
@@ -111,7 +112,9 @@ export default function EventPage({ merchant, event, products, artists }) {
       />
 
       <Helmet>
-        <title>{event.title} | {merchant.displayName} | Mercado</title>
+        <title>
+          {event.title} | {merchant.displayName} | Mercado
+        </title>
       </Helmet>
 
       <Spacer y={4} />
@@ -147,29 +150,31 @@ export default function EventPage({ merchant, event, products, artists }) {
           {event.description}
         </ShowMoreText>
 
-
         <Spacer y={4} />
 
-        {
-          hasAlreadyHappened ?
-            <p>This event ended on {format(dateFromTimestamp(event.endsAt), "do MMM")} at {format(dateFromTimestamp(event.endsAt), "H:mm")}.</p>
-            : <div>
-                <h1 className="header-m">Get tickets</h1>
-                <Spacer y={2} />
-                {products
-                  .map((product) => {
-                    return (
-                      <div key={product.id}>
-                        <ProductListing
-                          product={product}
-                          currency={merchant.currency}
-                        />
-                        <Spacer y={1} />
-                      </div>
-                    )
-                  })}
-              </div>
-        }
+        {hasAlreadyHappened ? (
+          <p>
+            This event ended on{" "}
+            {format(dateFromTimestamp(event.endsAt), "do MMM")} at{" "}
+            {format(dateFromTimestamp(event.endsAt), "H:mm")}.
+          </p>
+        ) : (
+          <div>
+            <h1 className="header-m">Get tickets</h1>
+            <Spacer y={2} />
+            {products.map((product) => {
+              return (
+                <div key={product.id}>
+                  <ProductListing
+                    product={product}
+                    currency={merchant.currency}
+                  />
+                  <Spacer y={1} />
+                </div>
+              )
+            })}
+          </div>
+        )}
         <Spacer y={8} />
       </div>
     </div>

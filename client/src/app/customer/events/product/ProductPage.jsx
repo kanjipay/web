@@ -72,9 +72,12 @@ export default function ProductPage({ merchant, event, product, user }) {
     if (!merchantId || !productId || !user) {
       return
     }
-    console.log("merchant id", merchantId)
-    console.log("product id", productId)
-    console.log("user", user)
+    // I think Meta does deduplication but might be cleaner to get this to run once per order
+    getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {
+      const { metaPixelId } = merchantDoc.data()
+      const purchaseData = { value: order.total, currency: "GBP" }
+      logMetaPixelEvent(metaPixelId, user, "ViewContent") // todo add data with productId
+    })
   }, [merchantId, productId, user])
 
   useEffect(() => {
@@ -169,7 +172,9 @@ export default function ProductPage({ merchant, event, product, user }) {
       />
 
       <Helmet>
-        <title>{event.title} | {merchant.displayName} | Mercado</title>
+        <title>
+          {event.title} | {merchant.displayName} | Mercado
+        </title>
       </Helmet>
 
       <AsyncImage

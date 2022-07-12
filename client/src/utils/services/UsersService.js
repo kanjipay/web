@@ -36,7 +36,7 @@ export async function processUserCredential(credential) {
       return await updateDocWithDisplayName()
     } else {
       if (!displayName) {
-        await updateProfile(user, { displayName: `${firstName} ${lastName}`})
+        await updateProfile(user, { displayName: `${firstName} ${lastName}` })
       }
 
       return true
@@ -44,7 +44,7 @@ export async function processUserCredential(credential) {
   } else {
     await setDoc(userRef, {
       email,
-      marketingConsentStatus: MarketingConsent.PENDING
+      marketingConsentStatus: MarketingConsent.PENDING,
     })
 
     return await updateDocWithDisplayName()

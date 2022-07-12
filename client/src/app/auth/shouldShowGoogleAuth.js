@@ -4,7 +4,17 @@ export function shouldShowGoogleAuth() {
   const userAgent = UAParser(navigator.userAgent)
   const browser = userAgent.browser.name
 
-  if (["Safari", "Mobile Safari", "Chrome", "Chromium", "Edge", "Brave", "Firefox"].includes(browser)) {
+  if (
+    [
+      "Safari",
+      "Mobile Safari",
+      "Chrome",
+      "Chromium",
+      "Edge",
+      "Brave",
+      "Firefox",
+    ].includes(browser)
+  ) {
     return true
   }
 

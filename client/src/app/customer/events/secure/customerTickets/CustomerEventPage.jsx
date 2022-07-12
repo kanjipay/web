@@ -31,13 +31,15 @@ export default function CustomerEventPage({ events }) {
     const event = events.find((event) => event.id === eventId)
 
     if (!event) {
-      return <IconPage
-        title="Event not found"
-        body="We couldn't find this event."
-        Icon={Cross}
-        iconBackgroundColor={Colors.RED_LIGHT}
-        iconForegroundColor={Colors.RED}
-      />
+      return (
+        <IconPage
+          title="Event not found"
+          body="We couldn't find this event."
+          Icon={Cross}
+          iconBackgroundColor={Colors.RED_LIGHT}
+          iconForegroundColor={Colors.RED}
+        />
+      )
     }
 
     return (
