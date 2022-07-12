@@ -6,7 +6,10 @@ export default function Orders({ user }) {
   return (
     <Routes>
       <Route path="tickets" element={<OrderTicketsPage />} />
-      <Route path=":orderId/confirmation" element={<OrderConfirmationPage user={user} />} />
+      <Route
+        path=":orderId/confirmation"
+        element={<OrderConfirmationPage user={user} />}
+      />
     </Routes>
   )
 }

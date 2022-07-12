@@ -27,6 +27,7 @@
     "react": "^17.0.2",
     "react-device-detect": "^2.1.2",
     "react-dom": "^17.0.2",
+    "react-facebook-pixel": "^1.0.4",
     "react-helmet-async": "^1.2.3",
     "react-hotjar": "^5.0.0",
     "react-id-generator": "^3.0.2",
@@ -52,7 +53,8 @@
     "lint": "npx prettier --no-semi --write .",
     "build:dev": "env-cmd -f ./.env.dev npm run-script build",
     "build:staging": "env-cmd -f ./.env.staging npm run-script build",
-    "build:prod": "env-cmd -f ./.env.prod npm run-script build"
+    "build:prod": "env-cmd -f ./.env.prod npm run-script build",
+    "deploy": "firebase deploy --only hosting"
   },
   "eslintConfig": {
     "extends": [

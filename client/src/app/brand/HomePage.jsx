@@ -184,7 +184,7 @@ export default function HomePage() {
             transform: "translate(-50%, -50%)",
             width: isMobile ? "100%" : 800,
             padding: isMobile ? "0 16px" : 0,
-            boxSizing: "border-box"
+            boxSizing: "border-box",
           }}
         >
           <h1

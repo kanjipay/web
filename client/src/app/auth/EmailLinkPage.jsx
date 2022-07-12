@@ -39,7 +39,9 @@ export default function EmailLinkPage() {
       try {
         const currentUrl = window.location.href
 
-        if (!emailForSignIn || error || userId) { return }
+        if (!emailForSignIn || error || userId) {
+          return
+        }
 
         if (!isSignInWithEmailLink(auth, currentUrl)) {
           setError({
@@ -50,7 +52,11 @@ export default function EmailLinkPage() {
           return
         }
 
-        const credential = await signInWithEmailLink(auth, emailForSignIn, currentUrl)
+        const credential = await signInWithEmailLink(
+          auth,
+          emailForSignIn,
+          currentUrl
+        )
 
         setUserId(credential.user.uid)
 
@@ -63,7 +69,7 @@ export default function EmailLinkPage() {
         setHasName(hasName)
       } catch (err) {
         console.log(err)
-        
+
         setError({
           title: "Something went wrong",
           body: "We're sorry, but we couldn't log you in. Try checking back later.",
@@ -79,7 +85,7 @@ export default function EmailLinkPage() {
     successState,
     error,
     stateId,
-    userId
+    userId,
   ])
 
   useEffect(() => {
@@ -93,11 +99,12 @@ export default function EmailLinkPage() {
     setEmailForSignIn(email)
   }
 
-  const handleNameSubmit = async data => {
+  const handleNameSubmit = async (data) => {
     const { firstName, lastName } = data
 
     await updateDoc(Collection.USER.docRef(userId), {
-      firstName, lastName
+      firstName,
+      lastName,
     })
 
     navigate(successPath, { state: successState })
@@ -120,26 +127,24 @@ export default function EmailLinkPage() {
       />
     )
   } else if (hasName === false) {
-    return <div className="container">
-      <div className="content">
-        <Spacer y={4} />
-        <Form
-          formGroupData={[
-            {
-              explanation:
-                "Fill in your name to complete your profile.",
-              items: [
-                { name: "firstName" },
-                { name: "lastName" },
-              ],
-            },
-          ]}
-          onSubmit={handleNameSubmit}
-          submitTitle="Submit"
-        />
-        <Spacer y={6} />
+    return (
+      <div className="container">
+        <div className="content">
+          <Spacer y={4} />
+          <Form
+            formGroupData={[
+              {
+                explanation: "Fill in your name to complete your profile.",
+                items: [{ name: "firstName" }, { name: "lastName" }],
+              },
+            ]}
+            onSubmit={handleNameSubmit}
+            submitTitle="Submit"
+          />
+          <Spacer y={6} />
+        </div>
       </div>
-    </div>
+    )
   } else if (!emailForSignIn) {
     return (
       <div className="container">

@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react"
 import * as base64 from "base-64"
-import {
-  onAuthStateChanged,
-  sendSignInLinkToEmail,
-} from "firebase/auth"
+import { onAuthStateChanged, sendSignInLinkToEmail } from "firebase/auth"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Colors } from "../../enums/Colors"
 import NavBar from "../../components/NavBar"
@@ -103,24 +100,26 @@ export default function AuthPage() {
     )
   } else if (isLoading) {
     return <LoadingPage />
-  } else {    
-    const emailLinkForm = <Form
-      isFormLoading={isLoading}
-      formGroupData={[
-        {
-          items: [
-            {
-              name: "email",
-              validators: [generateValidator(validateEmail, "Invalid email")],
-              decorator: <FieldDecorator suffix={emailSuffix} />,
-              input: <Field type="email" autocomplete="email" />,
-            },
-          ],
-        },
-      ]}
-      onSubmit={handleSendEmailLink}
-      submitTitle="Send email link"
-    />
+  } else {
+    const emailLinkForm = (
+      <Form
+        isFormLoading={isLoading}
+        formGroupData={[
+          {
+            items: [
+              {
+                name: "email",
+                validators: [generateValidator(validateEmail, "Invalid email")],
+                decorator: <FieldDecorator suffix={emailSuffix} />,
+                input: <Field type="email" autocomplete="email" />,
+              },
+            ],
+          },
+        ]}
+        onSubmit={handleSendEmailLink}
+        submitTitle="Send email link"
+      />
+    )
 
     return (
       <div className="container">
@@ -129,26 +128,26 @@ export default function AuthPage() {
         <div className="content">
           <Spacer y={9} />
 
-          {
-            shouldShowGoogleAuth() ?
-              <div>
-                {!requiredEmailDomain && (
-                  <div>
-                    <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
-                    <Spacer y={4} />
-                    <OrDivider />
-                    <Spacer y={4} />
-                  </div>
-                )}
+          {shouldShowGoogleAuth() ? (
+            <div>
+              {!requiredEmailDomain && (
+                <div>
+                  <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
+                  <Spacer y={4} />
+                  <OrDivider />
+                  <Spacer y={4} />
+                </div>
+              )}
 
-                <Revealer title="Email me a sign in link" name="auth">
-                  {emailLinkForm}
-                </Revealer>
+              <Revealer title="Email me a sign in link" name="auth">
+                {emailLinkForm}
+              </Revealer>
 
-                <Spacer y={6} />
-              </div> :
-              emailLinkForm
-          }
+              <Spacer y={6} />
+            </div>
+          ) : (
+            emailLinkForm
+          )}
         </div>
       </div>
     )

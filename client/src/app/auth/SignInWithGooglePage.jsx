@@ -45,7 +45,9 @@ export default function SignInWithGooglePage() {
   useEffect(() => {
     async function handleAuth() {
       try {
-        if (error) { return }
+        if (error) {
+          return
+        }
 
         if (isAuthInProgress()) {
           const credential = await getRedirectResult(auth)
@@ -85,11 +87,12 @@ export default function SignInWithGooglePage() {
     navigate({ pathname: "/auth", search })
   }
 
-  const handleNameSubmit = async data => {
+  const handleNameSubmit = async (data) => {
     const { firstName, lastName } = data
 
     await updateDoc(Collection.USER.docRef(userId), {
-      firstName, lastName
+      firstName,
+      lastName,
     })
 
     navigate(successPath, { state: successState })
@@ -108,26 +111,24 @@ export default function SignInWithGooglePage() {
       />
     )
   } else if (hasName === false) {
-    return <div className="container">
-      <div className="content">
-        <Spacer y={4} />
-        <Form
-          formGroupData={[
-            {
-              explanation:
-                "Fill in your name to complete your profile.",
-              items: [
-                { name: "firstName" },
-                { name: "lastName" },
-              ],
-            },
-          ]}
-          onSubmit={handleNameSubmit}
-          submitTitle="Submit"
-        />
-        <Spacer y={6} />
+    return (
+      <div className="container">
+        <div className="content">
+          <Spacer y={4} />
+          <Form
+            formGroupData={[
+              {
+                explanation: "Fill in your name to complete your profile.",
+                items: [{ name: "firstName" }, { name: "lastName" }],
+              },
+            ]}
+            onSubmit={handleNameSubmit}
+            submitTitle="Submit"
+          />
+          <Spacer y={6} />
+        </div>
       </div>
-    </div>
+    )
   } else {
     return <LoadingPage message="Signing you in" />
   }
