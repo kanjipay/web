@@ -49,7 +49,7 @@ export default function OrderConfirmationPage({ user }) {
         <EventsAppNavBar title="Your tickets" />
 
         <Helmet>
-          <ticket>Your order | Mercado</ticket>
+          <title>Your order | Mercado</title>
         </Helmet>
 
         <div className="content">
