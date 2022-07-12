@@ -13,6 +13,8 @@ import { auth } from "../../../../../utils/FirebaseUtils"
 import useAttribution from "../../../../shared/attribution/useAttribution"
 import EventsAppNavBar from "../EventsAppNavBar"
 import { Helmet } from "react-helmet-async"
+import {logMetaPixelEvent} from "../../../../../utils/MetaPixelLogger"
+import { getDoc } from "firebase/firestore"
 
 export default function OrderConfirmationPage({ user }) {
   const { orderId } = useParams()
@@ -33,10 +35,11 @@ export default function OrderConfirmationPage({ user }) {
     if (!order) {
       return
     }
-    console.log("product id", order.orderItems[0].productId)
-    console.log("merchant id", order.merchantId)
-    console.log("total", order.total)
-    console.log("user", auth.currentUser)
+    getDoc(Collection.MERCHANT.docRef(order.merchantId)).then((merchantDoc) => {
+      const {metaPixelId} = merchantDoc.data()
+      const purchaseData = {value: order.total, currency: 'GBP'}
+      logMetaPixelEvent(metaPixelId, auth.currentUser, "Purchase", ) // todo add data with productId, total // todo switch to other user
+    })
   }, [order])
 
   useEffect(() => {
