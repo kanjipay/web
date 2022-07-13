@@ -19,7 +19,7 @@ function prepareAdvancedMatchingData(user) {
     return {
       em: user.email,
       fn: user.firstName,
-      ln: user.lastName, 
+      ln: user.lastName,
       ge: alignFacebookGender(user.gender),
       external_id: user.email,
     }
@@ -31,5 +31,21 @@ function prepareAdvancedMatchingData(user) {
 export async function logMetaPixelEvent(metaPixelId, user, event, data) {
   const advancedMatchingData = prepareAdvancedMatchingData(user)
   ReactPixel.init(metaPixelId, advancedMatchingData, metaPixelOptions)
-  ReactPixel.trackSingle(event, data)
+  ReactPixel.track(event, { ...data })
+}
+
+export function parseOrderDetails(order) {
+  const contents = order.orderItems.map(function (orderItem) {
+    return {
+      id: orderItem.productId,
+      quantity: orderItem.quantity,
+      item_price: orderItem.price / 100,
+    }
+  })
+  return {
+    value: order.total,
+    currency: order.currency,
+    contents,
+    content_type: "product",
+  }
 }

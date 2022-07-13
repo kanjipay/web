@@ -13,7 +13,10 @@ import { auth } from "../../../../../utils/FirebaseUtils"
 import useAttribution from "../../../../shared/attribution/useAttribution"
 import EventsAppNavBar from "../EventsAppNavBar"
 import { Helmet } from "react-helmet-async"
-import { logMetaPixelEvent } from "../../../../../utils/MetaPixelLogger"
+import {
+  logMetaPixelEvent,
+  parseOrderDetails,
+} from "../../../../../utils/MetaPixelLogger"
 import { getDoc } from "firebase/firestore"
 
 export default function OrderConfirmationPage({ user }) {
@@ -37,9 +40,10 @@ export default function OrderConfirmationPage({ user }) {
     }
     getDoc(Collection.MERCHANT.docRef(order.merchantId)).then((merchantDoc) => {
       const { metaPixelId } = merchantDoc.data()
-      const purchaseData = { value: order.total, currency: "GBP", content_ids:[order.orderItems[0].productId], content_type: 'product' }
-      // only log if Mercado customer has shared pixel with us. 
-      if (metaPixelId){
+      // only log if Mercado customer has shared pixel with us.
+      if (metaPixelId) {
+        const purchaseData = parseOrderDetails(order)
+        console.log(purchaseData)
         logMetaPixelEvent(metaPixelId, user, "Purchase", purchaseData) // todo add data with productId, total // todo switch to other user
       }
     })
