@@ -78,7 +78,10 @@ export default function ProductPage({ merchant, event, product, user }) {
     // I think Meta does deduplication but might be cleaner to get this to run once per order
     getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {
       const { metaPixelId } = merchantDoc.data()
-      logMetaPixelEvent(metaPixelId, user, "ViewContent", {}) // todo add data with productId
+      // log if Mercado customer has given us a pixelId
+      if (metaPixelId) {
+        logMetaPixelEvent(metaPixelId, user, "ViewContent", {}) // todo add data with productId
+      }
     })
   }, [merchantId, productId, user])
 

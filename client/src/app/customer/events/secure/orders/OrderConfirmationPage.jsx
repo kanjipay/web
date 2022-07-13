@@ -38,7 +38,10 @@ export default function OrderConfirmationPage({ user }) {
     getDoc(Collection.MERCHANT.docRef(order.merchantId)).then((merchantDoc) => {
       const { metaPixelId } = merchantDoc.data()
       const purchaseData = { value: order.total, currency: "GBP" }
-      logMetaPixelEvent(metaPixelId, user, "Purchase") // todo add data with productId, total // todo switch to other user
+      // only log if Mercado customer has shared pixel with us. 
+      if (metaPixelId){
+        logMetaPixelEvent(metaPixelId, user, "Purchase", purchaseData) // todo add data with productId, total // todo switch to other user
+      }
     })
   }, [order])
 
