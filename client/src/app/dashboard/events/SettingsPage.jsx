@@ -40,7 +40,7 @@ export default function SettingsPage({ merchant }) {
     promises.push(
       updateDoc(Collection.MERCHANT.docRef(merchantId), {
         ...data,
-        photo: merchant.photo,
+        photo: file?.name ?? merchant.photo,
       })
     )
   }
@@ -183,17 +183,21 @@ export default function SettingsPage({ merchant }) {
                 "You're connected with Stripe. This means your customers can pay you via card" :
                 "Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts."
             }</p>
-            <Spacer y={2} />
-            <MainButton
-              title={
-                merchant.stripe
-                  ? "Continue your Stripe onboarding"
-                  : "Connect with Stripe"
-              }
-              test-id="connect-stripe-button"
-              onClick={handleContinueToStripe}
-              isLoading={isRedirectingToStripe}
-            />
+            {
+              merchant.stripe?.status !== StripeStatus.CHARGES_ENABLED && <div>
+                <Spacer y={2} />
+                <MainButton
+                  title={
+                    merchant.stripe
+                      ? "Continue your Stripe onboarding"
+                      : "Connect with Stripe"
+                  }
+                  test-id="connect-stripe-button"
+                  onClick={handleContinueToStripe}
+                  isLoading={isRedirectingToStripe}
+                />
+              </div>
+            }
             <Spacer y={6} />
           </div>
         </div>

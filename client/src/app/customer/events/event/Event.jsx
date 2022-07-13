@@ -5,8 +5,6 @@ import LoadingPage from "../../../../components/LoadingPage"
 import EventPage from "./EventPage"
 import { documentId, orderBy, where } from "firebase/firestore"
 import Product from "../product/Product"
-import IconPage from "../../../../components/IconPage"
-import Discover from "../../../../assets/icons/Discover"
 
 export default function Event({ merchant, user }) {
   const { eventId } = useParams()
@@ -44,35 +42,25 @@ export default function Event({ merchant, user }) {
   }, [eventId])
 
   if (event && products && artists) {
-    if (event.isPublished) {
-      return (
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <EventPage
-                merchant={merchant}
-                event={event}
-                products={products}
-                artists={artists}
-              />
-            }
-          />
-          <Route
-            path="/:productId/*"
-            element={<Product merchant={merchant} event={event} user={user} />}
-          />
-        </Routes>
-      )
-    } else {
-      return (
-        <IconPage
-          Icon={Discover}
-          title="Coming soon"
-          body="The event organiser hasn't published this event yet. Try checking back later."
+    return (
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <EventPage
+              merchant={merchant}
+              event={event}
+              products={products}
+              artists={artists}
+            />
+          }
         />
-      )
-    }
+        <Route
+          path="/:productId/*"
+          element={<Product merchant={merchant} event={event} user={user} />}
+        />
+      </Routes>
+    )
   } else {
     return <LoadingPage />
   }

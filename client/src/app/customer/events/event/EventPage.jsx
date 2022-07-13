@@ -155,6 +155,16 @@ export default function EventPage({ merchant, event, products, artists }) {
             : <div>
                 <h1 className="header-m">Get tickets</h1>
                 <Spacer y={2} />
+                {
+                  !event.isPublished && <div>
+                    <p>{
+                      event.publishScheduledAt ?
+                      `Tickets to this event will become available on ${format(dateFromTimestamp(event.endsAt), "do MMM")} at ${format(dateFromTimestamp(event.endsAt), "H:mm")}.` :
+                        "The event organiser hasn't made tickets available yet."
+                    }</p>
+                  <Spacer y={2} />
+                  </div>
+                }
                 {products
                   .map((product) => {
                     return (
@@ -162,6 +172,7 @@ export default function EventPage({ merchant, event, products, artists }) {
                         <ProductListing
                           product={product}
                           currency={merchant.currency}
+                          isPublished={event.isPublished}
                         />
                         <Spacer y={1} />
                       </div>

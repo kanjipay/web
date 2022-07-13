@@ -73,10 +73,25 @@ function PublishInfoBanners({ merchant, hasProducts, publishButtonRef }) {
   </div>
 }
 
+function CopyableUrl({ urlString }) {
+  return <div
+    style={{ display: "flex", alignItems: "center", columnGap: 16 }}
+  >
+    <a
+      href={urlString}
+      target="_blank"
+      rel="noreferrer"
+      style={{ textDecoration: "underline", fontWeight: "400" }}
+    >
+      {urlString}
+    </a>
+    <div className="flex-spacer"></div>
+    <CopyToClipboardButton text={urlString} />
+  </div>
+}
+
 function EventLinkSection({ eventLinkString }) {
   return <div>
-    <h2 className="header-m">Event links</h2>
-    <Spacer y={3} />
     <h3 className="header-s">Plain event link</h3>
     <Spacer y={2} />
     <p className="text-body-faded">
@@ -84,20 +99,7 @@ function EventLinkSection({ eventLinkString }) {
       tickets.
     </p>
     <Spacer y={2} />
-    <div
-      style={{ display: "flex", alignItems: "center", columnGap: 16 }}
-    >
-      <a
-        href={eventLinkString}
-        target="_blank"
-        rel="noreferrer"
-        style={{ textDecoration: "underline", fontWeight: "400" }}
-      >
-        {eventLinkString}
-      </a>
-      <div className="flex-spacer"></div>
-      <CopyToClipboardButton text={eventLinkString} />
-    </div>
+    <CopyableUrl urlString={eventLinkString} />
   </div>
 }
 
@@ -184,30 +186,46 @@ export default function EventPage({ merchant, event, products }) {
   }
 
   const handleUpdateEvent = async (data) => {
+    console.log(data)
     const promises = []
     const file = data.photo?.file
 
+    console.log(file)
+
     if (file) {
-      const eventRef = getEventStorageRef(event.merchantId, event.id, file.name)
+      const uploadRef = getEventStorageRef(event.merchantId, event.id, file.name)
+      const existingRef = getEventStorageRef(event.merchantId, event.id, event.photo)
 
-      data.photo = { storageRef: eventRef }
+      console.log("Upload ref", uploadRef.fullPath)
+      console.log("Existing ref", existingRef.fullPath)
 
-      promises.push(uploadImage(eventRef, file))
+      data.photo = { storageRef: uploadRef }
+
+      promises.push(uploadImage(uploadRef, file))
 
       promises.push(
-        deleteObject(
-          getEventStorageRef(event.merchantId, event.id, event.photo)
-        )
+        deleteObject(existingRef)
       )
     }
 
+    let uploadData = {
+      ...data,
+      photo: file?.name ?? event.photo,
+      maxTicketsPerPerson: parseInt(data.maxTicketsPerPerson, 10),
+    }
+
+    console.log("publishScheduledAt", uploadData.publishScheduledAt)
+
+    if (!uploadData.publishScheduledAt) {
+      console.log("deleting publishScheduledAt")
+      delete uploadData.publishScheduledAt
+      console.log(uploadData)
+    }
+
+    console.log("upload data", uploadData)
+
     promises.push(
-      updateDoc(docRef, {
-        ...data,
-        photo: file ? file.name : event.photo,
-        maxTicketsPerPerson: parseInt(data.maxTicketsPerPerson, 10),
-        publishScheduledAt: data.publishScheduledAt ?? null
-      })
+      updateDoc(docRef, uploadData)
     )
 
     await Promise.all(promises)
@@ -258,11 +276,24 @@ export default function EventPage({ merchant, event, products }) {
       >
         <div>
           {event.isPublished ? <div>
+              <h2 className="header-m">Event links</h2>
+              <Spacer y={3} />
               <EventLinkSection eventLinkString={eventLinkString} />
               <Spacer y={3} />
               <AttributionLinkSection attributionLinks={attributionLinks} />
             </div> :
-            <PublishInfoBanners merchant={merchant} publishButtonRef={publishButtonRef} hasProducts={products.length > 0} />
+            <div>
+              <PublishInfoBanners merchant={merchant} publishButtonRef={publishButtonRef} hasProducts={products.length > 0} />
+              
+              <Spacer y={4} />
+              
+              <h2 className="header-m">Preview event</h2>
+              <Spacer y={2} />
+              <p className="text-body-faded">Visit this link to see a preview of the event.</p>
+              <Spacer y={2} />
+              <CopyableUrl urlString={eventLinkString} />
+            </div>
+            
           }
 
           <Spacer y={3} />

@@ -10,6 +10,7 @@ export default function ProductListing({
   product,
   currency,
   linkPath = product.id,
+  isPublished,
   ...props
 }) {
   const isSoldOut = product.soldCount >= product.capacity
@@ -18,13 +19,16 @@ export default function ProductListing({
   const isAvailable =
     product.isAvailable &&
     product.soldCount + product.reservedCount < product.capacity &&
-    isReleased
+    isReleased &&
+    isPublished
   const backgroundColor = isAvailable ? Colors.BLACK : Colors.OFF_WHITE
   const textColor = isAvailable ? Colors.WHITE : Colors.BLACK
 
   let message
 
-  if (isAvailable) {
+  if (!isPublished) {
+    message = "Not published"
+  } else if (isAvailable) {
     message = formatCurrency(product.price, currency)
   } else if (!isReleased) {
     message = `Releases ${format(releaseDate, "MMM do")} at ${format(

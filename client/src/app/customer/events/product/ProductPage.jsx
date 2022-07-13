@@ -59,6 +59,8 @@ export default function ProductPage({ merchant, event, product, user }) {
 
   const customerFee = merchant.customerFee ?? 0.1
 
+  const { isPublished } = event
+
   useEffect(() => {
     AnalyticsManager.main.viewPage("Product", {
       productId,
@@ -147,7 +149,7 @@ export default function ProductPage({ merchant, event, product, user }) {
   }
 
   function isEnabled() {
-    return !user?.email || canBuyProduct()
+    return user?.email && canBuyProduct() && isPublished
   }
 
   return product ? (
@@ -314,14 +316,18 @@ export default function ProductPage({ merchant, event, product, user }) {
           </div>
         )}
         <MainButton
-          title={user?.email ? "Checkout" : "Log in to continue"}
+          title={
+            isPublished ?
+              (user?.email ? "Checkout" : "Log in to continue") :
+              "Not available"
+          }
           sideMessage={
-            user?.email
-              ? formatCurrency(
-                  Math.round(product.price * quantity * (1 + customerFee)),
-                  merchant.currency
-                )
-              : undefined
+            (isPublished && user?.email) ? 
+              formatCurrency(
+                Math.round(product.price * quantity * (1 + customerFee)),
+                merchant.currency
+              ) :
+              undefined
           }
           onClick={handleCheckout}
           isLoading={isLoading}
