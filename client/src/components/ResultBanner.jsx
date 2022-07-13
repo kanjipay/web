@@ -8,7 +8,11 @@ import Warning from "../assets/icons/Warning"
 export class ResultType {
   static SUCCESS = new ResultType(Colors.OFF_WHITE_LIGHT, Colors.BLACK, Tick)
   static ERROR = new ResultType(Colors.RED_LIGHT, Colors.RED, Cross)
-  static INFO = new ResultType(Colors.OFF_WHITE_LIGHT, Colors.GRAY_LIGHT, Warning)
+  static INFO = new ResultType(
+    Colors.OFF_WHITE_LIGHT,
+    Colors.GRAY_LIGHT,
+    Warning
+  )
 
   constructor(
     backgroundColor,
@@ -23,11 +27,12 @@ export class ResultType {
   }
 }
 
-export default function ResultBanner({ 
-  resultType, 
-  message, 
-  action = undefined, 
-  actionTitle = undefined }) {
+export default function ResultBanner({
+  resultType,
+  message,
+  action = undefined,
+  actionTitle = undefined,
+}) {
   const bannerStyle = {
     backgroundColor: resultType.backgroundColor,
     padding: "12px 16px",
@@ -44,12 +49,9 @@ export default function ResultBanner({
           style={{ marginRight: 8 }}
         />
         <span style={{ color: resultType.textColor }}>{message}</span>
-        {
-          action && actionTitle && <SmallButton 
-            title={actionTitle}
-            onClick={action}
-          />
-        }
+        {action && actionTitle && (
+          <SmallButton title={actionTitle} onClick={action} />
+        )}
       </div>
     </div>
   )

@@ -101,10 +101,25 @@ export default function Merchant({ user }) {
           }}
         >
           <SidebarHeader title="Manage" />
-          <SidebarItem to="events" title="Events" Icon={Clock} test-id="nav-link-events" />
-          <SidebarItem to="analytics" title="Analytics" Icon={Analytics} test-id="nav-link-analytics" />
+          <SidebarItem
+            to="events"
+            title="Events"
+            Icon={Clock}
+            test-id="nav-link-events"
+          />
+          <SidebarItem
+            to="analytics"
+            title="Analytics"
+            Icon={Analytics}
+            test-id="nav-link-analytics"
+          />
           <SidebarHeader title="Organisation" />
-          <SidebarItem to="settings" title="Settings" Icon={Settings} test-id="nav-link-settings" />
+          <SidebarItem
+            to="settings"
+            title="Settings"
+            Icon={Settings}
+            test-id="nav-link-settings"
+          />
           {/* <SidebarItem to="users" title="Users" Icon={User} /> */}
         </nav>
         <div
@@ -128,10 +143,19 @@ export default function Merchant({ user }) {
               element={<SettingsPage merchant={merchant} />}
             />
             <Route path="users" element={<UsersPage merchant={merchant} />} />
-            <Route path="stripe-connected" element={<StripeConnectRedirectPage />} />
-            <Route path="crezco-connected" element={<CrezcoConnectRedirectPage />} />
+            <Route
+              path="stripe-connected"
+              element={<StripeConnectRedirectPage />}
+            />
+            <Route
+              path="crezco-connected"
+              element={<CrezcoConnectRedirectPage />}
+            />
             <Route path="connect-stripe" element={<ConnectStripePage />} />
-            <Route path="connect-crezco" element={<ConnectCrezcoPage user={user} />} />
+            <Route
+              path="connect-crezco"
+              element={<ConnectCrezcoPage user={user} />}
+            />
           </Routes>
         </div>
       </div>

@@ -69,35 +69,35 @@ export default function MerchantPage({ merchant }) {
 
         <h2 className="header-m">Upcoming events</h2>
         <Spacer y={2} />
-        {
-          events.length > 0 ?
-            events.map((event) => {
-              return (
-                <div key={event.id}>
-                  <EventListing event={event} />
-                  <Spacer y={3} />
-                </div>
-              )
-            }) :
-            <p>No upcoming events</p>
-        }
+        {events.length > 0 ? (
+          events.map((event) => {
+            return (
+              <div key={event.id}>
+                <EventListing event={event} />
+                <Spacer y={3} />
+              </div>
+            )
+          })
+        ) : (
+          <p>No upcoming events</p>
+        )}
 
         <Spacer y={3} />
 
         <h2 className="header-m">Past events</h2>
         <Spacer y={2} />
-        {
-          pastEvents.length > 0 ?
-            pastEvents.map((event) => {
-              return (
-                <div key={event.id}>
-                  <EventListing event={event} />
-                  <Spacer y={3} />
-                </div>
-              )
-            }) :
-            <p>No past events</p>
-        }
+        {pastEvents.length > 0 ? (
+          pastEvents.map((event) => {
+            return (
+              <div key={event.id}>
+                <EventListing event={event} />
+                <Spacer y={3} />
+              </div>
+            )
+          })
+        ) : (
+          <p>No past events</p>
+        )}
 
         <Spacer y={6} />
       </div>

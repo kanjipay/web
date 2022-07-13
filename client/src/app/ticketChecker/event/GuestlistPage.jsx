@@ -26,7 +26,8 @@ export default function GuestlistPage() {
       const name = `${firstName} ${lastName}`
 
       return (
-        name.toLowerCase().includes(newSearchName.toLowerCase()) || email.toLowerCase().includes(newSearchName.toLowerCase())
+        name.toLowerCase().includes(newSearchName.toLowerCase()) ||
+        email.toLowerCase().includes(newSearchName.toLowerCase())
       )
     })
 
@@ -34,7 +35,9 @@ export default function GuestlistPage() {
   }
 
   useEffect(() => {
-    NetworkManager.get(`/merchants/m/${merchantId}/eventAttendees/${eventId}`).then((res) => {
+    NetworkManager.get(
+      `/merchants/m/${merchantId}/eventAttendees/${eventId}`
+    ).then((res) => {
       console.log(res.data)
       setGuestlistData(res.data)
       setFilteredGuestlistData(res.data)

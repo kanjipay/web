@@ -55,7 +55,7 @@ describe("Create merchant", () => {
     const confirmBankButton = await page.waitForSelector(
       'button[data-test-id="confirm-onboarding"]'
     )
-    
+
     await confirmBankButton.click()
 
     const crezcoConnectedButton = await page.waitForSelector(
@@ -84,7 +84,7 @@ describe("Create merchant", () => {
     await page.click('button[type="submit"]')
 
     await page.waitForSelector(".ToggleBoxItem")
-    
+
     // await firstToggleBox.click()
     await page.click('button[type="button"]')
 
@@ -93,9 +93,9 @@ describe("Create merchant", () => {
     )
 
     const pageTitleTag = await page.$(testId("icon-title-stripe-connected"))
-    const pageTitle = pageTitleTag.evaluate(e => e.textContent)
+    const pageTitle = pageTitleTag.evaluate((e) => e.textContent)
     expect(pageTitle).to.eql("Card payments enabled")
-    
+
     await stripeConnectedButton.click()
   })
 

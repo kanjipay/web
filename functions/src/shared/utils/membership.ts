@@ -36,7 +36,9 @@ export async function createMembership(
     .where("userId", "==", userId)
     .get()
 
-  logger.log("Got user's memberships", { membershipCount: membershipSnapshot.docs.length })
+  logger.log("Got user's memberships", {
+    membershipCount: membershipSnapshot.docs.length,
+  })
 
   const memberships: any[] = membershipSnapshot.docs.map((doc) => ({
     id: doc.id,

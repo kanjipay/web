@@ -59,7 +59,9 @@ export default function IconActionPage({
           style={{ margin: "auto" }}
         />
         <Spacer y={2} />
-        <div className="header-s" test-id={`icon-title=${name}`}>{title}</div>
+        <div className="header-s" test-id={`icon-title=${name}`}>
+          {title}
+        </div>
         <Spacer y={2} />
         <div className="text-body-faded">{body}</div>
 

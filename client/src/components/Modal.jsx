@@ -1,5 +1,4 @@
-import { Colors } from "../enums/Colors";
-
+import { Colors } from "../enums/Colors"
 
 export function Modal({ children, modalStyle }) {
   return (
@@ -24,5 +23,5 @@ export function Modal({ children, modalStyle }) {
         {children}
       </div>
     </div>
-  );
+  )
 }

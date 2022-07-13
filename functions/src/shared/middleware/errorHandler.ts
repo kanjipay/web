@@ -9,7 +9,6 @@ if (process.env.ENVIRONMENT === "PROD") {
   errors = new ErrorReporting({ reportMode: "always" })
 }
 
-
 export const errorHandler = (err, req, res, next) => {
   if (err instanceof ValidationError) {
     // Handle the error
@@ -53,7 +52,7 @@ export const errorHandler = (err, req, res, next) => {
     if (errors) {
       errors.report(err)
     }
-    
+
     return res.status(500).json({ message: "An unexpected error occured" })
   }
 }

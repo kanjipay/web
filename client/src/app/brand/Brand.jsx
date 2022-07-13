@@ -40,7 +40,7 @@ export function Brand() {
   const [authUser, setAuthUser] = useState(null)
 
   useEffect(() => {
-    onAuthStateChanged(auth, u => {
+    onAuthStateChanged(auth, (u) => {
       setAuthUser(u)
     })
   })
