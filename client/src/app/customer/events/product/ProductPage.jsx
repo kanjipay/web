@@ -79,8 +79,11 @@ export default function ProductPage({ merchant, event, product, user }) {
     getDoc(Collection.MERCHANT.docRef(merchantId)).then((merchantDoc) => {
       const { metaPixelId } = merchantDoc.data()
       // log if Mercado customer has given us a pixelId
+      const pixelData = {content_ids: [productId],
+                    content_type: 'product'}
+    
       if (metaPixelId) {
-        logMetaPixelEvent(metaPixelId, user, "ViewContent", {}) // todo add data with productId
+        logMetaPixelEvent(metaPixelId, user, "ViewContent", pixelData) 
       }
     })
   }, [merchantId, productId, user])
