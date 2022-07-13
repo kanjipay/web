@@ -85,7 +85,6 @@ export default function ProductPage({ merchant, event, product, user }) {
           content_ids: [productId],
           content_type: "product",
         }
-        console.log(contentViewData)
         logMetaPixelEvent(metaPixelId, user, "ViewContent", contentViewData)
       }
     })

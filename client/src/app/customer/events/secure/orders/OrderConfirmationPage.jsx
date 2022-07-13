@@ -43,7 +43,6 @@ export default function OrderConfirmationPage({ user }) {
       // only log if Mercado customer has shared pixel with us.
       if (metaPixelId) {
         const purchaseData = parseOrderDetails(order)
-        console.log(purchaseData)
         logMetaPixelEvent(metaPixelId, user, "Purchase", purchaseData) // todo add data with productId, total // todo switch to other user
       }
     })
