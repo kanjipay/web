@@ -161,8 +161,8 @@ function SignInWithGoogleButton({ style, ...props }) {
       test-id="google-auth-button"
       style={{
         height: 48,
-        borderWidth: 2,
-        borderColor: Colors.OFF_WHITE,
+        borderWidth: 1,
+        borderColor: Colors.BLACK,
         width: "100%",
         borderStyle: "solid",
         backgroundColor: Colors.WHITE,
@@ -170,7 +170,8 @@ function SignInWithGoogleButton({ style, ...props }) {
         outline: "none",
         alignItems: "center",
         justifyContent: "center",
-        color: Colors.GRAY_LIGHT,
+        color: Colors.BLACK,
+        fontWeight: 500,
         cursor: "pointer",
         columnGap: 8,
         ...style,
