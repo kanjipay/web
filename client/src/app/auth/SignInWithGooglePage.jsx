@@ -2,6 +2,7 @@ import {
   getRedirectResult,
   GoogleAuthProvider,
   signInWithRedirect,
+  OAuthProvider
 } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
@@ -18,8 +19,12 @@ import Collection from "../../enums/Collection"
 import Spacer from "../../components/Spacer"
 import Form from "../../components/Form"
 
-export default function SignInWithGooglePage() {
-  useEffect(() => {})
+export class OAuthType {
+  static GOOGLE = "GOOGLE"
+  static APPLE = "APPLE"
+}
+
+export default function SignInWithOAuthPage({ type }) {
   const navigate = useNavigate()
   const { search } = useLocation()
 
@@ -27,7 +32,7 @@ export default function SignInWithGooglePage() {
   const successPath = base64.decode(searchParams.get("success"))
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
 
-  const isAuthInProgressKey = "isGoogleAuthInProgress"
+  const isAuthInProgressKey = "isAuthInProgress"
   const [error, setError] = useState(null)
   const [userId, setUserId] = useState(null)
   const [hasName, setHasName] = useState(null)
@@ -36,11 +41,14 @@ export default function SignInWithGooglePage() {
     return localStorage.getItem(isAuthInProgressKey) === "true"
   }
 
+  console.log("isAuthInProgress: ", isAuthInProgress())
+
   useEffect(() => {
-    AnalyticsManager.main.viewPage("GoogleAuth", {
+    AnalyticsManager.main.viewPage("OAuth", {
       isAuthInProgress: isAuthInProgress(),
+      type
     })
-  })
+  }, [type])
 
   useEffect(() => {
     async function handleAuth() {
@@ -59,8 +67,22 @@ export default function SignInWithGooglePage() {
           }
         } else {
           localStorage.setItem(isAuthInProgressKey, "true")
-          const provider = new GoogleAuthProvider()
-          provider.addScope("email")
+          let provider
+
+          switch (type) {
+            case OAuthType.APPLE:
+              provider = new OAuthProvider("apple.com")
+              provider.addScope("email")
+              provider.addScope("name")
+              break;
+            case OAuthType.GOOGLE:
+              provider = new GoogleAuthProvider()
+              provider.addScope("email")
+              break;
+            default:
+              break;
+          }
+          provider.setCustomParameters({ locale: 'en' });
           signInWithRedirect(auth, provider)
         }
       } catch (err) {
@@ -74,7 +96,7 @@ export default function SignInWithGooglePage() {
     }
 
     handleAuth()
-  }, [navigate, successPath, successState, error])
+  }, [error, type])
 
   useEffect(() => {
     if (hasName && userId) {

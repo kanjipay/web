@@ -1,0 +1,8 @@
+.ApplePayButton {
+  -webkit-appearance: -apple-pay-button;
+  -apple-pay-button-type: buy;
+  -apple-pay-button-style: black;
+  height: 40px;
+  border-radius: 0;
+  cursor: pointer;
+}

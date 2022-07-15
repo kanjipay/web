@@ -163,7 +163,9 @@ export default function ProductPage({ merchant, event, product, user }) {
   }
 
   function isEnabled() {
-    return user?.email && canBuyProduct() && isPublished
+    console.log(canBuyProduct())
+    console.log(isPublished)
+    return (!user?.email || canBuyProduct()) && isPublished
   }
 
   return product ? (

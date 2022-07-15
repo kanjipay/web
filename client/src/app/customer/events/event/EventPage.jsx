@@ -93,6 +93,14 @@ export default function EventPage({ merchant, event, products, artists }) {
     AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
   }, [eventId, merchantId])
 
+  useEffect(() => {
+    const promise = window.ApplePaySession.canMakePaymentsWithActiveCard("merchant.mercado.mercadopay")
+
+    promise.then(canMakePayments => {
+      console.log("canMakePayments: ", canMakePayments)
+    })
+  })
+
   const hasAlreadyHappened =
     new Date() >= addMinutes(dateFromTimestamp(event.endsAt), -30)
 
