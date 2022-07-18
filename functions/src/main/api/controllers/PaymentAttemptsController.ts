@@ -33,6 +33,16 @@ const crezcoPaymentStatuses = {
   Completed: PaymentAttemptStatus.SUCCESSFUL,
 }
 
+async function getMercadoPlatformFee(merchantId: string, amount: number){
+  let { mercadoPlatformFee } = await fetchDocument(
+    Collection.MERCHANT,
+    merchantId)
+  mercadoPlatformFee = mercadoPlatformFee || 0 // set to zero if not aggreed
+  return Math.ceil(amount*mercadoPlatformFee)
+  
+
+}
+
 export class PaymentAttemptsController extends BaseController {
   createStripe = async (req, res, next) => {
     try {
@@ -87,9 +97,10 @@ export class PaymentAttemptsController extends BaseController {
         )
         return
       }
-
+      const mercadoPlatformFee = await getMercadoPlatformFee(merchantId, total)
       const stripePaymentIntentData = {
         amount: total,
+        application_fee_amount: mercadoPlatformFee,
         currency: currency.toLowerCase(),
         automatic_payment_methods: {
           enabled: true,
