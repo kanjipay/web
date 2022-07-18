@@ -5,6 +5,7 @@ import LoadingPage from "../../components/LoadingPage"
 import Collection from "../../enums/Collection"
 import OrderType from "../../enums/OrderType"
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus"
+import { PaymentType } from "../../enums/PaymentType"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import useBasket from "../customer/menu/basket/useBasket"
 
@@ -62,7 +63,10 @@ export default function RedirectPageStripe() {
         break
       case PaymentAttemptStatus.FAILED:
         navigate(`/checkout/o/${orderId}/payment-failure`, {
-          state: { retryPath: `/checkout/o/${orderId}/payment-stripe` },
+          state: { 
+            retryPath: `/checkout/o/${orderId}/payment-stripe`,
+            paymentType: PaymentType.STRIPE
+          },
         })
         break
       default:

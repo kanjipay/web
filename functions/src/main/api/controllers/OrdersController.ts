@@ -14,6 +14,7 @@ import MerchantStatus from "../../../shared/enums/MerchantStatus"
 import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
 import axios from "axios"
 import { logger } from "firebase-functions/v1"
+import { StripeStatus } from "../../../shared/enums/StripeStatus"
 
 enum DeviceType {
   MOBILE = "Mobile",
@@ -26,6 +27,27 @@ enum Gender {
   MALE = "Male",
   FEMALE = "Female",
   NOT_DETERMINED = "Not determined",
+}
+
+enum PaymentType {
+  STRIPE = "STRIPE",
+  OPEN_BANKING = "OPEN_BANKING"
+}
+
+function getPaymentTypes(merchant: any) {
+  const { currency, stripe, crezco } = merchant
+
+  let paymentTypes = []
+
+  if (stripe?.status === StripeStatus.CHARGES_ENABLED) {
+    paymentTypes.push(PaymentType.STRIPE)
+  }
+
+  if (crezco?.userId && currency === "GBP") {
+    paymentTypes.push(PaymentType.OPEN_BANKING)
+  }
+
+  return paymentTypes
 }
 
 async function getGender(userId: string) {
@@ -337,6 +359,8 @@ export class OrdersController extends BaseController {
         }
       }
 
+      const paymentTypes = getPaymentTypes(merchant)
+
       const currentTicketCount = existingTicketDocs.docs.length
 
       logger.log("Got event, merchant and existing tickets", {
@@ -429,6 +453,7 @@ export class OrdersController extends BaseController {
         eventId,
         merchantId,
         customerFee,
+        paymentTypes,
         orderItems: [
           {
             productId,

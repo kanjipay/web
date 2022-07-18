@@ -4,6 +4,7 @@ import LoadingPage from "../../components/LoadingPage"
 import Collection from "../../enums/Collection"
 import OrderType from "../../enums/OrderType"
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus"
+import { PaymentType } from "../../enums/PaymentType"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { IdentityManager } from "../../utils/IdentityManager"
 import { NetworkManager } from "../../utils/NetworkManager"
@@ -72,7 +73,7 @@ export default function RedirectPageCrezco() {
         }
         break
       case PaymentAttemptStatus.FAILED:
-        navigate(`/checkout/o/${orderId}/payment-failure`)
+        navigate(`/checkout/o/${orderId}/payment-failure`, { state: { paymentType: PaymentType.OPEN_BANKING }})
         break
       default:
     }
