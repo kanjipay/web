@@ -156,7 +156,9 @@ export class MerchantController extends BaseController {
           .json({ stripeStatus: StripeStatus.CHARGES_ENABLED })
       }
 
-      const account = await stripe.accounts.retrieve(merchant.stripe.accountId)
+      const stripeAccountId = merchant.stripe.accountId
+
+      const account = await stripe.accounts.retrieve(stripeAccountId)
 
       logger.log("Stripe account retrieved", { account })
 
@@ -173,6 +175,14 @@ export class MerchantController extends BaseController {
       }
 
       const update = { "stripe.status": stripeStatus }
+
+      if (stripeStatus === StripeStatus.CHARGES_ENABLED) {
+        await stripe.applePayDomains.create({
+          domain_name: process.env.CLIENT_URL.replace("https://", ""),
+        }, {
+          stripeAccount: stripeAccountId
+        })
+      }
 
       logger.log("updating merchant", { update })
 

@@ -322,7 +322,7 @@ export class OrdersController extends BaseController {
 
       logger.log("Got product", { product })
 
-      if (soldCount + reservedCount + quantity >= capacity) {
+      if (soldCount + reservedCount + quantity > capacity) {
         const errorMessage = "This ticket is sold out."
         logger.log("Ticket is sold out", {
           soldCount,

@@ -20,6 +20,7 @@ import {
 import stripe from "../../../shared/utils/stripeClient"
 import { processPaymentUpdate } from "../../webhooks/processPaymentUpdate"
 import { StripeStatus } from "../../../shared/enums/StripeStatus"
+import Stripe from "stripe"
 
 const crezcoPaymentStatuses = {
   New: PaymentAttemptStatus.PENDING, // Payment has been created internally, authorisation has not been attempted
@@ -88,9 +89,24 @@ export class PaymentAttemptsController extends BaseController {
         return
       }
 
-      const stripePaymentIntentData = {
+      const mercadoFee = merchant.mercadoFee ?? 0
+      const customerFee = merchant.customerFee ?? 0
+
+      let mercadoFeeCents = 0
+
+      if (mercadoFee > 0) {
+        if (customerFee > mercadoFee) {
+          const totalWithoutCustomerFee = Math.round(total / (1 + customerFee))
+          mercadoFeeCents = Math.round(totalWithoutCustomerFee * mercadoFee)
+        } else {
+          logger.warn("Customer fee smaller than mercado fee and mercado fee exists", { customerFee, mercadoFee })
+        }
+      }
+
+      const stripePaymentIntentData: Stripe.PaymentIntentCreateParams = {
         amount: total,
         currency: currency.toLowerCase(),
+        application_fee_amount: mercadoFeeCents,
         automatic_payment_methods: {
           enabled: true,
         },

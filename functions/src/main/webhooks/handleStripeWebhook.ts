@@ -2,8 +2,8 @@ import Collection from "../../shared/enums/Collection"
 import PaymentAttemptStatus from "../../shared/enums/PaymentAttemptStatus"
 import { db } from "../../shared/utils/admin"
 import LoggingController from "../../shared/utils/loggingClient"
-import stripe from "../../shared/utils/stripeClient"
 import { processPaymentUpdate } from "./processPaymentUpdate"
+import { StripeWebhookName, verifyStripe } from "./utils/stripeUtils"
 
 const stripePaymentStatuses = {
   "payment_intent.succeeded": PaymentAttemptStatus.SUCCESSFUL,
@@ -14,34 +14,19 @@ const stripePaymentStatuses = {
 export const handleStripeWebhook = async (req, res, next) => {
   try {
     const logger = new LoggingController("Handle Stripe webhook")
-    const signature = req.headers["stripe-signature"]
+    logger.log("Handling stripe payment webhook")
 
-    let event
+    const { isVerified, event } = verifyStripe(req, StripeWebhookName.PAYMENT_INTENT_UPDATE)
 
-    const endpointSecret = process.env.STRIPE_PAYMENT_WEBHOOK_SECRET
-    logger.log("Stripe webhook received", {
-      signature,
-      body: req.body,
-      endpointSecret,
-    })
-
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.rawBody,
-        signature,
-        endpointSecret
-      )
-    } catch (err) {
-      logger.log("Stripe webhook verification failed: ", err.message)
+    if (!isVerified) {
       return res.sendStatus(400)
     }
-
-    logger.log("Stripe webhook verification succeeded", { event })
 
     const paymentAttemptStatus = stripePaymentStatuses[event.type]
 
     if (!paymentAttemptStatus) {
       logger.log("Unrecognised Stripe event type", { eventType: event.type })
+      return res.sendStatus(200)
     }
 
     const stripePaymentIntentId = event.data.object.id

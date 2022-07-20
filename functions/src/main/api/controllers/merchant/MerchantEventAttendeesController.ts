@@ -31,6 +31,7 @@ export class MerchantEventAttendeesController extends BaseController {
       ]
       logger.log("order Userids", { orderUserIds })
       logger.log("Product ids", { orderProductIds })
+
       const orderUsers = await fetchDocumentsInArray(
         db().collection(Collection.USER),
         firestore.FieldPath.documentId(),
@@ -76,6 +77,7 @@ export class MerchantEventAttendeesController extends BaseController {
           quantity,
         }
       })
+        .sort((d1, d2) => d1.lastName?.localeCompare(d2.lastName ?? "0") ?? -1)
       logger.log("ticket details", { ticketDetails })
       return res.status(200).json(ticketDetails)
     } catch (err) {
