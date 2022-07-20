@@ -10,14 +10,14 @@ export const abandonOldOrders = async (context) => {
   try {
     logger.log("Fetching pending ticket orders")
 
-    const tenMinutesAgo = addMinutes(new Date(), -10)
+    const sixtyMinutesAgo = addMinutes(new Date(), -60)
 
     const snapshot = await db()
       .collection(Collection.ORDER)
       .where("type", "==", OrderType.TICKETS)
       .where("wereTicketsCreated", "==", false)
       .where("status", "==", OrderStatus.PENDING)
-      .where("createdAt", "<", tenMinutesAgo)
+      .where("createdAt", "<", sixtyMinutesAgo)
       .get()
 
     const orders: any[] = snapshot.docs.map((doc) => {

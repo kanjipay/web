@@ -22,6 +22,16 @@ import { cancelOrder } from "./cancelOrder"
 import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import LoadingPage from "../../components/LoadingPage"
+import { PaymentType } from "../../enums/PaymentType"
+
+function AcceptedCards() {
+  return <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
+    <p className="text-body-faded">We accept: </p>
+    <img src="/img/visa.png" alt="Visa" style={{ height: 40 }} />
+    <img src="/img/mastercard.png" alt="Mastercard" style={{ height: 32 }} />
+    <img src="/img/amex.png" alt="American Express" style={{ height: 32 }} />
+  </div>
+}
 
 const cachedBankFileNamePrefix = ["PROD", "STAGING"].includes(
   process.env.REACT_APP_ENV_NAME
@@ -53,6 +63,10 @@ export default function ChooseBankCrezcoPage({ order }) {
     setCountryCode(countryCode)
   }
 
+  const canPayWithCard = order?.paymentTypes?.includes(PaymentType.STRIPE)
+
+  const handlePayWithCard = () => navigate("../payment-stripe")
+
   const handleBankNameChange = (event) => {
     const enteredBankName = event.target.value
     setBankName(enteredBankName)
@@ -78,7 +92,19 @@ export default function ChooseBankCrezcoPage({ order }) {
     const code = bankDatum.bankCode
     localStorage.setItem("crezcoBankCode", code)
     AnalyticsManager.main.logEvent("ChooseBank", { crezcoBankCode: code })
+
     setBankCode(code)
+
+    if (isMobile) {
+      AnalyticsManager.main.pressButton("ContinueToBank", {
+        isMobile,
+        crezcoBankCode: bankCode,
+      })
+
+      navigate("../payment", {
+        state: { bankCode: code, countryCode, referringDeviceId },
+      })
+    }
   }
 
   const handleContinueToBank = () => {
@@ -86,6 +112,7 @@ export default function ChooseBankCrezcoPage({ order }) {
       isMobile,
       crezcoBankCode: bankCode,
     })
+
     navigate("../payment", {
       state: { bankCode, countryCode, referringDeviceId },
     })
@@ -107,23 +134,6 @@ export default function ChooseBankCrezcoPage({ order }) {
       cachedBankId: bankCodeFromStorage,
     })
   }, [bankCodeFromStorage])
-
-  function receiveBankData(bankData) {
-    setBankData(bankData)
-    setFilteredBankData(bankData)
-
-    const initialBankCode = bankCodeFromQuery ?? bankCodeFromStorage
-
-    const bankCodes = bankData.map((bankDatum) => bankDatum.bankCode)
-
-    if (bankCodeFromStorage && !bankCodes.includes(bankCodeFromStorage)) {
-      localStorage.removeItem("crezcoBankCode")
-    }
-
-    if (bankCodes.includes(initialBankCode)) {
-      setBankCode(initialBankCode)
-    }
-  }
 
   useEffect(() => {
     NetworkManager.get(`/banks/${countryCode}`).then((res) => {
@@ -183,6 +193,7 @@ export default function ChooseBankCrezcoPage({ order }) {
 
     if (!bankDatum) return <LoadingPage />
     const { bankName, logoUrl } = bankDatum
+
     return (
       <div className="container">
         <Helmet>
@@ -203,14 +214,25 @@ export default function ChooseBankCrezcoPage({ order }) {
               maxWidth: 311,
             }}
           >
-            <img
-              alt={bankName}
-              src={logoUrl}
-              style={{ width: 80, height: 80, margin: "auto" }}
-            />
-            <Spacer y={1} />
+            <div style={{ display: "inline-block" }}>
+              <div style={{ display: "flex", alignItems: "center", columnGap: 16, margin: "auto" }}>
+                <img
+                  alt={bankName}
+                  src={logoUrl}
+                  style={{ width: 80, height: 80 }}
+                />
+                <p>+</p>
+                <img
+                  alt="crezco"
+                  src="/img/crezco.png"
+                  style={{ width: 80, height: 80 }}
+                />
+              </div>
+            </div>
+            
+            <Spacer y={3} />
             <p className="text-body">
-              We're redirecting you to {bankName} using Crezco to complete your
+              We're redirecting you to {bankName} using Crezco to confirm your
               payment.
             </p>
           </div>
@@ -319,14 +341,21 @@ export default function ChooseBankCrezcoPage({ order }) {
     return (
       <div className="container">
         <Helmet>
-          <title>Choose your bank | Mercado</title>
+          <title>Checkout | Mercado</title>
         </Helmet>
-        <NavBar title="Choose your bank" backAction={handleClickBack} />
+        <NavBar title="Checkout" backAction={handleClickBack} />
 
         <div className="content">
           <Spacer y={9} />
-          <p className="text-body-faded" style={{ textAlign: "center" }}>
-            Securely connect to your bank account and pay by bank transfer.
+          
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <h2 className="header-m">Pay by bank transfer</h2>
+            <div className="flex-spacer"></div>
+            <img src="/img/crezco.png" alt="Crezco" style={{ height: 40 }} />
+          </div>
+          <Spacer y={2} />
+          <p className="text-body-faded">
+            We'll redirect you to our payments partner Crezco to confirm the payment.
           </p>
           <Spacer y={3} />
           <div style={{ display: "flex", columnGap: 16 }}>
@@ -346,7 +375,7 @@ export default function ChooseBankCrezcoPage({ order }) {
               <input
                 value={bankName}
                 onChange={handleBankNameChange}
-                placeholder="Search"
+                placeholder="Search for a bank"
                 style={{
                   flexGrow: 10,
                   height: "100%",
@@ -377,7 +406,7 @@ export default function ChooseBankCrezcoPage({ order }) {
                   section.data.length > 0 && (
                     <div key={index}>
                       <h2 className="header-s">{section.title}</h2>
-                      <Spacer y={3} />
+                      <Spacer y={2} />
                       {section.data.map((datum) => {
                         return (
                           <div key={datum.bankCode}>
@@ -390,10 +419,23 @@ export default function ChooseBankCrezcoPage({ order }) {
                           </div>
                         )
                       })}
-                      <Spacer y={2} />
+                      <Spacer y={3} />
                     </div>
                   )
               )}
+              {
+                canPayWithCard && <div>
+                  <OrDivider />
+                  <Spacer y={3} />
+                  <MainButton
+                    title="Pay with card"
+                    onClick={handlePayWithCard}
+                  />
+                  <Spacer y={1} />
+                  <AcceptedCards />
+                </div>
+              }
+              
             </div>
           ) : (
             <div style={{ textAlign: "center" }}>
@@ -405,9 +447,26 @@ export default function ChooseBankCrezcoPage({ order }) {
               <Spacer y={2} />
               <h3 className="header-s">We couldn't find that bank</h3>
               <Spacer y={1} />
-              <p className="text-body-faded">
-                Try searching for a different one.
-              </p>
+              
+              {
+                canPayWithCard ? <div>
+                  <p className="text-body-faded">
+                    Try searching for a different one, or pay with card instead.
+                  </p>
+                  <Spacer y={6} />
+                  <div style={{ maxWidth: 400, margin: "auto" }}>
+                      <MainButton
+                        title="Pay with card"
+                        onClick={handlePayWithCard}
+                      />
+                      <Spacer y={1} />
+                      <AcceptedCards />
+                  </div>
+                </div> :
+                <p className="text-body-faded">
+                  Try searching for a different one.
+                </p>
+              }
             </div>
           )}
 

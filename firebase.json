@@ -3,9 +3,14 @@
     "public": "client/build",
     "rewrites": [
       {
+        "source": "/.well-known/apple-developer-merchantid-domain-association",
+        "function": "applePay"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
+      
     ],
     "ignore": [
       "firebase.json",

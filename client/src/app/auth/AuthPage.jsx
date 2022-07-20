@@ -17,6 +17,9 @@ import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { saveState } from "../../utils/services/StateService"
 import { shouldShowGoogleAuth } from "./shouldShowGoogleAuth"
 import Revealer from "../../components/Revealer"
+import { SignInWithGoogleButton } from "./SignInWithGoogleButton"
+import SignInWithAppleButton from "./SignInWithAppleButton"
+import { shouldShowAppleAuth } from "./shouldShowAppleAuth"
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -48,6 +51,10 @@ export default function AuthPage() {
       setUser(user)
     })
   }, [])
+
+  const handleSignInWithApple = () => {
+    navigate({ pathname: "apple", search })
+  }
 
   const handleSignInWithGoogle = () => {
     navigate({ pathname: "google", search })
@@ -128,16 +135,23 @@ export default function AuthPage() {
         <div className="content">
           <Spacer y={9} />
 
-          {shouldShowGoogleAuth() ? (
+          {(shouldShowGoogleAuth() || shouldShowAppleAuth()) && !requiredEmailDomain ? (
             <div>
-              {!requiredEmailDomain && (
-                <div>
-                  <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
-                  <Spacer y={4} />
-                  <OrDivider />
-                  <Spacer y={4} />
-                </div>
-              )}
+              <div>
+                {
+                  shouldShowAppleAuth() && <div>
+                    <SignInWithAppleButton onClick={handleSignInWithApple} />
+                    <Spacer y={2} />
+                  </div>
+                }
+                {
+                  shouldShowGoogleAuth() && <div>
+                    <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
+                    <Spacer y={2} />
+                  </div>
+                }
+                
+              </div>
 
               <Revealer title="Email me a sign in link" name="auth">
                 {emailLinkForm}
@@ -154,30 +168,4 @@ export default function AuthPage() {
   }
 }
 
-function SignInWithGoogleButton({ style, ...props }) {
-  return (
-    <button
-      {...props}
-      test-id="google-auth-button"
-      style={{
-        height: 48,
-        borderWidth: 2,
-        borderColor: Colors.OFF_WHITE,
-        width: "100%",
-        borderStyle: "solid",
-        backgroundColor: Colors.WHITE,
-        display: "flex",
-        outline: "none",
-        alignItems: "center",
-        justifyContent: "center",
-        color: Colors.GRAY_LIGHT,
-        cursor: "pointer",
-        columnGap: 8,
-        ...style,
-      }}
-    >
-      <img src="/img/google.png" alt="" style={{ height: 20, width: 20 }} />
-      Continue with Google
-    </button>
-  )
-}
+

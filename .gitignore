@@ -1,4 +1,7 @@
 *.log
 .firebase
 *.DS_Store
-.env
+**/node_modules
+**/build
+**/lib
+.env**

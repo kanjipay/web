@@ -3,8 +3,6 @@ import { Route, Routes, useLocation, useParams } from "react-router-dom"
 import LoadingPage from "../../../../components/LoadingPage"
 import Collection from "../../../../enums/Collection"
 import ProductPage from "./ProductPage"
-import IconPage from "../../../../components/IconPage"
-import Discover from "../../../../assets/icons/Discover"
 
 export default function Product({ merchant, event, user }) {
   const { productId } = useParams()

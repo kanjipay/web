@@ -9,11 +9,13 @@ export async function cancelOrder(order, navigate) {
     button: "cancelOrder",
   })
 
-  const { type, merchantId } = order
+  const { type, merchantId, status } = order
 
-  await updateDoc(Collection.ORDER.docRef(order.id), {
-    status: OrderStatus.ABANDONED,
-  })
+  if (status === OrderStatus.PENDING) {
+    await updateDoc(Collection.ORDER.docRef(order.id), {
+      status: OrderStatus.ABANDONED,
+    })
+  }
 
   switch (type) {
     case OrderType.TICKETS:

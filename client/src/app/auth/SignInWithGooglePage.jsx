@@ -2,6 +2,7 @@ import {
   getRedirectResult,
   GoogleAuthProvider,
   signInWithRedirect,
+  OAuthProvider
 } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
@@ -18,68 +19,64 @@ import Collection from "../../enums/Collection"
 import Spacer from "../../components/Spacer"
 import Form from "../../components/Form"
 
-export default function SignInWithGooglePage() {
-  useEffect(() => {})
+export class OAuthType {
+  static GOOGLE = "GOOGLE"
+  static APPLE = "APPLE"
+}
+
+export default function SignInWithOAuthPage({ type }) {
   const navigate = useNavigate()
   const { search } = useLocation()
 
   const [searchParams] = useSearchParams()
   const successPath = base64.decode(searchParams.get("success"))
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
-
-  const isAuthInProgressKey = "isGoogleAuthInProgress"
   const [error, setError] = useState(null)
   const [userId, setUserId] = useState(null)
   const [hasName, setHasName] = useState(null)
 
-  function isAuthInProgress() {
-    return localStorage.getItem(isAuthInProgressKey) === "true"
-  }
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("OAuth", { type })
+  }, [type])
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("GoogleAuth", {
-      isAuthInProgress: isAuthInProgress(),
-    })
-  })
+    async function handleSuccessfulAuth() {
+      if (userId) { return }
 
-  useEffect(() => {
-    async function handleAuth() {
-      try {
-        if (error) {
-          return
+      const credential = await getRedirectResult(auth)
+
+      if (credential) {
+        setUserId(credential.user.uid)
+        const hasName = await processUserCredential(credential)
+        setHasName(hasName)
+      } else {
+        let provider
+
+        switch (type) {
+          case OAuthType.APPLE:
+            provider = new OAuthProvider("apple.com")
+            provider.addScope("email")
+            provider.addScope("name")
+            break;
+          case OAuthType.GOOGLE:
+            provider = new GoogleAuthProvider()
+            provider.addScope("email")
+            break;
+          default:
+            break;
         }
 
-        if (isAuthInProgress()) {
-          const credential = await getRedirectResult(auth)
-
-          if (credential) {
-            setUserId(credential.user.uid)
-            const hasName = await processUserCredential(credential)
-            setHasName(hasName)
-          }
-        } else {
-          localStorage.setItem(isAuthInProgressKey, "true")
-          const provider = new GoogleAuthProvider()
-          provider.addScope("email")
-          signInWithRedirect(auth, provider)
-        }
-      } catch (err) {
-        console.log(err)
-        localStorage.setItem(isAuthInProgressKey, "false")
-        setError({
-          title: "Something went wrong",
-          body: "We're sorry, but we couldn't log you in. Try checking back later.",
-        })
+        provider.setCustomParameters({ locale: 'en' });
+        signInWithRedirect(auth, provider)
       }
     }
 
-    handleAuth()
-  }, [navigate, successPath, successState, error])
+    handleSuccessfulAuth()
+  }, [type, userId])
 
   useEffect(() => {
     if (hasName && userId) {
       navigate(successPath, { state: successState })
-      localStorage.setItem(isAuthInProgressKey, "false")
     }
   }, [hasName, userId, navigate, successPath, successState])
 
