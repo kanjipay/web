@@ -59,7 +59,9 @@ export const handleCrezcoWebhook = async (req, res, next) => {
 
     const paymentAttemptStatus = crezcoPaymentStatuses[eventType]
 
-    loggingClient.log("Got payment attempt status", { paymentAttemptStatus: paymentAttemptStatus ?? "undefined" })
+    loggingClient.log("Got payment attempt status", {
+      paymentAttemptStatus: paymentAttemptStatus ?? "undefined",
+    })
 
     if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) {
       return res.sendStatus(200)
@@ -88,7 +90,10 @@ export const handleCrezcoWebhook = async (req, res, next) => {
     )
 
     if (error) {
-      loggingClient.log("An error occured processing payment update", { message: error.message, error })
+      loggingClient.log("An error occured processing payment update", {
+        message: error.message,
+        error,
+      })
       return res.sendStatus(200)
     }
 
