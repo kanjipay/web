@@ -8,6 +8,7 @@ import {
   OrganisationRole,
 } from "../../../shared/utils/membership"
 import { logger } from "firebase-functions/v1"
+import { sendgridClient } from "../../../shared/utils/sendgridClient"
 
 export class MerchantsController extends BaseController {
   create = async (req, res, next) => {
@@ -61,6 +62,14 @@ export class MerchantsController extends BaseController {
       ])
 
       logger.log(`Successfully created merchant with id ${merchantId}`)
+      const updateText = `Merchant with name ${displayName} id ${merchantId} registered with Mercado`
+      logger.log(updateText)
+      sendgridClient().send({
+        to: 'team@mercadopay.co',
+        from: 'team@mercadopay.co',
+        text: updateText,
+      })
+
 
       return res.status(200).json({ merchantId })
     } catch (err) {

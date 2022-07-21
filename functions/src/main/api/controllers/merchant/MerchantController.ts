@@ -6,6 +6,7 @@ import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
 import LoggingController from "../../../../shared/utils/loggingClient"
 import stripe from "../../../../shared/utils/stripeClient"
+import { sendgridClient } from "../../../../shared/utils/sendgridClient"
 
 export class MerchantController extends BaseController {
   addCrezcoUserId = async (req, res, next) => {
@@ -23,11 +24,14 @@ export class MerchantController extends BaseController {
             userId: crezcoUserId,
           },
         })
-
-      logger.log(
-        `Updated merchant with id ${merchantId} with crezco user id ${crezcoUserId}`
-      )
-
+      
+      const updateText = `Merchant with id ${merchantId} registered with Crezco`
+      logger.log(updateText)
+      sendgridClient().send({
+        to: 'team@mercadopay.co',
+        from: 'team@mercadopay.co',
+        text: updateText,
+      })
       res.sendStatus(200)
     } catch (err) {
       next(err)
@@ -177,7 +181,12 @@ export class MerchantController extends BaseController {
       logger.log("updating merchant", { update })
 
       await db().collection(Collection.MERCHANT).doc(merchantId).update(update)
-
+      'team@mercadopay.co'
+      sendgridClient().send({
+        to: 'team@mercadopay.co',
+        from: 'team@mercadopay.co',
+        text: `Updated merchant with id ${merchantId} with to stipe status ${stripeStatus}`,
+      })
       return res.status(200).json({ stripeStatus })
     } catch (err) {
       next(err)
