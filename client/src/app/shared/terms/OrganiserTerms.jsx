@@ -10,10 +10,10 @@ export default function OrganiserTerms() {
         <title>Organiser Terms</title>
       </Helmet>
       <h1 className="header-l">
-        Organiser Terms
+        Mercado Organiser Terms
       </h1>
 <Spacer y={2}/>
-<p>Last Updated 28 June 2022</p>
+<p>Last Updated 21 July 2022</p>
 <Spacer y={2}/>
 <h2 className="header-m">Definitions</h2>
 <Spacer y={2}/>
