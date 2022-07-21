@@ -17,6 +17,7 @@ export function eventTimeString(event) {
     )}`
   }
 }
+
 export function generateGoogleMapsLink(event) {
   return `https://www.google.com/maps/search/?api=1&query=${event.address
     .replaceAll(/[^0-9a-z\s]/gi, "")

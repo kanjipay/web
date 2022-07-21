@@ -26,7 +26,7 @@ export default function Event({ events, merchant }) {
           <EventPage event={event} products={products} merchant={merchant} />
         }
       />
-      <Route path="/guestlist" element={<GuestlistPage />} />
+      <Route path="/guestlist" element={<GuestlistPage event={event} />} />
       <Route path="/checker" element={<CheckerPage event={event} />} />
     </Routes>
   )

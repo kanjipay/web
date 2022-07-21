@@ -322,7 +322,7 @@ export class OrdersController extends BaseController {
 
       logger.log("Got product", { product })
 
-      if (soldCount + reservedCount + quantity >= capacity) {
+      if (soldCount + reservedCount + quantity > capacity) {
         const errorMessage = "This ticket is sold out."
         logger.log("Ticket is sold out", {
           soldCount,
@@ -481,18 +481,12 @@ export class OrdersController extends BaseController {
 
         promises.push(
           processSuccessfulTicketsOrder(
-            merchantId,
-            eventId,
-            event.title,
-            productId,
-            product.title,
-            product.price,
+            merchant,
+            event,
+            product,
             orderId,
             userId,
-            endsAt,
-            merchant.currency,
             quantity,
-            customerFee
           )
         )
       }

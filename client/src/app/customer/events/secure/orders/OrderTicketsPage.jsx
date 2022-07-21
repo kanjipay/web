@@ -40,7 +40,7 @@ export default function OrderTicketsPage() {
       .catch((error) => {
         setError({
           title: "The order failed",
-          description: error?.response?.data?.error,
+          description: error?.response?.data?.message,
         })
       })
   }, [productId, eventId, quantity, navigate])

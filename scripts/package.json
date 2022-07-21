@@ -12,6 +12,7 @@
   "dependencies": {
     "base-64": "^1.0.0",
     "dotenv": "^16.0.1",
-    "firebase-admin": "^10.3.0"
+    "firebase-admin": "^10.3.0",
+    "stripe": "^9.13.0"
   }
 }

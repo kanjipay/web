@@ -26,7 +26,13 @@ export default function EmailLinkPage() {
 
   const stateId = searchParams.get("stateId")
 
-  const successState = JSON.parse(base64.decode(searchParams.get("state")))
+  let successState
+
+  try {
+    successState = JSON.parse(base64.decode(searchParams.get("state")))
+  } catch (err) {
+    successState = {}
+  }
 
   const emailFromLocalStorage = localStorage.getItem("emailForSignIn")
   const [emailForSignIn, setEmailForSignIn] = useState(emailFromLocalStorage)
