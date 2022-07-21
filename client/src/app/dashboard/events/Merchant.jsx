@@ -9,7 +9,6 @@ import {
 import Analytics from "../../../assets/icons/Analytics"
 import Clock from "../../../assets/icons/Clock"
 import Settings from "../../../assets/icons/Settings"
-import Tick from "../../../assets/icons/Tick"
 import Spinner from "../../../assets/Spinner"
 import { Colors } from "../../../enums/Colors"
 import IconActionPage from "../../../components/IconActionPage"
@@ -23,6 +22,7 @@ import ConnectStripePage from "./ConnectStripePage"
 import StripeConnectRedirectPage from "./StripeConnectRedirectPage"
 import Discover from "../../../assets/icons/Discover"
 import UsersPage from "./UsersPage"
+import { isMobile } from "react-device-detect"
 
 function SidebarItem({ title, Icon, ...props }) {
   const [isHovering, setIsHovering] = useState(false)
@@ -92,42 +92,46 @@ export default function Merchant({ user }) {
           display: "flex",
         }}
       >
-        <nav
-          style={{
-            width: 256,
-            backgroundColor: Colors.OFF_BLACK,
-            position: "fixed",
-            height: "100vh",
-          }}
-        >
-          <SidebarHeader title="Manage" />
-          <SidebarItem
-            to="events"
-            title="Events"
-            Icon={Clock}
-            test-id="nav-link-events"
-          />
-          <SidebarItem
-            to="analytics"
-            title="Analytics"
-            Icon={Analytics}
-            test-id="nav-link-analytics"
-          />
-          <SidebarHeader title="Organisation" />
-          <SidebarItem
-            to="settings"
-            title="Settings"
-            Icon={Settings}
-            test-id="nav-link-settings"
-          />
-          {/* <SidebarItem to="users" title="Users" Icon={User} /> */}
-        </nav>
+        {
+          !isMobile && <nav
+            style={{
+              width: 256,
+              backgroundColor: Colors.OFF_BLACK,
+              position: "fixed",
+              height: "100vh",
+            }}
+          >
+            <SidebarHeader title="Manage" />
+            <SidebarItem
+              to="events"
+              title="Events"
+              Icon={Clock}
+              test-id="nav-link-events"
+            />
+            <SidebarItem
+              to="analytics"
+              title="Analytics"
+              Icon={Analytics}
+              test-id="nav-link-analytics"
+            />
+            <SidebarHeader title="Organisation" />
+            <SidebarItem
+              to="settings"
+              title="Settings"
+              Icon={Settings}
+              test-id="nav-link-settings"
+            />
+            {/* <SidebarItem to="users" title="Users" Icon={User} /> */}
+          </nav>
+        }
+        
         <div
           className="flex-spacer"
           style={{
-            padding: "0 24px",
+            padding: isMobile ? "0 16px" : "0 24px",
+            boxSizing: "border-box",
             position: "absolute",
-            left: 256,
+            left: isMobile ? 0 : 256,
             right: 0,
           }}
         >

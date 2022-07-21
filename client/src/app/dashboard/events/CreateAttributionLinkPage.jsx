@@ -31,7 +31,7 @@ export default function CreateAttributionLinkPage() {
       <Spacer y={5} />
       <h1 className="header-l">Create attribution link</h1>
       <Spacer y={2} />
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+      <div style={{ maxWidth: 500 }}>
         <Form
           formGroupData={[
             {
@@ -47,6 +47,7 @@ export default function CreateAttributionLinkPage() {
           onSubmit={handleCreateAttributionLink}
           submitTitle="Create link"
         />
+        <Spacer y={9} />
       </div>
     </div>
   )

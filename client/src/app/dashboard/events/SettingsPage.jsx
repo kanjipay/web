@@ -1,9 +1,9 @@
 import { updateDoc } from "firebase/firestore"
 import { deleteObject } from "firebase/storage"
 import { useState } from "react"
+import { isMobile } from "react-device-detect"
 import { useParams } from "react-router-dom"
 import Form from "../../../components/Form"
-import ImagePicker from "../../../components/ImagePicker"
 import { TextArea } from "../../../components/Input"
 import Dropdown from "../../../components/input/Dropdown"
 import { Field, IntField } from "../../../components/input/IntField"
@@ -68,12 +68,9 @@ export default function SettingsPage({ merchant }) {
       <Spacer y={2} />
       <div
         style={{
-          display: "grid",
-          columnGap: 64,
-          gridTemplateColumns: "1fr 1fr",
+          maxWidth: 500
         }}
       >
-        <div>
           <Form
             initialDataSource={{
               ...merchant,
@@ -199,10 +196,7 @@ export default function SettingsPage({ merchant }) {
               </div>
             )}
             <Spacer y={6} />
-          </div>
         </div>
-
-        <div></div>
       </div>
     </div>
   )

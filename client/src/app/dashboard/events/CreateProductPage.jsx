@@ -1,4 +1,5 @@
 import { addDoc } from "firebase/firestore"
+import { isMobile } from "react-device-detect"
 import { useNavigate, useParams } from "react-router-dom"
 import Breadcrumb from "../../../components/Breadcrumb"
 import DatePicker from "../../../components/DatePicker"
@@ -64,12 +65,9 @@ export default function CreateProductPage({ event, products, merchant }) {
       <Spacer y={3} />
       <div
         style={{
-          display: "grid",
-          columnGap: 48,
-          gridTemplateColumns: "1fr 1fr",
+          maxWidth: 500,
         }}
       >
-        <div>
           <Form
             initialDataSource={{
               releasesAt: new Date(),
@@ -127,7 +125,6 @@ export default function CreateProductPage({ event, products, merchant }) {
             onSubmit={handleCreateProduct}
           />
           <Spacer y={6} />
-        </div>
       </div>
     </div>
   )

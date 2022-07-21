@@ -113,7 +113,7 @@ export default function EventPage({ merchant, event, products, artists }) {
 
       <Helmet>
         <title>
-          {event.title} | {merchant.displayName} | Mercado
+          {`${event.title} | ${merchant.displayName} | Mercado`}
         </title>
       </Helmet>
 

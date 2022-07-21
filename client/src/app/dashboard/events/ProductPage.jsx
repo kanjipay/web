@@ -18,6 +18,7 @@ import { ButtonTheme } from "../../../components/ButtonTheme"
 import { Modal } from "../../../components/Modal"
 import { getCurrencySymbol } from "../../../utils/helpers/money"
 import CheckBox from "../../../components/CheckBox"
+import { isMobile } from "react-device-detect"
 
 export default function ProductPage({ event, products, merchant }) {
   const { productId } = useParams()
@@ -62,12 +63,9 @@ export default function ProductPage({ event, products, merchant }) {
       <Spacer y={4} />
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          columnGap: 48,
+          maxWidth: 500
         }}
       >
-        <div>
           <h2 className="header-m">Product details</h2>
           <Spacer y={3} />
           <Form
@@ -187,7 +185,6 @@ export default function ProductPage({ event, products, merchant }) {
             </div>
           )}
           <Spacer y={6} />
-        </div>
       </div>
     </div>
   )

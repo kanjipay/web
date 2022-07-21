@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Popup from "reactjs-popup";
 import Cross from "../assets/icons/Cross";
 import Menu from "../assets/icons/Menu";
@@ -7,6 +7,7 @@ import { ButtonTheme } from "./ButtonTheme";
 import IconButton from "./IconButton";
 
 export default function MobilePopupMenu({ navItems = [] }) {
+  const navigate = useNavigate()
   return <Popup
     trigger={<IconButton
       Icon={Menu}
@@ -46,7 +47,7 @@ export default function MobilePopupMenu({ navItems = [] }) {
           </div>
           {
             navItems.map(item => {
-              return <Link
+              return <div
                 to={item.path} 
                 style={{
                   borderBottom: `1px solid ${Colors.OFF_BLACK_LIGHT}`,
@@ -58,11 +59,14 @@ export default function MobilePopupMenu({ navItems = [] }) {
                   padding: 16,
                   boxSizing: "border-box",
                   color: Colors.WHITE,
-                  
+                }}
+                onClick={() => {
+                  navigate(item.path)
+                  close()
                 }}
               >
                 {item.title}
-              </Link>
+              </div>
             })
           }
         </div>

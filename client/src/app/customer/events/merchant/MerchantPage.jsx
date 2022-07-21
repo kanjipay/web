@@ -53,7 +53,7 @@ export default function MerchantPage({ merchant }) {
       />
 
       <Helmet>
-        <title>{merchant.displayName} | Mercado</title>
+        <title>{`${merchant.displayName} | Mercado`}</title>
       </Helmet>
 
       <Spacer y={4} />

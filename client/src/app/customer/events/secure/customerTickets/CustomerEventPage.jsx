@@ -52,7 +52,7 @@ export default function CustomerEventPage({ events }) {
         />
 
         <Helmet>
-          <title>{event.title} | Mercado</title>
+          <title>{`${event.title} | Mercado`}</title>
         </Helmet>
 
         <AsyncImage
@@ -60,10 +60,6 @@ export default function CustomerEventPage({ events }) {
           className="headerImage"
           alt={event.title}
         />
-
-        <Helmet>
-          <title>{} | Mercado</title>
-        </Helmet>
 
         <Spacer y={4} />
 

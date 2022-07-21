@@ -179,7 +179,7 @@ export default function ProductPage({ merchant, event, product, user }) {
 
       <Helmet>
         <title>
-          {event.title} | {merchant.displayName} | Mercado
+          {`${event.title} | ${merchant.displayName} | Mercado`}
         </title>
       </Helmet>
 

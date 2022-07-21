@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { getEventStorageRef } from "../../../utils/helpers/storage"
 import { uploadImage } from "../../../utils/helpers/uploadImage"
 import SimpleImagePicker from "../../../components/SimpleImagePicker"
+import { isMobile } from "react-device-detect"
 
 export default function CreateEventPage() {
   const navigate = useNavigate()
@@ -65,12 +66,9 @@ export default function CreateEventPage() {
       <Spacer y={3} />
       <div
         style={{
-          display: "grid",
-          columnGap: 48,
-          gridTemplateColumns: "1fr 1fr",
+          maxWidth: 500
         }}
       >
-        <div>
           <Form
             initialDataSource={{
               startsAt: new Date(),
@@ -131,7 +129,6 @@ export default function CreateEventPage() {
             submitTitle="Create event"
           />
           <Spacer y={6} />
-        </div>
       </div>
     </div>
   )

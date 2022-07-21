@@ -22,6 +22,7 @@ import SimpleImagePicker from "../../../components/SimpleImagePicker"
 import ResultBanner, { ResultType } from "../../../components/ResultBanner"
 import { Modal } from "../../../components/Modal"
 import { CopyToClipboardButton } from "../../../components/CopyToClipboardButton"
+import { isMobile } from "react-device-detect"
 
 function PublishInfoBanners({ merchant, hasProducts, publishButtonRef }) {
   const navigate = useNavigate()
@@ -127,7 +128,7 @@ function AttributionLinkSection({ attributionLinks }) {
                   style={{
                     padding: 16,
                     backgroundColor: Colors.OFF_WHITE_LIGHT,
-                    display: "flex",
+                    display: isMobile ? "block" : "flex",
                     alignItems: "center",
                     columnGap: 16,
                     marginBottom: 16,
@@ -154,7 +155,12 @@ function AttributionLinkSection({ attributionLinks }) {
                     <Spacer y={2} />
                     <p>{linkUrlString}</p>
                   </div>
-                  <div style={{ flexGrow: 100 }}></div>
+                  {
+                    isMobile ?
+                      <Spacer y={2} /> :
+                      <div style={{ flexGrow: 100 }}></div>
+                  }
+                  
                   <CopyToClipboardButton text={linkUrlString} />
                 </div>
               )
@@ -260,6 +266,7 @@ export default function EventPage({ merchant, event, products }) {
     )
   }, [merchantId])
 
+
   return (
     <div>
       <Spacer y={2} />
@@ -274,9 +281,7 @@ export default function EventPage({ merchant, event, products }) {
       <Spacer y={4} />
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          columnGap: 48,
+          maxWidth: 500
         }}
       >
         <div>
@@ -308,7 +313,47 @@ export default function EventPage({ merchant, event, products }) {
             </div>
           )}
 
-          <Spacer y={3} />
+          <Spacer y={6} />
+
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <h2 className="header-m">Ticket types</h2>
+              <div className="flex-spacer"></div>
+              <MainButton
+                title="Create ticket type"
+                onClick={handleCreateProduct}
+                test-id="create-product-button"
+                style={{ padding: "0 16px" }}
+              />
+            </div>
+            <Spacer y={3} />
+            {products.length > 0 ? (
+              <div>
+                <p>Click to edit.</p>
+                <Spacer y={3} />
+                {products.map((product) => {
+                  return (
+                    <div key={product.id}>
+                      <ProductListing
+                        product={product}
+                        currency={merchant.currency}
+                      />
+                      <Spacer y={2} />
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div>
+                <p>
+                  You don't have any ticket types for this event yet. You'll need
+                  at least one before you can publish the event.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <Spacer y={6} />
 
           <h2 className="header-m">Event details</h2>
           <Spacer y={3} />
@@ -482,43 +527,6 @@ export default function EventPage({ merchant, event, products }) {
           )}
 
           <Spacer y={6} />
-        </div>
-        <div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <h2 className="header-m">Ticket types</h2>
-            <div className="flex-spacer"></div>
-            <MainButton
-              title="Create ticket type"
-              onClick={handleCreateProduct}
-              test-id="create-product-button"
-              style={{ padding: "0 16px" }}
-            />
-          </div>
-          <Spacer y={3} />
-          {products.length > 0 ? (
-            <div>
-              <p>Click to edit.</p>
-              <Spacer y={3} />
-              {products.map((product) => {
-                return (
-                  <div key={product.id}>
-                    <ProductListing
-                      product={product}
-                      currency={merchant.currency}
-                    />
-                    <Spacer y={2} />
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <div>
-              <p>
-                You don't have any ticket types for this event yet. You'll need
-                at least one before you can publish the event.
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>
