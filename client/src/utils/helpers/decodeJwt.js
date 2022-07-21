@@ -8,8 +8,17 @@ export function decodeJwt(jwt) {
 }
 
 export function isExpired(jwt) {
-  const { payload } = decodeJwt(jwt)
-  const expirySecondsSinceEpoch = payload.exp
+  let jwtPayload
+  
+  try {
+    const { payload } = decodeJwt(jwt)
+    jwtPayload = payload
+  } catch (err) {
+    console.log(err)
+    return true
+  }
+  
+  const expirySecondsSinceEpoch = jwtPayload.exp
 
   if (!expirySecondsSinceEpoch) {
     return false

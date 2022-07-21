@@ -2,6 +2,7 @@ import { onAuthStateChanged } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { Link, Route, Routes } from "react-router-dom"
 import { ButtonTheme } from "../../components/ButtonTheme"
+import MobilePopupMenu from "../../components/MobilePopupMenu"
 import SmallButton from "../../components/SmallButton"
 import { Colors } from "../../enums/Colors"
 import { auth } from "../../utils/FirebaseUtils"
@@ -104,19 +105,36 @@ export function Brand() {
 
           <div className="flex-spacer"></div>
 
-          <Link to="/dashboard/o/create">
-            <SmallButton
-              title="Sign up"
-              buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
-            />
-          </Link>
+          {
+            !isMobile && <Link to="/events/s/tickets">
+              <SmallButton
+                title="Event goers"
+                buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
+              />
+            </Link>
+          }
 
-          <Link to="/dashboard">
-            <SmallButton
-              title={authUser ? "Dashboard" : "Log in"}
-              buttonTheme={ButtonTheme.MONOCHROME_OUTLINED_REVERSE}
-            />
-          </Link>
+          {
+            !isMobile && <Link to="/dashboard">
+              <SmallButton
+                title="Organisers"
+                buttonTheme={ButtonTheme.MONOCHROME_OUTLINED_REVERSE}
+              />
+            </Link>
+          }
+
+          {
+            isMobile && <MobilePopupMenu navItems={[
+              {
+                title: "Event goers",
+                path: "/events/s/tickets"
+              },
+              {
+                title: "Organisers",
+                path: "/dashboard"
+              }
+            ]} />
+          }
         </div>
       </header>
 

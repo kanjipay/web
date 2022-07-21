@@ -69,9 +69,7 @@ export async function processPaymentUpdate(
       wereTicketsCreated,
       merchantId,
       userId,
-      currency,
       status,
-      customerFee,
     } = order
 
     // Only update the order if it's still pending
@@ -86,7 +84,7 @@ export async function processPaymentUpdate(
       if (type === OrderType.TICKETS && !wereTicketsCreated) {
         logger.log("Order is of type tickets and tickets not already created", { type, wereTicketsCreated })
 
-        const { productId, eventId, eventEndsAt, quantity } = orderItems[0]
+        const { productId, eventId, quantity } = orderItems[0]
 
         const updateProduct = db()
           .collection(Collection.PRODUCT)
@@ -99,22 +97,30 @@ export async function processPaymentUpdate(
 
         orderUpdate["wereTicketsCreated"] = true
 
-        const orderItem = orderItems[0]
+        const [
+          { merchant, merchantError },
+          { event, eventError },
+          { product, productError }
+        ] = await Promise.all([
+          fetchDocument(Collection.MERCHANT, merchantId),
+          fetchDocument(Collection.EVENT, eventId),
+          fetchDocument(Collection.PRODUCT, productId)
+        ])
+
+        for (const error of [merchantError, eventError, productError]) {
+          if (error) {
+            return [false, error]
+          }
+        }
 
         promises.push(
           processSuccessfulTicketsOrder(
-            merchantId,
-            eventId,
-            orderItem.eventTitle,
-            productId,
-            orderItem.title,
-            orderItem.price,
+            merchant,
+            event,
+            product,
             orderId,
             userId,
-            eventEndsAt,
-            currency,
             quantity,
-            customerFee
           )
         )
       }

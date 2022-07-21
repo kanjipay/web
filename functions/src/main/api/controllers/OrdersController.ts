@@ -481,18 +481,12 @@ export class OrdersController extends BaseController {
 
         promises.push(
           processSuccessfulTicketsOrder(
-            merchantId,
-            eventId,
-            event.title,
-            productId,
-            product.title,
-            product.price,
+            merchant,
+            event,
+            product,
             orderId,
             userId,
-            endsAt,
-            merchant.currency,
             quantity,
-            customerFee
           )
         )
       }
