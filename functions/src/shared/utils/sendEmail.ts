@@ -194,3 +194,12 @@ export async function sendTicketSaleAlert(
   }
   return sendEmail(toEmails, TemplateName.TICKET_SALE_ALERT, data)
 }
+
+export function sendTextEmail(emailParams) {
+  sendgridClient()
+    .send(emailParams)
+    .then(() => logger.log("Mail sent successfully"))
+    .catch((error) => {
+      throw new Error(error)
+    })
+}
