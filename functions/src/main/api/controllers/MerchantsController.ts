@@ -8,7 +8,7 @@ import {
   OrganisationRole,
 } from "../../../shared/utils/membership"
 import { logger } from "firebase-functions/v1"
-import { sendTextEmail } from "../../../shared/utils/sendEmail"
+import { sendgridClient } from "../../../shared/utils/sendgridClient"
 
 export class MerchantsController extends BaseController {
   create = async (req, res, next) => {
@@ -69,7 +69,8 @@ export class MerchantsController extends BaseController {
         subject: "New Merchant",
       }
       logger.log("email params", emailParams)
-      sendTextEmail(emailParams)
+      await sendgridClient().send(emailParams)
+      logger.log("email sent successfully")
       return res.status(200).json({ merchantId })
     } catch (err) {
       logger.log(err)

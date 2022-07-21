@@ -6,7 +6,7 @@ import { HttpError, HttpStatusCode } from "../../../../shared/utils/errors"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
 import LoggingController from "../../../../shared/utils/loggingClient"
 import stripe from "../../../../shared/utils/stripeClient"
-import { sendTextEmail } from "../../../../shared/utils/sendEmail"
+import { sendgridClient } from "../../../../shared/utils/sendgridClient"
 
 export class MerchantController extends BaseController {
   addCrezcoUserId = async (req, res, next) => {
@@ -32,7 +32,8 @@ export class MerchantController extends BaseController {
         subject: "Merchant linked to Crezco",
       }
       logger.log("email params", emailParams)
-      sendTextEmail(emailParams)
+      await sendgridClient().send(emailParams)
+      logger.log("email sent successfully")
       res.sendStatus(200)
     } catch (err) {
       next(err)
@@ -190,7 +191,8 @@ export class MerchantController extends BaseController {
         subject: "Merchant Stripe status changed",
       }
       logger.log("email params", emailParams)
-      sendTextEmail(emailParams)
+      await sendgridClient().send(emailParams)
+      logger.log("email sent successfully")
       return res.status(200).json({ stripeStatus })
     } catch (err) {
       next(err)
