@@ -183,7 +183,6 @@ export class MerchantController extends BaseController {
       logger.log("updating merchant", { update })
 
       await db().collection(Collection.MERCHANT).doc(merchantId).update(update)
-      ;("team@mercadopay.co")
       const emailParams = {
         to: "team@mercadopay.co",
         from: "team@mercadopay.co",
