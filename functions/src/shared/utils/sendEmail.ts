@@ -24,7 +24,7 @@ function addFees(productPrice, quantity, customerFee, currency) {
   return { fee, total }
 }
 
-async function sendEmail(
+export async function sendEmail(
   toEmails: Array<string>,
   templateName: TemplateName,
   data: unknown

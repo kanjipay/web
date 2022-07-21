@@ -31,7 +31,7 @@ enum Gender {
 
 enum PaymentType {
   STRIPE = "STRIPE",
-  OPEN_BANKING = "OPEN_BANKING"
+  OPEN_BANKING = "OPEN_BANKING",
 }
 
 function getPaymentTypes(merchant: any) {

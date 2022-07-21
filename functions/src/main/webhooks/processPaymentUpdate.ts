@@ -15,7 +15,11 @@ export async function processPaymentUpdate(
 ) {
   const logger = new LoggingController("Process payment update")
 
-  logger.log("processing payment update", { paymentAttemptId, paymentAttemptStatus, orderId })
+  logger.log("processing payment update", {
+    paymentAttemptId,
+    paymentAttemptStatus,
+    orderId,
+  })
 
   if (paymentAttemptStatus === PaymentAttemptStatus.PENDING) {
     logger.log("Payment attempt status is pending, returning")
@@ -82,7 +86,10 @@ export async function processPaymentUpdate(
       }
 
       if (type === OrderType.TICKETS && !wereTicketsCreated) {
-        logger.log("Order is of type tickets and tickets not already created", { type, wereTicketsCreated })
+        logger.log("Order is of type tickets and tickets not already created", {
+          type,
+          wereTicketsCreated,
+        })
 
         const { productId, eventId, quantity } = orderItems[0]
 
