@@ -51,7 +51,10 @@ export default function App() {
           <Route path="/auth/*" element={<Auth />} />
           <Route path="/dashboard/*" element={<Dashboard />} />
           <Route path="/ticket-checker/*" element={<TicketChecker />} />
-          <Route path="/legal/organiser-terms-and-conditions" element={<OrganiserTerms />} />
+          <Route
+            path="/legal/organiser-terms-and-conditions"
+            element={<OrganiserTerms />}
+          />
 
           {/* Brand pages */}
           <Route path="*" element={<Brand />} />

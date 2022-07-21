@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import LoadingPage from "../../components/LoadingPage";
-import { AnalyticsManager } from "../../utils/AnalyticsManager";
-import { OAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../../utils/FirebaseUtils";
-import { processUserCredential } from "../../utils/services/UsersService";
+import { useEffect, useState } from "react"
+import LoadingPage from "../../components/LoadingPage"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
+import { OAuthProvider, signInWithPopup } from "firebase/auth"
+import { auth } from "../../utils/FirebaseUtils"
+import { processUserCredential } from "../../utils/services/UsersService"
 import * as base64 from "base-64"
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { updateDoc } from "firebase/firestore";
-import Collection from "../../enums/Collection";
-import Spacer from "../../components/Spacer";
-import Form from "../../components/Form";
-import IconActionPage from "../../components/IconActionPage";
-import Cross from "../../assets/icons/Cross";
-import { Colors } from "../../enums/Colors";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import { updateDoc } from "firebase/firestore"
+import Collection from "../../enums/Collection"
+import Spacer from "../../components/Spacer"
+import Form from "../../components/Form"
+import IconActionPage from "../../components/IconActionPage"
+import Cross from "../../assets/icons/Cross"
+import { Colors } from "../../enums/Colors"
 
 export default function SignInWithApplePage() {
   const [userId, setUserId] = useState(null)
@@ -25,19 +25,21 @@ export default function SignInWithApplePage() {
   const [searchParams] = useSearchParams()
   const successPath = base64.decode(searchParams.get("success"))
   const successState = JSON.parse(base64.decode(searchParams.get("state")))
-  
+
   useEffect(() => {
     AnalyticsManager.main.viewPage("AppleAuth")
   }, [])
 
   useEffect(() => {
     async function handleAuth() {
-      if (error) { return }
+      if (error) {
+        return
+      }
 
       const appleProvider = new OAuthProvider("apple.com")
-      appleProvider.addScope('email');
-      appleProvider.addScope('name');
-      appleProvider.setCustomParameters({ locale: 'en' });
+      appleProvider.addScope("email")
+      appleProvider.addScope("name")
+      appleProvider.setCustomParameters({ locale: "en" })
 
       try {
         const credential = await signInWithPopup(auth, appleProvider)

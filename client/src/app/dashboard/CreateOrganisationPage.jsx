@@ -155,10 +155,17 @@ export default function CreateOrganisationPage({ authUser }) {
           submitTitle="Create organisation"
         />
         <Spacer y={6} />
-        <div>By creating a Mercado organiser account you aggree to our <a target="_blank" rel="noreferrer" href="/legal/organiser-terms-and-conditions">Terms and Conditions</a></div>
-
+        <div>
+          By creating a Mercado organiser account you aggree to our{" "}
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="/legal/organiser-terms-and-conditions"
+          >
+            Terms and Conditions
+          </a>
+        </div>
       </div>
-
     </div>
   )
 }
