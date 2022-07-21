@@ -17,8 +17,14 @@ export default function Auth() {
         <Route path="email-link" element={<EmailLinkPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="redirect" element={<RedirectPage />} />
-        <Route path="apple" element={<SignInWithOAuthPage type={OAuthType.APPLE} />} />
-        <Route path="google" element={<SignInWithOAuthPage type={OAuthType.GOOGLE} />} />
+        <Route
+          path="apple"
+          element={<SignInWithOAuthPage type={OAuthType.APPLE} />}
+        />
+        <Route
+          path="google"
+          element={<SignInWithOAuthPage type={OAuthType.GOOGLE} />}
+        />
 
         <Route path="email-link-sent" element={<EmailLinkSentPage />} />
         <Route

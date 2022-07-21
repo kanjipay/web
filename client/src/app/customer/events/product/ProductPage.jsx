@@ -335,17 +335,19 @@ export default function ProductPage({ merchant, event, product, user }) {
         )}
         <MainButton
           title={
-            isPublished ?
-              (user?.email ? "Checkout" : "Log in to continue") :
-              "Not available"
+            isPublished
+              ? user?.email
+                ? "Checkout"
+                : "Log in to continue"
+              : "Not available"
           }
           sideMessage={
-            (isPublished && user?.email) ? 
-              formatCurrency(
-                Math.round(product.price * quantity * (1 + customerFee)),
-                merchant.currency
-              ) :
-              undefined
+            isPublished && user?.email
+              ? formatCurrency(
+                  Math.round(product.price * quantity * (1 + customerFee)),
+                  merchant.currency
+                )
+              : undefined
           }
           onClick={handleCheckout}
           isLoading={isLoading}

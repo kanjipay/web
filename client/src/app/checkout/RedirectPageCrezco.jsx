@@ -73,7 +73,9 @@ export default function RedirectPageCrezco() {
         }
         break
       case PaymentAttemptStatus.FAILED:
-        navigate(`/checkout/o/${orderId}/payment-failure`, { state: { paymentType: PaymentType.OPEN_BANKING }})
+        navigate(`/checkout/o/${orderId}/payment-failure`, {
+          state: { paymentType: PaymentType.OPEN_BANKING },
+        })
         break
       default:
     }

@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom"
 import { BrowserRouter } from "react-router-dom"
 import MenuApp from "./customer/menu/MenuApp"
 import MerchantApp from "./dashboard/menu/MerchantApp"
+import OrganiserTerms from "./shared/terms/OrganiserTerms"
 import { Brand } from "./brand/Brand"
 import OneTimeLinkPage from "./shared/OneTimeLinkPage"
 import EventsApp from "./customer/events/EventsApp"
@@ -50,6 +51,10 @@ export default function App() {
           <Route path="/auth/*" element={<Auth />} />
           <Route path="/dashboard/*" element={<Dashboard />} />
           <Route path="/ticket-checker/*" element={<TicketChecker />} />
+          <Route
+            path="/legal/organiser-terms-and-conditions"
+            element={<OrganiserTerms />}
+          />
 
           {/* Brand pages */}
           <Route path="*" element={<Brand />} />

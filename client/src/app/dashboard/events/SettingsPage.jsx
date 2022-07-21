@@ -178,13 +178,13 @@ export default function SettingsPage({ merchant }) {
             <Spacer y={4} />
             <h3 className="header-xs">Stripe</h3>
             <Spacer y={2} />
-            <p className="text-body-faded">{
-              merchant.stripe?.status === StripeStatus.CHARGES_ENABLED ?
-                "You're connected with Stripe. This means your customers can pay you via card" :
-                "Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts."
-            }</p>
-            {
-              merchant.stripe?.status !== StripeStatus.CHARGES_ENABLED && <div>
+            <p className="text-body-faded">
+              {merchant.stripe?.status === StripeStatus.CHARGES_ENABLED
+                ? "You're connected with Stripe. This means your customers can pay you via card"
+                : "Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts."}
+            </p>
+            {merchant.stripe?.status !== StripeStatus.CHARGES_ENABLED && (
+              <div>
                 <Spacer y={2} />
                 <MainButton
                   title={
@@ -197,7 +197,7 @@ export default function SettingsPage({ merchant }) {
                   isLoading={isRedirectingToStripe}
                 />
               </div>
-            }
+            )}
             <Spacer y={6} />
           </div>
         </div>

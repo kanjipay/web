@@ -2,7 +2,7 @@ import {
   getRedirectResult,
   GoogleAuthProvider,
   signInWithRedirect,
-  OAuthProvider
+  OAuthProvider,
 } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
@@ -41,7 +41,9 @@ export default function SignInWithOAuthPage({ type }) {
 
   useEffect(() => {
     async function handleSuccessfulAuth() {
-      if (userId) { return }
+      if (userId) {
+        return
+      }
 
       const credential = await getRedirectResult(auth)
 
@@ -57,16 +59,16 @@ export default function SignInWithOAuthPage({ type }) {
             provider = new OAuthProvider("apple.com")
             provider.addScope("email")
             provider.addScope("name")
-            break;
+            break
           case OAuthType.GOOGLE:
             provider = new GoogleAuthProvider()
             provider.addScope("email")
-            break;
+            break
           default:
-            break;
+            break
         }
 
-        provider.setCustomParameters({ locale: 'en' });
+        provider.setCustomParameters({ locale: "en" })
         signInWithRedirect(auth, provider)
       }
     }

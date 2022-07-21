@@ -51,8 +51,12 @@ export default function PaymentUnsuccessfulPage({
         body={body}
         primaryActionTitle="Try again"
         primaryAction={handleTryAgain}
-        secondaryActionTitle={wasOpenBankingPayment ? "Pay with card instead" : "Cancel payment"}
-        secondaryAction={wasOpenBankingPayment ? handleCardPayment : handleCancelOrder}
+        secondaryActionTitle={
+          wasOpenBankingPayment ? "Pay with card instead" : "Cancel payment"
+        }
+        secondaryAction={
+          wasOpenBankingPayment ? handleCardPayment : handleCancelOrder
+        }
       />
     )
   }
