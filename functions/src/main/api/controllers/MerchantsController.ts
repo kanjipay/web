@@ -37,6 +37,7 @@ export class MerchantsController extends BaseController {
         sortCode,
         accountNumber,
         customerFee: 0.1,
+        mercadoFee: 0.03,
         createdAt: firestore.FieldValue.serverTimestamp(),
         approvalStatus: "PENDING",
       }

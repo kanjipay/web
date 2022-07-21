@@ -73,14 +73,13 @@ export default function OrganiserTerms() {
       <Spacer y={1} />
       <p className="text-body">
         'Organiser Booking fee rebate' The share of booking fees we rebate to
-        organisers. We agree to rebate 75% of booking fees for OpenBanking
-        payments, and 50% for Card payments.
+        organisers. We agree to rebate 70% of booking fees for OpenBanking
+        payments (7% of ticket face value), and 70% for Card payments, less Stripe payment processing costs of 20p + 1.2%.
       </p>
       <Spacer y={1} />
       <p className="text-body">
         'Mercado Booking fee share' The share of booking fees we do not rebate
-        to organisers. 25% booking fees for OpenBanking payments (2.5% of ticket
-        face value) and 50% for Card payments (5% of ticket face value).
+        to organisers. 30% booking fees for OpenBanking payments and Card payments (3% of ticket face value)
       </p>
       <Spacer y={1} />
       <p className="text-body">
