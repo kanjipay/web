@@ -62,14 +62,19 @@ export class MerchantsController extends BaseController {
       ])
 
       logger.log(`Successfully created merchant with id ${merchantId}`)
-      const updateText = `Merchant with name ${displayName} id ${merchantId} registered with Mercado`
+      const updateText = `Merchant registered with Mercado: \n name - ${displayName} \n id - ${merchantId}`
       logger.log(updateText)
-      sendgridClient().send({
-        to: 'team@mercadopay.co',
-        from: 'team@mercadopay.co',
-        text: updateText,
-      })
-
+      sendgridClient()
+        .send({
+          to: "team@mercadopay.co",
+          from: "team@mercadopay.co",
+          text: updateText,
+          subject: "New Merchant",
+        })
+        .then(() => logger.log("Mail sent successfully"))
+        .catch((error) => {
+          throw new Error(error)
+        })
 
       return res.status(200).json({ merchantId })
     } catch (err) {

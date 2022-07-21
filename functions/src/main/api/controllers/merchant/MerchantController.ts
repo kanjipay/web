@@ -24,14 +24,20 @@ export class MerchantController extends BaseController {
             userId: crezcoUserId,
           },
         })
-      
+
       const updateText = `Merchant with id ${merchantId} registered with Crezco`
       logger.log(updateText)
-      sendgridClient().send({
-        to: 'team@mercadopay.co',
-        from: 'team@mercadopay.co',
-        text: updateText,
-      })
+      sendgridClient()
+        .send({
+          to: "team@mercadopay.co",
+          from: "team@mercadopay.co",
+          text: updateText,
+          subject: "Merchant linked to Crezco",
+        })
+        .then(() => logger.log("Mail sent successfully"))
+        .catch((error) => {
+          throw new Error(error)
+        })
       res.sendStatus(200)
     } catch (err) {
       next(err)
@@ -181,12 +187,18 @@ export class MerchantController extends BaseController {
       logger.log("updating merchant", { update })
 
       await db().collection(Collection.MERCHANT).doc(merchantId).update(update)
-      'team@mercadopay.co'
-      sendgridClient().send({
-        to: 'team@mercadopay.co',
-        from: 'team@mercadopay.co',
-        text: `Updated merchant with id ${merchantId} with to stipe status ${stripeStatus}`,
-      })
+      ;("team@mercadopay.co")
+      sendgridClient()
+        .send({
+          to: "team@mercadopay.co",
+          from: "team@mercadopay.co",
+          text: `Updated merchant with id ${merchantId} with to stipe status ${stripeStatus}`,
+          subject: "Merchant Stripe status changed",
+        })
+        .then(() => logger.log("Mail sent successfully"))
+        .catch((error) => {
+          throw new Error(error)
+        })
       return res.status(200).json({ stripeStatus })
     } catch (err) {
       next(err)

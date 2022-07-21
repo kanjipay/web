@@ -4,8 +4,11 @@ import { setCors } from "./shared/utils/express"
 const applePayApp = express()
 setCors(applePayApp, true)
 
-applePayApp.get("/.well-known/apple-developer-merchantid-domain-association", (req, res) => {
-  return res.status(200).send(process.env.APPLE_PAY_VERIFICATION)
-})
+applePayApp.get(
+  "/.well-known/apple-developer-merchantid-domain-association",
+  (req, res) => {
+    return res.status(200).send(process.env.APPLE_PAY_VERIFICATION)
+  }
+)
 
 export default applePayApp
