@@ -28,8 +28,10 @@ import { logMetaPixelEvent } from "../../../../utils/MetaPixelLogger"
 import Collection from "../../../../enums/Collection"
 
 function combineIntoUniqueArray(...arrays) {
-  if (arrays.length < 2) {
-    return arrays
+  if (arrays.length === 0) {
+    return []
+  } else if (arrays.length === 1) {
+    return [...new Set(arrays[0])]
   }
 
   return [...new Set(arrays[0].concat(...arrays.slice(1)))]
@@ -52,9 +54,7 @@ export default function ProductPage({ merchant, event, product, user }) {
   const { productId, eventId, merchantId } = useParams()
   const openAuthPage = useOpenAuthPage()
   const navigate = useNavigate()
-  const { pathname } = useLocation()
-  const isMarketingConsentShowing =
-    user && user.marketingConsentStatus === "PENDING"
+  const { pathname, state } = useLocation()
   const [isMarketingConsentApproved, setIsMarketingConsentApproved] =
     useState(true)
   const [attestationData, setAttestationData] = useState({})
@@ -83,6 +83,29 @@ export default function ProductPage({ merchant, event, product, user }) {
       logMetaPixelEvent(metaPixelId, user, "ViewContent", {}) // todo add data with productId
     })
   }, [merchantId, productId, user])
+
+  useEffect(() => {
+    if (!state) { return }
+
+    const { shouldCheckOut, marketingConsentStatus, quantity } = state
+
+    if (shouldCheckOut) {
+      setIsLoading(true)
+
+      setMarketingConsent(marketingConsentStatus).then(() => {
+        setIsLoading(false)
+        
+        const state = {
+          productId,
+          quantity,
+          eventId,
+          backPath: pathname,
+        }
+
+        navigate("/events/s/orders/tickets", { state })
+      })
+    }
+  }, [state, eventId, navigate, pathname, productId])
 
   useEffect(() => {
     const attestations = getAttestations(merchant, event, product)
@@ -114,22 +137,30 @@ export default function ProductPage({ merchant, event, product, user }) {
         navigate("/events/s/orders/tickets", { state })
       }
 
-      if (isMarketingConsentShowing) {
-        setIsLoading(true)
-        const marketingConsentStatus = isMarketingConsentApproved
-          ? MarketingConsent.APPROVED
-          : MarketingConsent.DECLINED
+      setIsLoading(true)
 
-        setMarketingConsent(marketingConsentStatus).then(() => {
-          setIsLoading(false)
-          navigateToTicketsPage()
-        })
-      } else {
+      const marketingConsentStatus = isMarketingConsentApproved
+        ? MarketingConsent.APPROVED
+        : MarketingConsent.DECLINED
+
+      setMarketingConsent(marketingConsentStatus).then(() => {
+        setIsLoading(false)
         navigateToTicketsPage()
-      }
+      })
     } else {
+      const marketingConsentStatus = isMarketingConsentApproved
+        ? MarketingConsent.APPROVED
+        : MarketingConsent.DECLINED
+
+      const successState = {
+        shouldCheckOut: true,
+        marketingConsentStatus,
+        quantity
+      }
+      
       openAuthPage({
         successPath: pathname,
+        successState,
         showsBack: true,
         backPath: pathname,
         requiresPassword: false,
@@ -163,13 +194,13 @@ export default function ProductPage({ merchant, event, product, user }) {
   }
 
   function isEnabled() {
-    console.log(canBuyProduct())
-    console.log(isPublished)
     return (!user?.email || canBuyProduct()) && isPublished
   }
 
-  return product ? (
-    <div className="container">
+  if (state?.shouldCheckOut) {
+    return <LoadingPage />
+  } else {
+    return <div className="container">
       <EventsAppNavBar
         title={product.title}
         transparentDepth={50}
@@ -246,7 +277,7 @@ export default function ProductPage({ merchant, event, product, user }) {
               style={{ columnGap: 8, justifyContent: "left" }}
             >
               {getEmailDomain() &&
-              !validateEmail(user.email, getEmailDomain()) ? (
+                !validateEmail(user.email, getEmailDomain()) ? (
                 <p className="text-body-faded">
                   {"You need an email address ending in "}
                   <span className="text-body" style={{ fontWeight: 500 }}>
@@ -335,18 +366,16 @@ export default function ProductPage({ merchant, event, product, user }) {
         )}
         <MainButton
           title={
-            isPublished
-              ? user?.email
-                ? "Checkout"
-                : "Log in to continue"
+            isPublished ?
+              "Checkout"
               : "Not available"
           }
           sideMessage={
-            isPublished && user?.email
+            isPublished
               ? formatCurrency(
-                  Math.round(product.price * quantity * (1 + customerFee)),
-                  merchant.currency
-                )
+                Math.round(product.price * quantity * (1 + customerFee)),
+                merchant.currency
+              )
               : undefined
           }
           onClick={handleCheckout}
@@ -356,7 +385,7 @@ export default function ProductPage({ merchant, event, product, user }) {
           test-id="product-cta-button"
         />
 
-        {user && user.marketingConsentStatus === "PENDING" && (
+        {(!user || user.marketingConsentStatus === MarketingConsent.PENDING) && (
           <div>
             <Spacer y={2} />
             <div
@@ -381,7 +410,5 @@ export default function ProductPage({ merchant, event, product, user }) {
         <Spacer y={3} />
       </div>
     </div>
-  ) : (
-    <LoadingPage />
-  )
+  }
 }

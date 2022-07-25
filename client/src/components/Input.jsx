@@ -22,6 +22,7 @@ export function InputGroup({
   decorator,
   required,
   disabled,
+  visible,
   onSubmit,
 }) {
   const Input = React.cloneElement(input, {
@@ -57,7 +58,7 @@ export function InputGroup({
     setValidationMessage(message)
   }, [validators, value])
 
-  return (
+  return visible ?
     <label>
       <span className="header-xs">
         {label + (required ? "" : " (optional)")}
@@ -82,8 +83,8 @@ export function InputGroup({
         </div>
       )}
       <Spacer y={3} />
-    </label>
-  )
+    </label> :
+    <div></div>
 }
 
 export default function TextField({

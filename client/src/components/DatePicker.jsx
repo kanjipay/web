@@ -83,7 +83,10 @@ export default function DatePicker({
     return ("0" + string).slice(-2)
   }
 
-  const [values, setValues] = useState(dateToValues(value ? value : new Date()))
+  const initialDate = new Date()
+  initialDate.setMinutes(0)
+
+  const [values, setValues] = useState(dateToValues(value ? value : initialDate))
 
   const separator = <p style={{ color: "#aaa" }}>/</p>
 

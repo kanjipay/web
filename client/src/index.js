@@ -12,12 +12,16 @@ import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
 import Environment from "./enums/Environment"
 
-Sentry.init({
-  dsn: "https://0df91bf606524301ae038acb4238c3d0@o1326715.ingest.sentry.io/6587262",
-  integrations: [new BrowserTracing()],
-  environment: process.env.REACT_APP_ENV_NAME,
-  tracesSampleRate: process.env.REACT_APP_ENV_NAME === Environment.PROD ? 0.2 : 1.0,
-});
+if (process.env.REACT_APP_ENV_NAME === Environment.PROD) {
+  Sentry.init({
+    dsn: "https://0df91bf606524301ae038acb4238c3d0@o1326715.ingest.sentry.io/6587262",
+    integrations: [new BrowserTracing()],
+    environment: process.env.REACT_APP_ENV_NAME,
+    tracesSampleRate: process.env.REACT_APP_ENV_NAME === Environment.PROD ? 0.2 : 1.0,
+  });
+}
+
+
 
 console.log("environment: ", process.env.REACT_APP_ENV_NAME)
 

@@ -1,18 +1,18 @@
-import { addDoc } from "firebase/firestore"
+import { addDoc, serverTimestamp } from "firebase/firestore"
 import { isMobile } from "react-device-detect"
 import { useNavigate, useParams } from "react-router-dom"
-import Breadcrumb from "../../../components/Breadcrumb"
-import DatePicker from "../../../components/DatePicker"
-import Form from "../../../components/Form"
-import { TextArea } from "../../../components/Input"
+import Breadcrumb from "../../../../components/Breadcrumb"
+import DatePicker from "../../../../components/DatePicker"
+import Form from "../../../../components/Form"
+import { TextArea } from "../../../../components/Input"
 import {
   FieldDecorator,
   FloatField,
   IntField,
-} from "../../../components/input/IntField"
-import Spacer from "../../../components/Spacer"
-import Collection from "../../../enums/Collection"
-import { getCurrencySymbol } from "../../../utils/helpers/money"
+} from "../../../../components/input/IntField"
+import Spacer from "../../../../components/Spacer"
+import Collection from "../../../../enums/Collection"
+import { getCurrencySymbol } from "../../../../utils/helpers/money"
 
 export default function CreateProductPage({ event, products, merchant }) {
   const { merchantId } = useParams()
@@ -43,11 +43,10 @@ export default function CreateProductPage({ event, products, merchant }) {
       sortOrder: currLargestSortOrder + 1,
       soldCount: 0,
       reservedCount: 0,
+      createdAt: serverTimestamp()
     })
 
-    const productId = productRef.id
-
-    navigate(`../p/${productId}`)
+    navigate(`..`)
   }
 
   return (
@@ -63,11 +62,7 @@ export default function CreateProductPage({ event, products, merchant }) {
       <Spacer y={2} />
       <h1 className="header-l">Create ticket type</h1>
       <Spacer y={3} />
-      <div
-        style={{
-          maxWidth: 500,
-        }}
-      >
+      <div style={{ maxWidth: 500 }}>
           <Form
             initialDataSource={{
               releasesAt: new Date(),
@@ -75,7 +70,7 @@ export default function CreateProductPage({ event, products, merchant }) {
             formGroupData={[
               {
                 explanation:
-                  "Your product won't be available to customers immediately. You'll need to publish it first",
+                  "Configure a ticket type event goers can purchase for your event. You can create multiple ticket types for each event.",
                 items: [
                   {
                     name: "title",

@@ -22,6 +22,7 @@ enum Collection {
   TICKET = "Ticket",
   PRODUCT = "Product",
   EVENT = "Event",
+  EVENT_RECURRENCE = "EventRecurrence",
   USER = "User",
   MEMBERSHIP = "Membership",
 }

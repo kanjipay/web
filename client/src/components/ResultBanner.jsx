@@ -49,6 +49,7 @@ export default function ResultBanner({
           style={{ marginRight: 8 }}
         />
         <span style={{ color: resultType.textColor }}>{message}</span>
+        <div className="flex-spacer"></div>
         {action && actionTitle && (
           <SmallButton title={actionTitle} onClick={action} />
         )}

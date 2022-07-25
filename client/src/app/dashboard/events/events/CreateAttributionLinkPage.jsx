@@ -1,10 +1,11 @@
 import { addDoc } from "firebase/firestore"
 import { useNavigate, useParams } from "react-router-dom"
-import Form from "../../../components/Form"
-import Spacer from "../../../components/Spacer"
-import Collection from "../../../enums/Collection"
+import Breadcrumb from "../../../../components/Breadcrumb"
+import Form from "../../../../components/Form"
+import Spacer from "../../../../components/Spacer"
+import Collection from "../../../../enums/Collection"
 
-export default function CreateAttributionLinkPage() {
+export default function CreateAttributionLinkPage({ event }) {
   const { eventId, merchantId } = useParams()
   const navigate = useNavigate()
 
@@ -28,7 +29,13 @@ export default function CreateAttributionLinkPage() {
 
   return (
     <div>
-      <Spacer y={5} />
+      <Spacer y={2} />
+      <Breadcrumb pageData={[
+        { title: "Events", path: "../.." }, 
+        { title: event.title, path: ".." },
+        { title: "Attribtion" },
+      ]} />
+      <Spacer y={2} />
       <h1 className="header-l">Create attribution link</h1>
       <Spacer y={2} />
       <div style={{ maxWidth: 500 }}>

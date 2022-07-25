@@ -47,7 +47,7 @@ export default function CreateOrganisationPage({ authUser }) {
 
     await uploadImage(ref, photoFile)
 
-    navigate(`/dashboard/o/${merchantId}`)
+    navigate(`/dashboard/o/${merchantId}/events/create`)
 
     return { resultType: ResultType.SUCCESS }
   }

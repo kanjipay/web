@@ -23,6 +23,7 @@ import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import LoadingPage from "../../components/LoadingPage"
 import { PaymentType } from "../../enums/PaymentType"
+import { formatCurrency } from "../../utils/helpers/money"
 
 function AcceptedCards() {
   return (
@@ -242,7 +243,7 @@ export default function ChooseBankCrezcoPage({ order }) {
             <Spacer y={3} />
             <p className="text-body">
               We're redirecting you to {bankName} using Crezco to confirm your
-              payment.
+              payment of {formatCurrency(order.total, order.currency)}.
             </p>
           </div>
         </div>

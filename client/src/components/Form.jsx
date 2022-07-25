@@ -33,7 +33,7 @@ export default function Form({
   submitTitle,
   isFormLoading = false,
 }) {
-  const allItems = formGroupData.flatMap(
+  const allItems = (Array.isArray(formGroupData) ? formGroupData : formGroupData({})).flatMap(
     (formGroupDatum) => formGroupDatum.items
   )
 
@@ -44,14 +44,22 @@ export default function Form({
     return groupInitialData
   }, {})
 
-  const [validationMessage, setValidationMessage] = useState("")
   const [data, setData] = useState(initialData)
+
+  function getFormGroupData() {
+    if (Array.isArray(formGroupData)) {
+      return formGroupData
+    } else {
+      return formGroupData(data ?? {})
+    }
+  }
+
+  const [validationMessage, setValidationMessage] = useState("")
+  
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [isShowingValidationErrors, setIsShowingValidationErrors] =
     useState(false)
-
-  console.log(data)
 
   useEffect(() => {
     const formMessage = validators.reduce((formMessage, validator) => {
@@ -104,7 +112,6 @@ export default function Form({
     }
 
     if (areValidationErrors()) {
-      console.log("are validation errors")
       setIsShowingValidationErrors(true)
 
       showResultBanner({
@@ -130,7 +137,7 @@ export default function Form({
 
   return (
     <div>
-      {formGroupData.map((formGroupDatum, i) => {
+      {getFormGroupData().map((formGroupDatum, i) => {
         return (
           <FormGroup
             key={i}
@@ -205,8 +212,14 @@ function FormGroup({
           validators,
           decorator,
           required,
+          visible,
           disabled,
         } = item
+
+        console.log("FormGroup - ", name, visible)
+
+        const isVisible = visible ?? true
+        const isRequired = isVisible ? (required ?? true) : false
 
         return (
           <InputGroup
@@ -220,9 +233,10 @@ function FormGroup({
             input={input ?? <Field />}
             value={data[name]}
             disabled={disabled ?? false}
+            visible={isVisible}
             decorator={decorator}
             onChange={onChange}
-            required={required ?? true}
+            required={isRequired}
           />
         )
       })}

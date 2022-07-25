@@ -1,11 +1,11 @@
 import { updateDoc } from "firebase/firestore"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import IconActionPage from "../../../components/IconActionPage"
-import LoadingPage from "../../../components/LoadingPage"
-import Collection from "../../../enums/Collection"
-import Forward from "../../../assets/icons/Forward"
-import { NetworkManager } from "../../../utils/NetworkManager"
+import IconActionPage from "../../../../components/IconActionPage"
+import LoadingPage from "../../../../components/LoadingPage"
+import Collection from "../../../../enums/Collection"
+import Forward from "../../../../assets/icons/Forward"
+import { NetworkManager } from "../../../../utils/NetworkManager"
 
 export default function ConnectStripePage({ title, body }) {
   const { merchantId } = useParams()
@@ -53,6 +53,7 @@ export default function ConnectStripePage({ title, body }) {
       primaryAction={handleContinueToStripe}
       secondaryActionTitle="Leave for later"
       secondaryAction={handleSkipStripe}
+      showsButtonsAtBottom={false}
     />
   )
 }

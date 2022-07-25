@@ -6,21 +6,21 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom"
-import Analytics from "../../../assets/icons/Analytics"
-import Clock from "../../../assets/icons/Clock"
-import Settings from "../../../assets/icons/Settings"
-import Spinner from "../../../assets/Spinner"
-import { Colors } from "../../../enums/Colors"
-import IconActionPage from "../../../components/IconActionPage"
-import Collection from "../../../enums/Collection"
-import AnalyticsPage from "./analytics/AnalyticsPage"
+import Analytics from "../../../../assets/icons/Analytics"
+import Clock from "../../../../assets/icons/Clock"
+import Settings from "../../../../assets/icons/Settings"
+import Spinner from "../../../../assets/Spinner"
+import { Colors } from "../../../../enums/Colors"
+import IconActionPage from "../../../../components/IconActionPage"
+import Collection from "../../../../enums/Collection"
+import AnalyticsPage from "../analytics/AnalyticsPage"
 import CrezcoConnectRedirectPage from "./CrezcoConnectRedirectPage"
-import Events from "./Events"
+import Events from "../events/Events"
 import SettingsPage from "./SettingsPage"
 import ConnectCrezcoPage from "./ConnectCrezcoPage"
 import ConnectStripePage from "./ConnectStripePage"
 import StripeConnectRedirectPage from "./StripeConnectRedirectPage"
-import Discover from "../../../assets/icons/Discover"
+import Discover from "../../../../assets/icons/Discover"
 import UsersPage from "./UsersPage"
 import { isMobile } from "react-device-detect"
 
@@ -176,6 +176,7 @@ export default function Merchant({ user }) {
         body="We couldn't find the organisation you specified"
         primaryActionTitle="Go back"
         primaryAction={handleGoBack}
+        showsButtonsAtBottom={false}
       />
     )
   }

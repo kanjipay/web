@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
-import Tick from "../../../assets/icons/Tick"
-import { Colors } from "../../../enums/Colors"
-import IconActionPage from "../../../components/IconActionPage"
-import LoadingPage from "../../../components/LoadingPage"
-import { NetworkManager } from "../../../utils/NetworkManager"
+import Tick from "../../../../assets/icons/Tick"
+import { Colors } from "../../../../enums/Colors"
+import IconActionPage from "../../../../components/IconActionPage"
+import LoadingPage from "../../../../components/LoadingPage"
+import { NetworkManager } from "../../../../utils/NetworkManager"
 
 export default function CrezcoConnectRedirectPage() {
   const [registered, setRegistered] = useState(false)
@@ -41,6 +41,7 @@ export default function CrezcoConnectRedirectPage() {
         body="You're now all set up to receive payments by bank transfer!"
         primaryAction={handleGoToEventsPage}
         primaryActionTitle="Continue"
+        showsButtonsAtBottom={false}
       />
     )
   } else {

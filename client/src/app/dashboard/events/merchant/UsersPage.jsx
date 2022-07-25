@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import Spacer from "../../../components/Spacer"
+import Spacer from "../../../../components/Spacer"
 import { useParams } from "react-router-dom"
-import { NetworkManager } from "../../../utils/NetworkManager"
-import Collection from "../../../enums/Collection"
-import LoadingPage from "../../../components/LoadingPage"
+import { NetworkManager } from "../../../../utils/NetworkManager"
+import Collection from "../../../../enums/Collection"
+import LoadingPage from "../../../../components/LoadingPage"
 import { where } from "firebase/firestore"
 
 export default function UsersPage() {

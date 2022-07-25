@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom"
 import { BrowserRouter } from "react-router-dom"
 import MenuApp from "./customer/menu/MenuApp"
 import MerchantApp from "./dashboard/menu/MerchantApp"
-import OrganiserTerms from "./shared/terms/OrganiserTerms"
+import OrganiserTerms from "./legal/OrganiserTerms"
 import { Brand } from "./brand/Brand"
 import OneTimeLinkPage from "./shared/OneTimeLinkPage"
 import EventsApp from "./customer/events/EventsApp"
@@ -15,6 +15,7 @@ import AttributionLinkPage from "./shared/attribution/AttributionLinkPage"
 import { AnalyticsManager } from "../utils/AnalyticsManager"
 import TicketChecker from "./ticketChecker/TicketChecker"
 import { UAParser } from "ua-parser-js"
+import Legal from "./legal/Legal"
 
 export default function App() {
   console.log("language: ", navigator.language)
@@ -51,10 +52,7 @@ export default function App() {
           <Route path="/auth/*" element={<Auth />} />
           <Route path="/dashboard/*" element={<Dashboard />} />
           <Route path="/ticket-checker/*" element={<TicketChecker />} />
-          <Route
-            path="/legal/organiser-terms-and-conditions"
-            element={<OrganiserTerms />}
-          />
+          <Route path="/legal/*" element={<Legal />} />
 
           {/* Brand pages */}
           <Route path="*" element={<Brand />} />
