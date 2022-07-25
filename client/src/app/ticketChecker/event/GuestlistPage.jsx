@@ -92,7 +92,7 @@ export default function GuestlistPage({ event }) {
   if (filteredGuestlistData) {
     return (
       <div className="container">
-        <TicketCheckerNavBar title="Guestlist" backPath=".." />
+        <TicketCheckerNavBar title="Guestlist" back=".." />
 
         <div className="content">
           <Spacer y={9} />

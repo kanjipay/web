@@ -54,7 +54,7 @@ export default function MerchantAboutPage({ merchant, openHourRanges }) {
         <title>{merchant.displayName}</title>
       </Helmet>
 
-      <NavBar backPath=".." transparentDepth={50} opaqueDepth={100} />
+      <NavBar back=".." transparentDepth={50} opaqueDepth={100} />
 
       <AsyncImage
         imageRef={getMerchantStorageRef(merchant.id, merchant.photo)}

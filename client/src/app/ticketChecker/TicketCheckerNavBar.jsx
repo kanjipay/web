@@ -9,9 +9,9 @@ import { Colors } from "../../enums/Colors"
 import { auth } from "../../utils/FirebaseUtils"
 import { MenuItem } from "../dashboard/events/analytics/AnalyticsPage"
 
-export default function TicketCheckerNavBar({ title, backPath }) {
+export default function TicketCheckerNavBar({ title, back }) {
   const navigate = useNavigate()
-  const handleBackClick = () => navigate(backPath)
+  const handleBackClick = () => navigate(back)
   const handleSignOut = () => signOut(auth)
 
   return (
@@ -51,7 +51,7 @@ export default function TicketCheckerNavBar({ title, backPath }) {
           alignItems: "center",
         }}
       >
-        {backPath && (
+        {back && (
           <IconButton
             Icon={Back}
             buttonTheme={ButtonTheme.NAVBAR}

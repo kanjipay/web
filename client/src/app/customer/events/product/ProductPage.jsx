@@ -26,6 +26,7 @@ import { Helmet } from "react-helmet-async"
 import { getDoc } from "firebase/firestore"
 import { logMetaPixelEvent } from "../../../../utils/MetaPixelLogger"
 import Collection from "../../../../enums/Collection"
+import ShowMoreText from "react-show-more-text"
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length === 0) {
@@ -205,7 +206,7 @@ export default function ProductPage({ merchant, event, product, user }) {
         title={product.title}
         transparentDepth={50}
         opaqueDepth={100}
-        backPath="../.."
+        back="../.."
       />
 
       <Helmet>
@@ -226,7 +227,10 @@ export default function ProductPage({ merchant, event, product, user }) {
         <h1 className="header-l">{product.title}</h1>
 
         <Spacer y={3} />
-        <p className="text-body-faded">{product.description}</p>
+
+        <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
+          {product.description}
+        </ShowMoreText>
         {product.earliestEntryAt && (
           <div>
             <Spacer y={3} />

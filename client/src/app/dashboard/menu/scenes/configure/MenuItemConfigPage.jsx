@@ -53,7 +53,6 @@ function MenuItemConfigPage(props) {
         title={menuItem.title}
         transparentDepth={50}
         opaqueDepth={100}
-        showsBackButton={true}
       />
       <AsyncImage
         imageRef={getMenuItemStorageRef(

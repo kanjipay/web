@@ -88,7 +88,6 @@ export default function MenuPage({
         title={merchant.displayName}
         transparentDepth={50}
         opaqueDepth={100}
-        showsBackButton={false}
       />
 
       <AsyncImage

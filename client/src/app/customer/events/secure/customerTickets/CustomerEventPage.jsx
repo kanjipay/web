@@ -10,6 +10,7 @@ import LoadingPage from "../../../../../components/LoadingPage"
 import Spacer from "../../../../../components/Spacer"
 import { AnalyticsManager } from "../../../../../utils/AnalyticsManager"
 import { getEventStorageRef } from "../../../../../utils/helpers/storage"
+import ShowMoreText from "react-show-more-text"
 import {
   eventTimeString,
   generateGoogleMapsLink,
@@ -48,7 +49,7 @@ export default function CustomerEventPage({ events }) {
           title={event.title}
           transparentDepth={50}
           opaqueDepth={100}
-          backPath=".."
+          back=".."
         />
 
         <Helmet>
@@ -104,7 +105,9 @@ export default function CustomerEventPage({ events }) {
             </p>
           </div>
           <Spacer y={4} />
-          <p className="text-body-faded">{event.description}</p>
+          <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
+            {event.description}
+          </ShowMoreText>
 
           <Spacer y={4} />
 

@@ -102,7 +102,7 @@ export default function EventPage({ merchant, event, products, artists }) {
         title={event.title}
         transparentDepth={50}
         opaqueDepth={100}
-        backPath="../.."
+        back="../.."
       />
 
       <AsyncImage
@@ -146,7 +146,7 @@ export default function EventPage({ merchant, event, products, artists }) {
 
         <EventDetails event={event} merchant={merchant} artists={artists} />
         <Spacer y={4} />
-        <ShowMoreText lines={3} className="text-body-faded">
+        <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
           {event.description}
         </ShowMoreText>
 

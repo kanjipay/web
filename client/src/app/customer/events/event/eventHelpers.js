@@ -6,14 +6,14 @@ export function eventTimeString(event) {
   const endsAt = dateFromTimestamp(event.endsAt)
 
   if (isSameDay(startsAt, endsAt)) {
-    return `${format(startsAt, "do MMM")} ${format(
+    return `${format(startsAt, "EEE do MMM")} ${format(
       startsAt,
       "H:mm"
     )} - ${format(endsAt, "H:mm")}`
   } else {
-    return `${format(startsAt, "do MMM H:mm")} - ${format(
+    return `${format(startsAt, "EEE do MMM H:mm")} - ${format(
       endsAt,
-      "do MMM H:mm"
+      "EEE do MMM H:mm"
     )}`
   }
 }

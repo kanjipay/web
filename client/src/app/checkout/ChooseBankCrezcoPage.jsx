@@ -204,7 +204,7 @@ export default function ChooseBankCrezcoPage({ order }) {
         </Helmet>
         <NavBar
           title="Confirm your bank"
-          backAction={handleChooseAnotherBank}
+          back={handleChooseAnotherBank}
         />
         <Spacer y={12} />
 
@@ -353,7 +353,7 @@ export default function ChooseBankCrezcoPage({ order }) {
         <Helmet>
           <title>Checkout | Mercado</title>
         </Helmet>
-        <NavBar title="Checkout" backAction={handleClickBack} />
+        <NavBar title="Checkout" back={handleClickBack} />
 
         <div className="content">
           <Spacer y={9} />

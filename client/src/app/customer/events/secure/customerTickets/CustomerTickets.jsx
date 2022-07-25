@@ -11,7 +11,6 @@ export default function CustomerTickets() {
   useEffect(() => {
     NetworkManager.get("/tickets").then((res) => {
       const { events } = res.data
-      console.log(events)
       setEvents(events)
     })
   }, [])

@@ -105,7 +105,7 @@ export default function HomePage() {
       setEvents,
       where("isPublished", "==", true),
       where("startsAt", ">", new Date()),
-      orderBy("startsAt", "desc"),
+      orderBy("startsAt", "asc"),
       limit(3)
     )
   }, [])

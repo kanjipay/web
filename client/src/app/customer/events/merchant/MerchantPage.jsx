@@ -8,6 +8,7 @@ import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
 import EventListing from "../event/EventListing"
 import EventsAppNavBar from "../secure/EventsAppNavBar"
 import { Helmet } from "react-helmet-async"
+import ShowMoreText from "react-show-more-text"
 
 export default function MerchantPage({ merchant }) {
   const merchantId = merchant.id
@@ -63,7 +64,9 @@ export default function MerchantPage({ merchant }) {
 
         <Spacer y={4} />
 
-        <p className="text-body-faded">{merchant.description}</p>
+        <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
+          {merchant.description}
+        </ShowMoreText>
 
         <Spacer y={4} />
 
