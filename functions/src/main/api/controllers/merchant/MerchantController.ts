@@ -183,11 +183,14 @@ export class MerchantController extends BaseController {
       const update = { "stripe.status": stripeStatus }
 
       if (stripeStatus === StripeStatus.CHARGES_ENABLED) {
-        await stripe.applePayDomains.create({
-          domain_name: process.env.CLIENT_URL.replace("https://", ""),
-        }, {
-          stripeAccount: stripeAccountId
-        })
+        await stripe.applePayDomains.create(
+          {
+            domain_name: process.env.CLIENT_URL.replace("https://", ""),
+          },
+          {
+            stripeAccount: stripeAccountId,
+          }
+        )
       }
 
       logger.log("updating merchant", { update })

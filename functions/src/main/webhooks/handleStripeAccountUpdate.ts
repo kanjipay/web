@@ -3,7 +3,10 @@ import { StripeWebhookName, verifyStripe } from "./utils/stripeUtils"
 
 export const handleStripeAccountUpdate = async (req, res, next) => {
   try {
-    const { isVerified, event } = verifyStripe(req, StripeWebhookName.ACCOUNT_UPDATE)
+    const { isVerified, event } = verifyStripe(
+      req,
+      StripeWebhookName.ACCOUNT_UPDATE
+    )
 
     if (!isVerified) {
       return res.sendStatus(400)

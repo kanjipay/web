@@ -15,10 +15,21 @@ export async function processSuccessfulTicketsOrder(
   product,
   orderId: string,
   userId: string,
-  quantity: number,
+  quantity: number
 ) {
-  const { id: merchantId, currency, customerFee, displayName: merchantName } = merchant
-  const { id: eventId, title: eventTitle, startsAt: eventStartsAt, endsAt: eventEndsAt, address } = event
+  const {
+    id: merchantId,
+    currency,
+    customerFee,
+    displayName: merchantName,
+  } = merchant
+  const {
+    id: eventId,
+    title: eventTitle,
+    startsAt: eventStartsAt,
+    endsAt: eventEndsAt,
+    address,
+  } = event
   const { id: productId, title: productTitle, price: productPrice } = product
   const logger = new LoggingController("processSuccessfulTicketsOrder")
 

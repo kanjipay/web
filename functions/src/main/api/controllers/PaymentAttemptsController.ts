@@ -99,7 +99,10 @@ export class PaymentAttemptsController extends BaseController {
           const totalWithoutCustomerFee = Math.round(total / (1 + customerFee))
           mercadoFeeCents = Math.round(totalWithoutCustomerFee * mercadoFee)
         } else {
-          logger.warn("Customer fee smaller than mercado fee and mercado fee exists", { customerFee, mercadoFee })
+          logger.warn(
+            "Customer fee smaller than mercado fee and mercado fee exists",
+            { customerFee, mercadoFee }
+          )
         }
       }
 

@@ -52,8 +52,8 @@ export class MerchantsController extends BaseController {
         .set(merchantData)
 
       const mercadoAdmins = JSON.parse(process.env.MERCADO_ADMINS) // always add Mercado devs to new organisations
-      const organisationMemberships = [...mercadoAdmins,userId] 
-      logger.log('adding memberships: ', organisationMemberships)
+      const organisationMemberships = [...mercadoAdmins, userId]
+      logger.log("adding memberships: ", organisationMemberships)
       await Promise.all([
         createMerchant,
         organisationMemberships.map((memberId) => {
@@ -63,7 +63,7 @@ export class MerchantsController extends BaseController {
             displayName,
             OrganisationRole.ADMIN
           )
-        })
+        }),
       ])
 
       logger.log(`Successfully created merchant with id ${merchantId}`)

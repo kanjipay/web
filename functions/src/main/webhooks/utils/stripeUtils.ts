@@ -3,7 +3,7 @@ import stripe from "../../../shared/utils/stripeClient"
 
 export enum StripeWebhookName {
   PAYMENT_INTENT_UPDATE = "PaymentIntentUpdate",
-  ACCOUNT_UPDATE = "AccountUpdate"
+  ACCOUNT_UPDATE = "AccountUpdate",
 }
 
 export function verifyStripe(req, name: StripeWebhookName) {
@@ -25,6 +25,6 @@ export function verifyStripe(req, name: StripeWebhookName) {
   }
 
   logger.log("Stripe webhook verification succeeded", { event })
-  
+
   return { event, isVerified: true }
 }

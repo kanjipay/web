@@ -16,7 +16,10 @@ export const handleStripeWebhook = async (req, res, next) => {
     const logger = new LoggingController("Handle Stripe webhook")
     logger.log("Handling stripe payment webhook")
 
-    const { isVerified, event } = verifyStripe(req, StripeWebhookName.PAYMENT_INTENT_UPDATE)
+    const { isVerified, event } = verifyStripe(
+      req,
+      StripeWebhookName.PAYMENT_INTENT_UPDATE
+    )
 
     if (!isVerified) {
       return res.sendStatus(400)

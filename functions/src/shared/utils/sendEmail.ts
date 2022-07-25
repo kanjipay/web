@@ -114,7 +114,7 @@ export async function sendTicketReceipt(
   boughtAt: Date,
   currency: string,
   ticketIds: string[],
-  customerFee: number,
+  customerFee: number
 ) {
   logger.log("Sending ticket receipt", {
     toEmail,
