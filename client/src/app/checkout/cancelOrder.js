@@ -19,7 +19,7 @@ export async function cancelOrder(order, navigate) {
 
   switch (type) {
     case OrderType.TICKETS:
-      navigate(`/events/${merchantId}/${order.eventId}`)
+      navigate(`/events/${merchantId}/${order.eventId}/${order.orderItems[0].productId}`)
       break
     case OrderType.MENU:
       navigate(`/menu/${merchantId}`)

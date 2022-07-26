@@ -130,7 +130,7 @@ export default function AuthPage() {
 
     return (
       <div className="container">
-        <NavBar title="Sign in" backPath={backPath} />
+        <NavBar title="Sign in" back={backPath} />
 
         <div className="content">
           <Spacer y={9} />

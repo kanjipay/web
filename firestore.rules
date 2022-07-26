@@ -89,6 +89,12 @@ service cloud.firestore {
       )
     }
 
+    match /EventRecurrence/{resourceId} {
+      allow read, delete: if isAdminForMerchant(existingData().merchantId)
+      allow create: if isAdminForMerchant(incomingData().merchantId)
+      allow update: if isAdminForMerchant(existingData().merchantId) && !hasChangedKeys(["merchantId", "eventId"])
+    }
+
     match /Artist/{resourceId} {
       allow read;
     }

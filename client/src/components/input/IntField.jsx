@@ -7,6 +7,7 @@ export function Field({
   maxChars = 140,
   disregardInCharCountRegex = null,
   onSubmit,
+  style,
   ...props
 }) {
   const validateKey = (event) => {
@@ -35,8 +36,10 @@ export function Field({
     backgroundColor: Colors.OFF_WHITE_LIGHT,
     color: props.disabled ? Colors.GRAY : Colors.BLACK,
     boxSizing: "border-box",
-    padding: 12,
+    height: 48,
+    padding: "0 12px",
     width: "100%",
+    ...style
   }
 
   return (

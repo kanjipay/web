@@ -10,7 +10,6 @@ function MerchantOrderList({ orderList, menuItems }) {
         title={`Orders`}
         transparentDepth={0}
         opaqueDepth={0}
-        showsBackButton={false}
       />
       <Spacer y={10} />
       <div className="content">

@@ -1,23 +1,23 @@
 import { deleteDoc, updateDoc } from "firebase/firestore"
 import { useNavigate, useParams } from "react-router-dom"
-import Breadcrumb from "../../../components/Breadcrumb"
-import DatePicker from "../../../components/DatePicker"
-import Form from "../../../components/Form"
-import { TextArea } from "../../../components/Input"
+import Breadcrumb from "../../../../components/Breadcrumb"
+import DatePicker from "../../../../components/DatePicker"
+import Form from "../../../../components/Form"
+import { TextArea } from "../../../../components/Input"
 import {
   FieldDecorator,
   FloatField,
   IntField,
-} from "../../../components/input/IntField"
-import Spacer from "../../../components/Spacer"
-import Collection from "../../../enums/Collection"
-import { dateFromTimestamp } from "../../../utils/helpers/time"
+} from "../../../../components/input/IntField"
+import Spacer from "../../../../components/Spacer"
+import Collection from "../../../../enums/Collection"
+import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import Popup from "reactjs-popup"
-import MainButton from "../../../components/MainButton"
-import { ButtonTheme } from "../../../components/ButtonTheme"
-import { Modal } from "../../../components/Modal"
-import { getCurrencySymbol } from "../../../utils/helpers/money"
-import CheckBox from "../../../components/CheckBox"
+import MainButton from "../../../../components/MainButton"
+import { ButtonTheme } from "../../../../components/ButtonTheme"
+import { Modal } from "../../../../components/Modal"
+import { getCurrencySymbol } from "../../../../utils/helpers/money"
+import CheckBox from "../../../../components/CheckBox"
 
 export default function ProductPage({ event, products, merchant }) {
   const { productId } = useParams()
@@ -62,12 +62,9 @@ export default function ProductPage({ event, products, merchant }) {
       <Spacer y={4} />
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          columnGap: 48,
+          maxWidth: 500
         }}
       >
-        <div>
           <h2 className="header-m">Product details</h2>
           <Spacer y={3} />
           <Form
@@ -187,7 +184,6 @@ export default function ProductPage({ event, products, merchant }) {
             </div>
           )}
           <Spacer y={6} />
-        </div>
       </div>
     </div>
   )

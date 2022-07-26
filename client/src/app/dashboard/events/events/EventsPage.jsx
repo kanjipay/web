@@ -1,28 +1,19 @@
 import { orderBy, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import Discover from "../../../assets/icons/Discover"
-import Breadcrumb from "../../../components/Breadcrumb"
-import IconActionPage from "../../../components/IconActionPage"
-import LoadingPage from "../../../components/LoadingPage"
-import MainButton from "../../../components/MainButton"
-import Spacer from "../../../components/Spacer"
-import Collection from "../../../enums/Collection"
-import { dateFromTimestamp } from "../../../utils/helpers/time"
+import Discover from "../../../../assets/icons/Discover"
+import Breadcrumb from "../../../../components/Breadcrumb"
+import IconActionPage from "../../../../components/IconActionPage"
+import LoadingPage from "../../../../components/LoadingPage"
+import MainButton from "../../../../components/MainButton"
+import Spacer from "../../../../components/Spacer"
+import Collection from "../../../../enums/Collection"
+import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import EventListing from "./EventListing"
+import EventRecurrenceListing from "./EventRecurrenceListing"
 
-export default function EventsPage() {
-  const { merchantId } = useParams()
+export default function EventsPage({ events, eventRecurrences }) {
   const navigate = useNavigate()
-  const [events, setEvents] = useState(null)
-
-  useEffect(() => {
-    return Collection.EVENT.queryOnChange(
-      setEvents,
-      where("merchantId", "==", merchantId),
-      orderBy("startsAt", "desc")
-    )
-  }, [merchantId])
 
   let contents
 
@@ -40,6 +31,7 @@ export default function EventsPage() {
         body="If you want to create a new one, you're in the right place!"
         primaryAction={handleCreateNewEvent}
         primaryActionTitle="Create new event"
+        showsButtonsAtBottom={false}
       />
     )
   } else {
@@ -61,6 +53,14 @@ export default function EventsPage() {
           boxSizing: "border-box",
         }}
       >
+        {eventRecurrences.length > 0 && <div>
+          <h3 className="header-m">Event schedulers</h3>
+          <Spacer y={3} />
+          {eventRecurrences.map(eventRecurrence => <div key={eventRecurrence.id}>
+            <EventRecurrenceListing eventRecurrence={eventRecurrence} />
+            <Spacer y={3} />
+          </div>)}
+        </div>}
         {upcomingEvents.length > 0 && (
           <div>
             <h3 className="header-m">Upcoming</h3>

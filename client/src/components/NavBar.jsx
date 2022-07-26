@@ -6,10 +6,8 @@ import { useEffect, useState } from "react"
 import Back from "../assets/icons/Back"
 
 export default function NavBar({
-  backAction,
-  backPath,
+  back,
   title,
-  titleElement,
   leftElements = [],
   rightElements = [],
   transparentDepth,
@@ -23,7 +21,13 @@ export default function NavBar({
   const [opacity, setOpacity] = useState(initialOpacity)
 
   const handleBackClick = () => {
-    backAction ? backAction() : navigate(backPath ?? -1)
+    if (!back) { return }
+
+    if (typeof back === "string") {
+      navigate(back)
+    } else {
+      back()
+    }
   }
 
   useEffect(() => {
@@ -73,7 +77,11 @@ export default function NavBar({
           borderBottom: `1px solid ${Colors.OFF_WHITE}`,
         }}
       >
-        {titleElement ?? <h1 className="header-xs">{title}</h1>}
+        {
+          typeof title === "string" ?
+            <h1 className="header-xs">{title}</h1> :
+            title
+        }
       </div>
 
       <div
@@ -88,7 +96,7 @@ export default function NavBar({
           boxSizing: "border-box",
         }}
       >
-        {(backPath || backAction) && (
+        {back && (
           <div className="NavBar__item">
             <IconButton
               Icon={Back}

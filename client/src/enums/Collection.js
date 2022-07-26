@@ -9,6 +9,7 @@ export default class Collection {
   static USER = new Collection("User")
   static PRODUCT = new Collection("Product")
   static EVENT = new Collection("Event")
+  static EVENT_RECURRENCE = new Collection("EventRecurrence")
   static MENU_ITEM = new Collection("MenuItem")
   static MENU_SECTION = new Collection("MenuSection")
   static ORDER = new Collection("Order")

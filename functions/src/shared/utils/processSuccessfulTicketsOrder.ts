@@ -7,7 +7,6 @@ import { fetchDocument } from "./fetchDocument"
 import { sendTicketReceipt, sendTicketSaleAlert } from "./sendEmail"
 import { fetchDocumentsInArray } from "./fetchDocumentsInArray"
 import { FieldPath } from "@google-cloud/firestore"
-import { dateFromTimestamp } from "./time"
 
 export async function processSuccessfulTicketsOrder(
   merchant,
@@ -17,8 +16,8 @@ export async function processSuccessfulTicketsOrder(
   userId: string,
   quantity: number,
 ) {
-  const { id: merchantId, currency, customerFee, displayName: merchantName } = merchant
-  const { id: eventId, title: eventTitle, startsAt: eventStartsAt, endsAt: eventEndsAt, address } = event
+  const { id: merchantId, currency, customerFee } = merchant
+  const { id: eventId, title: eventTitle, endsAt: eventEndsAt } = event
   const { id: productId, title: productTitle, price: productPrice } = product
   const logger = new LoggingController("processSuccessfulTicketsOrder")
 
@@ -69,24 +68,16 @@ export async function processSuccessfulTicketsOrder(
     updateProduct,
   ])
 
-  const { email, firstName, lastName } = user
+  const { firstName, lastName } = user
   const boughtAt = new Date()
 
   await sendTicketReceipt(
-    email,
-    firstName,
-    merchantName,
-    eventTitle,
-    address,
-    dateFromTimestamp(eventStartsAt),
-    dateFromTimestamp(eventEndsAt),
-    productTitle,
-    productPrice,
+    merchant,
+    event,
+    product,
+    user,
     quantity,
-    boughtAt,
-    currency,
     ticketIds,
-    customerFee
   )
 
   const customerName = firstName + " " + lastName

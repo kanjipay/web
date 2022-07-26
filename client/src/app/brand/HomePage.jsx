@@ -103,8 +103,9 @@ export default function HomePage() {
   useEffect(() => {
     return Collection.EVENT.queryOnChange(
       setEvents,
+      where("isPublished", "==", true),
       where("startsAt", ">", new Date()),
-      orderBy("startsAt", "desc"),
+      orderBy("startsAt", "asc"),
       limit(3)
     )
   }, [])

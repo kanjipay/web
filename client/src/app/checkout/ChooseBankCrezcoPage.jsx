@@ -23,6 +23,7 @@ import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import LoadingPage from "../../components/LoadingPage"
 import { PaymentType } from "../../enums/PaymentType"
+import { formatCurrency } from "../../utils/helpers/money"
 
 function AcceptedCards() {
   return (
@@ -203,7 +204,7 @@ export default function ChooseBankCrezcoPage({ order }) {
         </Helmet>
         <NavBar
           title="Confirm your bank"
-          backAction={handleChooseAnotherBank}
+          back={handleChooseAnotherBank}
         />
         <Spacer y={12} />
 
@@ -242,7 +243,7 @@ export default function ChooseBankCrezcoPage({ order }) {
             <Spacer y={3} />
             <p className="text-body">
               We're redirecting you to {bankName} using Crezco to confirm your
-              payment.
+              payment of {formatCurrency(order.total, order.currency)}.
             </p>
           </div>
         </div>
@@ -352,7 +353,7 @@ export default function ChooseBankCrezcoPage({ order }) {
         <Helmet>
           <title>Checkout | Mercado</title>
         </Helmet>
-        <NavBar title="Checkout" backAction={handleClickBack} />
+        <NavBar title="Checkout" back={handleClickBack} />
 
         <div className="content">
           <Spacer y={9} />

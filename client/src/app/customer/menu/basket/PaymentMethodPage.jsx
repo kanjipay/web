@@ -10,7 +10,7 @@ export default function PaymentMethodPage({ order }) {
       <Helmet>
         <title>Checkout</title>
       </Helmet>
-      <NavBar title="Checkout" backPath={`/menu/${order.merchantId}`} />
+      <NavBar title="Checkout" back={`/menu/${order.merchantId}`} />
 
       <div className="content">
         <Spacer y={9} />

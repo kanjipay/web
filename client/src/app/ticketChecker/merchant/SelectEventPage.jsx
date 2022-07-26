@@ -8,7 +8,7 @@ export default function SelectEventPage({ events }) {
 
   return (
     <div className="container">
-      <TicketCheckerNavBar title="Select event" backPath="../.." />
+      <TicketCheckerNavBar title="Select event" back="../.." />
       <div className="content" style={{ padding: 0 }}>
         <Spacer y={9} />
         <p className="text-body-faded" style={{ textAlign: "center" }}>

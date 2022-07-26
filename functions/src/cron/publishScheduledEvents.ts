@@ -1,3 +1,4 @@
+import { firestore } from "firebase-admin"
 import { logger } from "firebase-functions/v1"
 import Collection from "../shared/enums/Collection"
 import { db } from "../shared/utils/admin"
@@ -20,7 +21,10 @@ export const publishScheduledEvents = async (context) => {
 
     for (const eventDoc of eventsSnapshot.docs) {
       const eventRef = db().collection(Collection.EVENT).doc(eventDoc.id)
-      batch.update(eventRef, { isPublished: true })
+      batch.update(eventRef, { 
+        isPublished: true,
+        publishedAt: firestore.FieldValue.serverTimestamp()
+      })
     }
 
     await batch.commit()

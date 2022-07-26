@@ -39,7 +39,7 @@ export default function ArtistPage() {
           opaqueDepth={100}
         />
         <Helmet>
-          <title>{artist.name} | Mercado</title>
+          <title>{`${artist.name} | Mercado`}</title>
         </Helmet>
 
         <AsyncImage

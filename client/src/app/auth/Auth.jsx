@@ -6,7 +6,7 @@ import EmailLinkSentPage from "./EmailLinkSentPage"
 import ForgotPasswordPage from "./ForgotPasswordPage"
 import PasswordResetSentPage from "./PasswordResetSentPage"
 import RedirectPage from "./RedirectPage"
-import SignInWithOAuthPage, { OAuthType } from "./SignInWithGooglePage"
+import SignInWithOAuthPage, { OAuthType } from "./SignInWithOAuthPage"
 import VerificationLinkSentPage from "./VerificationLinkSentPage"
 
 export default function Auth() {

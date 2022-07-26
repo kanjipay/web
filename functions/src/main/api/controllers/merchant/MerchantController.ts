@@ -7,6 +7,7 @@ import { fetchDocument } from "../../../../shared/utils/fetchDocument"
 import LoggingController from "../../../../shared/utils/loggingClient"
 import stripe from "../../../../shared/utils/stripeClient"
 import { sendgridClient } from "../../../../shared/utils/sendgridClient"
+import { firestore } from "firebase-admin"
 
 export class MerchantController extends BaseController {
   addCrezcoUserId = async (req, res, next) => {
@@ -22,6 +23,7 @@ export class MerchantController extends BaseController {
         .update({
           crezco: {
             userId: crezcoUserId,
+            connnectedAt: firestore.FieldValue.serverTimestamp()
           },
         })
 
@@ -90,6 +92,7 @@ export class MerchantController extends BaseController {
         const merchantUpdate = {
           stripe: {
             accountId: account.id,
+            connnectedAt: firestore.FieldValue.serverTimestamp()
           },
         }
 
@@ -180,7 +183,10 @@ export class MerchantController extends BaseController {
         stripeStatus = StripeStatus.DETAILS_NOT_SUBMITTED
       }
 
-      const update = { "stripe.status": stripeStatus }
+      const update = { 
+        "stripe.status": stripeStatus, 
+        "stripe.connectedAt": firestore.FieldValue.serverTimestamp()
+      }
 
       if (stripeStatus === StripeStatus.CHARGES_ENABLED) {
         await stripe.applePayDomains.create({
