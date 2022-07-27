@@ -9,12 +9,14 @@ import Spacer from "../../components/Spacer"
 import Collection from "../../enums/Collection"
 import { auth } from "../../utils/FirebaseUtils"
 import { useOpenAuthPage } from "../auth/useOpenAuthPage"
-import Merchant from "./events/Merchant"
+import Merchant from "./events/merchant/Merchant"
 import MerchantDropdown from "./MerchantDropdown"
 import SelectOrganisationPage from "./SelectOrganisationPage"
 import CreateOrganisationPage from "./CreateOrganisationPage"
 import Popup from "reactjs-popup"
 import { MenuItem } from "./events/analytics/AnalyticsPage"
+import { isMobile } from "react-device-detect"
+import MerchantMobileMenu from "./MerchantMobileMenu"
 
 function UserNavBarItem({ user }) {
   const handleSignOut = () => {
@@ -134,11 +136,11 @@ export default function Dashboard() {
         <div
           style={{
             height: "100%",
-            width: 256,
+            width: isMobile ? "auto" : 256,
             boxSizing: "border-box",
             display: "flex",
             alignItems: "center",
-            padding: "0 24px",
+            padding: isMobile ? "0 16px" : "0 24px",
           }}
         >
           <Link
@@ -152,20 +154,30 @@ export default function Dashboard() {
         <div
           style={{
             display: "flex",
-            columnGap: 24,
+            columnGap: isMobile ? 16 : 24,
+            paddingRight: isMobile ? 16 : 0,
             alignItems: "center",
-            // padding: "0 24px",
             flexGrow: 100,
           }}
         >
-          <Routes>
-            <Route
-              path="o/:merchantId/*"
-              element={<MerchantDropdown memberships={memberships} />}
-            />
-          </Routes>
+          {
+            !isMobile && <Routes>
+              <Route
+                path="o/:merchantId/*"
+                element={<MerchantDropdown memberships={memberships} />}
+              />
+            </Routes>
+          }
+          
           <div className="flex-spacer" />
-          {user && <UserNavBarItem user={user} />}
+
+          {!isMobile && user && <UserNavBarItem user={user} />}
+
+          {
+            isMobile && <Routes>
+              <Route path="o/:merchantId/*" element={<MerchantMobileMenu />} />
+            </Routes>
+          }
         </div>
       </div>
 

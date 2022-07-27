@@ -40,7 +40,6 @@ function MerchantConfigurePage(props) {
         title={`Menu`}
         transparentDepth={0}
         opaqueDepth={0}
-        showsBackButton={false}
       />
       <Spacer y={7} />
       <div className="content">

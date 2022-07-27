@@ -75,7 +75,6 @@ function MerchantLogin() {
         title={`Sign in`}
         transparentDepth={0}
         opaqueDepth={0}
-        showsBackButton={false}
       />
       <Spacer y={8} />
 

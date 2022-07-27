@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Colors } from "../enums/Colors"
 import SmallButton from "./SmallButton"
 import { getDownloadURL } from "firebase/storage"
+import { isMobile } from "react-device-detect"
 
 export default function SimpleImagePicker({
   height = 200,
@@ -53,8 +54,9 @@ export default function SimpleImagePicker({
     <div test-id={`image-picker-${name}`}>
       <div
         style={{
-          height,
-          width: height * aspectRatio,
+          aspectRatio: "2 / 1",
+          width: isMobile ? "100%" : "auto",
+          height: isMobile ? "auto" : 200,
           backgroundColor: Colors.OFF_WHITE_LIGHT,
           cursor: "pointer",
           position: "relative",

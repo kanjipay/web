@@ -130,27 +130,27 @@ export default function AuthPage() {
 
     return (
       <div className="container">
-        <NavBar title="Sign in" backPath={backPath} />
+        <NavBar title="Sign in" back={backPath} />
 
         <div className="content">
           <Spacer y={9} />
 
-          {(shouldShowGoogleAuth() || shouldShowAppleAuth()) && !requiredEmailDomain ? (
+          {(shouldShowGoogleAuth() || shouldShowAppleAuth()) &&
+          !requiredEmailDomain ? (
             <div>
               <div>
-                {
-                  shouldShowAppleAuth() && <div>
+                {shouldShowAppleAuth() && (
+                  <div>
                     <SignInWithAppleButton onClick={handleSignInWithApple} />
                     <Spacer y={2} />
                   </div>
-                }
-                {
-                  shouldShowGoogleAuth() && <div>
+                )}
+                {shouldShowGoogleAuth() && (
+                  <div>
                     <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
                     <Spacer y={2} />
                   </div>
-                }
-                
+                )}
               </div>
 
               <Revealer title="Email me a sign in link" name="auth">
@@ -167,5 +167,3 @@ export default function AuthPage() {
     )
   }
 }
-
-

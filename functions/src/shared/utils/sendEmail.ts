@@ -101,31 +101,26 @@ export async function sendInvites(
 }
 
 export async function sendTicketReceipt(
-  toEmail: string,
-  firstName: string,
-  merchantName: string,
-  eventTitle: string,
-  eventAddress: string,
-  eventStartsAt: Date,
-  eventEndsAt: Date,
-  productTitle: string,
-  productPrice: number,
+  merchant,
+  event,
+  product,
+  user,
   quantity: number,
-  boughtAt: Date,
-  currency: string,
   ticketIds: string[],
-  customerFee: number
 ) {
   logger.log("Sending ticket receipt", {
-    toEmail,
-    firstName,
-    eventTitle,
-    productTitle,
-    productPrice,
-    quantity,
-    boughtAt,
-    ticketIds,
+    merchant,
+    event,
+    product,
+    user
   })
+
+  const { email: toEmail, firstName } = user
+  const { displayName: merchantName, currency, customerFee } = merchant
+  const { title: eventTitle, address } = event
+  const { title: productTitle, price: productPrice } = product
+  const boughtAt = new Date()
+
   const { fee, total } = addFees(productPrice, quantity, customerFee, currency)
   const tickets = ticketIds.map((ticketId, index) => {
     let ticketNumber = (index + 1).toString()
@@ -142,7 +137,7 @@ export async function sendTicketReceipt(
     }
   })
 
-  const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${eventAddress
+  const googleMapsLink = `https://www.google.com/maps/search/?api=1&query=${address
     .replace(/[^0-9a-z\s]/gi, "")
     .replace(" ", "+")}`
 
@@ -150,10 +145,9 @@ export async function sendTicketReceipt(
     firstName,
     merchantName,
     eventTitle,
-    eventAddress,
+    eventAddress: address,
     googleMapsLink,
-    eventStartsAt: format(eventStartsAt, "do MMM HH:mm"),
-    eventEndsAt: format(eventEndsAt, "do MMM HH:mm"),
+    eventLink: `${process.env.CLIENT_URL}/events/${merchant.id}/${event.id}`,
     lineItems: [
       {
         productTitle,

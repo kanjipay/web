@@ -429,6 +429,7 @@ export class OrdersController extends BaseController {
       }
 
       const { currency, customerFee } = merchant
+      const mercadoFee = merchant.mercadoFee ?? 0
 
       const total = Math.round(price * quantity * (1 + customerFee))
 
@@ -453,6 +454,7 @@ export class OrdersController extends BaseController {
         eventId,
         merchantId,
         customerFee,
+        mercadoFee,
         paymentTypes,
         orderItems: [
           {

@@ -1,4 +1,4 @@
-import { Colors } from "../../enums/Colors";
+import { Colors } from "../../enums/Colors"
 
 export function SignInWithGoogleButton({ style, ...props }) {
   return (
@@ -26,5 +26,5 @@ export function SignInWithGoogleButton({ style, ...props }) {
       <img src="/img/google.png" alt="" style={{ height: 20, width: 20 }} />
       Continue with Google
     </button>
-  );
+  )
 }

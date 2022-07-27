@@ -235,7 +235,7 @@ export default function CheckerPage({ event }) {
       case PermissionStatus.GRANTED:
         return (
           <div className="container">
-            <TicketCheckerNavBar title="Scan tickets" backPath=".." />
+            <TicketCheckerNavBar title="Scan tickets" back=".." />
             <div className="content" style={{ padding: 0 }}>
               <QrReader
                 constraints={{

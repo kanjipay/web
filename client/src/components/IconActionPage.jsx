@@ -18,6 +18,7 @@ export default function IconActionPage({
   secondaryAction,
   secondaryIsLoading = false,
   name = "",
+  showsButtonsAtBottom = null
 }) {
   const buttons = (
     <div style={{ margin: "16px" }}>
@@ -48,6 +49,14 @@ export default function IconActionPage({
     </div>
   )
 
+  let showAtBottom
+
+  if (showsButtonsAtBottom == null) {
+    showAtBottom = isMobile
+  } else {
+    showAtBottom = showsButtonsAtBottom
+  }
+
   return (
     <div className="container">
       <div className="centred-top" style={{ width: isMobile ? 311 : 400 }}>
@@ -65,10 +74,10 @@ export default function IconActionPage({
         <Spacer y={2} />
         <div className="text-body-faded">{body}</div>
 
-        {!isMobile && buttons}
+        {!showAtBottom && buttons}
       </div>
 
-      {isMobile && <div className="anchored-bottom">{buttons}</div>}
+      {showAtBottom && <div className="anchored-bottom">{buttons}</div>}
     </div>
   )
 }

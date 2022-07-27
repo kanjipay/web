@@ -102,7 +102,7 @@ export default function EventPage({ merchant, event, products, artists }) {
         title={event.title}
         transparentDepth={50}
         opaqueDepth={100}
-        backPath="../.."
+        back="../.."
       />
 
       <AsyncImage
@@ -113,7 +113,7 @@ export default function EventPage({ merchant, event, products, artists }) {
 
       <Helmet>
         <title>
-          {event.title} | {merchant.displayName} | Mercado
+          {`${event.title} | ${merchant.displayName} | Mercado`}
         </title>
       </Helmet>
 
@@ -146,43 +146,49 @@ export default function EventPage({ merchant, event, products, artists }) {
 
         <EventDetails event={event} merchant={merchant} artists={artists} />
         <Spacer y={4} />
-        <ShowMoreText lines={3} className="text-body-faded">
+        <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
           {event.description}
         </ShowMoreText>
 
         <Spacer y={4} />
 
-        {
-          hasAlreadyHappened ?
-            <p>This event ended on {format(dateFromTimestamp(event.endsAt), "do MMM")} at {format(dateFromTimestamp(event.endsAt), "H:mm")}.</p>
-            : <div>
-                <h1 className="header-m">Get tickets</h1>
+        {hasAlreadyHappened ? (
+          <p>
+            This event ended on{" "}
+            {format(dateFromTimestamp(event.endsAt), "do MMM")} at{" "}
+            {format(dateFromTimestamp(event.endsAt), "H:mm")}.
+          </p>
+        ) : (
+          <div>
+            <h1 className="header-m">Get tickets</h1>
+            <Spacer y={2} />
+            {!event.isPublished && (
+              <div>
+                <p>
+                  {event.publishScheduledAt
+                    ? `Tickets to this event will become available on ${format(
+                        dateFromTimestamp(event.endsAt),
+                        "do MMM"
+                      )} at ${format(dateFromTimestamp(event.endsAt), "H:mm")}.`
+                    : "The event organiser hasn't made tickets available yet."}
+                </p>
                 <Spacer y={2} />
-                {
-                  !event.isPublished && <div>
-                    <p>{
-                      event.publishScheduledAt ?
-                      `Tickets to this event will become available on ${format(dateFromTimestamp(event.endsAt), "do MMM")} at ${format(dateFromTimestamp(event.endsAt), "H:mm")}.` :
-                        "The event organiser hasn't made tickets available yet."
-                    }</p>
-                  <Spacer y={2} />
-                  </div>
-                }
-                {products
-                  .map((product) => {
-                    return (
-                      <div key={product.id}>
-                        <ProductListing
-                          product={product}
-                          currency={merchant.currency}
-                          isPublished={event.isPublished}
-                        />
-                        <Spacer y={1} />
-                      </div>
-                    )
-                  })}
               </div>
-        }
+            )}
+            {products.map((product) => {
+              return (
+                <div key={product.id}>
+                  <ProductListing
+                    product={product}
+                    currency={merchant.currency}
+                    isPublished={event.isPublished}
+                  />
+                  <Spacer y={1} />
+                </div>
+              )
+            })}
+          </div>
+        )}
         <Spacer y={8} />
       </div>
     </div>

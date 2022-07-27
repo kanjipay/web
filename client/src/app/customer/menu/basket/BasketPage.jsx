@@ -74,8 +74,8 @@ export default function BasketPage({ merchant }) {
       </Helmet>
 
       <NavBar
-        backPath=".."
-        titleElement={titleElement}
+        back=".."
+        title={titleElement}
         rightElements={[
           <NavBarButton
             title={isEditing ? "Done" : "Edit"}

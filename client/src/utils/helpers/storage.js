@@ -16,6 +16,10 @@ export function getEventStorageRef(merchantId, eventId, filename) {
   return ref(storage, `merchants/${merchantId}/events/${eventId}/${filename}`)
 }
 
+export function getEventRecurrenceStorageRef(merchantId, eventRecurrenceId, filename) {
+  return ref(storage, `merchants/${merchantId}/eventRecurrences/${eventRecurrenceId}/${filename}`)
+}
+
 export function getArtistStorageRef(artistId, filename) {
   return ref(storage, `artists/${artistId}/${filename}`)
 }

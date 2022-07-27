@@ -121,7 +121,7 @@ export default function ChooseBankMoneyhubPage({ order }) {
         </Helmet>
         <NavBar
           title="Confirm your bank"
-          backAction={handleChooseAnotherBank}
+          back={handleChooseAnotherBank}
         />
         <Spacer y={12} />
 
@@ -247,7 +247,7 @@ export default function ChooseBankMoneyhubPage({ order }) {
         <Helmet>
           <title>Choose your bank | Mercado</title>
         </Helmet>
-        <NavBar title="Choose your bank" backAction={handleClickBack} />
+        <NavBar title="Choose your bank" back={handleClickBack} />
 
         <div className="content">
           <Spacer y={9} />

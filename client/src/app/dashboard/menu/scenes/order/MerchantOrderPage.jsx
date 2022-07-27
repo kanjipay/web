@@ -53,7 +53,6 @@ function MerchantOrderPage({ orderList, menuItems }) {
         title={`Order # ${order.orderNumber}`}
         transparentDepth={0}
         opaqueDepth={0}
-        showsBackButton={true}
       />
       <Spacer y={8} />
 

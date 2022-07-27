@@ -63,9 +63,9 @@ export default function RedirectPageStripe() {
         break
       case PaymentAttemptStatus.FAILED:
         navigate(`/checkout/o/${orderId}/payment-failure`, {
-          state: { 
+          state: {
             retryPath: `/checkout/o/${orderId}/payment-stripe`,
-            paymentType: PaymentType.STRIPE
+            paymentType: PaymentType.STRIPE,
           },
         })
         break

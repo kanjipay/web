@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import Tick from "../../../assets/icons/Tick"
-import IconActionPage from "../../../components/IconActionPage"
-import LoadingPage from "../../../components/LoadingPage"
-import { Colors } from "../../../enums/Colors"
-import StripeStatus from "../../../enums/StripeStatus"
-import { NetworkManager } from "../../../utils/NetworkManager"
+import Tick from "../../../../assets/icons/Tick"
+import IconActionPage from "../../../../components/IconActionPage"
+import LoadingPage from "../../../../components/LoadingPage"
+import { Colors } from "../../../../enums/Colors"
+import StripeStatus from "../../../../enums/StripeStatus"
+import { NetworkManager } from "../../../../utils/NetworkManager"
 
 export default function StripeConnectRedirectPage() {
   const { merchantId } = useParams()
@@ -36,6 +36,7 @@ export default function StripeConnectRedirectPage() {
             body="You're now all set up to receive card payments!"
             primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
             primaryActionTitle="Continue"
+            showsButtonsAtBottom={false}
           />
         )
       case StripeStatus.DETAILS_SUBMITTED:
@@ -49,6 +50,7 @@ export default function StripeConnectRedirectPage() {
             body="Stripe needs to verify some of your details before you can receive card payments. This normally only takes a few days, and they'll send you an email once it's done."
             primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
             primaryActionTitle="Continue"
+            showsButtonsAtBottom={false}
           />
         )
       case StripeStatus.DETAILS_NOT_SUBMITTED:
@@ -62,6 +64,7 @@ export default function StripeConnectRedirectPage() {
             body="You haven't filled in all the details needed for your Stripe onboarding. Any details you have filled in are saved."
             primaryAction={() => navigate(`/dashboard/o/${merchantId}/events`)}
             primaryActionTitle="Continue"
+            showsButtonsAtBottom={false}
           />
         )
       default:

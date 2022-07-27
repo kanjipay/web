@@ -24,6 +24,7 @@ import Dropdown from "../../../../components/input/Dropdown"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { format, startOfWeek } from "date-fns"
 import { getCurrencySymbol } from "../../../../utils/helpers/money"
+import { isMobile } from "react-device-detect"
 
 class AnalyticsValue {
   static SALES_NUMBERS = "Sales numbers"
@@ -446,82 +447,93 @@ export default function AnalyticsPage({ merchant }) {
         ? `${getCurrencySymbol(merchant?.currency ?? "GBP")}${num / 100}`
         : num.toString()
 
+    const filtersSection = <div style={{ width: isMobile ? "100%" : 320 }}>
+      <h3 className="header-s">Value</h3>
+      <Spacer y={2} />
+      <SegmentedControl
+        values={[AnalyticsValue.REVENUE, AnalyticsValue.SALES_NUMBERS]}
+        value={analyticsValue}
+        onChange={onAnalyticsValueChange}
+      />
+      <Spacer y={4} />
+      <h3 className="header-s">Filters</h3>
+      <Spacer y={2} />
+      {filterData.length > 0 ? (
+        filterData.map((filterDatum, index) => {
+          return (
+            <div key={index}>
+              <FilterControl
+                filterDatum={filterDatum}
+                onChange={(filterDatum) =>
+                  handleFilterChange(filterDatum, index)
+                }
+                filtersListData={filtersListData}
+              />
+              <Spacer y={2} />
+            </div>
+          )
+        })
+      ) : (
+        <div>
+          <p>No filters yet</p>
+          <Spacer y={2} />
+        </div>
+      )}
+      <MainButton title="Add filter" onClick={handleAddFilter} />
+
+      <Spacer y={4} />
+      <h3 className="header-s">View by</h3>
+      <Spacer y={2} />
+      <Dropdown
+        value={grouping}
+        onChange={(event) => setGrouping(event.target.value)}
+        optionList={[
+          { value: "Event" },
+          { value: "Product" },
+          { value: "Time" },
+          { value: "Source" },
+          { value: "Campaign" },
+          { value: "Returning user" },
+          { value: "Gender" },
+          { value: "Location" },
+          { value: "Browser" },
+          { value: "Device type" },
+          { value: "Platform" },
+          { value: "Operating system" },
+        ]}
+      />
+      <Spacer y={2} />
+    </div>
+
+    const graphSection = <div className="flex-spacer" style={{ height: "60vh" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart width={150} height={40} data={groupedSalesData}>
+          <YAxis tickFormatter={formatter} />
+
+          <XAxis dataKey="name" />
+          <Tooltip formatter={formatter} />
+          <Bar dataKey={analyticsValue} fill={Colors.BLACK} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+
     return (
       <div>
         <Spacer y={5} />
         <h1 className="header-l">Analytics</h1>
         <Spacer y={3} />
-        <div style={{ display: "flex", columnGap: 48 }}>
-          <div style={{ width: 320 }}>
-            <h3 className="header-s">Value</h3>
-            <Spacer y={2} />
-            <SegmentedControl
-              values={[AnalyticsValue.REVENUE, AnalyticsValue.SALES_NUMBERS]}
-              value={analyticsValue}
-              onChange={onAnalyticsValueChange}
-            />
-            <Spacer y={4} />
-            <h3 className="header-s">Filters</h3>
-            <Spacer y={2} />
-            {filterData.length > 0 ? (
-              filterData.map((filterDatum, index) => {
-                return (
-                  <div key={index}>
-                    <FilterControl
-                      filterDatum={filterDatum}
-                      onChange={(filterDatum) =>
-                        handleFilterChange(filterDatum, index)
-                      }
-                      filtersListData={filtersListData}
-                    />
-                    <Spacer y={2} />
-                  </div>
-                )
-              })
-            ) : (
-              <div>
-                <p>No filters yet</p>
-                <Spacer y={2} />
-              </div>
-            )}
-            <MainButton title="Add filter" onClick={handleAddFilter} />
-
-            <Spacer y={4} />
-            <h3 className="header-s">View by</h3>
-            <Spacer y={2} />
-            <Dropdown
-              value={grouping}
-              onChange={(event) => setGrouping(event.target.value)}
-              optionList={[
-                { value: "Event" },
-                { value: "Product" },
-                { value: "Time" },
-                { value: "Source" },
-                { value: "Campaign" },
-                { value: "Returning user" },
-                { value: "Gender" },
-                { value: "Location" },
-                { value: "Browser" },
-                { value: "Device type" },
-                { value: "Platform" },
-                { value: "Operating system" },
-              ]}
-            />
-            <Spacer y={2} />
-          </div>
-
-          <div className="flex-spacer" style={{ height: "60vh" }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart width={150} height={40} data={groupedSalesData}>
-                <YAxis tickFormatter={formatter} />
-
-                <XAxis dataKey="name" />
-                <Tooltip formatter={formatter} />
-                <Bar dataKey={analyticsValue} fill={Colors.BLACK} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        {
+          isMobile ?
+            <div>
+              {filtersSection}
+              <Spacer y={3} />
+              {graphSection}
+            </div> :
+            <div style={{ display: "flex", columnGap: 48 }}>
+              {filtersSection}
+              {graphSection}
+            </div>
+        }
       </div>
     )
   } else {

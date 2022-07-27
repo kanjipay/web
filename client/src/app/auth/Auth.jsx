@@ -6,7 +6,7 @@ import EmailLinkSentPage from "./EmailLinkSentPage"
 import ForgotPasswordPage from "./ForgotPasswordPage"
 import PasswordResetSentPage from "./PasswordResetSentPage"
 import RedirectPage from "./RedirectPage"
-import SignInWithOAuthPage, { OAuthType } from "./SignInWithGooglePage"
+import SignInWithOAuthPage, { OAuthType } from "./SignInWithOAuthPage"
 import VerificationLinkSentPage from "./VerificationLinkSentPage"
 
 export default function Auth() {
@@ -17,8 +17,14 @@ export default function Auth() {
         <Route path="email-link" element={<EmailLinkPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="redirect" element={<RedirectPage />} />
-        <Route path="apple" element={<SignInWithOAuthPage type={OAuthType.APPLE} />} />
-        <Route path="google" element={<SignInWithOAuthPage type={OAuthType.GOOGLE} />} />
+        <Route
+          path="apple"
+          element={<SignInWithOAuthPage type={OAuthType.APPLE} />}
+        />
+        <Route
+          path="google"
+          element={<SignInWithOAuthPage type={OAuthType.GOOGLE} />}
+        />
 
         <Route path="email-link-sent" element={<EmailLinkSentPage />} />
         <Route

@@ -58,7 +58,6 @@ function MerchantForgotPasswordPage() {
         title={`Forgot password`}
         transparentDepth={0}
         opaqueDepth={0}
-        showsBackButton={true}
       />
       <Spacer y={8} />
       <div className="content">

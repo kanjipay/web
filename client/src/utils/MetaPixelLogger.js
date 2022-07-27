@@ -19,7 +19,7 @@ function prepareAdvancedMatchingData(user) {
     return {
       em: user.email,
       fn: user.firstName,
-      ln: user.lastName, 
+      ln: user.lastName,
       ge: alignFacebookGender(user.gender),
       external_id: user.email,
     }

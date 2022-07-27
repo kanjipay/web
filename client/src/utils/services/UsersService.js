@@ -1,5 +1,5 @@
 import { updateProfile } from "firebase/auth"
-import { getDoc, setDoc, updateDoc } from "firebase/firestore"
+import { getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 import Collection from "../../enums/Collection"
 import { auth } from "../FirebaseUtils"
 
@@ -45,6 +45,7 @@ export async function processUserCredential(credential) {
     await setDoc(userRef, {
       email,
       marketingConsentStatus: MarketingConsent.PENDING,
+      createdAt: serverTimestamp()
     })
 
     return await updateDocWithDisplayName()

@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="container">
-      <NavBar title="Forgot password" backPath="/auth" />
+      <NavBar title="Forgot password" back="/auth" />
       <div className="content">
         <Spacer y={9} />
 

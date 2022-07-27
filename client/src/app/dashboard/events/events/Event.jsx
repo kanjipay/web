@@ -1,16 +1,17 @@
 import { orderBy, where } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { Route, Routes, useParams } from "react-router-dom"
-import LoadingPage from "../../../components/LoadingPage"
-import Collection from "../../../enums/Collection"
+import LoadingPage from "../../../../components/LoadingPage"
+import Collection from "../../../../enums/Collection"
 import CreateAttributionLinkPage from "./CreateAttributionLinkPage"
-import CreateProductPage from "./CreateProductPage"
+import CreateProductPage from "../products/CreateProductPage"
 import EventPage from "./EventPage"
-import ProductPage from "./ProductPage"
+import ProductPage from "../products/ProductPage"
 
-export default function Event({ events, merchant }) {
+export default function Event({ events, merchant, eventRecurrences }) {
   const { eventId } = useParams()
   const event = events.find((e) => e.id === eventId)
+  const eventRecurrence = eventRecurrences.find(er => er.eventId === eventId)
   const [products, setProducts] = useState(null)
 
   useEffect(() => {
@@ -26,13 +27,19 @@ export default function Event({ events, merchant }) {
       <Route
         path="/"
         element={
-          <EventPage event={event} products={products} merchant={merchant} />
+          <EventPage 
+            event={event} 
+            products={products}
+            eventRecurrence={eventRecurrence}
+            merchant={merchant}
+          />
         }
       />
       <Route
         path="/create-attribution-link"
-        element={<CreateAttributionLinkPage />}
+        element={<CreateAttributionLinkPage event={event} />}
       />
+
       <Route
         path="/p/create"
         element={

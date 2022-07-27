@@ -23,14 +23,17 @@ import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import LoadingPage from "../../components/LoadingPage"
 import { PaymentType } from "../../enums/PaymentType"
+import { formatCurrency } from "../../utils/helpers/money"
 
 function AcceptedCards() {
-  return <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
-    <p className="text-body-faded">We accept: </p>
-    <img src="/img/visa.png" alt="Visa" style={{ height: 40 }} />
-    <img src="/img/mastercard.png" alt="Mastercard" style={{ height: 32 }} />
-    <img src="/img/amex.png" alt="American Express" style={{ height: 32 }} />
-  </div>
+  return (
+    <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
+      <p className="text-body-faded">We accept: </p>
+      <img src="/img/visa.png" alt="Visa" style={{ height: 40 }} />
+      <img src="/img/mastercard.png" alt="Mastercard" style={{ height: 32 }} />
+      <img src="/img/amex.png" alt="American Express" style={{ height: 32 }} />
+    </div>
+  )
 }
 
 const cachedBankFileNamePrefix = ["PROD", "STAGING"].includes(
@@ -201,7 +204,7 @@ export default function ChooseBankCrezcoPage({ order }) {
         </Helmet>
         <NavBar
           title="Confirm your bank"
-          backAction={handleChooseAnotherBank}
+          back={handleChooseAnotherBank}
         />
         <Spacer y={12} />
 
@@ -215,7 +218,14 @@ export default function ChooseBankCrezcoPage({ order }) {
             }}
           >
             <div style={{ display: "inline-block" }}>
-              <div style={{ display: "flex", alignItems: "center", columnGap: 16, margin: "auto" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  columnGap: 16,
+                  margin: "auto",
+                }}
+              >
                 <img
                   alt={bankName}
                   src={logoUrl}
@@ -229,11 +239,11 @@ export default function ChooseBankCrezcoPage({ order }) {
                 />
               </div>
             </div>
-            
+
             <Spacer y={3} />
             <p className="text-body">
               We're redirecting you to {bankName} using Crezco to confirm your
-              payment.
+              payment of {formatCurrency(order.total, order.currency)}.
             </p>
           </div>
         </div>
@@ -343,11 +353,11 @@ export default function ChooseBankCrezcoPage({ order }) {
         <Helmet>
           <title>Checkout | Mercado</title>
         </Helmet>
-        <NavBar title="Checkout" backAction={handleClickBack} />
+        <NavBar title="Checkout" back={handleClickBack} />
 
         <div className="content">
           <Spacer y={9} />
-          
+
           <div style={{ display: "flex", alignItems: "center" }}>
             <h2 className="header-m">Pay by bank transfer</h2>
             <div className="flex-spacer"></div>
@@ -355,7 +365,8 @@ export default function ChooseBankCrezcoPage({ order }) {
           </div>
           <Spacer y={2} />
           <p className="text-body-faded">
-            We'll redirect you to our payments partner Crezco to confirm the payment.
+            We'll redirect you to our payments partner Crezco to confirm the
+            payment.
           </p>
           <Spacer y={3} />
           <div style={{ display: "flex", columnGap: 16 }}>
@@ -423,8 +434,8 @@ export default function ChooseBankCrezcoPage({ order }) {
                     </div>
                   )
               )}
-              {
-                canPayWithCard && <div>
+              {canPayWithCard && (
+                <div>
                   <OrDivider />
                   <Spacer y={3} />
                   <MainButton
@@ -434,8 +445,7 @@ export default function ChooseBankCrezcoPage({ order }) {
                   <Spacer y={1} />
                   <AcceptedCards />
                 </div>
-              }
-              
+              )}
             </div>
           ) : (
             <div style={{ textAlign: "center" }}>
@@ -447,26 +457,27 @@ export default function ChooseBankCrezcoPage({ order }) {
               <Spacer y={2} />
               <h3 className="header-s">We couldn't find that bank</h3>
               <Spacer y={1} />
-              
-              {
-                canPayWithCard ? <div>
+
+              {canPayWithCard ? (
+                <div>
                   <p className="text-body-faded">
                     Try searching for a different one, or pay with card instead.
                   </p>
                   <Spacer y={6} />
                   <div style={{ maxWidth: 400, margin: "auto" }}>
-                      <MainButton
-                        title="Pay with card"
-                        onClick={handlePayWithCard}
-                      />
-                      <Spacer y={1} />
-                      <AcceptedCards />
+                    <MainButton
+                      title="Pay with card"
+                      onClick={handlePayWithCard}
+                    />
+                    <Spacer y={1} />
+                    <AcceptedCards />
                   </div>
-                </div> :
+                </div>
+              ) : (
                 <p className="text-body-faded">
                   Try searching for a different one.
                 </p>
-              }
+              )}
             </div>
           )}
 

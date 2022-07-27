@@ -8,7 +8,7 @@ import IconButton from "./IconButton"
 import Spacer from "./Spacer"
 
 const defaultDateFormatter = (date) =>
-  date ? format(date, "EEEE") : "Invalid date"
+  date ? format(date, "EEE") : "Invalid date"
 
 export default function DatePicker({
   name,
@@ -83,7 +83,10 @@ export default function DatePicker({
     return ("0" + string).slice(-2)
   }
 
-  const [values, setValues] = useState(dateToValues(value ? value : new Date()))
+  const initialDate = new Date()
+  initialDate.setMinutes(0)
+
+  const [values, setValues] = useState(dateToValues(value ? value : initialDate))
 
   const separator = <p style={{ color: "#aaa" }}>/</p>
 
@@ -221,8 +224,6 @@ export default function DatePicker({
           />
         </div>
       )}
-
-      {showsDate && showsTime && <p style={{ color: "#aaa" }}>at</p>}
 
       {showsTime && (
         <div

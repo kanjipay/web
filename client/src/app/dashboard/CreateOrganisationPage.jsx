@@ -18,6 +18,7 @@ import { useIntl } from "react-intl"
 import { getCurrencyCode } from "../../utils/helpers/money"
 import { uploadImage } from "../../utils/helpers/uploadImage"
 import SimpleImagePicker from "../../components/SimpleImagePicker"
+import { isMobile } from "react-device-detect"
 
 export default function CreateOrganisationPage({ authUser }) {
   const navigate = useNavigate()
@@ -46,13 +47,13 @@ export default function CreateOrganisationPage({ authUser }) {
 
     await uploadImage(ref, photoFile)
 
-    navigate(`/dashboard/o/${merchantId}`)
+    navigate(`/dashboard/o/${merchantId}/events/create`)
 
     return { resultType: ResultType.SUCCESS }
   }
 
   return (
-    <div style={{ position: "relative", height: "100%" }}>
+    <div style={{ position: "relative", height: "100%", backgroundColor: Colors.RED, width: "100%" }}>
       <img
         alt=""
         src="/img/club_floor.jpg"
@@ -66,8 +67,9 @@ export default function CreateOrganisationPage({ authUser }) {
       />
       <div
         style={{
-          width: 600,
-          padding: 24,
+          width: isMobile ? "100%" : 600,
+          padding: isMobile ? 16 : 24,
+          boxSizing: "border-box",
           position: "absolute",
           left: "50%",
           top: 100,
@@ -154,6 +156,17 @@ export default function CreateOrganisationPage({ authUser }) {
           onSubmit={handleCreateMerchant}
           submitTitle="Create organisation"
         />
+        <Spacer y={3} />
+        <div>
+          By creating a Mercado organiser account you agree to our{" "}
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="/legal/organiser-terms-and-conditions"
+          >
+            Terms and Conditions
+          </a>
+        </div>
         <Spacer y={6} />
       </div>
     </div>

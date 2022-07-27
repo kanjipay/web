@@ -1,4 +1,3 @@
-import { getDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { Route, Routes, useParams } from "react-router-dom"
 import LoadingPage from "../../../../components/LoadingPage"
@@ -11,7 +10,7 @@ export default function Merchant({ user }) {
   const [merchant, setMerchant] = useState(null)
 
   useEffect(() => {
-    Collection.MERCHANT.onChange(merchantId, setMerchant)
+    return Collection.MERCHANT.onChange(merchantId, setMerchant)
   }, [merchantId])
 
   if (merchant) {
