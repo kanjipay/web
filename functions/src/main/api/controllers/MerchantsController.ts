@@ -70,7 +70,7 @@ export class MerchantsController extends BaseController {
       const emailParams = {
         to: "team@mercadopay.co",
         from: "team@mercadopay.co",
-        text: `Merchant registered with Mercado: \n name - ${displayName} \n id - ${merchantId} env ${process.env.ENVIRONMENT}`,
+        text: `Merchant registered with Mercado: \n name - ${displayName} \n id - ${merchantId} \n env ${process.env.ENVIRONMENT}`,
         subject: "New Merchant",
       }
       logger.log("email params", emailParams)
