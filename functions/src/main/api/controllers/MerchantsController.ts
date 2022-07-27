@@ -52,7 +52,7 @@ export class MerchantsController extends BaseController {
         .set(merchantData)
 
       const mercadoAdmins = JSON.parse(process.env.MERCADO_ADMINS) // always add Mercado devs to new organisations
-      const organisationMemberships = [...mercadoAdmins, userId]
+      const organisationMemberships = [...new Set([...mercadoAdmins, userId])]
       logger.log("adding memberships: ", organisationMemberships)
       await Promise.all([
         createMerchant,
@@ -70,7 +70,7 @@ export class MerchantsController extends BaseController {
       const emailParams = {
         to: "team@mercadopay.co",
         from: "team@mercadopay.co",
-        text: `Merchant registered with Mercado: \n name - ${displayName} \n id - ${merchantId}`,
+        text: `Merchant registered with Mercado: \n name - ${displayName} \n id - ${merchantId} env ${process.env.ENVIRONMENT}`,
         subject: "New Merchant",
       }
       logger.log("email params", emailParams)
