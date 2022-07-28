@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions"
 import mainApp from "./main/mainApp"
 import { cronFunction } from "./cron/cron"
+import {notif}
 import { backupFirestore } from "./cron/backupFirestore"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
@@ -36,3 +37,5 @@ export const backup = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
   .pubsub.schedule("every 24 hours")
   .onRun(backupFirestore)
+
+export const eventCreate = euFunctions.runWith({ secrets: ["SERVICE_ACCOUNT"] }).firestore.document('Event').onWrite((  change, context) => notifyIfPublished(change, context) )
