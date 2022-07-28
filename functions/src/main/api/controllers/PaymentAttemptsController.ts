@@ -14,12 +14,10 @@ import { firestore } from "firebase-admin"
 import { db } from "../../../shared/utils/admin"
 import {
   ErrorHandler,
-  HttpError,
   HttpStatusCode,
 } from "../../../shared/utils/errors"
 import stripe from "../../../shared/utils/stripeClient"
 import { processPaymentUpdate } from "../../webhooks/processPaymentUpdate"
-import { StripeStatus } from "../../../shared/enums/StripeStatus"
 import Stripe from "stripe"
 
 const crezcoPaymentStatuses = {
