@@ -3,6 +3,7 @@ import stripe from "../../../shared/utils/stripeClient"
 
 export enum StripeWebhookName {
   PAYMENT_INTENT_UPDATE = "PaymentIntentUpdate",
+  PAYMENT_INTENT_UPDATE_DIRECT = "PaymentIntentUpdateDirect",
   ACCOUNT_UPDATE = "AccountUpdate"
 }
 
