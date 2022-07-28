@@ -51,7 +51,7 @@ function PublishInfoBanners({ merchant, hasProducts }) {
     banners.push(
       <ResultBanner
         resultType={ResultType.INFO}
-        message="You'll need to connect a payment method before you can publish this event."
+        message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
         action={() => {
           navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
         }}
@@ -202,7 +202,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   const publishButtonRef = useRef(null)
 
   function canPublishEvent() {
-    return !!merchant.crezco?.userId && products.length > 0
+    return products.length > 0
   }
 
   const handleUpdateEvent = async (data) => {

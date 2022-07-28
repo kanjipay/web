@@ -1,6 +1,5 @@
 import { updateDoc } from "firebase/firestore"
 import { deleteObject } from "firebase/storage"
-import { useState } from "react"
 import { useParams } from "react-router-dom"
 import Form from "../../../../components/Form"
 import { TextArea } from "../../../../components/Input"
@@ -13,7 +12,6 @@ import TabControl from "../../../../components/TabControl"
 import Collection from "../../../../enums/Collection"
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
 import { uploadImage } from "../../../../utils/helpers/uploadImage"
-import { NetworkManager } from "../../../../utils/NetworkManager"
 import { redirectToCrezco } from "./redirectToCrezco"
 
 export default function SettingsPage({ merchant }) {
