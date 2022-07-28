@@ -14,8 +14,9 @@ export async function processSuccessfulTicketsOrder(
   product,
   orderId: string,
   userId: string,
-  quantity: number,
+  quantity: number
 ) {
+
   const { id: merchantId, currency, customerFee } = merchant
   const { id: eventId, title: eventTitle, endsAt: eventEndsAt } = event
   const { id: productId, title: productTitle, price: productPrice } = product

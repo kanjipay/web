@@ -492,7 +492,7 @@ export class OrdersController extends BaseController {
             product,
             orderId,
             userId,
-            quantity,
+            quantity
           )
         )
       }

@@ -67,14 +67,8 @@ export async function processPaymentUpdate(
 
     logger.log("Retrieved order", { order })
 
-    const {
-      type,
-      orderItems,
-      wereTicketsCreated,
-      merchantId,
-      userId,
-      status,
-    } = order
+    const { type, orderItems, wereTicketsCreated, merchantId, userId, status } =
+      order
 
     // Only update the order if it's still pending
     if ([OrderStatus.PENDING, OrderStatus.ABANDONED].includes(status)) {
@@ -107,11 +101,11 @@ export async function processPaymentUpdate(
         const [
           { merchant, merchantError },
           { event, eventError },
-          { product, productError }
+          { product, productError },
         ] = await Promise.all([
           fetchDocument(Collection.MERCHANT, merchantId),
           fetchDocument(Collection.EVENT, eventId),
-          fetchDocument(Collection.PRODUCT, productId)
+          fetchDocument(Collection.PRODUCT, productId),
         ])
 
         for (const error of [merchantError, eventError, productError]) {
@@ -127,7 +121,7 @@ export async function processPaymentUpdate(
             product,
             orderId,
             userId,
-            quantity,
+            quantity
           )
         )
       }

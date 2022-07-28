@@ -45,38 +45,39 @@ export class MerchantEventAttendeesController extends BaseController {
       )
       logger.log("ticket users", { orderUsers })
       logger.log("products", { orderProducts })
-      const ticketDetails = orderDocs.docs.map((doc) => {
-        const orderId = doc.id
-        const { createdAt, merchantId, orderItems, userId } = doc.data()
-        const {
-          eventEndsAt,
-          productId,
-          quantity,
-          title: productTitle,
-        } = orderItems[0]
-        const { earliestEntryAt, lastestEntryAt, description } =
-          orderProducts.find((product) => product.id === productId)
-        const { email, firstName, lastName } = orderUsers.find(
-          (user) => user.id === userId
-        )
+      const ticketDetails = orderDocs.docs
+        .map((doc) => {
+          const orderId = doc.id
+          const { createdAt, merchantId, orderItems, userId } = doc.data()
+          const {
+            eventEndsAt,
+            productId,
+            quantity,
+            title: productTitle,
+          } = orderItems[0]
+          const { earliestEntryAt, lastestEntryAt, description } =
+            orderProducts.find((product) => product.id === productId)
+          const { email, firstName, lastName } = orderUsers.find(
+            (user) => user.id === userId
+          )
 
-        return {
-          createdAt,
-          eventEndsAt,
-          productTitle,
-          merchantId,
-          orderId,
-          productId,
-          userId,
-          email,
-          firstName,
-          lastName,
-          earliestEntryAt,
-          lastestEntryAt,
-          description,
-          quantity,
-        }
-      })
+          return {
+            createdAt,
+            eventEndsAt,
+            productTitle,
+            merchantId,
+            orderId,
+            productId,
+            userId,
+            email,
+            firstName,
+            lastName,
+            earliestEntryAt,
+            lastestEntryAt,
+            description,
+            quantity,
+          }
+        })
         .sort((d1, d2) => d1.lastName?.localeCompare(d2.lastName ?? "0") ?? -1)
       logger.log("ticket details", { ticketDetails })
       return res.status(200).json(ticketDetails)
