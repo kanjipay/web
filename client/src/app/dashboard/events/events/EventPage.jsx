@@ -31,7 +31,7 @@ function PublishInfoBanners({ merchant, hasProducts }) {
 
   let publishBannerProps = {}
 
-  if (merchant.crezco?.userId && hasProducts) {
+  if (hasProducts) {
     const eventRef = Collection.EVENT.docRef(eventId)
     publishBannerProps = {
       action: async () => await updateDoc(eventRef, { isPublished: true }),
@@ -311,10 +311,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
               name: "publishScheduledAt",
               label: "Scheduled publish date",
               explanation:
-                "Optionally set the time you want to publish this event to customers." +
-                (!merchant.crezco
-                  ? " You can only do this after you connect a payment method."
-                  : ""),
+                "Optionally set the time you want to publish this event to customers.",
               input: <DatePicker />,
               required: false,
               disabled: !!event.isPublished || !canPublishEvent(),

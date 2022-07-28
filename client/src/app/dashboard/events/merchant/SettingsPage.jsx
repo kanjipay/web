@@ -1,20 +1,21 @@
 import { updateDoc } from "firebase/firestore"
 import { deleteObject } from "firebase/storage"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Form from "../../../../components/Form"
 import { TextArea } from "../../../../components/Input"
 import Dropdown from "../../../../components/input/Dropdown"
 import { Field, IntField } from "../../../../components/input/IntField"
-import MainButton from "../../../../components/MainButton"
 import SimpleImagePicker from "../../../../components/SimpleImagePicker"
 import Spacer from "../../../../components/Spacer"
 import Collection from "../../../../enums/Collection"
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
 import { uploadImage } from "../../../../utils/helpers/uploadImage"
-import { redirectToCrezco } from "./redirectToCrezco"
+import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
+
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
+  const navigate = useNavigate()
 
   const handleSaveDetails = async (data) => {
     const promises = []
@@ -50,6 +51,20 @@ export default function SettingsPage({ merchant }) {
     <h1 className="header-m">Organiser Settings</h1>
     <Spacer y={3}/>
     <div style={{ maxWidth: 500 }}>
+    {
+        !merchant.crezco?.userId &&  <div style={{ maxWidth: 500 }}>
+        <ResultBanner
+            resultType={ResultType.INFO}
+            message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
+            action={() => {
+              navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
+            }}
+            actionTitle="Connect payments"
+          />
+          <Spacer y={3} />
+        </div>
+      }
+    <Spacer y={3}/>
     <Form
       initialDataSource={{
         ...merchant,
@@ -84,24 +99,6 @@ export default function SettingsPage({ merchant }) {
       onSubmit={handleSaveDetails}
       submitTitle="Save changes"
     />
-    <Spacer y={2} />
-    <h2 className="header-s">Crezco</h2>
-    <Spacer y={2} />
-    <p className="text-body-faded">
-      {merchant.crezco?.userId
-        ? "You're connected with Crezco. This means your customers can pay you via bank transfer."
-        : "Connect with Crezco to enable customers to pay for tickets with an instant bank transfer."}
-    </p>
-    {!merchant.crezco?.userId && (
-      <div>
-        <Spacer y={2} />
-        <MainButton
-          title="Connect with Crezco"
-          test-id="connect-crezco-button"
-          onClick={() => redirectToCrezco(merchantId)}
-        />
-      </div>
-    )}
     <Spacer y={6} />
     <Form
       initialDataSource={merchant}
