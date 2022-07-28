@@ -26,6 +26,6 @@ export function verifyStripe(req, name: StripeWebhookName) {
   }
 
   logger.log("Stripe webhook verification succeeded", { event })
-  
+
   return { event, isVerified: true }
 }
