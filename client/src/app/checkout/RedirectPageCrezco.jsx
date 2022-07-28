@@ -57,19 +57,29 @@ export default function RedirectPageCrezco() {
 
     switch (status) {
       case PaymentAttemptStatus.SUCCESSFUL:
-        if (currentDeviceId === deviceId) {
-          switch (order.type) {
-            case OrderType.TICKETS:
-              navigate(`/events/s/orders/${orderId}/confirmation`)
-              break
-            case OrderType.MENU:
-              clearBasket()
-              navigate(`/menu/orders/${orderId}/confirmation`)
-              break
-            default:
-          }
-        } else {
-          navigate(`/checkout/o/${orderId}/mobile-finished`)
+        // if (currentDeviceId === deviceId) {
+        //   switch (order.type) {
+        //     case OrderType.TICKETS:
+        //       navigate(`/events/s/orders/${orderId}/confirmation`)
+        //       break
+        //     case OrderType.MENU:
+        //       clearBasket()
+        //       navigate(`/menu/orders/${orderId}/confirmation`)
+        //       break
+        //     default:
+        //   }
+        // } else {
+        //   navigate(`/checkout/o/${orderId}/mobile-finished`)
+        // }
+        switch (order.type) {
+          case OrderType.TICKETS:
+            navigate(`/events/s/orders/${orderId}/confirmation`)
+            break
+          case OrderType.MENU:
+            clearBasket()
+            navigate(`/menu/orders/${orderId}/confirmation`)
+            break
+          default:
         }
         break
       case PaymentAttemptStatus.FAILED:
