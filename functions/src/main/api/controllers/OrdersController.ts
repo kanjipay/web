@@ -35,13 +35,9 @@ enum PaymentType {
 }
 
 function getPaymentTypes(merchant: any) {
-  const { currency, stripe, crezco } = merchant
+  const { currency, crezco } = merchant
 
-  let paymentTypes = []
-
-  if (stripe?.status === StripeStatus.CHARGES_ENABLED) {
-    paymentTypes.push(PaymentType.STRIPE)
-  }
+  let paymentTypes = [PaymentType.STRIPE]
 
   if (crezco?.userId && currency === "GBP") {
     paymentTypes.push(PaymentType.OPEN_BANKING)
