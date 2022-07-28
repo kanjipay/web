@@ -216,8 +216,6 @@ function FormGroup({
           disabled,
         } = item
 
-        console.log("FormGroup - ", name, visible)
-
         const isVisible = visible ?? true
         const isRequired = isVisible ? (required ?? true) : false
 

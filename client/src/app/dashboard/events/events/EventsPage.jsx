@@ -1,16 +1,13 @@
-import { orderBy, where } from "firebase/firestore"
-import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import Discover from "../../../../assets/icons/Discover"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import IconActionPage from "../../../../components/IconActionPage"
 import LoadingPage from "../../../../components/LoadingPage"
 import MainButton from "../../../../components/MainButton"
 import Spacer from "../../../../components/Spacer"
-import Collection from "../../../../enums/Collection"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import EventListing from "./EventListing"
-import EventRecurrenceListing from "./EventRecurrenceListing"
+import EventRecurrenceListing from "../eventRecurrences/EventRecurrenceListing"
 
 export default function EventsPage({ events, eventRecurrences }) {
   const navigate = useNavigate()
@@ -38,7 +35,9 @@ export default function EventsPage({ events, eventRecurrences }) {
     const currentDate = new Date()
     const upcomingEvents = events.filter(
       (event) => dateFromTimestamp(event.endsAt) >= currentDate
-    )
+    ).sort((event1, event2) => {
+      return dateFromTimestamp(event1.startsAt) - dateFromTimestamp(event2.startsAt)
+    })
     const pastEvents = events.filter(
       (event) => dateFromTimestamp(event.endsAt) < currentDate
     )

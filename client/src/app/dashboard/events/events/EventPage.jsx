@@ -34,7 +34,7 @@ function PublishInfoBanners({ merchant, hasProducts }) {
   if (merchant.crezco?.userId && hasProducts) {
     const eventRef = Collection.EVENT.docRef(eventId)
     publishBannerProps = {
-      action: updateDoc(eventRef, { isPublished: true }),
+      action: async () => await updateDoc(eventRef, { isPublished: true }),
       actionTitle: "Publish"
     }
   }
@@ -84,7 +84,7 @@ function PublishInfoBanners({ merchant, hasProducts }) {
   return <div>{children}</div>
 }
 
-function CopyableUrl({ urlString }) {
+export function CopyableUrl({ urlString }) {
   return (
     <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
       <a
@@ -211,13 +211,11 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
 
     if (file) {
       const uploadRef = getEventStorageRef(
-        event.merchantId,
-        event.id,
+        event,
         file.name
       )
       const existingRef = getEventStorageRef(
-        event.merchantId,
-        event.id,
+        event,
         event.photo
       )
 
@@ -234,15 +232,9 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
       maxTicketsPerPerson: parseInt(data.maxTicketsPerPerson, 10),
     }
 
-    console.log("publishScheduledAt", uploadData.publishScheduledAt)
-
     if (!uploadData.publishScheduledAt) {
-      console.log("deleting publishScheduledAt")
       delete uploadData.publishScheduledAt
-      console.log(uploadData)
     }
-
-    console.log("upload data", uploadData)
 
     promises.push(updateDoc(docRef, uploadData))
 
@@ -259,6 +251,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   }
 
   const handlePublishEvent = async () => {
+    console.log("publish event")
     await updateDoc(docRef, { isPublished: true, publishedAt: serverTimestamp() })
   }
 
@@ -276,15 +269,13 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   const eventDetails = <div style={{ maxWidth: 500 }}>
     <Form
       initialDataSource={{
-        maxTicketsPerPerson: 10,
         ...event,
         startsAt: dateFromTimestamp(event.startsAt) ?? new Date(),
         endsAt: dateFromTimestamp(event.endsAt) ?? new Date(),
         publishScheduledAt: dateFromTimestamp(event.publishScheduledAt),
         photo: {
           storageRef: getEventStorageRef(
-            event.merchantId,
-            event.id,
+            event,
             event.photo
           ),
         },
@@ -517,7 +508,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
             resultType={ResultType.INFO}
             message="This event is part of a schedule, but any changes you make here will only apply to this event."
             actionTitle="Edit schedule"
-            action={() => navigate(`../er/${event.eventRecurrenceId}`)}
+            action={() => navigate(`../../er/${event.eventRecurrenceId}`)}
           />
           <Spacer y={3} />
         </div>

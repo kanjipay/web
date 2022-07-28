@@ -12,8 +12,14 @@ export function getMenuItemStorageRef(merchantId, itemId, filename) {
   )
 }
 
-export function getEventStorageRef(merchantId, eventId, filename) {
-  return ref(storage, `merchants/${merchantId}/events/${eventId}/${filename}`)
+export function getEventStorageRef(event, filename) {
+  const { merchantId, eventRecurrenceId, id: eventId } = event
+
+  if (eventRecurrenceId) {
+    return getEventRecurrenceStorageRef(merchantId, eventRecurrenceId, filename)
+  } else {
+    return ref(storage, `merchants/${merchantId}/events/${eventId}/${filename}`)
+  }
 }
 
 export function getEventRecurrenceStorageRef(merchantId, eventRecurrenceId, filename) {

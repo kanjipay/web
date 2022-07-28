@@ -91,7 +91,6 @@ service cloud.firestore {
 
     match /EventRecurrence/{resourceId} {
       allow read, delete: if isAdminForMerchant(existingData().merchantId)
-      allow create: if isAdminForMerchant(incomingData().merchantId)
       allow update: if isAdminForMerchant(existingData().merchantId) && !hasChangedKeys(["merchantId", "eventId"])
     }
 
@@ -116,6 +115,10 @@ service cloud.firestore {
         isAdminForMerchant(existingData().merchantId) &&
         !isEventPublished(existingData().eventId)
       );
+    }
+
+    match /ProductRecurrence/{resourceId} {
+      allow read: if isAdminForMerchant(existingData().merchantId)
     }
     
     match /MenuItem/{resourceId} {

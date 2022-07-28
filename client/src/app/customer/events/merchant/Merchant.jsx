@@ -3,6 +3,7 @@ import { Route, Routes, useParams } from "react-router-dom"
 import LoadingPage from "../../../../components/LoadingPage"
 import Collection from "../../../../enums/Collection"
 import Event from "../event/Event"
+import EventRecurrencePage from "../event/EventRecurrencePage"
 import MerchantPage from "./MerchantPage"
 
 export default function Merchant({ user }) {
@@ -16,6 +17,10 @@ export default function Merchant({ user }) {
   if (merchant) {
     return (
       <Routes>
+        <Route
+          path="er/:eventRecurrenceId"
+          element={<EventRecurrencePage />}
+        />
         <Route
           path=":eventId/*"
           element={<Event merchant={merchant} user={user} />}

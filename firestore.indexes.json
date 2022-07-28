@@ -23,6 +23,20 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
+          "fieldPath": "eventRecurrenceId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startsAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Event",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
           "fieldPath": "isPublished",
           "order": "ASCENDING"
         },

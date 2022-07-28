@@ -1,14 +1,14 @@
 import { isMobile } from "react-device-detect"
 import { Link } from "react-router-dom"
 import Clock from "../../../../assets/icons/Clock"
+import Location from "../../../../assets/icons/Location"
 import AsyncImage from "../../../../components/AsyncImage"
 import CircleIcon from "../../../../components/CircleIcon"
 import Spacer from "../../../../components/Spacer"
 import { Colors } from "../../../../enums/Colors"
 import { getEventRecurrenceStorageRef } from "../../../../utils/helpers/storage"
-import { generateGoogleMapsLink } from "../../../customer/events/event/eventHelpers"
 
-function timeIntervalString(amount, interval) {
+export function timeIntervalString(amount, interval) {
   if (amount === 1) {
     return interval.toLowerCase()
   } else {
@@ -16,7 +16,7 @@ function timeIntervalString(amount, interval) {
   }
 }
 
-function timePeriodString(amount, interval) {
+export function timePeriodString(amount, interval) {
   return `${amount} ${interval.toLowerCase()}${amount === 1 ? "" : "s"}`
 }
 
@@ -31,7 +31,7 @@ export default function EventRecurrenceListing({ eventRecurrence }) {
     style={{ width, aspectRatio: "2 / 1" }}
   />
 
-  const { interval, address, description } = eventRecurrence
+  const { interval, eventPublishInterval, address, description } = eventRecurrence
 
   const contents = <div style={{ width }}>
     <h3 className="header-s" style={{ lineHeight: 1 }}>
@@ -42,7 +42,7 @@ export default function EventRecurrenceListing({ eventRecurrence }) {
       <CircleIcon Icon={Clock} length={20} backgroundColor={Colors.CLEAR} />
       <p className="text-body">
         Every {timeIntervalString(interval.amount, interval.interval)}. 
-        Publishes {timePeriodString(interval.amount, interval.interval)} in advance.
+        Publishes {timePeriodString(eventPublishInterval.amount, eventPublishInterval.interval)} in advance.
       </p>
     </div>
     <Spacer y={1} />
@@ -52,17 +52,7 @@ export default function EventRecurrenceListing({ eventRecurrence }) {
         length={20}
         backgroundColor={Colors.CLEAR}
       />
-      <p className="text-body">
-        {`${address} · `}
-        <a
-          href={generateGoogleMapsLink(eventRecurrence)}
-          target="_blank"
-          rel="noreferrer"
-          test-id="event-details-directions-link"
-        >
-          Get directions
-        </a>
-      </p>
+      <p className="text-body">{address}</p>
     </div>
     <Spacer y={2} />
     <p className="text-body-faded">{description}</p>

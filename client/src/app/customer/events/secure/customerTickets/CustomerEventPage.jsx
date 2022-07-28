@@ -57,7 +57,7 @@ export default function CustomerEventPage({ events }) {
         </Helmet>
 
         <AsyncImage
-          imageRef={getEventStorageRef(event.merchantId, eventId, event.photo)}
+          imageRef={getEventStorageRef(event, event.photo)}
           className="headerImage"
           alt={event.title}
         />

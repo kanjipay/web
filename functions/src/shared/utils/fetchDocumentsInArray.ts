@@ -14,12 +14,8 @@ export async function fetchDocumentsInArray(
   let i = 0
   const chunkSize = 10
 
-  logger.log("valuesArray: ", { valuesArray })
-
   while (i < valuesArray.length) {
     const valuesArraySlice = valuesArray.slice(i, i + chunkSize)
-
-    logger.log("slice: ", { valuesArraySlice })
 
     const retrieveDocs = query
       .where(fieldPath, isPositive ? "in" : "not-in", valuesArraySlice)

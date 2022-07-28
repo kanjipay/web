@@ -5,7 +5,7 @@ import LoadingPage from "../../../../components/LoadingPage"
 import Collection from "../../../../enums/Collection"
 import CreateEventPage from "./CreateEventPage"
 import Event from "./Event"
-import EventRecurrencePage from "./EventRecurrencePage"
+import EventRecurrence from "../eventRecurrences/EventRecurrence"
 import EventsPage from "./EventsPage"
 
 export default function Events({ merchant }) {
@@ -31,6 +31,8 @@ export default function Events({ merchant }) {
     }
   }, [merchantId])
 
+  console.log(eventRecurrences)
+
   return events && eventRecurrences ? (
     <Routes>
       <Route path="/" element={<EventsPage events={events} eventRecurrences={eventRecurrences} />} />
@@ -40,8 +42,8 @@ export default function Events({ merchant }) {
         element={<Event events={events} merchant={merchant} eventRecurrences={eventRecurrences} />}
       />
       <Route
-        path="er/:eventRecurrenceId"
-        element={<EventRecurrencePage eventRecurrences={eventRecurrences} />}
+        path="er/:eventRecurrenceId/*"
+        element={<EventRecurrence eventRecurrences={eventRecurrences} merchant={merchant} />}
       />
     </Routes>
   ) : (

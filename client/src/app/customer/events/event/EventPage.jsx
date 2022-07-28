@@ -106,7 +106,7 @@ export default function EventPage({ merchant, event, products, artists }) {
       />
 
       <AsyncImage
-        imageRef={getEventStorageRef(merchant.id, event.id, event.photo)}
+        imageRef={getEventStorageRef(event, event.photo)}
         className="headerImage"
         alt={merchant.displayName}
       />
