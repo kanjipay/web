@@ -2,7 +2,7 @@ import BaseController from "../../../shared/BaseController"
 import Collection from "../../../shared/enums/Collection"
 import OrderStatus from "../../../shared/enums/OrderStatus"
 import { fetchDocument } from "../../../shared/utils/fetchDocument"
-import LoggingController from "../../../shared/utils/loggingClient"
+import { logger } from "firebase-functions/v1"
 import { v4 as uuid } from "uuid"
 import {
   createPayment,
@@ -37,7 +37,6 @@ const crezcoPaymentStatuses = {
 export class PaymentAttemptsController extends BaseController {
   createStripe = async (req, res, next) => {
     try {
-      const logger = new LoggingController("Create payment attempt with stripe")
       const { orderId, deviceId } = req.body
 
       logger.log("Creating payment attempt with stripe", { orderId, deviceId })
@@ -59,67 +58,20 @@ export class PaymentAttemptsController extends BaseController {
 
       const { total, currency, merchantId } = order
 
-      logger.log(`Retrieving merchant with id ${merchantId}`)
-
-      const { merchant, merchantError } = await fetchDocument(
-        Collection.MERCHANT,
-        merchantId
-      )
-
-      if (merchantError) {
-        next(merchantError)
-        return
-      }
-
-      logger.log("Got merchant", { merchant })
-
-      const stripeAccountId = merchant.stripe?.accountId
-
-      if (
-        !stripeAccountId ||
-        merchant.stripe.status !== StripeStatus.CHARGES_ENABLED
-      ) {
-        logger.error("Merchant not set up for stripe", {
-          stripe: merchant.stripe,
-        })
-        const errorMessage = "Merchant is not set up for Stripe"
-        next(
-          new HttpError(HttpStatusCode.BAD_REQUEST, errorMessage, errorMessage)
-        )
-        return
-      }
-
-      const mercadoFee = merchant.mercadoFee ?? 0
-      const customerFee = merchant.customerFee ?? 0
-
-      let mercadoFeeCents = 0
-
-      if (mercadoFee > 0) {
-        if (customerFee > mercadoFee) {
-          const totalWithoutCustomerFee = Math.round(total / (1 + customerFee))
-          mercadoFeeCents = Math.round(totalWithoutCustomerFee * mercadoFee)
-        } else {
-          logger.warn("Customer fee smaller than mercado fee and mercado fee exists", { customerFee, mercadoFee })
-        }
-      }
-
       const stripePaymentIntentData: Stripe.PaymentIntentCreateParams = {
         amount: total,
         currency: currency.toLowerCase(),
-        application_fee_amount: mercadoFeeCents,
         automatic_payment_methods: {
           enabled: true,
         },
       }
 
       logger.log("Creating stripe payment intent", {
-        stripeAccountId,
         stripePaymentIntentData,
       })
 
       const paymentIntent = await stripe.paymentIntents.create(
         stripePaymentIntentData,
-        { stripeAccount: stripeAccountId }
       )
 
       logger.log("Stripe payment intent created", { paymentIntent })
@@ -153,7 +105,7 @@ export class PaymentAttemptsController extends BaseController {
 
       logger.log("Payment attempt added")
 
-      return res.status(200).json({ clientSecret, stripeAccountId })
+      return res.status(200).json({ clientSecret})
     } catch (err) {
       next(err)
     }
@@ -161,8 +113,6 @@ export class PaymentAttemptsController extends BaseController {
 
   createCrezco = async (req, res, next) => {
     try {
-      const logger = new LoggingController("Create payment attempt with crezco")
-
       const { orderId, crezcoBankCode, countryCode, deviceId } = req.body
 
       logger.log("Creating Crezco payment attempt", {
