@@ -14,7 +14,6 @@ import MerchantStatus from "../../../shared/enums/MerchantStatus"
 import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
 import axios from "axios"
 import { logger } from "firebase-functions/v1"
-import { StripeStatus } from "../../../shared/enums/StripeStatus"
 
 enum DeviceType {
   MOBILE = "Mobile",

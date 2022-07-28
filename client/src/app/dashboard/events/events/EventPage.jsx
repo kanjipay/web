@@ -47,18 +47,6 @@ function PublishInfoBanners({ merchant, hasProducts }) {
     />,
   ]
 
-  if (!merchant.crezco?.userId) {
-    banners.push(
-      <ResultBanner
-        resultType={ResultType.INFO}
-        message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
-        action={() => {
-          navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
-        }}
-        actionTitle="Connect payments"
-      />
-    )
-  }
 
   if (!hasProducts) {
     banners.push(
@@ -513,8 +501,19 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
           <Spacer y={3} />
         </div>
       }
-      
-      
+      {
+        !merchant.crezco?.userId &&  <div style={{ maxWidth: 500 }}>
+        <ResultBanner
+            resultType={ResultType.INFO}
+            message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
+            action={() => {
+              navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
+            }}
+            actionTitle="Connect payments"
+          />
+          <Spacer y={3} />
+        </div>
+      }
       {
         !event.isPublished && <div style={{ maxWidth: 500 }}>
           <PublishInfoBanners
