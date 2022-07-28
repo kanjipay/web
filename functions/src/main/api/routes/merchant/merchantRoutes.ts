@@ -31,14 +31,4 @@ merchantRoutes.put(
   merchantController.addCrezcoUserId
 )
 
-merchantRoutes.post(
-  "/create-stripe-account-link",
-  merchantController.createStripeAccountLink
-)
-
-merchantRoutes.put(
-  "/update-stripe-status",
-  merchantController.updateStripeStatusIfNeeded
-)
-
 export default merchantRoutes
