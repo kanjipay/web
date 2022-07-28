@@ -78,6 +78,7 @@ export default function Dropdown({
             {optionList.map((option) => {
               return (
                 <MenuItem
+                  key={option}
                   title={option.label ?? option.value}
                   onClick={() => handleSelectOption(option.value, close)}
                   isSelected={option.value === value}

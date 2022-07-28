@@ -46,12 +46,19 @@ export default function TabControl({ name, tabs }) {
       columnGap: 8
     }}>
       {
-        tabNames.map(tabName => {
+        tabNames.map((tabName, index) => {
           return <Tab
+            key={index}
             isSelectedTab={tabName === selectedTabName}
             onClick={() => {
               sessionStorage.setItem(sessionStorageKey, tabName)
-              setSelectedTabName(tabName)
+
+              // This is so there is no odd caching of tabs
+              setSelectedTabName(null)
+
+              setTimeout(() => {
+                setSelectedTabName(tabName)
+              }, 5)
             }}
             title={tabName}
           />
@@ -59,6 +66,6 @@ export default function TabControl({ name, tabs }) {
       }
     </div>
     <Spacer y={3} />
-    {tabs[selectedTabName]}
+    {selectedTabName ? tabs[selectedTabName] : <div></div>}
   </div>
 }

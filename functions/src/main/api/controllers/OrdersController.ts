@@ -369,7 +369,7 @@ export class OrdersController extends BaseController {
         currentTicketCount,
       })
 
-      const { maxTicketsPerPerson, endsAt } = event
+      const { maxTicketsPerPerson, endsAt, eventRecurrenceId } = event
 
       if (!event.isPublished) {
         const errorMessage = "This event hasn't been published yet"
@@ -468,6 +468,10 @@ export class OrdersController extends BaseController {
           },
         ],
         wereTicketsCreated: isFree,
+      }
+
+      if (eventRecurrenceId) {
+        orderData["eventRecurrenceId"] = eventRecurrenceId
       }
 
       if (attributionData) {

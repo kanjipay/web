@@ -40,18 +40,19 @@ export default function OrderConfirmationPage({ user }) {
       const purchaseData = { value: order.total, currency: "GBP" }
       logMetaPixelEvent(metaPixelId, user, "Purchase") // todo add data with productId, total // todo switch to other user
     })
-  }, [order])
+  }, [order, user])
 
   useEffect(() => {
     if (!order || wasAttributionCleared) {
       return
     }
 
-    const { eventId } = order
+    const { eventId, eventRecurrenceId } = order
 
     setWasAttributionCleared(true)
 
     clearItems({ eventId })
+    clearItems({ eventRecurrenceId })
   }, [order, wasAttributionCleared, clearItems])
 
   const currUser = auth.currentUser

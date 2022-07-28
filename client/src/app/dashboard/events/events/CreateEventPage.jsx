@@ -11,7 +11,7 @@ import { getEventRecurrenceStorageRef, getEventStorageRef } from "../../../../ut
 import { uploadImage } from "../../../../utils/helpers/uploadImage"
 import SimpleImagePicker from "../../../../components/SimpleImagePicker"
 import CheckBox from "../../../../components/CheckBox"
-import TimeIntervalPicker from "../TimeIntervalPicker"
+import TimeIntervalPicker from "../../../../components/TimeIntervalPicker"
 import { TimeInterval } from "../../../../enums/TimeInterval"
 import { v4 as uuid } from "uuid"
 import { NetworkManager } from "../../../../utils/NetworkManager"
@@ -36,6 +36,9 @@ export default function CreateEventPage() {
       eventCreateInterval
     } = data
 
+    console.log(startsAt)
+    console.log(typeof startsAt)
+
     if (isRecurring) {
       const eventRecurrenceId = uuid()
       const ref = getEventRecurrenceStorageRef(merchantId, eventRecurrenceId, photo.file.name)
@@ -58,9 +61,7 @@ export default function CreateEventPage() {
         }
       })
 
-      const [
-        createRecurrenceRes
-      ] = await Promise([
+      await Promise.all([
         createEventRecurrence,
         uploadToStorage
       ])
@@ -69,7 +70,7 @@ export default function CreateEventPage() {
     } else {
       const eventId = uuid()
 
-      const ref = getEventStorageRef(merchantId, eventId, photo.file.name)
+      const ref = getEventStorageRef({ merchantId, eventId }, photo.file.name)
 
       const uploadToStorage =  uploadImage(ref, photo.file)
 

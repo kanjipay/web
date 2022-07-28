@@ -21,6 +21,7 @@ enum Collection {
   WEB_AUDIT_LOG = "WebAuditLog",
   TICKET = "Ticket",
   PRODUCT = "Product",
+  PRODUCT_RECURRENCE = "ProductRecurrence",
   EVENT = "Event",
   EVENT_RECURRENCE = "EventRecurrence",
   USER = "User",

@@ -6,7 +6,7 @@ import { dateFromTimestamp } from "../../../../utils/helpers/time"
 export default function EventListing({ event, linkPath = event.id, ...props }) {
   return (
     <Listing
-      imageRef={getEventStorageRef(event.merchantId, event.id, event.photo)}
+      imageRef={getEventStorageRef(event, event.photo)}
       title={event.title}
       description={event.description}
       rightBubbleText={format(dateFromTimestamp(event.startsAt), "do MMM")}

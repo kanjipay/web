@@ -29,7 +29,7 @@ export default function CreateProductPage({ event, products, merchant }) {
       0
     )
 
-    const productRef = await addDoc(Collection.PRODUCT.ref, {
+    await addDoc(Collection.PRODUCT.ref, {
       eventId: event.id,
       merchantId,
       isAvailable: true,

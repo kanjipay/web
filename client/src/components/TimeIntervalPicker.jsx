@@ -1,12 +1,11 @@
-import Dropdown from "../../../components/input/Dropdown";
-import { IntField } from "../../../components/input/IntField";
-import { TimeInterval } from "../../../enums/TimeInterval";
+import Dropdown from "./input/Dropdown";
+import { IntField } from "./input/IntField";
+import { TimeInterval } from "../enums/TimeInterval";
 
 export default function TimeIntervalPicker({ name, value = { amount: 1, interval: TimeInterval.WEEK }, onChange, prefix, suffix }) {
   const pluralisationSuffix = value.amount === 1 ? "" : "s";
 
   return <div>
-
     <div
       name={name}
       style={{ display: "flex", columnGap: 16, alignItems: "center" }}

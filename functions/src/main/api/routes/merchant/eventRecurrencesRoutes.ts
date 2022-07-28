@@ -9,4 +9,29 @@ eventRecurrencesRoutes.post(
   eventRecurrencesController.create
 )
 
+eventRecurrencesRoutes.put(
+  "/:eventRecurrenceId",
+  eventRecurrencesController.update
+)
+
+eventRecurrencesRoutes.delete(
+  "/:eventRecurrenceId",
+  eventRecurrencesController.delete
+)
+
+eventRecurrencesRoutes.post(
+  "/:eventRecurrenceId/pr",
+  eventRecurrencesController.createProduct
+)
+
+eventRecurrencesRoutes.put(
+  "/:eventRecurrenceId/pr/:productRecurrenceId",
+  eventRecurrencesController.updateProduct
+)
+
+eventRecurrencesRoutes.delete(
+  "/:eventRecurrenceId/pr/:productRecurrenceId",
+  eventRecurrencesController.deleteProduct
+)
+
 export default eventRecurrencesRoutes

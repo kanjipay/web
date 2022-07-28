@@ -10,12 +10,12 @@ import { getEventStorageRef } from "../../../../utils/helpers/storage"
 import { eventTimeString } from "../../../customer/events/event/eventHelpers"
 
 export default function EventListing({ event }) {
-  const { merchantId, title } = event
+  const { title } = event
 
   const width = isMobile ? "100%" : 400
 
   const image = <AsyncImage
-    imageRef={getEventStorageRef(merchantId, event.id, event.photo)}
+    imageRef={getEventStorageRef(event, event.photo) }
     alt={event.title}
     style={{ width, aspectRatio: "2 / 1" }}
   />
