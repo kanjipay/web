@@ -1,7 +1,6 @@
 import { updateDoc } from "firebase/firestore"
 import { deleteObject } from "firebase/storage"
 import { useState } from "react"
-import { isMobile } from "react-device-detect"
 import { useParams } from "react-router-dom"
 import Form from "../../../../components/Form"
 import { TextArea } from "../../../../components/Input"
@@ -12,7 +11,6 @@ import SimpleImagePicker from "../../../../components/SimpleImagePicker"
 import Spacer from "../../../../components/Spacer"
 import TabControl from "../../../../components/TabControl"
 import Collection from "../../../../enums/Collection"
-import StripeStatus from "../../../../enums/StripeStatus"
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
 import { uploadImage } from "../../../../utils/helpers/uploadImage"
 import { NetworkManager } from "../../../../utils/NetworkManager"
@@ -20,7 +18,6 @@ import { redirectToCrezco } from "./redirectToCrezco"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
-  const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false)
 
   const handleSaveDetails = async (data) => {
     const promises = []
@@ -48,18 +45,6 @@ export default function SettingsPage({ merchant }) {
 
   const handleChangeBankDetails = async (data) => {
     window.open("mailto:team@mercadopay.co")
-  }
-
-  const handleContinueToStripe = async () => {
-    setIsRedirectingToStripe(true)
-
-    const res = await NetworkManager.post(
-      `/merchants/m/${merchantId}/create-stripe-account-link`
-    )
-
-    const { redirectUrl } = res.data
-
-    window.location.href = redirectUrl
   }
 
   const details = <div style={{ maxWidth: 500 }}>
@@ -163,29 +148,6 @@ export default function SettingsPage({ merchant }) {
       </div>
     )}
 
-    <Spacer y={4} />
-    <h3 className="header-xs">Stripe</h3>
-    <Spacer y={2} />
-    <p className="text-body-faded">
-      {merchant.stripe?.status === StripeStatus.CHARGES_ENABLED
-        ? "You're connected with Stripe. This means your customers can pay you via card"
-        : "Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts."}
-    </p>
-    {merchant.stripe?.status !== StripeStatus.CHARGES_ENABLED && (
-      <div>
-        <Spacer y={2} />
-        <MainButton
-          title={
-            merchant.stripe
-              ? "Continue your Stripe onboarding"
-              : "Connect with Stripe"
-          }
-          test-id="connect-stripe-button"
-          onClick={handleContinueToStripe}
-          isLoading={isRedirectingToStripe}
-        />
-      </div>
-    )}
   </div>
 
   return (
