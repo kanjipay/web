@@ -31,7 +31,7 @@ function PublishInfoBanners({ merchant, hasProducts }) {
 
   let publishBannerProps = {}
 
-  if (merchant.crezco?.userId && hasProducts) {
+  if (hasProducts) {
     const eventRef = Collection.EVENT.docRef(eventId)
     publishBannerProps = {
       action: async () => await updateDoc(eventRef, { isPublished: true }),
@@ -47,18 +47,6 @@ function PublishInfoBanners({ merchant, hasProducts }) {
     />,
   ]
 
-  if (!merchant.crezco?.userId) {
-    banners.push(
-      <ResultBanner
-        resultType={ResultType.INFO}
-        message="You'll need to connect a payment method before you can publish this event."
-        action={() => {
-          navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
-        }}
-        actionTitle="Connect payments"
-      />
-    )
-  }
 
   if (!hasProducts) {
     banners.push(
@@ -202,7 +190,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   const publishButtonRef = useRef(null)
 
   function canPublishEvent() {
-    return !!merchant.crezco?.userId && products.length > 0
+    return products.length > 0
   }
 
   const handleUpdateEvent = async (data) => {
@@ -323,10 +311,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
               name: "publishScheduledAt",
               label: "Scheduled publish date",
               explanation:
-                "Optionally set the time you want to publish this event to customers." +
-                (!merchant.crezco
-                  ? " You can only do this after you connect a payment method."
-                  : ""),
+                "Optionally set the time you want to publish this event to customers.",
               input: <DatePicker />,
               required: false,
               disabled: !!event.isPublished || !canPublishEvent(),
@@ -513,8 +498,19 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
           <Spacer y={3} />
         </div>
       }
-      
-      
+      {
+        !merchant.crezco?.userId &&  <div style={{ maxWidth: 500 }}>
+        <ResultBanner
+            resultType={ResultType.INFO}
+            message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
+            action={() => {
+              navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
+            }}
+            actionTitle="Connect payments"
+          />
+          <Spacer y={3} />
+        </div>
+      }
       {
         !event.isPublished && <div style={{ maxWidth: 500 }}>
           <PublishInfoBanners

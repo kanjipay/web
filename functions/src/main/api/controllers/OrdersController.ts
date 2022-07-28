@@ -14,7 +14,6 @@ import MerchantStatus from "../../../shared/enums/MerchantStatus"
 import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
 import axios from "axios"
 import { logger } from "firebase-functions/v1"
-import { StripeStatus } from "../../../shared/enums/StripeStatus"
 
 enum DeviceType {
   MOBILE = "Mobile",
@@ -35,13 +34,9 @@ enum PaymentType {
 }
 
 function getPaymentTypes(merchant: any) {
-  const { currency, stripe, crezco } = merchant
+  const { currency, crezco } = merchant
 
-  let paymentTypes = []
-
-  if (stripe?.status === StripeStatus.CHARGES_ENABLED) {
-    paymentTypes.push(PaymentType.STRIPE)
-  }
+  let paymentTypes = [PaymentType.STRIPE]
 
   if (crezco?.userId && currency === "GBP") {
     paymentTypes.push(PaymentType.OPEN_BANKING)
@@ -428,7 +423,7 @@ export class OrdersController extends BaseController {
         logger.log("No required email domain found for ticket")
       }
 
-      const { currency, customerFee } = merchant
+      const { currency, customerFee, crezco } = merchant
       const mercadoFee = merchant.mercadoFee ?? 0
 
       const total = Math.round(price * quantity * (1 + customerFee))
@@ -520,10 +515,10 @@ export class OrdersController extends BaseController {
 
       if (isFree) {
         redirectPath = `/events/s/orders/${orderId}/confirmation`
-      } else if (currency === "EUR") {
-        redirectPath = `/checkout/o/${orderId}/payment-stripe`
+      } else if (crezco?.userId && currency === "GBP") {
+        redirectPath = `/checkout/o/${orderId}/choose-bank`        
       } else {
-        redirectPath = `/checkout/o/${orderId}/choose-bank`
+        redirectPath = `/checkout/o/${orderId}/payment-stripe`
       }
 
       logger.log("Function successful", { orderId, redirectPath })

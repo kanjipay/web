@@ -36,12 +36,10 @@ export default function PaymentPageStripe({ order }) {
       orderId,
       deviceId,
     }).then((res) => {
-      const { clientSecret, stripeAccountId } = res.data
+      const { clientSecret } = res.data
 
       setStripeProps({
-        stripe: loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY, {
-          stripeAccount: stripeAccountId,
-        }),
+        stripe: loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY),
         options: {
           clientSecret,
         },

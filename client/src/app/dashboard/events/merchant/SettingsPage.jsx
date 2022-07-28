@@ -1,26 +1,21 @@
 import { updateDoc } from "firebase/firestore"
 import { deleteObject } from "firebase/storage"
-import { useState } from "react"
-import { isMobile } from "react-device-detect"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Form from "../../../../components/Form"
 import { TextArea } from "../../../../components/Input"
 import Dropdown from "../../../../components/input/Dropdown"
 import { Field, IntField } from "../../../../components/input/IntField"
-import MainButton from "../../../../components/MainButton"
 import SimpleImagePicker from "../../../../components/SimpleImagePicker"
 import Spacer from "../../../../components/Spacer"
-import TabControl from "../../../../components/TabControl"
 import Collection from "../../../../enums/Collection"
-import StripeStatus from "../../../../enums/StripeStatus"
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
 import { uploadImage } from "../../../../utils/helpers/uploadImage"
-import { NetworkManager } from "../../../../utils/NetworkManager"
-import { redirectToCrezco } from "./redirectToCrezco"
+import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
+
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
-  const [isRedirectingToStripe, setIsRedirectingToStripe] = useState(false)
+  const navigate = useNavigate()
 
   const handleSaveDetails = async (data) => {
     const promises = []
@@ -50,19 +45,26 @@ export default function SettingsPage({ merchant }) {
     window.open("mailto:team@mercadopay.co")
   }
 
-  const handleContinueToStripe = async () => {
-    setIsRedirectingToStripe(true)
 
-    const res = await NetworkManager.post(
-      `/merchants/m/${merchantId}/create-stripe-account-link`
-    )
-
-    const { redirectUrl } = res.data
-
-    window.location.href = redirectUrl
-  }
-
-  const details = <div style={{ maxWidth: 500 }}>
+  return (
+    <div>
+    <h1 className="header-m">Organiser Settings</h1>
+    <Spacer y={3}/>
+    <div style={{ maxWidth: 500 }}>
+    {
+        !merchant.crezco?.userId &&  <div style={{ maxWidth: 500 }}>
+        <ResultBanner
+            resultType={ResultType.INFO}
+            message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
+            action={() => {
+              navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
+            }}
+            actionTitle="Connect payments"
+          />
+          <Spacer y={3} />
+        </div>
+      }
+    <Spacer y={3}/>
     <Form
       initialDataSource={{
         ...merchant,
@@ -143,64 +145,6 @@ export default function SettingsPage({ merchant }) {
       onSubmit={handleChangeBankDetails}
     />
   </div>
-
-  const paymentMethods = <div style={{ maxWidth: 500 }}>
-    <h3 className="header-xs">Crezco</h3>
-    <Spacer y={2} />
-    <p className="text-body-faded">
-      {merchant.crezco?.userId
-        ? "You're connected with Crezco. This means your customers can pay you via bank transfer."
-        : "Connect with Crezco to enable customers to pay for tickets with an instant bank transfer."}
-    </p>
-    {!merchant.crezco?.userId && (
-      <div>
-        <Spacer y={2} />
-        <MainButton
-          title="Connect with Crezco"
-          test-id="connect-crezco-button"
-          onClick={() => redirectToCrezco(merchantId)}
-        />
-      </div>
-    )}
-
-    <Spacer y={4} />
-    <h3 className="header-xs">Stripe</h3>
-    <Spacer y={2} />
-    <p className="text-body-faded">
-      {merchant.stripe?.status === StripeStatus.CHARGES_ENABLED
-        ? "You're connected with Stripe. This means your customers can pay you via card"
-        : "Connect with Stripe to enable customers to pay for tickets with a card. This is a useful fallback for customers with international bank accounts."}
-    </p>
-    {merchant.stripe?.status !== StripeStatus.CHARGES_ENABLED && (
-      <div>
-        <Spacer y={2} />
-        <MainButton
-          title={
-            merchant.stripe
-              ? "Continue your Stripe onboarding"
-              : "Connect with Stripe"
-          }
-          test-id="connect-stripe-button"
-          onClick={handleContinueToStripe}
-          isLoading={isRedirectingToStripe}
-        />
-      </div>
-    )}
-  </div>
-
-  return (
-    <div>
-      <Spacer y={5} />
-      <h1 className="header-l">Settings</h1>
-      <Spacer y={3} />
-      <TabControl
-        name="settings-page"
-        tabs={{
-          "Details": details,
-          "Payment Methods": paymentMethods
-        }}
-      />
-      <Spacer y={9} />
     </div>
   )
 }

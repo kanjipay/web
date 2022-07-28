@@ -3,7 +3,8 @@ import stripe from "../../../shared/utils/stripeClient"
 
 export enum StripeWebhookName {
   PAYMENT_INTENT_UPDATE = "PaymentIntentUpdate",
-  ACCOUNT_UPDATE = "AccountUpdate",
+  PAYMENT_INTENT_UPDATE_DIRECT = "PaymentIntentUpdateDirect",
+  ACCOUNT_UPDATE = "AccountUpdate"
 }
 
 export function verifyStripe(req, name: StripeWebhookName) {

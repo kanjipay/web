@@ -18,8 +18,6 @@ import CrezcoConnectRedirectPage from "./CrezcoConnectRedirectPage"
 import Events from "../events/Events"
 import SettingsPage from "./SettingsPage"
 import ConnectCrezcoPage from "./ConnectCrezcoPage"
-import ConnectStripePage from "./ConnectStripePage"
-import StripeConnectRedirectPage from "./StripeConnectRedirectPage"
 import Discover from "../../../../assets/icons/Discover"
 import UsersPage from "./UsersPage"
 import { isMobile } from "react-device-detect"
@@ -148,14 +146,9 @@ export default function Merchant({ user }) {
             />
             <Route path="users" element={<UsersPage merchant={merchant} />} />
             <Route
-              path="stripe-connected"
-              element={<StripeConnectRedirectPage />}
-            />
-            <Route
               path="crezco-connected"
               element={<CrezcoConnectRedirectPage />}
             />
-            <Route path="connect-stripe" element={<ConnectStripePage />} />
             <Route
               path="connect-crezco"
               element={<ConnectCrezcoPage user={user} />}

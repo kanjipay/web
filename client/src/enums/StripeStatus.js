@@ -1,5 +1,0 @@
-export default class StripeStatus {
-  static DETAILS_NOT_SUBMITTED = "DETAILS_NOT_SUBMITTED"
-  static DETAILS_SUBMITTED = "DETAILS_SUBMITTED"
-  static CHARGES_ENABLED = "CHARGES_ENABLED"
-}
