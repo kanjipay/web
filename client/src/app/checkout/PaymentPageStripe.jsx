@@ -36,12 +36,10 @@ export default function PaymentPageStripe({ order }) {
       orderId,
       deviceId,
     }).then((res) => {
-      const { stripeAccountId } = res.data
+      const { clientSecret } = res.data
 
       setStripeProps({
-        stripe: loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY, {
-          stripeAccount: stripeAccountId,
-        }),
+        stripe: loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY),
         options: {
           clientSecret,
         },
@@ -54,7 +52,7 @@ export default function PaymentPageStripe({ order }) {
 
     return (
       <Elements {...stripeProps}>
-        <StripeCheckoutForm order={order}  />
+        <StripeCheckoutForm order={order} clientSecret={clientSecret} />
       </Elements>
     )
   } else {
@@ -62,7 +60,7 @@ export default function PaymentPageStripe({ order }) {
   }
 }
 
-function StripeCheckoutForm({ order }) {
+function StripeCheckoutForm({ order, clientSecret }) {
   const stripe = useStripe()
   const elements = useElements()
   const navigate = useNavigate()
