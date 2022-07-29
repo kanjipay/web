@@ -5,11 +5,12 @@ import { sendgridClient } from "./sendgridClient"
 
 const fromEmail = "team@mercadopay.co"
 
-enum TemplateName {
+export enum TemplateName {
   TICKET_RECEIPT = "TICKET_RECEIPT",
   MENU_RECEIPT = "MENU_RECEIPT",
   INVITE = "INVITE",
   TICKET_SALE_ALERT = "TICKET_SALE_ALERT",
+  NEW_EVENT = "NEW_EVENT"
 }
 
 function addFees(productPrice, quantity, customerFee, currency) {
