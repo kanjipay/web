@@ -38,4 +38,4 @@ export const backup = euFunctions
   .pubsub.schedule("every 24 hours")
   .onRun(backupFirestore)
 
-export const eventCreate = euFunctions.runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] }).firestore.document('Event/{eventId}').onWrite((  change, context) => notifyIfPublished(change, context) )
+export const eventCreate = euFunctions.runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] }).firestore.document('Event/{eventId}').onWrite((  change, context) => notifyIfPublished)

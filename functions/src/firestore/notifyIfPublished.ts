@@ -4,14 +4,17 @@ import { db } from "../shared/utils/admin"
 import { sendgridClient } from "../shared/utils/sendgridClient"
 import { sendEmail } from "../shared/utils/sendEmail"
 import { TemplateName } from "../shared/utils/sendEmail"
+import { nDaysAgo, dateFromTimestamp } from "../shared/utils/time"
+import { firestore } from "firebase-admin"
+import { fetchDocumentsInArray } from "../shared/utils/fetchDocumentsInArray"
 
 const getConsentingUsers = async (merchantId: string) : Promise<Array<string>> => {
-    const ticketPurchasers = await db().collection(Collection.ORDER).where("merchantId","==", merchantId).get()
-    const marketingConsentUsers = await db().collection(Collection.USER).where("marketingConsentStatus","==", "APPROVED").get()
+    const oldestDate = nDaysAgo(90)
+    const ticketPurchasers = await db().collection(Collection.ORDER).where("merchantId","==", merchantId).where('createdAt', '>', oldestDate).get()
     const purchaserIds = new Set(ticketPurchasers.docs.map((doc) => doc.data().userId))
-    const consentUserEmails = marketingConsentUsers.docs.map((doc) => {
-        return {userId: doc.id, email: doc.data().email}
-    }).filter(i => purchaserIds.has(i.userId)).map((u) => u.email)
+    const userQuery = db().collection(Collection.USER).where("marketingConsentStatus","==", "APPROVED")
+    const marketingConsentUsers = await fetchDocumentsInArray(userQuery,  firestore.FieldPath.documentId(),[...purchaserIds])
+    const consentUserEmails =  marketingConsentUsers.map((u) => u.email)
     logger.log(`ticketPurchasers ${ticketPurchasers} marketingConsentUsers ${marketingConsentUsers}
     consentUsers ${consentUserEmails}`)
     return consentUserEmails
@@ -25,17 +28,17 @@ export const notifyIfPublished = async (change, context) => {
     if (publishedAfter && !publishedBefore){
         const {title, address, description, startsAt, merchantId} = change.after.data() 
         const eventId = change.after.id
-        const eventDate = new Date(startsAt.seconds*1000).toDateString()
+        const eventDate = dateFromTimestamp(startsAt.seconds)
         const merchantDoc =  await db().collection(Collection.MERCHANT).doc(merchantId).get()
         const merchantName = await merchantDoc.data().displayName
         const consentUserEmails = await getConsentingUsers(merchantId)
         const eventData = {
             merchantName,
-            "eventName":title,
+            eventName:title,
             address,
             startsAt:eventDate,
             description,
-            "ticketLink":`${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
+            ticketLink:`${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         }
         logger.log(consentUserEmails)
         logger.log(eventData)
