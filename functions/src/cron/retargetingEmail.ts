@@ -7,9 +7,9 @@ import { firestore } from "firebase-admin"
 import { TemplateName,sendEmail } from "../shared/utils/sendEmail"
 
 
-async function findMarketingConsentUsers(eventHasntHappenedEmails){
+async function findMarketingConsentUsers(userEmails){
     // get users who have given marketing consent, and not been contacted for 7 days.
-    const uniqueUserIds = new Set(eventHasntHappenedEmails.map((doc) => doc.data().userId))
+    const uniqueUserIds = new Set(userEmails.map((doc) => doc.data().userId))
     const userQuery = db().collection(Collection.USER).where("marketingConsentStatus","==", "APPROVED")
     const marketingConsentUsers = await fetchDocumentsInArray(userQuery,  firestore.FieldPath.documentId(),[...uniqueUserIds])
     return marketingConsentUsers.filter((doc) => !(doc.lastMarketingEmailDate && doc.lastMarketingEmailDate > nHoursAgo(24*7)))
@@ -30,9 +30,9 @@ async function findRetargetEvents(){
     return abandonedOrderSnapshot.docs.filter((doc) => doc.data().orderItems[0].eventEndsAt < nHoursAgo(-6))
 }
 
-function prepareEmailData(eventHasntHappenedEmails, notRecentlyContacted){
+function prepareEmailData(userEmails, notRecentlyContacted){
     let emailsToSend = {}
-    eventHasntHappenedEmails.forEach(event=>{
+    userEmails.forEach(event=>{
         const {userId, eventId, merchantId, orderItems} = event.data()
         const eventUrl = `${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         const consentUser = notRecentlyContacted.find(doc => doc.id = userId)

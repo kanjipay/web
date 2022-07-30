@@ -42,7 +42,7 @@ export const cron_backup = euFunctions
 
 export const cron_marketing = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
-  .pubsub.schedule("0 11 * * *")
+  .pubsub.schedule("30 12 * * *")
   .timeZone('Europe/London')
   .onRun(sendRetargetingEmails)
 

@@ -50,7 +50,7 @@ export const notifyIfPublished = async (change, context) => {
             subject: "New Event",
         }
         logger.log("email params", emailParams)
-        sendgridClient().send(emailParams)
+        await sendgridClient().send(emailParams)
     }
    } catch (err) {
     logger.error(err)
