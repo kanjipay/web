@@ -116,7 +116,7 @@ function StripeCheckoutForm({ order, clientSecret }) {
       <div className="container">
         <NavBar
           title="Complete your purchase"
-          back={() => cancelOrder(order, navigate)}
+          back={() => cancelOrder(order.id, navigate)}
         />
         <div className="content">
           <Spacer y={9} />

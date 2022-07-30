@@ -36,7 +36,7 @@ export default function PaymentUnsuccessfulPage({
   }
 
   const handleCancelOrder = async () => {
-    await cancelOrder(order, navigate)
+    await cancelOrder(order.id, navigate)
   }
 
   if (isLoading) {

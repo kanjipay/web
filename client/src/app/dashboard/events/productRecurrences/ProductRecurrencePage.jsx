@@ -74,6 +74,8 @@ export default function ProductRecurrencePage({ eventRecurrence, productRecurren
                 },
                 {
                   name: "capacity",
+                  label: "Maximum capacity",
+                  explanation: "Once this number of tickets has been sold for this ticket type, it will show as sold out.",
                   input: <IntField />,
                 },
                 {

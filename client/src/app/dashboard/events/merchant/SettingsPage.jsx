@@ -45,7 +45,6 @@ export default function SettingsPage({ merchant }) {
     window.open("mailto:team@mercadopay.co")
   }
 
-
   return (
     <div>
     <h1 className="header-m">Organiser Settings</h1>

@@ -218,6 +218,67 @@ async function isExistingUser(userId: string, merchantId: string) {
 }
 
 export class OrdersController extends BaseController {
+  abandon = async (req, res, next) => {
+    try {
+      const { orderId } = req.params
+      const userId: string = req.user.id
+
+      const { order, orderError } = await fetchDocument(
+        Collection.ORDER,
+        orderId,
+        { userId }
+      )
+
+      if (orderError) {
+        next(orderError)
+        return
+      }
+
+      const { orderItems, type, status, merchantId } = order
+
+      if (status === OrderStatus.PENDING) {
+        const updateOrderStatus = db()
+          .collection(Collection.ORDER)
+          .doc(orderId)
+          .update({ status: OrderStatus.ABANDONED })
+
+        const promises = [updateOrderStatus]
+
+        if (type === OrderType.TICKETS) {
+          const { productId, quantity } = orderItems[0]
+
+          const updateProduct = db()
+            .collection(Collection.PRODUCT)
+            .doc(productId)
+            .update({
+              reservedCount: firestore.FieldValue.increment(-quantity),
+            })
+
+          promises.push(updateProduct)
+        }
+
+        await Promise.all(promises)
+      }
+
+      let redirectPath
+
+      switch (type) {
+        case OrderType.TICKETS:
+          redirectPath = `/events/${merchantId}/${order.eventId}/${orderItems[0].productId}`
+          break
+        case OrderType.MENU:
+          redirectPath = `/menu/${merchantId}`
+          break
+        default:
+          redirectPath = "/"
+      }
+
+      return res.status(200).json({ redirectPath })
+    } catch (err) {
+      next(err)
+    }
+  }
+
   enrich = async (req, res, next) => {
     try {
       const { orderId } = req.params
@@ -227,7 +288,8 @@ export class OrdersController extends BaseController {
 
       const { order, orderError } = await fetchDocument(
         Collection.ORDER,
-        orderId
+        orderId,
+        { userId }
       )
 
       if (orderError) {

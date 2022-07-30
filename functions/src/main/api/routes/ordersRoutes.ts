@@ -69,6 +69,8 @@ const createOrderWithTicketsSchema: AllowedSchema = {
 
 ordersRoutes.put("/o/:orderId/enrich", authenticate, ordersController.enrich)
 
+ordersRoutes.put("/o/:orderId/abandon", authenticate, ordersController.abandon)
+
 ordersRoutes.post(
   "/tickets",
   validate({ body: createOrderWithTicketsSchema }),
