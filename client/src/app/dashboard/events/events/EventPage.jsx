@@ -8,7 +8,7 @@ import DatePicker from "../../../../components/DatePicker"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import ProductListing from "../products/ProductListing"
 import Form from "../../../../components/Form"
-import { Field, IntField } from "../../../../components/input/IntField"
+import { Field, FieldDecorator, IntField } from "../../../../components/input/IntField"
 import { Colors } from "../../../../enums/Colors"
 import { ButtonTheme } from "../../../../components/ButtonTheme"
 import { getEventStorageRef } from "../../../../utils/helpers/storage"
@@ -25,6 +25,8 @@ import { CopyToClipboardButton } from "../../../../components/CopyToClipboardBut
 import { isMobile } from "react-device-detect"
 import TabControl from "../../../../components/TabControl"
 import QRCode from "react-qr-code"
+import { Canvg } from "canvg"
+import Dropdown from "../../../../components/input/Dropdown"
 
 function PublishInfoBanners({ merchant, hasProducts }) {
   const navigate = useNavigate()
@@ -90,7 +92,60 @@ export function CopyableUrl({ urlString }) {
   )
 }
 
+class ImageFormat {
+  static PNG = "PNG"
+  static SVG = "SVG"
+}
+
 function EventLinkSection({ eventLinkString }) {
+  const initialQrColor = localStorage.getItem("qrQrColor") ?? Colors.BLACK.toUpperCase()
+  const [qrColor, setForegroundColor] = useState(initialQrColor.replace("#", ""))
+  const [displayQrColor, setDisplayForegroundColor] = useState(initialQrColor)
+  const [qrImageFormat, setQrImageFormat] = useState(ImageFormat.PNG)
+
+  const updateForegroundColor = event => {
+    const { value } = event.target
+    setForegroundColor(value)
+
+    if (/[0-9a-fA-F]{6}/g.test(value) || /[0-9a-fA-F]{3}/g.test(value)) {
+      setDisplayForegroundColor("#" + value)
+    }
+  }
+
+  const handleDownloadQrCode = () => {
+    const svg = document.querySelector("#event-link-qr-code")
+    const filename = `qr-code-event-link.${qrImageFormat.toLowerCase()}`
+
+    let fileUrl
+
+    switch (qrImageFormat) {
+      case ImageFormat.SVG:
+        const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
+        fileUrl = URL.createObjectURL(blob);
+        break
+      case ImageFormat.PNG:
+        const data = (new XMLSerializer()).serializeToString(svg)
+        const canvas = document.createElement("canvas")
+        const ctx = canvas.getContext('2d')
+        const canvg = Canvg.fromString(ctx, data)
+
+        canvg.start()
+
+        fileUrl = canvas.toDataURL("image/png");
+        break
+      default:
+    }
+
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => URL.revokeObjectURL(fileUrl), 5000);
+  }
+
   return (
     <div>
       <h3 className="header-s">Plain event link</h3>
@@ -100,8 +155,72 @@ function EventLinkSection({ eventLinkString }) {
       </p>
       <Spacer y={2} />
       <CopyableUrl urlString={eventLinkString} />
-      {/* <Spacer y={2} />
-      <QRCode size={160} value={eventLinkString} id="event-link-qr-code" fgColor={Colors.GREEN} bgColor /> */}
+      <Spacer y={6} />
+      <h3 className="header-s">QR code event link</h3>
+      <Spacer y={4} />
+      <div  style={{
+        display: isMobile ? "block" : "flex",
+        columnGap: 24
+      }}>
+        <QRCode
+          size={200}
+          style={{ flexShrink: 0 }}
+          value={eventLinkString}
+          id="event-link-qr-code"
+          fgColor={displayQrColor}
+          bgColor={Colors.CLEAR}
+        />
+        
+
+        { isMobile && <Spacer y={3} /> }
+
+        <div style={{ flexGrow: 100, flexShrink: 100 }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <p
+              className="text-body"
+              style={{ width: 80, flexShrink: 0 }}
+            >
+              Color
+            </p>
+            <FieldDecorator
+              style={{ flexGrow: 100, width: "auto" }}
+              field={
+                <Field
+                  value={qrColor}
+                  onChange={updateForegroundColor}
+                  maxChars={6}
+                />
+              }
+              prefix="#"
+            />
+          </div>
+          
+          <Spacer y={2} />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <p 
+              className="text-body"
+              style={{ width: 80 }}
+            >
+              Export as
+            </p>
+            <Dropdown
+              style={{ flexGrow: 100, width: "auto" }}
+              optionList={[
+                { value: ImageFormat.PNG },
+                { value: ImageFormat.SVG },
+              ]}
+              value={qrImageFormat}
+              onChange={event => setQrImageFormat(event.target.value)}
+            />
+          </div>
+          
+          <Spacer y={2} />
+          <MainButton 
+            title="Download QR code"
+            onClick={handleDownloadQrCode}
+          />
+        </div>
+      </div>
     </div>
   )
 }
@@ -469,7 +588,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   const eventLinks = event.isPublished ? (
     <div style={{ maxWidth: 500 }}>
       <EventLinkSection eventLinkString={eventLinkString} />
-      <Spacer y={3} />
+      <Spacer y={6} />
       <AttributionLinkSection attributionLinks={attributionLinks} />
     </div>
   ) : (
