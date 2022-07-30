@@ -1,32 +1,16 @@
-import { updateDoc } from "firebase/firestore"
-import Collection from "../../enums/Collection"
 import OrderStatus from "../../enums/OrderStatus"
 import OrderType from "../../enums/OrderType"
 import { AnalyticsEvent, AnalyticsManager } from "../../utils/AnalyticsManager"
+import { NetworkManager } from "../../utils/NetworkManager"
 
-export async function cancelOrder(order, navigate) {
+export async function cancelOrder(orderId, navigate) {
   AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
     button: "cancelOrder",
   })
 
-  const { type, merchantId, status } = order
+  const res = await NetworkManager.put(`/orders/o/${orderId}/abandon`)
 
-  if (status === OrderStatus.PENDING) {
-    await updateDoc(Collection.ORDER.docRef(order.id), {
-      status: OrderStatus.ABANDONED,
-    })
-  }
-
-  switch (type) {
-    case OrderType.TICKETS:
-      navigate(`/events/${merchantId}/${order.eventId}/${order.orderItems[0].productId}`)
-      break
-    case OrderType.MENU:
-      navigate(`/menu/${merchantId}`)
-      break
-    default:
-      navigate(`/`)
-  }
+  navigate(res.data.redirectPath)
 }
 
 export function redirectOrderIfNeeded(order, navigate, clearBasket = null) {

@@ -13,7 +13,7 @@ export default function ProductListing({
   isPublished,
   ...props
 }) {
-  const isSoldOut = product.soldCount >= product.capacity
+  const isSoldOut = product.soldCount + product.reservedCount >= product.capacity
   const releaseDate = dateFromTimestamp(product.releasesAt)
   const isReleased = releaseDate < new Date()
   const isAvailable =

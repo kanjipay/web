@@ -88,7 +88,7 @@ export default function ChooseBankCrezcoPage({ order }) {
   }
 
   const handleClickBack = async () => {
-    await cancelOrder(order, navigate)
+    await cancelOrder(order.id, navigate)
   }
 
   const handleChooseBank = (bankDatum) => {

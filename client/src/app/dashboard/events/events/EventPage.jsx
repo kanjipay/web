@@ -24,6 +24,7 @@ import { Modal } from "../../../../components/Modal"
 import { CopyToClipboardButton } from "../../../../components/CopyToClipboardButton"
 import { isMobile } from "react-device-detect"
 import TabControl from "../../../../components/TabControl"
+import QRCode from "react-qr-code"
 
 function PublishInfoBanners({ merchant, hasProducts }) {
   const navigate = useNavigate()
@@ -99,6 +100,8 @@ function EventLinkSection({ eventLinkString }) {
       </p>
       <Spacer y={2} />
       <CopyableUrl urlString={eventLinkString} />
+      <Spacer y={2} />
+      <QRCode size={160} value={eventLinkString} id="event-link-qr-code" fgColor={Colors.GREEN} bgColor />
     </div>
   )
 }
@@ -191,6 +194,10 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
 
   function canPublishEvent() {
     return products.length > 0
+  }
+
+  const handleExportQrCodeToPng = () => {
+    
   }
 
   const handleUpdateEvent = async (data) => {
