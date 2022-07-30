@@ -45,16 +45,21 @@ function prepareEmailData(userEmails, notRecentlyContacted){
 
 export const sendRetargetingEmails = async (context) => {
   try {
-    const retargetEvents = findRetargetEvents()
     logger.log("Find Orders for Retargeting Email")
+    const retargetEvents = findRetargetEvents()
+    logger.log("retarget events", retargetEvents)
     const notRecentlyContacted = await findMarketingConsentUsers(retargetEvents)
+    logger.log("notRecentlyContacted", notRecentlyContacted)
     const emailsToSend = prepareEmailData(retargetEvents,notRecentlyContacted)
+    logger.log("emailsToSend", emailsToSend)
     for (const userId in emailsToSend){
+        logger.log(`emailing user ${userId}`)
         const {email, eventUrl, orderItems} = emailsToSend[userId]
-        db().collection(Collection.USER).doc(userId).update({lastMarketingEmailDate: new Date()})
+        await db().collection(Collection.USER).doc(userId).update({lastMarketingEmailDate: new Date()})
+        logger.log(`updated last email date for user ${userId}`)
         await sendEmail([email], TemplateName.RETARGET, {eventUrl, orderItems})
+        logger.log(`emailed user ${userId}`)
     }
-
   } catch (err) {
     logger.error(err)
   }
