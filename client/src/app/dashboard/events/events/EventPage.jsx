@@ -100,8 +100,8 @@ function EventLinkSection({ eventLinkString }) {
       </p>
       <Spacer y={2} />
       <CopyableUrl urlString={eventLinkString} />
-      <Spacer y={2} />
-      <QRCode size={160} value={eventLinkString} id="event-link-qr-code" fgColor={Colors.GREEN} bgColor />
+      {/* <Spacer y={2} />
+      <QRCode size={160} value={eventLinkString} id="event-link-qr-code" fgColor={Colors.GREEN} bgColor /> */}
     </div>
   )
 }
