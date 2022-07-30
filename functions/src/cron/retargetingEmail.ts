@@ -30,13 +30,27 @@ async function findRetargetEvents(){
     return abandonedOrderSnapshot.docs.filter((doc) => doc.data().orderItems[0].eventEndsAt < nHoursAgo(-6))
 }
 
-function prepareEmailData(userEmails, notRecentlyContacted){
+async function findRecentPurchasers(){
+    // get abandoned orderrs within 24-48 hours
+    const paidOrderSnapshot = await db()
+      .collection(Collection.ORDER)
+      .where("publishScheduledAt", ">", nHoursAgo(48))
+      .where("status", "==", "PAID")
+      .get()
+    logger.log("Got paid orders", {
+      orderCount: paidOrderSnapshot.docs.length,
+    })
+    return new Set(paidOrderSnapshot.docs.map((doc) => doc.data().userId))
+}
+
+
+function prepareEmailData(userEmails, notRecentlyContacted, recentPurchasers){
     let emailsToSend = {}
     userEmails.forEach(event=>{
         const {userId, eventId, merchantId, orderItems} = event.data()
         const eventUrl = `${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         const consentUser = notRecentlyContacted.find(doc => doc.id = userId)
-        if (consentUser) {
+        if (consentUser && !recentPurchasers.has(userId)) {
             emailsToSend[userId] = {email: consentUser.email, eventUrl, eventTitle: orderItems[0].eventTitle}
         }
     })
@@ -46,11 +60,12 @@ function prepareEmailData(userEmails, notRecentlyContacted){
 export const sendRetargetingEmails = async (context) => {
   try {
     logger.log("Find Orders for Retargeting Email")
-    const retargetEvents = findRetargetEvents()
+    const retargetEvents = await findRetargetEvents()
     logger.log("retarget events", retargetEvents)
     const notRecentlyContacted = await findMarketingConsentUsers(retargetEvents)
     logger.log("notRecentlyContacted", notRecentlyContacted)
-    const emailsToSend = prepareEmailData(retargetEvents,notRecentlyContacted)
+    const recentPurchasers = await findRecentPurchasers()
+    const emailsToSend = prepareEmailData(retargetEvents, notRecentlyContacted, recentPurchasers)
     logger.log("emailsToSend", emailsToSend)
     for (const userId in emailsToSend){
         logger.log(`emailing user ${userId}`)
