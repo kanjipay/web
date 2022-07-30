@@ -9,6 +9,6 @@ export function longFormat(date: Date) {
   return `${format(date, "MMM d")} at ${format(date, "HH:mm")}`
 }
 
-export function nDaysAgo(n: number){
-  return new Date(new Date().getTime() - (n * 24 * 60 * 60 * 1000)) 
+export function nHoursAgo(n: number){
+  return new Date(new Date().getTime() - (n * 60 * 60 * 1000)) 
 }

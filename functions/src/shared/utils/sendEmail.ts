@@ -10,7 +10,8 @@ export enum TemplateName {
   MENU_RECEIPT = "MENU_RECEIPT",
   INVITE = "INVITE",
   TICKET_SALE_ALERT = "TICKET_SALE_ALERT",
-  NEW_EVENT = "NEW_EVENT"
+  NEW_EVENT = "NEW_EVENT",
+  RETARGET = "RETARGET"
 }
 
 function addFees(productPrice, quantity, customerFee, currency) {

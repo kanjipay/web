@@ -3,6 +3,7 @@ import mainApp from "./main/mainApp"
 import { cronFunction } from "./cron/cron"
 import { notifyIfPublished } from "./firestore/notifyIfPublished"
 import { backupFirestore } from "./cron/backupFirestore"
+import { sendRetargetingEmails } from "./cron/retargetingEmail"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 const euFunctions = functions.region("europe-west2")
@@ -28,14 +29,25 @@ export const main = euFunctions
   })
   .https.onRequest(mainApp)
 
-export const cron = euFunctions
+export const cron_10m = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
   .pubsub.schedule("every 10 minutes")
   .onRun(cronFunction)
 
-export const backup = euFunctions
+export const cron_backup = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
-  .pubsub.schedule("every 24 hours")
+  .pubsub.schedule("0 1 * * *")
+  .timeZone('Europe/London')
   .onRun(backupFirestore)
 
-export const eventCreate = euFunctions.runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] }).firestore.document('Event/{eventId}').onWrite((  change, context) => notifyIfPublished)
+export const cron_marketing = euFunctions
+  .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
+  .pubsub.schedule("0 11 * * *")
+  .timeZone('Europe/London')
+  .onRun(sendRetargetingEmails)
+
+
+export const eventCreate = euFunctions
+  .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
+  .firestore.document('Event/{eventId}')
+  .onWrite(notifyIfPublished)

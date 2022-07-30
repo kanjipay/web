@@ -2,14 +2,13 @@ import { logger } from "firebase-functions/v1"
 import Collection from "../shared/enums/Collection"
 import { db } from "../shared/utils/admin"
 import { sendgridClient } from "../shared/utils/sendgridClient"
-import { sendEmail } from "../shared/utils/sendEmail"
-import { TemplateName } from "../shared/utils/sendEmail"
-import { nDaysAgo, dateFromTimestamp } from "../shared/utils/time"
+import { sendEmail, TemplateName } from "../shared/utils/sendEmail"
+import { nHoursAgo, dateFromTimestamp } from "../shared/utils/time"
 import { firestore } from "firebase-admin"
 import { fetchDocumentsInArray } from "../shared/utils/fetchDocumentsInArray"
 
 const getConsentingUsers = async (merchantId: string) : Promise<Array<string>> => {
-    const oldestDate = nDaysAgo(90)
+    const oldestDate = nHoursAgo(90*24)
     const ticketPurchasers = await db().collection(Collection.ORDER).where("merchantId","==", merchantId).where('createdAt', '>', oldestDate).get()
     const purchaserIds = new Set(ticketPurchasers.docs.map((doc) => doc.data().userId))
     const userQuery = db().collection(Collection.USER).where("marketingConsentStatus","==", "APPROVED")
