@@ -54,7 +54,7 @@ export function Field({
   )
 }
 
-export function FieldDecorator({ field, prefix, suffix }) {
+export function FieldDecorator({ field, prefix, suffix, style, ...props }) {
   const endingsStyle = {
     padding: "0 12px",
     display: "flex",
@@ -64,7 +64,7 @@ export function FieldDecorator({ field, prefix, suffix }) {
   }
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", ...style }} {...props}>
       {prefix && <div style={endingsStyle}>{prefix}</div>}
       {field}
       {suffix && <div style={endingsStyle}>{suffix}</div>}
