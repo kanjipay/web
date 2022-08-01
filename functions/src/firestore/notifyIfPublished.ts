@@ -6,10 +6,11 @@ import { sendEmail, TemplateName } from "../shared/utils/sendEmail"
 import { nHoursAgo, dateFromTimestamp } from "../shared/utils/time"
 import { firestore } from "firebase-admin"
 import { fetchDocumentsInArray } from "../shared/utils/fetchDocumentsInArray"
+import OrderStatus from "../shared/enums/OrderStatus"
 
 const getConsentingUsers = async (merchantId: string) : Promise<Array<string>> => {
     const oldestDate = nHoursAgo(90*24)
-    const ticketPurchasers = await db().collection(Collection.ORDER).where("merchantId","==", merchantId).where('createdAt', '>', oldestDate).get()
+    const ticketPurchasers = await db().collection(Collection.ORDER).where("merchantId","==", merchantId).where('createdAt', '>', oldestDate).where('status', '==', OrderStatus.PAID).get()
     const purchaserIds = new Set(ticketPurchasers.docs.map((doc) => doc.data().userId))
     const userQuery = db().collection(Collection.USER).where("marketingConsentStatus","==", "APPROVED")
     const marketingConsentUsers = await fetchDocumentsInArray(userQuery,  firestore.FieldPath.documentId(),[...purchaserIds])
@@ -29,7 +30,7 @@ export const notifyIfPublished = async (change, context) => {
         const eventId = change.after.id
         const eventDate = dateFromTimestamp(startsAt.seconds)
         const merchantDoc =  await db().collection(Collection.MERCHANT).doc(merchantId).get()
-        const merchantName = await merchantDoc.data().displayName
+        const merchantName =  merchantDoc.data().displayName
         const consentUserEmails = await getConsentingUsers(merchantId)
         const eventData = {
             merchantName,
@@ -41,7 +42,6 @@ export const notifyIfPublished = async (change, context) => {
         }
         logger.log(consentUserEmails)
         logger.log(eventData)
-        await sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData)
         const emailText =  `New event published \n env ${process.env.ENVIRONMENT} \n merchant ${merchantName} \n title ${title} \n description ${description} \n startsAt ${eventDate}`
         const emailParams = {
             to: "team@mercadopay.co",
@@ -50,7 +50,7 @@ export const notifyIfPublished = async (change, context) => {
             subject: "New Event",
         }
         logger.log("email params", emailParams)
-        await sendgridClient().send(emailParams)
+        await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams)])
     }
    } catch (err) {
     logger.error(err)

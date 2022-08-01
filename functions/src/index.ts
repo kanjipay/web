@@ -3,7 +3,7 @@ import mainApp from "./main/mainApp"
 import { cronFunction } from "./cron/cron"
 import { notifyIfPublished } from "./firestore/notifyIfPublished"
 import { backupFirestore } from "./cron/backupFirestore"
-import { sendRetargetingEmails } from "./cron/retargetingEmail"
+import { retargetOrders } from "./cron/retargetingEmail"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 const euFunctions = functions.region("europe-west2")
@@ -44,7 +44,7 @@ export const cron_marketing = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
   .pubsub.schedule("55 11 * * *")
   .timeZone('Europe/London')
-  .onRun(sendRetargetingEmails)
+  .onRun(retargetOrders)
 
 
 export const eventCreate = euFunctions
