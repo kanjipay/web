@@ -4,7 +4,8 @@ import { db } from "../shared/utils/admin"
 import { nHoursAgo, dateFromTimestamp } from "../shared/utils/time"
 import { fetchDocumentsInArray } from "../shared/utils/fetchDocumentsInArray"
 import { firestore } from "firebase-admin"
-import { TemplateName,sendEmail } from "../shared/utils/sendEmail"
+import { TemplateName } from "../shared/utils/sendEmail"
+import { sendgridClient } from "../shared/utils/sendgridClient"
 import {OrderType} from "../shared/enums/OrderType"
 
 async function findMarketingConsentUsers(orderDocs){
@@ -46,16 +47,27 @@ async function findRecentPurchasers(){
 
 
 function prepareEmailData(userEmails, notRecentlyContacted, recentPurchasers){
-    let emailsToSend = {}
+    let personalizationArray = []
+    let userIds = []
+    const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
+    const templateId = templateIds[TemplateName.RETARGET]  
     userEmails.forEach(event=>{
         const {userId, eventId, merchantId, orderItems} = event.data()
         const eventUrl = `${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         const consentUser = notRecentlyContacted.find(doc => doc.id = userId)
         if (consentUser && !recentPurchasers.has(userId)) {
-            emailsToSend[userId] = {email: consentUser.email, eventUrl, eventTitle: orderItems[0].eventTitle}
+            const personalisationDatum = {
+                        to: consentUser.email,
+                        from:  'team@mercadopay.co',
+                        dynamic_template_data: {eventUrl, eventTitle: orderItems[0].eventTitle},
+                        template_id: templateId,
+            }
+            personalizationArray.push(personalisationDatum)
+            userIds.push(userId)
         }
+            
     })
-    return emailsToSend
+    return {personalizationArray, userIds}
 }
 
 export const retargetOrders = async (context) => {
@@ -66,19 +78,17 @@ export const retargetOrders = async (context) => {
     const notRecentlyContacted = await findMarketingConsentUsers(retargetEvents)
     logger.log("notRecentlyContacted", notRecentlyContacted)
     const recentPurchasers = await findRecentPurchasers()
-    const emailsToSend = prepareEmailData(retargetEvents, notRecentlyContacted, recentPurchasers)
-    logger.log("emailsToSend", emailsToSend)
+    const {personalizationArray, userIds} = prepareEmailData(retargetEvents, notRecentlyContacted, recentPurchasers)
+    logger.log("personalizationArray", personalizationArray)
+    logger.log("userIds", userIds)
     const currentDate = firestore.FieldValue.serverTimestamp()
     const batch = db().batch()
-    for (const userId in emailsToSend){
-        logger.log(`emailing user ${userId}`)
-        const {email, eventUrl, orderItems} = emailsToSend[userId]
+    userIds.forEach((userId) => {
         batch.update(db().collection(Collection.USER).doc(userId),{lastMarketingEmailDate: currentDate})
-        logger.log(`updated last email date for user ${userId}`)
-        await sendEmail([email], TemplateName.RETARGET, {eventUrl, orderItems})
-        logger.log(`emailed user ${userId}`)
-    }
+    })
     batch.commit()
+    sendgridClient().send(personalizationArray)
+ 
   } catch (err) {
     logger.error(err)
   }
