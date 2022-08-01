@@ -150,7 +150,6 @@ function FilterControl({ filterDatum, onChange, filtersListData }) {
                     }}
                   >
                     <CheckBox
-                      length={24}
                       style={{ flexShrink: 100 }}
                       color={Colors.BLACK}
                       value={valueDatum.isSelected}

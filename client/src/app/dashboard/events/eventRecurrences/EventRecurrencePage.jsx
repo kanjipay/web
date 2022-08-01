@@ -21,6 +21,7 @@ import { CopyableUrl } from "../events/EventPage";
 import Popup from "reactjs-popup";
 import { ButtonTheme } from "../../../../components/ButtonTheme";
 import { Modal } from "../../../../components/Modal";
+import { ResultType } from "../../../../components/ResultBanner";
 
 export default function EventRecurrencePage({ eventRecurrence, productRecurrences, merchant }) {
   const { eventRecurrenceId, merchantId } = useParams()
@@ -28,6 +29,11 @@ export default function EventRecurrencePage({ eventRecurrence, productRecurrence
 
   const handleSaveSchedule = async data => {
     await updateDoc(Collection.EVENT_RECURRENCE.docRef(eventRecurrenceId), data)
+
+    return {
+      resultType: ResultType.SUCCESS,
+      message: "Changes saved"
+    }
   }
 
   const handleSaveEventDetails = async data => {
@@ -62,6 +68,11 @@ export default function EventRecurrencePage({ eventRecurrence, productRecurrence
     promises.push(updateRecurrence)
 
     await Promise.all(promises)
+
+    return {
+      resultType: ResultType.SUCCESS,
+      message: "Changes saved"
+    }
   }
 
   const handleDeleteEventSchedule = async () => {

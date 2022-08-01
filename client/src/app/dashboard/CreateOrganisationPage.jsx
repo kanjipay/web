@@ -9,7 +9,6 @@ import {
 import { Colors } from "../../enums/Colors"
 import Form, { generateValidator } from "../../components/Form"
 import { IntField } from "../../components/input/IntField"
-import { ResultType } from "../../components/ResultBanner"
 import { getMerchantStorageRef } from "../../utils/helpers/storage"
 import { auth } from "../../utils/FirebaseUtils"
 import { onIdTokenChanged } from "firebase/auth"
@@ -19,6 +18,7 @@ import { getCurrencyCode } from "../../utils/helpers/money"
 import { uploadImage } from "../../utils/helpers/uploadImage"
 import SimpleImagePicker from "../../components/SimpleImagePicker"
 import { isMobile } from "react-device-detect"
+import { organiserTermsVersion } from "../../utils/constants"
 
 export default function CreateOrganisationPage({ authUser }) {
   const navigate = useNavigate()
@@ -34,6 +34,7 @@ export default function CreateOrganisationPage({ authUser }) {
     const body = {
       ...data,
       photo: photoFile.name,
+      organiserTermsVersion: organiserTermsVersion
     }
 
     const response = await NetworkManager.post("/merchants/create", body)
@@ -48,8 +49,6 @@ export default function CreateOrganisationPage({ authUser }) {
     await uploadImage(ref, photoFile)
 
     navigate(`/dashboard/o/${merchantId}/events/create`)
-
-    return { resultType: ResultType.SUCCESS }
   }
 
   return (
@@ -157,7 +156,7 @@ export default function CreateOrganisationPage({ authUser }) {
           submitTitle="Create organisation"
         />
         <Spacer y={3} />
-        <div>
+        <p className="text-caption">
           By creating a Mercado organiser account you agree to our{" "}
           <a
             target="_blank"
@@ -165,8 +164,8 @@ export default function CreateOrganisationPage({ authUser }) {
             href="/legal/organiser-terms-and-conditions"
           >
             Terms and Conditions
-          </a>
-        </div>
+          </a>.
+        </p>
         <Spacer y={6} />
       </div>
     </div>

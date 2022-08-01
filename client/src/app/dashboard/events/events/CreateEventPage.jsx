@@ -36,9 +36,6 @@ export default function CreateEventPage() {
       eventCreateInterval
     } = data
 
-    console.log(startsAt)
-    console.log(typeof startsAt)
-
     if (isRecurring) {
       const eventRecurrenceId = uuid()
       const ref = getEventRecurrenceStorageRef(merchantId, eventRecurrenceId, photo.file.name)
@@ -176,11 +173,11 @@ export default function CreateEventPage() {
                       name: "maxTicketsPerPerson",
                       input: <IntField maxChars={3} />,
                     },
-                    // {
-                    //   name: "isRecurring",
-                    //   label: "Make event recurring",
-                    //   input: <CheckBox />
-                    // },
+                    {
+                      name: "isRecurring",
+                      label: "Make event recurring",
+                      input: <CheckBox />
+                    },
                     {
                       name: "interval",
                       input: <TimeIntervalPicker prefix="Every" />,

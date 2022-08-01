@@ -3,7 +3,7 @@ import Tick from "../assets/icons/Tick"
 import { Colors } from "../enums/Colors"
 
 export default function CheckBox({
-  length = 32,
+  length = 24,
   color = Colors.BLACK,
   name,
   value,

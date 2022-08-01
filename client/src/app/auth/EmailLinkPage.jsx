@@ -141,7 +141,10 @@ export default function EmailLinkPage() {
             formGroupData={[
               {
                 explanation: "Fill in your name to complete your profile.",
-                items: [{ name: "firstName" }, { name: "lastName" }],
+                items: [
+                  { name: "firstName" },
+                  { name: "lastName" }
+              ],
               },
             ]}
             onSubmit={handleNameSubmit}

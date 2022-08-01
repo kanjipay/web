@@ -1,6 +1,6 @@
 import { Colors } from "../enums/Colors"
 
-export function Modal({ children, modalStyle }) {
+export function Modal({ children, style, modalStyle }) {
   return (
     <div
       style={{
@@ -8,6 +8,7 @@ export function Modal({ children, modalStyle }) {
         width: "100vw",
         backgroundColor: "#00000088",
         position: "relative",
+        ...style
       }}
     >
       <div

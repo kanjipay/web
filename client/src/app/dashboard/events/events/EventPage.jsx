@@ -27,6 +27,9 @@ import TabControl from "../../../../components/TabControl"
 import QRCode from "react-qr-code"
 import { Canvg } from "canvg"
 import Dropdown from "../../../../components/input/Dropdown"
+import { NetworkManager } from "../../../../utils/NetworkManager"
+import GuestlistTab from "./GuestlistTab"
+import LoadingPage from "../../../../components/LoadingPage"
 
 function PublishInfoBanners({ merchant, hasProducts }) {
   const navigate = useNavigate()
@@ -149,7 +152,7 @@ function EventLinkSection({ eventLinkString }) {
   return (
     <div>
       <h3 className="header-s">Plain event link</h3>
-      <Spacer y={2} />
+      <Spacer y={3} />
       <p className="text-body-faded">
         This is the link customers can use to view your event and buy tickets.
       </p>
@@ -157,7 +160,12 @@ function EventLinkSection({ eventLinkString }) {
       <CopyableUrl urlString={eventLinkString} />
       <Spacer y={6} />
       <h3 className="header-s">QR code event link</h3>
-      <Spacer y={4} />
+
+      <Spacer y={3} />
+      <p className="text-body-faded">
+        Selling tickets on the door, or creating a promotional poster? Download a QR code that links straight to this event.
+      </p>
+      <Spacer y={3} />
       <div  style={{
         display: isMobile ? "block" : "flex",
         columnGap: 24
@@ -307,16 +315,13 @@ function AttributionLinkSection({ attributionLinks }) {
 export default function EventPage({ merchant, event, products, eventRecurrence }) {
   const navigate = useNavigate()
   const docRef = Collection.EVENT.docRef(event.id)
-  const { merchantId } = useParams()
+  const { merchantId, eventId } = useParams()
   const [attributionLinks, setAttributionLinks] = useState(null)
+  const [guestlistData, setGuestlistData] = useState(null)
   const publishButtonRef = useRef(null)
 
   function canPublishEvent() {
     return products.length > 0
-  }
-
-  const handleExportQrCodeToPng = () => {
-    
   }
 
   const handleUpdateEvent = async (data) => {
@@ -353,6 +358,11 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
     promises.push(updateDoc(docRef, uploadData))
 
     await Promise.all(promises)
+
+    return {
+      resultType: ResultType.SUCCESS,
+      message: "Changes saved"
+    }
   }
 
   const handleCreateProduct = () => {
@@ -374,11 +384,19 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   const eventLinkString = eventLink.href
 
   useEffect(() => {
-    Collection.ATTRIBUTION_LINK.queryOnChange(
+    return Collection.ATTRIBUTION_LINK.queryOnChange(
       setAttributionLinks,
       where("merchantId", "==", merchantId)
     )
   }, [merchantId])
+
+  useEffect(() => {
+    NetworkManager.get(
+      `/merchants/m/${merchantId}/eventAttendees/${eventId}`
+    ).then((res) => {
+      setGuestlistData(res.data)
+    })
+  }, [eventId, merchantId])
 
   const eventDetails = <div style={{ maxWidth: 500 }}>
     <Form
@@ -601,6 +619,24 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
     </div>
   )
 
+  let guestlistTab
+
+  if (guestlistData) {
+    if (event.isPublished) {
+      if (guestlistData.length > 0) {
+        guestlistTab = <div style={{ maxWidth: 500 }}>
+          <GuestlistTab event={event} guestlistData={guestlistData} />
+        </div>
+      } else {
+        guestlistTab = <p className="text-body-faded">No guests yet.</p>
+      }
+    } else {
+      guestlistTab = <p className="text-body-faded">Your event isn't published yet. You'll be able to see your guestlist here once it is.</p>
+    }
+  } else {
+    guestlistTab = <LoadingPage />
+  }
+
   return (
     <div>
       <Spacer y={2} />
@@ -651,9 +687,10 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
       <TabControl 
         name="event-page"
         tabs={{
-          "Event details": eventDetails, 
+          "Event details": eventDetails,
           "Ticket types": ticketTypes,
-          "Event links": eventLinks
+          "Event links": eventLinks,
+          "Guestlist": guestlistTab
         }}
       />
 

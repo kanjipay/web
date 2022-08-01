@@ -159,7 +159,7 @@ export default function Form({
       />
       {result && (
         <div>
-          <Spacer y={3} />
+          <Spacer y={2} />
           <ResultBanner
             resultType={result.resultType}
             message={result.message}

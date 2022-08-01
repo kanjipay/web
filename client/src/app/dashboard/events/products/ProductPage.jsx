@@ -18,6 +18,7 @@ import { ButtonTheme } from "../../../../components/ButtonTheme"
 import { Modal } from "../../../../components/Modal"
 import { getCurrencySymbol } from "../../../../utils/helpers/money"
 import CheckBox from "../../../../components/CheckBox"
+import { ResultType } from "../../../../components/ResultBanner"
 
 export default function ProductPage({ event, products, merchant }) {
   const { productId } = useParams()
@@ -39,7 +40,13 @@ export default function ProductPage({ event, products, merchant }) {
         capacity: parseInt(data.capacity, 10),
       }
     }
+
     await updateDoc(docRef, update)
+
+    return {
+      resultType: ResultType.SUCCESS,
+      message: "Changes"
+    }
   }
 
   const handleDeleteProduct = async () => {

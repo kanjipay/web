@@ -4,7 +4,10 @@ import NavBar from "../../components/NavBar";
 import Spacer from "../../components/Spacer";
 
 export function LegalDocument({ data }) {
-  const { title, lastUpdated, definitions, sections } = data;
+  const { title, definitions, sections, version } = data;
+
+  const [year, month, day] = version.split(".").map(x => parseInt(x, 10))
+  const lastUpdated = new Date(year, month - 1, day)
 
   return <div className="container">
     <Helmet>

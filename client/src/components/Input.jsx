@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Colors } from "../enums/Colors"
+import CheckBox from "./CheckBox"
 import Spacer from "./Spacer"
 
 const textInputStyle = {
@@ -59,31 +60,47 @@ export function InputGroup({
   }, [validators, value])
 
   return visible ?
-    <label>
-      <span className="header-xs">
-        {label + (required ? "" : " (optional)")}
-      </span>
-      {explanation ? (
-        <div>
-          <Spacer y={2} />
-          <p className="text-body-faded">{explanation}</p>
-          <Spacer y={2} />
+    input.type === CheckBox ?
+      <label>
+        <div style={{ display: "flex", columnGap: 16, alignItems: "center" }}>
+          {inputArea}
+          <p className="header-xs">{label}</p>
         </div>
-      ) : (
-        <Spacer y={1} />
-      )}
-
-      {inputArea}
-      {validationMessage.length > 0 && isShowingValidationErrors && (
-        <div>
+        {validationMessage.length > 0 && isShowingValidationErrors && (
+          <div>
+            <Spacer y={1} />
+            <p className="text-caption" style={{ color: Colors.RED }}>
+              {validationMessage}
+            </p>
+          </div>
+        )}
+        <Spacer y={3} />
+      </label> :
+      <label>
+        <span className="header-xs">
+          {label + (required ? "" : " (optional)")}
+        </span>
+        {explanation ? (
+          <div>
+            <Spacer y={2} />
+            <p className="text-body-faded">{explanation}</p>
+            <Spacer y={2} />
+          </div>
+        ) : (
           <Spacer y={1} />
-          <p className="text-caption" style={{ color: Colors.RED }}>
-            {validationMessage}
-          </p>
-        </div>
-      )}
-      <Spacer y={3} />
-    </label> :
+        )}
+
+        {inputArea}
+        {validationMessage.length > 0 && isShowingValidationErrors && (
+          <div>
+            <Spacer y={1} />
+            <p className="text-caption" style={{ color: Colors.RED }}>
+              {validationMessage}
+            </p>
+          </div>
+        )}
+        <Spacer y={3} />
+      </label> :
     <div></div>
 }
 

@@ -38,13 +38,6 @@ export function Brand() {
   const { width } = useWindowSize()
   const isMobile = width < 750
   const [opacity, setOpacity] = useState(0)
-  const [authUser, setAuthUser] = useState(null)
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (u) => {
-      setAuthUser(u)
-    })
-  })
 
   useEffect(() => {
     const handleScroll = () => {

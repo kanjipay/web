@@ -164,8 +164,6 @@ export default function ProductPage({ merchant, event, product, user }) {
         successState,
         showsBack: true,
         backPath: pathname,
-        requiresPassword: false,
-        requiredEmailDomain: getEmailDomain(),
       })
     }
   }
@@ -173,8 +171,8 @@ export default function ProductPage({ merchant, event, product, user }) {
   const handleChangeEmail = () => {
     openAuthPage({
       successPath: pathname,
-      requiresPassword: false,
-      requiredEmailDomain: getEmailDomain(),
+      showsBack: true,
+      backPath: pathname,
     })
   }
 
