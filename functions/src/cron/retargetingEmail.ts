@@ -16,7 +16,7 @@ async function findMarketingConsentUsers(orderDocs){
     const userQuery = db().collection(Collection.USER).where("marketingConsentStatus","==", "APPROVED")
     logger.log('uniqueUserIds',uniqueUserIds)
     const marketingConsentUsers = await fetchDocumentsInArray(userQuery,  firestore.FieldPath.documentId(),[...uniqueUserIds])
-    return marketingConsentUsers.filter((doc) => !(doc.lastMarketingEmailDate && doc.lastMarketingEmailDate > subDays(new Date(),7))) // annoying not working
+    return marketingConsentUsers.filter((doc) => !(doc.lastMarketingEmailDate && dateFromTimestamp(doc.lastMarketingEmailDate) > subDays(new Date(),7))) // annoying not working
 }
 
 async function findRetargetEvents(){
