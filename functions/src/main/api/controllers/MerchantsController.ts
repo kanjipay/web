@@ -18,23 +18,17 @@ export class MerchantsController extends BaseController {
 
       const {
         accountNumber,
-        address,
         companyName,
         displayName,
         sortCode,
-        description,
         currency,
-        photo,
         organiserTermsVersion
       } = req.body
 
       const merchantId = uuid()
       const merchantData = {
-        address,
         companyName,
-        photo,
         displayName,
-        description,
         currency,
         sortCode,
         accountNumber,
@@ -47,6 +41,7 @@ export class MerchantsController extends BaseController {
           version: organiserTermsVersion
         }
       }
+      
       logger.log("Creating merchant and membership", {
         merchantId,
         merchantData,

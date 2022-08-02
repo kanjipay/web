@@ -15,11 +15,10 @@ import Collection from "../../../../enums/Collection"
 import { getCurrencySymbol } from "../../../../utils/helpers/money"
 
 export default function CreateProductPage({ event, products, merchant }) {
-  const { merchantId } = useParams()
+  const { merchantId, eventId } = useParams()
   const navigate = useNavigate()
   const handleCreateProduct = async (data) => {
-    const { title, description, releasesAt, earliestEntryAt, latestEntryAt } =
-      data
+    const { title } = data
 
     const price = parseFloat(data.price) * 100
     const capacity = parseInt(data.capacity, 10)
@@ -30,16 +29,12 @@ export default function CreateProductPage({ event, products, merchant }) {
     )
 
     await addDoc(Collection.PRODUCT.ref, {
-      eventId: event.id,
+      eventId,
       merchantId,
       isAvailable: true,
       title,
-      description,
       price,
       capacity,
-      releasesAt,
-      earliestEntryAt: earliestEntryAt ?? null,
-      latestEntryAt: latestEntryAt ?? null,
       sortOrder: currLargestSortOrder + 1,
       soldCount: 0,
       reservedCount: 0,
@@ -64,9 +59,6 @@ export default function CreateProductPage({ event, products, merchant }) {
       <Spacer y={3} />
       <div style={{ maxWidth: 500 }}>
           <Form
-            initialDataSource={{
-              releasesAt: new Date(),
-            }}
             formGroupData={[
               {
                 explanation:
@@ -75,10 +67,11 @@ export default function CreateProductPage({ event, products, merchant }) {
                   {
                     name: "title",
                   },
-                  {
-                    name: "description",
-                    input: <TextArea />,
-                  },
+                  // {
+                  //   name: "description",
+                  //   required: false,
+                  //   input: <TextArea />,
+                  // },
                   {
                     name: "price",
                     input: <FloatField />,
@@ -94,27 +87,29 @@ export default function CreateProductPage({ event, products, merchant }) {
                     explanation: "Once this number of tickets has been sold for this ticket type, it will show as sold out.",
                     input: <IntField />,
                   },
-                  {
-                    name: "releasesAt",
-                    label: "Release date",
-                    input: <DatePicker />,
-                  },
-                  {
-                    name: "earliestEntryAt",
-                    label: "Earliest entry",
-                    explanation:
-                      "Optionally set the earliest time event goers will be admitted with this ticket.",
-                    input: <DatePicker />,
-                    required: false,
-                  },
-                  {
-                    name: "latestEntryAt",
-                    label: "Latest entry",
-                    explanation:
-                      "Optionally set the latest time event goers will be admitted with this ticket.",
-                    input: <DatePicker />,
-                    required: false,
-                  },
+                  // {
+                  //   name: "releasesAt",
+                  //   label: "Release date",
+                  //   explanation: "Set a date for the ticket to become available. Leave this blank to make tickets available immediately (as long as the event is published).",
+                  //   required: false,
+                  //   input: <DatePicker />,
+                  // },
+                  // {
+                  //   name: "earliestEntryAt",
+                  //   label: "Earliest entry",
+                  //   explanation:
+                  //     "Set the earliest time event goers will be admitted with this ticket.",
+                  //   input: <DatePicker />,
+                  //   required: false,
+                  // },
+                  // {
+                  //   name: "latestEntryAt",
+                  //   label: "Latest entry",
+                  //   explanation:
+                  //     "Set the latest time event goers will be admitted with this ticket.",
+                  //   input: <DatePicker />,
+                  //   required: false,
+                  // },
                 ],
               },
             ]}

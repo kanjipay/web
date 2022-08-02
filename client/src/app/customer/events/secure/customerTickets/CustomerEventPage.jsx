@@ -20,9 +20,14 @@ import Ticket from "./Ticket"
 import { Helmet } from "react-helmet-async"
 import IconPage from "../../../../../components/IconPage"
 import Cross from "../../../../../assets/icons/Cross"
+import useWindowSize from "../../../../../utils/helpers/useWindowSize"
 
 export default function CustomerEventPage({ events }) {
   const { eventId } = useParams()
+
+  const { width } = useWindowSize()
+  const contentWidth = Math.min(width, 600)
+  const headerImageHeight = contentWidth / 2
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("CustomerEvent", { eventId })
@@ -47,8 +52,8 @@ export default function CustomerEventPage({ events }) {
       <div className="container">
         <EventsAppNavBar
           title={event.title}
-          transparentDepth={50}
-          opaqueDepth={100}
+          transparentDepth={headerImageHeight - 96}
+          opaqueDepth={headerImageHeight - 48}
           back=".."
         />
 

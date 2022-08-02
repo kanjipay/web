@@ -16,6 +16,7 @@ import { useEffect } from "react"
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
 import { addMinutes, format } from "date-fns"
 import { Helmet } from "react-helmet-async"
+import useWindowSize from "../../../../utils/helpers/useWindowSize"
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return (
@@ -89,6 +90,10 @@ export function EventDetails({ event, merchant, artists = [] }) {
 export default function EventPage({ merchant, event, products, artists }) {
   const { eventId, merchantId } = useParams()
 
+  const { width } = useWindowSize()
+  const contentWidth = Math.min(width, 600)
+  const headerImageHeight = contentWidth / 2
+
   useEffect(() => {
     AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
   }, [eventId, merchantId])
@@ -100,15 +105,9 @@ export default function EventPage({ merchant, event, products, artists }) {
     <div className="container">
       <EventsAppNavBar
         title={event.title}
-        transparentDepth={50}
-        opaqueDepth={100}
+        transparentDepth={headerImageHeight - 96}
+        opaqueDepth={headerImageHeight - 48}
         back="../.."
-      />
-
-      <AsyncImage
-        imageRef={getEventStorageRef(event, event.photo)}
-        className="headerImage"
-        alt={merchant.displayName}
       />
 
       <Helmet>
@@ -116,6 +115,12 @@ export default function EventPage({ merchant, event, products, artists }) {
           {`${event.title} | ${merchant.displayName} | Mercado`}
         </title>
       </Helmet>
+
+      <AsyncImage
+        imageRef={getEventStorageRef(event, event.photo)}
+        className="headerImage"
+        alt={merchant.displayName}
+      />
 
       <Spacer y={4} />
 
@@ -145,10 +150,15 @@ export default function EventPage({ merchant, event, products, artists }) {
         <Spacer y={2} />
 
         <EventDetails event={event} merchant={merchant} artists={artists} />
-        <Spacer y={4} />
-        <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
-          {event.description}
-        </ShowMoreText>
+
+        {
+          event.description?.length > 0 && <div>
+            <Spacer y={4} />
+            <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
+              {event.description}
+            </ShowMoreText>
+          </div>
+        }
 
         <Spacer y={4} />
 

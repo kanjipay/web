@@ -45,7 +45,7 @@ export default function ProductPage({ event, products, merchant }) {
 
     return {
       resultType: ResultType.SUCCESS,
-      message: "Changes"
+      message: "Changes saved"
     }
   }
 
@@ -77,7 +77,7 @@ export default function ProductPage({ event, products, merchant }) {
           <Form
             initialDataSource={{
               ...product,
-              releasesAt: dateFromTimestamp(product.releasesAt) ?? new Date(),
+              releasesAt: dateFromTimestamp(product.releasesAt),
               earliestEntryAt: dateFromTimestamp(product.earliestEntryAt),
               latestEntryAt: dateFromTimestamp(product.latestEntryAt),
               price: product.price / 100,
@@ -92,6 +92,7 @@ export default function ProductPage({ event, products, merchant }) {
                   {
                     name: "description",
                     input: <TextArea />,
+                    required: false
                   },
                   {
                     name: "price",
@@ -114,6 +115,7 @@ export default function ProductPage({ event, products, merchant }) {
                     name: "releasesAt",
                     label: "Release date",
                     input: <DatePicker />,
+                    required: false,
                     disabled: !!isPublished,
                   },
                   {

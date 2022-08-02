@@ -27,6 +27,7 @@ import { getDoc } from "firebase/firestore"
 import { logMetaPixelEvent } from "../../../../utils/MetaPixelLogger"
 import Collection from "../../../../enums/Collection"
 import ShowMoreText from "react-show-more-text"
+import useWindowSize from "../../../../utils/helpers/useWindowSize"
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length === 0) {
@@ -62,6 +63,10 @@ export default function ProductPage({ merchant, event, product, user }) {
   const [isLoading, setIsLoading] = useState(false)
 
   const customerFee = merchant.customerFee ?? 0.1
+
+  const { width } = useWindowSize()
+  const contentWidth = Math.min(width, 600)
+  const headerImageHeight = contentWidth / 2
 
   const { isPublished } = event
 
@@ -202,8 +207,8 @@ export default function ProductPage({ merchant, event, product, user }) {
     return <div className="container">
       <EventsAppNavBar
         title={product.title}
-        transparentDepth={50}
-        opaqueDepth={100}
+        transparentDepth={headerImageHeight - 96}
+        opaqueDepth={headerImageHeight - 48}
         back="../.."
       />
 
@@ -224,11 +229,16 @@ export default function ProductPage({ merchant, event, product, user }) {
       <div className="content">
         <h1 className="header-l">{product.title}</h1>
 
-        <Spacer y={3} />
+        {
+          product.description?.length > 0 && <div>
+            <Spacer y={3} />
 
-        <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
-          {product.description}
-        </ShowMoreText>
+            <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
+              {product.description}
+            </ShowMoreText>
+          </div>
+        }
+
         {product.earliestEntryAt && (
           <div>
             <Spacer y={3} />

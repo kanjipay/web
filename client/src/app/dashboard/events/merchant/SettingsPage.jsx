@@ -13,14 +13,6 @@ import { uploadImage } from "../../../../utils/helpers/uploadImage"
 import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import TabControl from "../../../../components/TabControl"
-import { useEffect } from "react"
-import { auth } from "../../../../utils/FirebaseUtils"
-import { GoogleAuthProvider } from "firebase/auth"
-
-class CalendarProvider {
-  static GOOGLE = "GOOGLE"
-  static APPLE = "APPLE"
-}
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
@@ -29,6 +21,10 @@ export default function SettingsPage({ merchant }) {
   const handleSaveDetails = async (data) => {
     const promises = []
     const file = data.photo?.file
+    const storageRef = data.photo?.storageRef
+
+    console.log("hasFile: ", !!file)
+    console.log("hasStorageRef: ", !!storageRef)
 
     if (file) {
       const merchantRef = getMerchantStorageRef(merchantId, file.name)
@@ -36,7 +32,9 @@ export default function SettingsPage({ merchant }) {
       data.photo = { storageRef: merchantRef }
 
       promises.push(uploadImage(merchantRef, file))
-
+    }
+    
+    if (!storageRef && merchant.photo) {
       promises.push(
         deleteObject(getMerchantStorageRef(merchantId, merchant.photo))
       )
@@ -65,9 +63,9 @@ export default function SettingsPage({ merchant }) {
     <Form
       initialDataSource={{
         ...merchant,
-        photo: {
+        photo: merchant.photo ? {
           storageRef: getMerchantStorageRef(merchantId, merchant.photo),
-        },
+        } : {},
       }}
       formGroupData={[
         {
@@ -81,14 +79,17 @@ export default function SettingsPage({ merchant }) {
             {
               name: "description",
               input: <TextArea />,
+              required: false,
             },
             {
               name: "photo",
               input: <SimpleImagePicker isRemovable={false} />,
+              required: false
             },
             {
               name: "address",
               label: "Business address",
+              required: false
             },
           ],
         },

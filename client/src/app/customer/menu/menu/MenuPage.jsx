@@ -93,7 +93,7 @@ export default function MenuPage({
       <AsyncImage
         imageRef={getMerchantStorageRef(merchant.id, merchant.photo)}
         className="headerImage"
-        alt={merchant.display_name}
+        alt={merchant.displayName}
       />
       <Spacer y={3} />
       <div className="content">

@@ -327,20 +327,25 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   const handleUpdateEvent = async (data) => {
     const promises = []
     const file = data.photo?.file
+    const storageRef = data.photo?.storageRef
 
     if (file) {
       const uploadRef = getEventStorageRef(
         event,
         file.name
       )
-      const existingRef = getEventStorageRef(
-        event,
-        event.photo
-      )
+      
 
       data.photo = { storageRef: uploadRef }
 
       promises.push(uploadImage(uploadRef, file))
+    }
+
+    if (!storageRef && event.photo) {
+      const existingRef = getEventStorageRef(
+        event,
+        event.photo
+      )
 
       promises.push(deleteObject(existingRef))
     }
@@ -349,10 +354,6 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
       ...data,
       photo: file?.name ?? event.photo,
       maxTicketsPerPerson: parseInt(data.maxTicketsPerPerson, 10),
-    }
-
-    if (!uploadData.publishScheduledAt) {
-      delete uploadData.publishScheduledAt
     }
 
     promises.push(updateDoc(docRef, uploadData))
@@ -375,7 +376,6 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   }
 
   const handlePublishEvent = async () => {
-    console.log("publish event")
     await updateDoc(docRef, { isPublished: true, publishedAt: serverTimestamp() })
   }
 
@@ -405,12 +405,12 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
         startsAt: dateFromTimestamp(event.startsAt) ?? new Date(),
         endsAt: dateFromTimestamp(event.endsAt) ?? new Date(),
         publishScheduledAt: dateFromTimestamp(event.publishScheduledAt),
-        photo: {
+        photo: event.photo ? {
           storageRef: getEventStorageRef(
             event,
             event.photo
           ),
-        },
+        } : {},
         tags: event.tags ?? [],
       }}
       formGroupData={[
@@ -422,6 +422,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
             { name: "title" },
             {
               name: "description",
+              required: false,
               input: <TextArea />,
             },
             {
@@ -432,6 +433,7 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
             {
               name: "photo",
               input: <SimpleImagePicker isRemovable={false} />,
+              required: false
             },
             {
               name: "address",

@@ -9,11 +9,16 @@ import EventListing from "../event/EventListing"
 import EventsAppNavBar from "../secure/EventsAppNavBar"
 import { Helmet } from "react-helmet-async"
 import ShowMoreText from "react-show-more-text"
+import useWindowSize from "../../../../utils/helpers/useWindowSize"
 
 export default function MerchantPage({ merchant }) {
   const merchantId = merchant.id
   const [events, setEvents] = useState([])
   const [pastEvents, setPastEvents] = useState([])
+
+  const { width } = useWindowSize()
+  const contentWidth = Math.min(width, 600)
+  const headerImageHeight = contentWidth / 2
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("TicketMerchant", { merchantId })
@@ -43,9 +48,13 @@ export default function MerchantPage({ merchant }) {
     <div className="container">
       <EventsAppNavBar
         title={merchant.displayName}
-        transparentDepth={50}
-        opaqueDepth={100}
+        transparentDepth={headerImageHeight - 96}
+        opaqueDepth={headerImageHeight - 48}
       />
+
+      <Helmet>
+        <title>{`${merchant.displayName} | Mercado`}</title>
+      </Helmet>
 
       <AsyncImage
         imageRef={getMerchantStorageRef(merchant.id, merchant.photo)}
@@ -53,20 +62,22 @@ export default function MerchantPage({ merchant }) {
         alt={merchant.displayName}
       />
 
-      <Helmet>
-        <title>{`${merchant.displayName} | Mercado`}</title>
-      </Helmet>
-
       <Spacer y={4} />
 
       <div className="content">
         <h1 className="header-l">{merchant.displayName}</h1>
 
-        <Spacer y={4} />
+        {
+          merchant.description?.length > 0 && <div>
+            <Spacer y={4} />
 
-        <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
-          {merchant.description}
-        </ShowMoreText>
+            <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
+              {merchant.description}
+            </ShowMoreText>
+          </div>
+        }
+
+        
 
         <Spacer y={4} />
 

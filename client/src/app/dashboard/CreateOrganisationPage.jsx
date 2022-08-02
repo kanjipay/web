@@ -1,5 +1,4 @@
 import { NetworkManager } from "../../utils/NetworkManager"
-import { TextArea } from "../../components/Input"
 import Spacer from "../../components/Spacer"
 import { useNavigate } from "react-router-dom"
 import {
@@ -9,14 +8,9 @@ import {
 import { Colors } from "../../enums/Colors"
 import Form, { generateValidator } from "../../components/Form"
 import { IntField } from "../../components/input/IntField"
-import { getMerchantStorageRef } from "../../utils/helpers/storage"
-import { auth } from "../../utils/FirebaseUtils"
-import { onIdTokenChanged } from "firebase/auth"
 import Dropdown from "../../components/input/Dropdown"
 import { useIntl } from "react-intl"
 import { getCurrencyCode } from "../../utils/helpers/money"
-import { uploadImage } from "../../utils/helpers/uploadImage"
-import SimpleImagePicker from "../../components/SimpleImagePicker"
 import { isMobile } from "react-device-detect"
 import { organiserTermsVersion } from "../../utils/constants"
 
@@ -24,16 +18,10 @@ export default function CreateOrganisationPage({ authUser }) {
   const navigate = useNavigate()
   const intl = useIntl()
 
-  onIdTokenChanged(auth, (user) => {
-    console.log("id token changed")
-  })
-
   const handleCreateMerchant = async (data) => {
-    const { file: photoFile } = data.photo
 
     const body = {
       ...data,
-      photo: photoFile.name,
       organiserTermsVersion: organiserTermsVersion
     }
 
@@ -43,10 +31,6 @@ export default function CreateOrganisationPage({ authUser }) {
 
     await authUser.reload()
     await authUser.getIdTokenResult(true)
-
-    const ref = getMerchantStorageRef(merchantId, photoFile.name)
-
-    await uploadImage(ref, photoFile)
 
     navigate(`/dashboard/o/${merchantId}/events/create`)
   }
@@ -92,26 +76,12 @@ export default function CreateOrganisationPage({ authUser }) {
                   explanation:
                     "Event goers will see this when visiting your event pages.",
                 },
-                {
-                  name: "description",
-                  input: <TextArea />,
-                },
-                {
-                  name: "photo",
-                  explanation:
-                    "This will appear on your organisation's page for event goers to see.",
-                  input: <SimpleImagePicker />,
-                },
-                {
-                  name: "address",
-                  label: "Business address",
-                },
               ],
             },
             {
               title: "Bank details",
               explanation:
-                "Enter the bank details for the bank you want your ticket sales to be paid into. It must be a valid UK or Irish bank account",
+                "Enter the bank details for the account you want ticket sales paid into. It must be a valid UK or Irish bank account",
               items: [
                 {
                   name: "currency",
@@ -128,6 +98,7 @@ export default function CreateOrganisationPage({ authUser }) {
                 },
                 {
                   name: "companyName",
+                  label: "Name on bank account"
                 },
                 {
                   name: "sortCode",
