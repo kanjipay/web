@@ -65,6 +65,13 @@ function prepareEmailData(retargetOrders, notRecentlyContacted, recentPurchasers
                         from:  'team@mercadopay.co',
                         dynamic_template_data: {eventUrl, eventTitle: orderItems[0].eventTitle},
                         template_id: templateId,
+                        asm: {
+                            group_id: 19423,
+                            groups_to_display: [
+                                19423
+                            ],
+                        },
+                        
             }
             messageArray.push(message)
             userIds.push(userId)
