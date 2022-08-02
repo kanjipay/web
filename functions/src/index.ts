@@ -29,20 +29,20 @@ export const main = euFunctions
   })
   .https.onRequest(mainApp)
 
-export const cron_10m = euFunctions
+export const cron10m = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
   .pubsub.schedule("every 10 minutes")
   .onRun(cronFunction)
 
-export const cron_backup = euFunctions
+export const cronBackup = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
   .pubsub.schedule("0 1 * * *")
   .timeZone('Europe/London')
   .onRun(backupFirestore)
 
-export const cron_marketing = euFunctions
+export const cronMarketing = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
-  .pubsub.schedule("55 11 * * *")
+  .pubsub.schedule("0 12 * * *")
   .timeZone('Europe/London')
   .onRun(retargetOrders)
 
