@@ -1,9 +1,10 @@
+import { organiserTermsVersion } from "../../utils/constants"
 import { LegalDocument } from "./LegalDocument"
 
 export default function OrganiserTerms() {
   return <LegalDocument data={{
     title: "Terms and Conditions",
-    lastUpdated: new Date(2022, 6, 21),
+    version: organiserTermsVersion,
     definitions: [
       {
         title: "Terms",

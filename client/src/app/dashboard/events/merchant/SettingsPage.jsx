@@ -11,7 +11,8 @@ import Collection from "../../../../enums/Collection"
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
 import { uploadImage } from "../../../../utils/helpers/uploadImage"
 import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
-
+import Breadcrumb from "../../../../components/Breadcrumb"
+import TabControl from "../../../../components/TabControl"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
@@ -20,6 +21,10 @@ export default function SettingsPage({ merchant }) {
   const handleSaveDetails = async (data) => {
     const promises = []
     const file = data.photo?.file
+    const storageRef = data.photo?.storageRef
+
+    console.log("hasFile: ", !!file)
+    console.log("hasStorageRef: ", !!storageRef)
 
     if (file) {
       const merchantRef = getMerchantStorageRef(merchantId, file.name)
@@ -27,7 +32,9 @@ export default function SettingsPage({ merchant }) {
       data.photo = { storageRef: merchantRef }
 
       promises.push(uploadImage(merchantRef, file))
-
+    }
+    
+    if (!storageRef && merchant.photo) {
       promises.push(
         deleteObject(getMerchantStorageRef(merchantId, merchant.photo))
       )
@@ -39,37 +46,26 @@ export default function SettingsPage({ merchant }) {
         photo: file?.name ?? merchant.photo,
       })
     )
+
+    await Promise.all(promises)
+
+    return {
+      resultType: ResultType.SUCCESS,
+      message: "Changes saved"
+    }
   }
 
   const handleChangeBankDetails = async (data) => {
     window.open("mailto:team@mercadopay.co")
   }
 
-  return (
-    <div>
-    <h1 className="header-m">Organiser Settings</h1>
-    <Spacer y={3}/>
-    <div style={{ maxWidth: 500 }}>
-    {
-        !merchant.crezco?.userId &&  <div style={{ maxWidth: 500 }}>
-        <ResultBanner
-            resultType={ResultType.INFO}
-            message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
-            action={() => {
-              navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
-            }}
-            actionTitle="Connect payments"
-          />
-          <Spacer y={3} />
-        </div>
-      }
-    <Spacer y={3}/>
+  const basicSettingsTab = <div style={{ maxWidth: 500 }}>
     <Form
       initialDataSource={{
         ...merchant,
-        photo: {
+        photo: merchant.photo ? {
           storageRef: getMerchantStorageRef(merchantId, merchant.photo),
-        },
+        } : {},
       }}
       formGroupData={[
         {
@@ -83,14 +79,17 @@ export default function SettingsPage({ merchant }) {
             {
               name: "description",
               input: <TextArea />,
+              required: false,
             },
             {
               name: "photo",
               input: <SimpleImagePicker isRemovable={false} />,
+              required: false
             },
             {
               name: "address",
               label: "Business address",
+              required: false
             },
           ],
         },
@@ -98,7 +97,9 @@ export default function SettingsPage({ merchant }) {
       onSubmit={handleSaveDetails}
       submitTitle="Save changes"
     />
-    <Spacer y={6} />
+  </div>
+
+  const bankDetailsTab = <div style={{ maxWidth: 500 }}>
     <Form
       initialDataSource={merchant}
       formGroupData={[
@@ -144,6 +145,36 @@ export default function SettingsPage({ merchant }) {
       onSubmit={handleChangeBankDetails}
     />
   </div>
+
+  return <div>
+    <Spacer y={2} />
+    <Breadcrumb pageData={[
+      { title: "Settings" }
+    ]}/>
+    <Spacer y={2} />
+    <h1 className="header-l">Organiser Settings</h1>
+    <Spacer y={3}/>
+    <div style={{ maxWidth: 500 }}>
+      {
+        !merchant.crezco?.userId && <div style={{ maxWidth: 500 }}>
+          <ResultBanner
+            resultType={ResultType.INFO}
+            message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
+            action={() => {
+              navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
+            }}
+            actionTitle="Connect payments"
+          />
+          <Spacer y={3} />
+        </div>
+      }
     </div>
-  )
+
+    <TabControl tabs={{ 
+      "Basic details": basicSettingsTab,
+      "Bank details": bankDetailsTab
+    }}/>
+
+    <Spacer y={9} />
+  </div>
 }

@@ -11,11 +11,19 @@ export default function ProductListing({ product, currency }) {
   const [isHovering, setIsHovering] = useState(false)
   const { title, releasesAt, soldCount, capacity, price } = product
   const releaseDate = dateFromTimestamp(releasesAt)
-  const hasReleased = releaseDate < new Date()
-  const label = `Release${hasReleased ? "d" : "s"} on ${format(
-    releaseDate,
-    "do MMM"
-  )} at ${format(releaseDate, "HH:mm")}`
+
+  let label
+
+  if (releaseDate) {
+    const hasReleased = releaseDate < new Date()
+    label = `Release${hasReleased ? "d" : "s"} on ${format(
+      releaseDate,
+      "do MMM"
+    )} at ${format(releaseDate, "HH:mm")}`
+  } else {
+    label = "Released"
+  }
+  
 
   return (
     <Link to={`p/${product.id}`}>

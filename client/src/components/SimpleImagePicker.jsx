@@ -5,8 +5,6 @@ import { getDownloadURL } from "firebase/storage"
 import { isMobile } from "react-device-detect"
 
 export default function SimpleImagePicker({
-  height = 200,
-  aspectRatio = 2,
   name,
   value = { file: null, storageRef: null },
   onChange,

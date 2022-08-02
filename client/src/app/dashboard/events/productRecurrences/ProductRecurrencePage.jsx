@@ -8,6 +8,7 @@ import { FieldDecorator, FloatField, IntField } from "../../../../components/inp
 import LoadingPage from "../../../../components/LoadingPage"
 import MainButton from "../../../../components/MainButton"
 import { Modal } from "../../../../components/Modal"
+import { ResultType } from "../../../../components/ResultBanner"
 import Spacer from "../../../../components/Spacer"
 import TimeIntervalPicker from "../../../../components/TimeIntervalPicker"
 import { getCurrencySymbol } from "../../../../utils/helpers/money"
@@ -24,6 +25,11 @@ export default function ProductRecurrencePage({ eventRecurrence, productRecurren
       price: parseFloat(data.price) * 100,
       capacity: parseInt(data.capacity, 10)
     })
+
+    return {
+      resultType: ResultType.SUCCESS,
+      message: "Changes saved"
+    }
   }
 
   const handleDeleteProductRecurrence = async () => {

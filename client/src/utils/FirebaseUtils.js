@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app"
-import { getFirestore } from "firebase/firestore"
+import { getFirestore, initializeFirestore } from "firebase/firestore"
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions"
 import { getStorage } from "firebase/storage"
 // import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
@@ -9,7 +9,8 @@ import { getAuth } from "firebase/auth"
 const firebaseApp = initializeApp(
   JSON.parse(process.env.REACT_APP_FIREBASE_OPTIONS)
 )
-const db = getFirestore()
+
+const db = initializeFirestore(firebaseApp, { ignoreUndefinedProperties: true })
 const storage = getStorage()
 const auth = getAuth()
 const functions = getFunctions(firebaseApp)

@@ -5,6 +5,7 @@ import Spacer from "../../../../components/Spacer"
 import { formatCurrency } from "../../../../utils/helpers/money"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { format } from "date-fns"
+import { useState } from "react"
 
 export default function ProductListing({
   product,
@@ -13,6 +14,8 @@ export default function ProductListing({
   isPublished,
   ...props
 }) {
+  const [isHovering, setIsHovering] = useState(false)
+
   const isSoldOut = product.soldCount + product.reservedCount >= product.capacity
   const releaseDate = dateFromTimestamp(product.releasesAt)
   const isReleased = releaseDate < new Date()
@@ -21,7 +24,10 @@ export default function ProductListing({
     product.soldCount + product.reservedCount < product.capacity &&
     isReleased &&
     isPublished
-  const backgroundColor = isAvailable ? Colors.BLACK : Colors.OFF_WHITE
+  const backgroundColor = isAvailable ? 
+    (isHovering ? Colors.OFF_BLACK_LIGHT : Colors.BLACK) : 
+    Colors.OFF_WHITE
+
   const textColor = isAvailable ? Colors.WHITE : Colors.BLACK
 
   let message
@@ -49,6 +55,8 @@ export default function ProductListing({
         display: "flex",
         alignItems: "center",
       }}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       test-name="product-listing"
       {...props}
     >

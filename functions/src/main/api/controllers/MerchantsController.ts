@@ -18,22 +18,17 @@ export class MerchantsController extends BaseController {
 
       const {
         accountNumber,
-        address,
         companyName,
         displayName,
         sortCode,
-        description,
         currency,
-        photo,
+        organiserTermsVersion
       } = req.body
 
       const merchantId = uuid()
       const merchantData = {
-        address,
         companyName,
-        photo,
         displayName,
-        description,
         currency,
         sortCode,
         accountNumber,
@@ -41,7 +36,12 @@ export class MerchantsController extends BaseController {
         mercadoFee: 0.03,
         createdAt: firestore.FieldValue.serverTimestamp(),
         approvalStatus: "PENDING",
+        organiserTerms: {
+          signedAt: firestore.FieldValue.serverTimestamp(),
+          version: organiserTermsVersion
+        }
       }
+      
       logger.log("Creating merchant and membership", {
         merchantId,
         merchantData,

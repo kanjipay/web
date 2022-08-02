@@ -1,11 +1,9 @@
-import { onAuthStateChanged } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { Link, Route, Routes } from "react-router-dom"
 import { ButtonTheme } from "../../components/ButtonTheme"
 import MobilePopupMenu from "../../components/MobilePopupMenu"
 import SmallButton from "../../components/SmallButton"
 import { Colors } from "../../enums/Colors"
-import { auth } from "../../utils/FirebaseUtils"
 import useWindowSize from "../../utils/helpers/useWindowSize"
 import NotFound from "../shared/NotFoundPage"
 import HomePage from "./HomePage"
@@ -38,13 +36,6 @@ export function Brand() {
   const { width } = useWindowSize()
   const isMobile = width < 750
   const [opacity, setOpacity] = useState(0)
-  const [authUser, setAuthUser] = useState(null)
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (u) => {
-      setAuthUser(u)
-    })
-  })
 
   useEffect(() => {
     const handleScroll = () => {

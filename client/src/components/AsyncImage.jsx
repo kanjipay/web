@@ -2,10 +2,15 @@ import { getDownloadURL } from "firebase/storage"
 import { useEffect, useState } from "react"
 import { Colors } from "../enums/Colors"
 
-export default function AsyncImage({ imageRef, alt = "", ...props }) {
+export default function AsyncImage({ imageRef, alt = "", style, ...props }) {
   const [url, setUrl] = useState(null)
 
   useEffect(() => {
+    if (!imageRef) {
+      setUrl("/img/default-background.png")
+      return
+    }
+
     getDownloadURL(imageRef)
       .then((url) => {
         setUrl(url)
@@ -20,9 +25,9 @@ export default function AsyncImage({ imageRef, alt = "", ...props }) {
       src={url}
       alt={alt}
       {...props}
-      style={{ objectFit: "cover", ...props.style }}
+      style={{ objectFit: "cover", ...style }}
     />
   ) : (
-    <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT }} {...props} />
+    <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT, ...style }} {...props} />
   )
 }

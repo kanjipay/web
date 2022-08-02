@@ -83,7 +83,6 @@ export default function GuestlistPage({ event }) {
     NetworkManager.get(
       `/merchants/m/${merchantId}/eventAttendees/${eventId}`
     ).then((res) => {
-      console.log(res.data)
       setGuestlistData(res.data)
       setFilteredGuestlistData(res.data)
     })

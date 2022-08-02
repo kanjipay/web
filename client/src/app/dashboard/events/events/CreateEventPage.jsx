@@ -23,75 +23,49 @@ export default function CreateEventPage() {
   const handleCreateEvent = async (data) => {
     const {
       title,
-      description,
-      photo,
       address,
       startsAt,
       endsAt,
-      maxTicketsPerPerson,
-      publishScheduledAt,
       isRecurring,
       interval,
       eventPublishInterval,
       eventCreateInterval
     } = data
 
-    console.log(startsAt)
-    console.log(typeof startsAt)
-
     if (isRecurring) {
       const eventRecurrenceId = uuid()
-      const ref = getEventRecurrenceStorageRef(merchantId, eventRecurrenceId, photo.file.name)
-      const uploadToStorage = uploadImage(ref, photo.file)
 
-      const createEventRecurrence = NetworkManager.post(`/merchants/m/${merchantId}/eventRecurrences`, {
+      await NetworkManager.post(`/merchants/m/${merchantId}/eventRecurrences`, {
         eventRecurrenceId,
         data: {
           merchantId,
           title,
-          description,
-          photo: photo.file.name,
           address,
           startsAt,
           endsAt,
-          maxTicketsPerPerson: parseInt(maxTicketsPerPerson, 10),
+          maxTicketsPerPerson: 10,
           interval,
           eventPublishInterval,
           eventCreateInterval
         }
       })
 
-      await Promise.all([
-        createEventRecurrence,
-        uploadToStorage
-      ])
-
       navigate(`../er/${eventRecurrenceId}`)
     } else {
       const eventId = uuid()
 
-      const ref = getEventStorageRef({ merchantId, eventId }, photo.file.name)
-
-      const uploadToStorage =  uploadImage(ref, photo.file)
-
       const uploadDoc = setDoc(Collection.EVENT.docRef(eventId), {
         merchantId,
         title,
-        description,
-        photo: photo.file.name,
         address,
         startsAt,
         endsAt,
-        maxTicketsPerPerson: parseInt(maxTicketsPerPerson, 10),
+        maxTicketsPerPerson: 10,
         isPublished: false,
-        publishScheduledAt: publishScheduledAt ?? null,
         createdAt: serverTimestamp()
       })
 
-      await Promise.all([
-        uploadDoc,
-        uploadToStorage,
-      ])
+      await uploadDoc
 
       navigate(`../e/${eventId}/p/create`)
     }
@@ -123,7 +97,7 @@ export default function CreateEventPage() {
             initialDataSource={{
               startsAt: initialDate,
               endsAt: initialDate,
-              maxTicketsPerPerson: 10,
+              isRecurring: false,
               interval: {
                 interval: TimeInterval.WEEK,
                 amount: 1,
@@ -152,14 +126,6 @@ export default function CreateEventPage() {
                       name: "title",
                     },
                     {
-                      name: "description",
-                      input: <TextArea />,
-                    },
-                    {
-                      name: "photo",
-                      input: <SimpleImagePicker />,
-                    },
-                    {
                       name: "address",
                     },
                     {
@@ -173,14 +139,10 @@ export default function CreateEventPage() {
                       input: <DatePicker />,
                     },
                     {
-                      name: "maxTicketsPerPerson",
-                      input: <IntField maxChars={3} />,
+                      name: "isRecurring",
+                      label: "Make event recurring",
+                      input: <CheckBox />
                     },
-                    // {
-                    //   name: "isRecurring",
-                    //   label: "Make event recurring",
-                    //   input: <CheckBox />
-                    // },
                     {
                       name: "interval",
                       input: <TimeIntervalPicker prefix="Every" />,
@@ -205,15 +167,6 @@ export default function CreateEventPage() {
                       explanation: "How far in advance your event will be created, relative to when it's published to customers.",
                       input: <TimeIntervalPicker prefix="Create" suffix="before publishing the event" />,
                       visible: !!data.isRecurring
-                    },
-                    {
-                      name: "publishScheduledAt",
-                      label: "Scheduled publish date",
-                      explanation:
-                        "Optionally set the time you want to publish this event to customers.",
-                      input: <DatePicker />,
-                      required: false,
-                      visible: !data.isRecurring
                     },
                   ]
                 },

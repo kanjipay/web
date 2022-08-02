@@ -1,27 +1,5 @@
 import * as base64 from "base-64"
-import { fetchSignInMethodsForEmail } from "firebase/auth"
 import { useLocation, useNavigate } from "react-router-dom"
-import { auth } from "../../utils/FirebaseUtils"
-
-export async function doesUserRequireAuth({ user, requirePassword }) {
-  if (user && user.email) {
-    if (requirePassword) {
-      const providerIds = user.providerData.map((d) => d.providerId)
-
-      if (providerIds.includes("google")) {
-        return false
-      }
-
-      const signInMethodsForEmail = await fetchSignInMethodsForEmail(user.email)
-
-      return !signInMethodsForEmail.includes("password")
-    } else {
-      return false
-    }
-  } else {
-    return true
-  }
-}
 
 export function useOpenAuthPage() {
   const navigate = useNavigate()
@@ -32,8 +10,6 @@ export function useOpenAuthPage() {
     successState = {},
     showsBack = true,
     backPath,
-    requiresPassword = false,
-    requiredEmailDomain,
   }) => {
     const actualBackPath = backPath ?? location.pathname
 
@@ -50,12 +26,6 @@ export function useOpenAuthPage() {
         pathname: "/auth",
         search,
       },
-      {
-        state: {
-          requiresPassword,
-          requiredEmailDomain,
-        },
-      }
     )
   }
 }

@@ -4,6 +4,7 @@ import { Colors } from "../enums/Colors"
 import Spacer from "./Spacer"
 import "./Listing.css"
 import SquareLabel from "./SquareLabel"
+import { useState } from "react"
 
 export default function Listing({
   imageRef,
@@ -17,8 +18,15 @@ export default function Listing({
   linkState = {},
   ...props
 }) {
+  const [isHovering, setIsHovering] = useState(false)
+
   const listing = (
-    <div className="Listing">
+    <div 
+      className="Listing"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      style={{ opacity: isHovering ? 0.9 : 1}}
+    >
       <div className="Listing__imageWrapper">
         <AsyncImage
           className="Listing__image"

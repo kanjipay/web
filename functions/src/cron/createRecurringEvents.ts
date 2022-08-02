@@ -15,12 +15,13 @@ export const createRecurringEvents = async (context) => {
       .get()
 
     const eventRecurrences: any[] = eventRecurrencesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    const eventRecurrenceIds = eventRecurrences.map(er => er.id)
 
     const productRecurrenceQuery = db().collection(Collection.PRODUCT_RECURRENCE)
     const allProductRecurrences = await fetchDocumentsInArray(
       productRecurrenceQuery, 
       "eventRecurrenceId",
-      eventRecurrences.map(er => er.id)
+      eventRecurrenceIds
     )
 
     const batch = db().batch()
@@ -57,6 +58,7 @@ export const createRecurringEvents = async (context) => {
       while (iterStartDate < createBeforeDate) {
         const eventId = uuid()
         const eventRef = db().collection(Collection.EVENT).doc(eventId)
+        const isPublished = iterStartDate < publishBeforeDate
 
         const startsAt = iterStartDate
 
@@ -73,7 +75,7 @@ export const createRecurringEvents = async (context) => {
           startsAt,
           endsAt: iterEndDate,
           maxTicketsPerPerson: parseInt(maxTicketsPerPerson, 10),
-          isPublished: new Date() < publishDate,
+          isPublished,
           publishScheduledAt: publishDate,
           createdAt: firestore.FieldValue.serverTimestamp()
         })

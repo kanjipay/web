@@ -45,7 +45,6 @@ export default function ArtistPage() {
         <AsyncImage
           imageRef={getArtistStorageRef(artistId, artist.photo)}
           className="headerImage"
-          style={{ height: 300 }}
           alt={artist.name}
         />
 

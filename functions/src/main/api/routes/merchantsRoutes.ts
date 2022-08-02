@@ -11,19 +11,14 @@ const merchantsRoutes = Router({ mergeParams: true })
 const createMerchantSchema: AllowedSchema = {
   type: "object",
   required: [
-    "accountNumber",
-    "address",
-    "companyName",
     "displayName",
+    "companyName",
+    "currency",
     "sortCode",
-    "description",
-    "photo",
+    "accountNumber",
   ],
   properties: {
     accountNumber: {
-      type: "string",
-    },
-    address: {
       type: "string",
     },
     companyName: {
@@ -37,12 +32,6 @@ const createMerchantSchema: AllowedSchema = {
       type: "string",
     },
     sortCode: {
-      type: "string",
-    },
-    description: {
-      type: "string",
-    },
-    photo: {
       type: "string",
     },
   },

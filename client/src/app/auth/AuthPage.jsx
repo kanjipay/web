@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
 import * as base64 from "base-64"
-import { onAuthStateChanged, sendSignInLinkToEmail } from "firebase/auth"
+import { sendSignInLinkToEmail } from "firebase/auth"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Colors } from "../../enums/Colors"
 import NavBar from "../../components/NavBar"
-import OrDivider from "../../components/OrDivider"
 import Spacer from "../../components/Spacer"
 import { validateEmail } from "../../utils/helpers/validation"
 import LoadingPage from "../../components/LoadingPage"
@@ -12,7 +11,7 @@ import IconActionPage from "../../components/IconActionPage"
 import Cross from "../../assets/icons/Cross"
 import { auth } from "../../utils/FirebaseUtils"
 import Form, { generateValidator } from "../../components/Form"
-import { Field, FieldDecorator } from "../../components/input/IntField"
+import { Field } from "../../components/input/IntField"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { saveState } from "../../utils/services/StateService"
 import { shouldShowGoogleAuth } from "./shouldShowGoogleAuth"
@@ -23,33 +22,16 @@ import { shouldShowAppleAuth } from "./shouldShowAppleAuth"
 
 export default function AuthPage() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { search } = useLocation()
 
-  // const requiresPassword = location.state?.requiresPassword ?? false
-  const requiredEmailDomain = location.state?.requiredEmailDomain
-
-  let emailSuffix = requiredEmailDomain ? `@${requiredEmailDomain}` : ""
-
   const [searchParams] = useSearchParams()
-  const [backPath, successPath] = ["back", "success"].map((e) =>
-    base64.decode(searchParams.get(e))
-  )
-  // const successState = JSON.parse(base64.decode(searchParams.get("state")))
+  const backPath = base64.decode(searchParams.get("back"))
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [user, setUser] = useState(null)
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("Auth")
-  }, [])
-
-  useEffect(() => {
-    return onAuthStateChanged(auth, (user) => {
-      setIsLoading(false)
-      setUser(user)
-    })
   }, [])
 
   const handleSignInWithApple = () => {
@@ -108,62 +90,60 @@ export default function AuthPage() {
   } else if (isLoading) {
     return <LoadingPage />
   } else {
-    const emailLinkForm = (
-      <Form
-        isFormLoading={isLoading}
-        formGroupData={[
-          {
-            items: [
+
+    return <div className="container">
+      <NavBar title="Sign in" back={backPath} />
+
+      <div className="content">
+        <Spacer y={9} />
+
+        {shouldShowAppleAuth() && (
+          <div>
+            <SignInWithAppleButton onClick={handleSignInWithApple} />
+            <Spacer y={2} />
+          </div>
+        )}
+
+        {shouldShowGoogleAuth() && (
+          <div>
+            <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
+            <Spacer y={2} />
+          </div>
+        )}
+
+        <Revealer title="Email me a sign in link" name="auth">
+          <Form
+            isFormLoading={isLoading}
+            formGroupData={[
               {
-                name: "email",
-                validators: [generateValidator(validateEmail, "Invalid email")],
-                decorator: <FieldDecorator suffix={emailSuffix} />,
-                input: <Field type="email" autocomplete="email" />,
+                items: [
+                  {
+                    name: "email",
+                    validators: [generateValidator(validateEmail, "Invalid email")],
+                    input: <Field type="email" autocomplete="email" />,
+                  },
+                ],
               },
-            ],
-          },
-        ]}
-        onSubmit={handleSendEmailLink}
-        submitTitle="Send email link"
-      />
-    )
+            ]}
+            onSubmit={handleSendEmailLink}
+            submitTitle="Send email link"
+          />
+        </Revealer>
 
-    return (
-      <div className="container">
-        <NavBar title="Sign in" back={backPath} />
+        <Spacer y={2} />
+        <p className="text-caption">
+          By continuing, you agree to our{" "}
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="/legal/privacy-policy"
+          >
+            Privacy Policy
+          </a>.
+        </p>
 
-        <div className="content">
-          <Spacer y={9} />
-
-          {(shouldShowGoogleAuth() || shouldShowAppleAuth()) &&
-          !requiredEmailDomain ? (
-            <div>
-              <div>
-                {shouldShowAppleAuth() && (
-                  <div>
-                    <SignInWithAppleButton onClick={handleSignInWithApple} />
-                    <Spacer y={2} />
-                  </div>
-                )}
-                {shouldShowGoogleAuth() && (
-                  <div>
-                    <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
-                    <Spacer y={2} />
-                  </div>
-                )}
-              </div>
-
-              <Revealer title="Email me a sign in link" name="auth">
-                {emailLinkForm}
-              </Revealer>
-
-              <Spacer y={6} />
-            </div>
-          ) : (
-            emailLinkForm
-          )}
-        </div>
+        <Spacer y={6} />
       </div>
-    )
+    </div>
   }
 }

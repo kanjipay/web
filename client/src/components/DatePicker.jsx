@@ -266,7 +266,6 @@ export default function DatePicker({
           />
           <div style={{ display: "flex", columnGap: 16, alignItems: "center" }}>
             <CheckBox
-              length={24}
               value={!value}
               onChange={handleCheckBoxChange}
               disabled={disabled}

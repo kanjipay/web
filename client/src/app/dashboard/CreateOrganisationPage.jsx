@@ -1,5 +1,4 @@
 import { NetworkManager } from "../../utils/NetworkManager"
-import { TextArea } from "../../components/Input"
 import Spacer from "../../components/Spacer"
 import { useNavigate } from "react-router-dom"
 import {
@@ -9,31 +8,21 @@ import {
 import { Colors } from "../../enums/Colors"
 import Form, { generateValidator } from "../../components/Form"
 import { IntField } from "../../components/input/IntField"
-import { ResultType } from "../../components/ResultBanner"
-import { getMerchantStorageRef } from "../../utils/helpers/storage"
-import { auth } from "../../utils/FirebaseUtils"
-import { onIdTokenChanged } from "firebase/auth"
 import Dropdown from "../../components/input/Dropdown"
 import { useIntl } from "react-intl"
 import { getCurrencyCode } from "../../utils/helpers/money"
-import { uploadImage } from "../../utils/helpers/uploadImage"
-import SimpleImagePicker from "../../components/SimpleImagePicker"
 import { isMobile } from "react-device-detect"
+import { organiserTermsVersion } from "../../utils/constants"
 
 export default function CreateOrganisationPage({ authUser }) {
   const navigate = useNavigate()
   const intl = useIntl()
 
-  onIdTokenChanged(auth, (user) => {
-    console.log("id token changed")
-  })
-
   const handleCreateMerchant = async (data) => {
-    const { file: photoFile } = data.photo
 
     const body = {
       ...data,
-      photo: photoFile.name,
+      organiserTermsVersion: organiserTermsVersion
     }
 
     const response = await NetworkManager.post("/merchants/create", body)
@@ -43,13 +32,7 @@ export default function CreateOrganisationPage({ authUser }) {
     await authUser.reload()
     await authUser.getIdTokenResult(true)
 
-    const ref = getMerchantStorageRef(merchantId, photoFile.name)
-
-    await uploadImage(ref, photoFile)
-
     navigate(`/dashboard/o/${merchantId}/events/create`)
-
-    return { resultType: ResultType.SUCCESS }
   }
 
   return (
@@ -93,26 +76,12 @@ export default function CreateOrganisationPage({ authUser }) {
                   explanation:
                     "Event goers will see this when visiting your event pages.",
                 },
-                {
-                  name: "description",
-                  input: <TextArea />,
-                },
-                {
-                  name: "photo",
-                  explanation:
-                    "This will appear on your organisation's page for event goers to see.",
-                  input: <SimpleImagePicker />,
-                },
-                {
-                  name: "address",
-                  label: "Business address",
-                },
               ],
             },
             {
               title: "Bank details",
               explanation:
-                "Enter the bank details for the bank you want your ticket sales to be paid into. It must be a valid UK or Irish bank account",
+                "Enter the bank details for the account you want ticket sales paid into. It must be a valid UK or Irish bank account",
               items: [
                 {
                   name: "currency",
@@ -129,6 +98,7 @@ export default function CreateOrganisationPage({ authUser }) {
                 },
                 {
                   name: "companyName",
+                  label: "Name on bank account"
                 },
                 {
                   name: "sortCode",
@@ -157,7 +127,7 @@ export default function CreateOrganisationPage({ authUser }) {
           submitTitle="Create organisation"
         />
         <Spacer y={3} />
-        <div>
+        <p className="text-caption">
           By creating a Mercado organiser account you agree to our{" "}
           <a
             target="_blank"
@@ -165,8 +135,8 @@ export default function CreateOrganisationPage({ authUser }) {
             href="/legal/organiser-terms-and-conditions"
           >
             Terms and Conditions
-          </a>
-        </div>
+          </a>.
+        </p>
         <Spacer y={6} />
       </div>
     </div>
