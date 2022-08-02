@@ -8,6 +8,7 @@ import { firestore } from "firebase-admin"
 import { TemplateName } from "../shared/utils/sendEmail"
 import { sendgridClient } from "../shared/utils/sendgridClient"
 import {OrderType} from "../shared/enums/OrderType"
+import OrderStatus from "../shared/enums/OrderStatus"
 
 async function findMarketingConsentUsers(orderDocs){
     // get users who have given marketing consent, and not been contacted for 7 days.
@@ -40,7 +41,7 @@ async function findRecentPurchasers(){
     const paidOrderSnapshot = await db()
       .collection(Collection.ORDER)
       .where("createdAt", ">", subDays(new Date(), 2))
-      .where("status", "==", "PAID")
+      .where("status", "==", OrderStatus.PAID)
       .get()
     logger.log("Got paid orders", {
       orderCount: paidOrderSnapshot.docs.length,
@@ -49,12 +50,12 @@ async function findRecentPurchasers(){
 }
 
 
-function prepareEmailData(userEmails, notRecentlyContacted, recentPurchasers){
+function prepareEmailData(retargetOrders, notRecentlyContacted, recentPurchasers){
     let messageArray = []
     let userIds = []
     const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
     const templateId = templateIds[TemplateName.RETARGET]  
-    userEmails.forEach(event=>{
+    retargetOrders.forEach(event=>{
         const {userId, eventId, merchantId, orderItems} = event.data()
         const eventUrl = `${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         const consentUser = notRecentlyContacted.find(doc => doc.id = userId)
