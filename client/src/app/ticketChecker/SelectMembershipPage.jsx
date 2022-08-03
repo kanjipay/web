@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import Spacer from "../../components/Spacer"
-import { MenuItem } from "../dashboard/events/analytics/AnalyticsPage"
+import { MenuItem } from "../dashboard/events/analytics/MenuItem"
 import TicketCheckerNavBar from "./TicketCheckerNavBar"
 
 export default function SelectMembershipPage({ memberships }) {

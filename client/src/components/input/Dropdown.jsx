@@ -1,5 +1,5 @@
 import Popup from "reactjs-popup"
-import { MenuItem } from "../../app/dashboard/events/analytics/AnalyticsPage"
+import { MenuItem } from "../../app/dashboard/events/analytics/MenuItem"
 import Carat from "../../assets/icons/Carat"
 import { Colors } from "../../enums/Colors"
 

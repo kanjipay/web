@@ -7,7 +7,7 @@ import { ButtonTheme } from "../../components/ButtonTheme"
 import IconButton from "../../components/IconButton"
 import { Colors } from "../../enums/Colors"
 import { auth } from "../../utils/FirebaseUtils"
-import { MenuItem } from "../dashboard/events/analytics/AnalyticsPage"
+import { MenuItem } from "../dashboard/events/analytics/MenuItem"
 
 export default function TicketCheckerNavBar({ title, back }) {
   const navigate = useNavigate()
