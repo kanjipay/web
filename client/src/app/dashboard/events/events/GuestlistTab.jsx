@@ -75,7 +75,11 @@ export default function GuestlistTab({ event, guestlistData }) {
     download(csvContent, `${event.title} Guestlist.csv`, 'text/csv;encoding:utf-8');
   }
 
-  if (filteredGuestlistData) {
+  if (!event.isPublished) {
+    return <p className="text-body-faded">Your event isn't published yet. You'll be able to see your guestlist here once it is.</p>
+  } else if (guestlistData.length === 0) {
+    return <p className="text-body-faded">No guests yet.</p>
+  } else if (filteredGuestlistData) {
     return <div>
       <div style={{ display: "flex", columnGap: 8 }}>
         <div

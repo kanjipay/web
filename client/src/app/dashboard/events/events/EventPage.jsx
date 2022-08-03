@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import { TextArea } from "../../../../components/Input"
 import Spacer from "../../../../components/Spacer"
@@ -151,7 +151,7 @@ function EventLinkSection({ eventLinkString }) {
 
   return (
     <div>
-      <h3 className="header-s">Plain event link</h3>
+      <h3 className="header-s">Plain link</h3>
       <Spacer y={3} />
       <p className="text-body-faded">
         This is the link customers can use to view your event and buy tickets.
@@ -159,7 +159,7 @@ function EventLinkSection({ eventLinkString }) {
       <Spacer y={2} />
       <CopyableUrl urlString={eventLinkString} />
       <Spacer y={6} />
-      <h3 className="header-s">QR code event link</h3>
+      <h3 className="header-s">QR code link</h3>
 
       <Spacer y={3} />
       <p className="text-body-faded">
@@ -624,17 +624,14 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
   let guestlistTab
 
   if (guestlistData) {
-    if (event.isPublished) {
-      if (guestlistData.length > 0) {
-        guestlistTab = <div style={{ maxWidth: 500 }}>
-          <GuestlistTab event={event} guestlistData={guestlistData} />
-        </div>
-      } else {
-        guestlistTab = <p className="text-body-faded">No guests yet.</p>
-      }
-    } else {
-      guestlistTab = <p className="text-body-faded">Your event isn't published yet. You'll be able to see your guestlist here once it is.</p>
-    }
+    guestlistTab = <div style={{ maxWidth: 500 }}>
+      <GuestlistTab event={event} guestlistData={guestlistData} />
+      <Spacer y={3} />
+      
+      <Link to={`/ticket-checker/${merchantId}/${eventId}/checker`}>
+        <MainButton title="Scan tickets for this event" />
+      </Link>
+    </div>
   } else {
     guestlistTab = <LoadingPage />
   }

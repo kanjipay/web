@@ -14,7 +14,7 @@ import MerchantDropdown from "./MerchantDropdown"
 import SelectOrganisationPage from "./SelectOrganisationPage"
 import CreateOrganisationPage from "./CreateOrganisationPage"
 import Popup from "reactjs-popup"
-import { MenuItem } from "./events/analytics/AnalyticsPage"
+import { MenuItem } from "./events/analytics/MenuItem"
 import { isMobile } from "react-device-detect"
 import MerchantMobileMenu from "./MerchantMobileMenu"
 
