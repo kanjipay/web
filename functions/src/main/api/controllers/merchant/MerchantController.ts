@@ -26,6 +26,7 @@ export class MerchantController extends BaseController {
       const emailParams = {
         to: "team@mercadopay.co",
         from: "team@mercadopay.co",
+        fromname: "Mercado Team",
         text: `Merchant with id ${merchantId} registered with Crezco`,
         subject: "Merchant linked to Crezco",
       }
