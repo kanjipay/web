@@ -1,7 +1,9 @@
 import * as functions from "firebase-functions"
 import mainApp from "./main/mainApp"
 import { cronFunction } from "./cron/cron"
+import { notifyIfPublished } from "./firestore/notifyIfPublished"
 import { backupFirestore } from "./cron/backupFirestore"
+import { retargetOrders } from "./cron/retargetingEmail"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 const euFunctions = functions.region("europe-west2")
@@ -27,12 +29,25 @@ export const main = euFunctions
   })
   .https.onRequest(mainApp)
 
-export const cron = euFunctions
+export const cron10m = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
   .pubsub.schedule("every 10 minutes")
   .onRun(cronFunction)
 
-export const backup = euFunctions
+export const cronBackup = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT"] })
-  .pubsub.schedule("every 24 hours")
+  .pubsub.schedule("0 1 * * *")
+  .timeZone('Europe/London')
   .onRun(backupFirestore)
+
+export const cronMarketing = euFunctions
+  .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
+  .pubsub.schedule("0 11 * * *")
+  .timeZone('Europe/London')
+  .onRun(retargetOrders)
+
+
+export const eventCreate = euFunctions
+  .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
+  .firestore.document('Event/{eventId}')
+  .onWrite(notifyIfPublished)
