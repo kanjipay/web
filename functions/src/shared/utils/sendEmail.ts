@@ -4,6 +4,7 @@ import { logger } from "firebase-functions/v1"
 import { sendgridClient } from "./sendgridClient"
 
 const fromEmail = "team@mercadopay.co"
+const fromName = " Mercado Team"
 
 enum TemplateName {
   TICKET_RECEIPT = "TICKET_RECEIPT",
@@ -43,6 +44,7 @@ export async function sendEmail(
   return sendgridClient().send({
     to: toEmails,
     from: fromEmail,
+    fromname: fromName,
     dynamic_template_data: data,
     template_id: templateId,
   })
