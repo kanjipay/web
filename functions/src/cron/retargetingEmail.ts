@@ -17,7 +17,7 @@ async function findMarketingConsentUsers(orderDocs){
     const userQuery = db().collection(Collection.USER).where("marketingConsentStatus","==", "APPROVED")
     logger.log('uniqueUserIds',uniqueUserIds)
     const marketingConsentUsers = await fetchDocumentsInArray(userQuery,  firestore.FieldPath.documentId(),[...uniqueUserIds])
-    return marketingConsentUsers.filter((doc) => !(doc.lastMarketingEmailDate && dateFromTimestamp(doc.lastMarketingEmailDate) > subDays(new Date(),7))) // annoying not working
+    return marketingConsentUsers.filter((doc) => !(doc.lastMarketingEmailDate && dateFromTimestamp(doc.lastMarketingEmailDate) > subDays(new Date(),7))) 
 }
 
 async function findRetargetEvents(){
@@ -70,8 +70,7 @@ function prepareEmailData(retargetOrders, notRecentlyContacted, recentPurchasers
                             groups_to_display: [
                                 19423
                             ],
-                        },
-                        
+                        },    
             }
             messageArray.push(message)
             userIds.push(userId)
@@ -85,21 +84,20 @@ export const retargetOrders = async (context) => {
   try {
     logger.log("Find Orders for Retargeting Email")
     const retargetEvents = await findRetargetEvents()
-    logger.log("retarget events", retargetEvents)
+    logger.log({retargetEvents})
     const marketingConsentUsers = await findMarketingConsentUsers(retargetEvents)
-    logger.log("marketingConsentUsers", marketingConsentUsers)
+    logger.log({marketingConsentUsers})
     const recentPurchasers = await findRecentPurchasers()
     const {messageArray, userIds} = prepareEmailData(retargetEvents, marketingConsentUsers, recentPurchasers)
-    logger.log("messageArray", messageArray)
-    logger.log("userIds", userIds)
+    logger.log({messageArray, userIds})
     const currentDate = firestore.FieldValue.serverTimestamp()
     const batch = db().batch()
     userIds.forEach((userId) => {
         batch.update(db().collection(Collection.USER).doc(userId),{lastMarketingEmailDate: currentDate})
     })
-    batch.commit()
-    sendgridClient().send(messageArray)
- 
+    await batch.commit()
+    const result = await sendgridClient().send(messageArray)
+    logger.log({result})
   } catch (err) {
     logger.error(err)
   }

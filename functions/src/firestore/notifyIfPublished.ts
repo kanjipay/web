@@ -30,7 +30,7 @@ export const notifyIfPublished = async (change, context) => {
     if (publishedAfter && !publishedBefore){
         const {title, address, description, startsAt, merchantId} = change.after.data() 
         const eventId = change.after.id
-        const eventDate = dateFromTimestamp(startsAt.seconds)
+        const eventDate = dateFromTimestamp(startsAt)
         const merchantDoc =  await db().collection(Collection.MERCHANT).doc(merchantId).get()
         const merchantName =  merchantDoc.data().displayName
         const consentUserEmails = await getConsentingUsers(merchantId)
