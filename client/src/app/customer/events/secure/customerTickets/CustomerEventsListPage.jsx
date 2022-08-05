@@ -16,7 +16,7 @@ export default function CustomerEventListPage({ events }) {
   let pageContents
 
   useEffect(() => {
-    AnalyticsManager.main.logEvent("CustomerEventList")
+    AnalyticsManager.main.viewPage("CustomerEventList")
   }, [])
 
   const pastEvents = events.filter(event => dateFromTimestamp(event.endsAt) < new Date())

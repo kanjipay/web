@@ -93,7 +93,6 @@ export default function ChooseBankCrezcoPage({ order }) {
 
   const handleChooseBank = (bankDatum) => {
     const code = bankDatum.bankCode
-    localStorage.setItem("crezcoBankCode", code)
     AnalyticsManager.main.logEvent("ChooseBank", { crezcoBankCode: code })
 
     setBankCode(code)

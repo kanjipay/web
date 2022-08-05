@@ -131,6 +131,8 @@ export default function ProductPage({ merchant, event, product, user }) {
   const minQuantity = 1
 
   const handleCheckout = () => {
+    AnalyticsManager.main.pressButton("Checkout", { eventId, productId })
+
     if (user && user.email) {
       function navigateToTicketsPage() {
         const state = {

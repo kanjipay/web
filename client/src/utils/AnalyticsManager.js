@@ -13,6 +13,7 @@ export class AnalyticsEvent {
   static ABANDON_PAYMENT_INTENT = "AbandonPaymentIntent"
   static RECEIVE_PLAID_EVENT = "ReceivePlaidEvent"
   static CREATE_PAYMENT_ATTEMPT = "CreatePaymentAttempt"
+  static INITIALISE_APP = "InitialiseApp"
 }
 
 export class PageName {

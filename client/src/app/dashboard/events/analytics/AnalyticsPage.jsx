@@ -45,8 +45,6 @@ class AnalyticsProperty {
     this.sortValueGetter = typeof sort === "string" ? datum => datum[sort] : sort
   }
 
-  
-
   static EVENT = new AnalyticsProperty("Event", "eventId", "eventTitle")
   static PRODUCT = new AnalyticsProperty("Ticket type", "productId", "productTitle")
   static DAY = new AnalyticsProperty(

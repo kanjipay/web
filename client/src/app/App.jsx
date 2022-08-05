@@ -10,7 +10,7 @@ import Dashboard from "./dashboard/Dashboard"
 import Auth from "./auth/Auth"
 
 import AttributionLinkPage from "./shared/attribution/AttributionLinkPage"
-import { AnalyticsManager } from "../utils/AnalyticsManager"
+import { AnalyticsEvent, AnalyticsManager } from "../utils/AnalyticsManager"
 import TicketChecker from "./ticketChecker/TicketChecker"
 import { UAParser } from "ua-parser-js"
 import Legal from "./legal/Legal"
@@ -31,7 +31,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    AnalyticsManager.main.logEvent("InitialiseApp")
+    AnalyticsManager.main.logEvent(AnalyticsEvent.INITIALISE_APP)
   }, [])
 
   return (

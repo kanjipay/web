@@ -25,9 +25,7 @@ export default function PaymentUnsuccessfulPage({
   const wasOpenBankingPayment = paymentType === PaymentType.OPEN_BANKING
 
   const handleTryAgain = () => {
-    AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
-      button: "retryPayment",
-    })
+    AnalyticsManager.main.pressButton("retryPayment")
     navigate(retryPath)
   }
 
