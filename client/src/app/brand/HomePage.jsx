@@ -11,6 +11,7 @@ import { ButtonTheme } from "../../components/ButtonTheme"
 import Collection from "../../enums/Collection"
 import { limit, orderBy, where } from "firebase/firestore"
 import EventListing from "../customer/events/event/EventListing"
+import { AnalyticsEvent, AnalyticsManager } from "../../utils/AnalyticsManager"
 
 class CustomerSegment {
   constructor(id, displayName, headerPhoto, screenshotPhoto, photo1, photo2) {
@@ -97,6 +98,10 @@ export default function HomePage() {
   const [customerSegment, setCustomerSegment] = useState(
     CustomerSegment.GENERAL
   )
+
+  useEffect(() => {
+    AnalyticsManager.main.viewPage("Home")
+  }, [])
 
   const [events, setEvents] = useState([])
 
@@ -254,6 +259,20 @@ export default function HomePage() {
               }
             })}
             <div></div>
+          </div>
+        </div>
+      </div>
+      <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT, padding: `${isMobile ? "32px" : "128px"} ${isMobile ? "16px" : "0px"}`, boxSizing: "border-box" }}>
+        <div style={{ maxWidth: 600, margin: "auto", padding: "32px 48px", position: "relative" }}>
+          <p style={{ position: "absolute", top: 0, left: 0, fontSize: 120, fontWeight: 600, fontFamily: "Roboto, sans-serif" }}>"</p>
+          <p style={{ fontSize: isMobile ? "1.25em" : "1.5em" }}>
+            Between being open to feedback, constantly providing solutions and always working around us, Mercado is by far the most considerate ticketing platform we've worked with to date. We feel the Mercado team are onto something special with their service and plan to continue working with them for our future events.
+          </p>
+          <p style={{ position: "absolute", bottom: 0, right: 0, fontSize: 120, fontWeight: 600 }}>"</p>
+          <Spacer y={2} />
+          <div style={{ display: "flex", alignItems: "center", columnGap: 12 }}>
+            <img alt="house of hibernia" src="/img/hibernia.jpeg" style={{ borderRadius: 24, height: 48, width: 48 }}/>
+            <p style={{ color: Colors.GRAY_LIGHT, fontSize: isMobile ? "1.1em" : "1.25em" }}>House of Hibernia</p>
           </div>
         </div>
       </div>

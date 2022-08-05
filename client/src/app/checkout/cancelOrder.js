@@ -1,12 +1,10 @@
 import OrderStatus from "../../enums/OrderStatus"
 import OrderType from "../../enums/OrderType"
-import { AnalyticsEvent, AnalyticsManager } from "../../utils/AnalyticsManager"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { NetworkManager } from "../../utils/NetworkManager"
 
 export async function cancelOrder(orderId, navigate) {
-  AnalyticsManager.main.logEvent(AnalyticsEvent.PRESS_BUTTON, {
-    button: "cancelOrder",
-  })
+  AnalyticsManager.main.pressButton("cancelOrder")
 
   const res = await NetworkManager.put(`/orders/o/${orderId}/abandon`)
 
