@@ -21,10 +21,10 @@ import { Helmet } from "react-helmet-async"
 import IconPage from "../../../../../components/IconPage"
 import Cross from "../../../../../assets/icons/Cross"
 import useWindowSize from "../../../../../utils/helpers/useWindowSize"
+import { dateFromTimestamp } from "../../../../../utils/helpers/time"
 
 export default function CustomerEventPage({ events }) {
   const { eventId } = useParams()
-
   const { width } = useWindowSize()
   const contentWidth = Math.min(width, 600)
   const headerImageHeight = contentWidth / 2
@@ -122,6 +122,8 @@ export default function CustomerEventPage({ events }) {
           {event.products.map((product) => {
             return (
               <div key={product.id}>
+                <h2 className="header-s">{product.title}</h2>
+                <Spacer y={2} />
                 {product.tickets.map((ticket, index) => {
                   return (
                     <div key={ticket.id}>

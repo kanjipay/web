@@ -13,10 +13,19 @@ import { uploadImage } from "../../../../utils/helpers/uploadImage"
 import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import TabControl from "../../../../components/TabControl"
+import { useState } from "react"
+import MainButton from "../../../../components/MainButton"
+import { CopyableUrl } from "../events/EventPage"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
   const navigate = useNavigate()
+  const [linkName, setLinkName] = useState(merchant.linkName)
+
+  const updateLinkName = event => {
+    const { value } = event.target
+
+  }
 
   const handleSaveDetails = async (data) => {
     const promises = []
@@ -97,6 +106,18 @@ export default function SettingsPage({ merchant }) {
       onSubmit={handleSaveDetails}
       submitTitle="Save changes"
     />
+  </div>
+
+  const brandedLinkUrl = new URL(window.location.href)
+  brandedLinkUrl.pathname = linkName ? `/l/${linkName}` : "/l/your-name-here"
+
+  const linkTab = <div style={{ maxWidth: 500 }}>
+    <p className="text-body-faded">Create a short, branded link for your page.</p>
+    <Spacer y={2} />
+    <CopyableUrl urlString={brandedLinkUrl.href} />
+    <Field value={linkName} onChange={updateLinkName} />
+    <Spacer y={2} />
+    <MainButton title="Save changes" />
   </div>
 
   const bankDetailsTab = <div style={{ maxWidth: 500 }}>

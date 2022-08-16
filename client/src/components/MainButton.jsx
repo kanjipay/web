@@ -80,7 +80,9 @@ export default function MainButton({
             fontWeight: 500,
             color: Colors.WHITE,
             backgroundColor: Colors.OFF_BLACK_LIGHT,
+            cursor: "pointer"
           }}
+          onClick={isLoading ? undefined : onClick}
         >
           {sideMessage}
         </div>

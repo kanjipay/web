@@ -11,6 +11,7 @@ export default function Listing({
   title,
   description,
   rightBubbleText,
+  rightCornerText,
   flexItems = [],
   isAvailable = true,
   unavailableMessage = "Not available",
@@ -33,6 +34,20 @@ export default function Listing({
           style={{ filter: isAvailable ? "none" : "blur(1px)" }}
           imageRef={imageRef}
         />
+        {
+          rightCornerText && <div 
+            style={{ 
+              right: 0, 
+              top: 0, 
+              padding: "8px 12px", 
+              position: "absolute",
+              backgroundColor: Colors.BLACK, 
+              color: Colors.WHITE,
+            }}
+          >
+            {rightCornerText}
+          </div>
+        }
         {!isAvailable && <div className="Listing__imageShadow" />}
         {!isAvailable && (
           <SquareLabel

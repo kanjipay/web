@@ -185,18 +185,21 @@ export default function EventPage({ merchant, event, products, artists }) {
                 <Spacer y={2} />
               </div>
             )}
-            {products.map((product) => {
-              return (
-                <div key={product.id}>
-                  <ProductListing
-                    product={product}
-                    currency={merchant.currency}
-                    isPublished={event.isPublished}
-                  />
-                  <Spacer y={1} />
-                </div>
-              )
-            })}
+            {products
+              .filter(product => !product.isPrivate)
+              .map((product) => {
+                return (
+                  <div key={product.id}>
+                    <ProductListing
+                      product={product}
+                      currency={merchant.currency}
+                      isPublished={event.isPublished}
+                    />
+                    <Spacer y={1} />
+                  </div>
+                )
+              })
+            }
           </div>
         )}
         <Spacer y={8} />
