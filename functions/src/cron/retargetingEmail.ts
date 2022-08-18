@@ -63,6 +63,7 @@ function prepareEmailData(retargetOrders, notRecentlyContacted, recentPurchasers
             const message = {
                         to: consentUser.email,
                         from:  'team@mercadopay.co',
+                        fromname: "Mercado Team",
                         dynamic_template_data: {eventUrl, eventTitle: orderItems[0].eventTitle},
                         template_id: templateId,
                         asm: {
