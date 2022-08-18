@@ -13,6 +13,7 @@ import { uploadImage } from "../../../../utils/helpers/uploadImage"
 import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import TabControl from "../../../../components/TabControl"
+import { InviteUsersTab } from "./settingsTabs/inviteUsers"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
@@ -172,7 +173,8 @@ export default function SettingsPage({ merchant }) {
 
     <TabControl tabs={{ 
       "Basic details": basicSettingsTab,
-      "Bank details": bankDetailsTab
+      "Bank details": bankDetailsTab,
+      "Invite users": InviteUsersTab(merchant),
     }}/>
 
     <Spacer y={9} />
