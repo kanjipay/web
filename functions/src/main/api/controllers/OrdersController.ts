@@ -559,15 +559,17 @@ export class OrdersController extends BaseController {
         .doc(orderId)
         .set(orderData)
 
-      const updateProduct = db()
+      if (!isFree){
+        const updateProduct = db()
         .collection(Collection.PRODUCT)
         .doc(productId)
         .update({
           reservedCount: firestore.FieldValue.increment(quantity),
         })
+        promises.push(updateProduct)
+      }
 
       promises.push(createOrder)
-      promises.push(updateProduct)
 
       logger.log("Formulated order data to save", { orderData })
 
