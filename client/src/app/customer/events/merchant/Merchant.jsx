@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Route, Routes, useParams } from "react-router-dom"
+import { Route, Routes, useLocation, useParams } from "react-router-dom"
 import LoadingPage from "../../../../components/LoadingPage"
 import Collection from "../../../../enums/Collection"
 import Event from "../event/Event"
@@ -8,7 +8,8 @@ import MerchantPage from "./MerchantPage"
 
 export default function Merchant({ user }) {
   const { merchantId } = useParams()
-  const [merchant, setMerchant] = useState(null)
+  const { state } = useLocation()
+  const [merchant, setMerchant] = useState(state?.merchant)
 
   useEffect(() => {
     return Collection.MERCHANT.onChange(merchantId, setMerchant)

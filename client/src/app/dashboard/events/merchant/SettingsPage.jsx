@@ -15,7 +15,7 @@ import Breadcrumb from "../../../../components/Breadcrumb"
 import TabControl from "../../../../components/TabControl"
 import { useState } from "react"
 import MainButton from "../../../../components/MainButton"
-import { CopyableUrl } from "../events/EventPage"
+import { CopyableUrl } from "../../../../components/CopyableUrl"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()

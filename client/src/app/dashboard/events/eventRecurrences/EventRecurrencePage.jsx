@@ -17,7 +17,7 @@ import { NetworkManager } from "../../../../utils/NetworkManager";
 import { uploadImage } from "../../../../utils/helpers/uploadImage";
 import { deleteObject } from "firebase/storage";
 import ProductRecurrenceListing from "../productRecurrences/ProductRecurrenceListing";
-import { CopyableUrl } from "../events/EventPage";
+import { CopyableUrl } from "../../../../components/CopyableUrl";
 import Popup from "reactjs-popup";
 import { ButtonTheme } from "../../../../components/ButtonTheme";
 import { Modal } from "../../../../components/Modal";

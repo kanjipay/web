@@ -14,6 +14,8 @@ import { AnalyticsEvent, AnalyticsManager } from "../utils/AnalyticsManager"
 import TicketChecker from "./ticketChecker/TicketChecker"
 import { UAParser } from "ua-parser-js"
 import Legal from "./legal/Legal"
+import EventShortLinks from "./customer/events/EventShortLinks"
+import SalesSender from "./SalesSender"
 
 export default function App() {
   console.log("language: ", navigator.language)
@@ -36,8 +38,11 @@ export default function App() {
 
   return (
     <Routes>
+      <Route path="/xlx-v" element={<SalesSender />} />
       <Route path="/menu/*" element={<MenuApp />} />
       <Route path="/events/*" element={<EventsApp />} />
+      <Route path="/e/:merchantLinkName" element={<EventShortLinks />} />
+      <Route path="/e/:merchantLinkName/:eventLinkName" element={<EventShortLinks />} />
       <Route path="/checkout/*" element={<Checkout />} />
       <Route path="/link/:linkId" element={<OneTimeLinkPage />} />
       <Route

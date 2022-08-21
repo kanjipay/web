@@ -58,7 +58,7 @@ service cloud.firestore {
     	allow read;
       
       allow update: if (
-        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe"]) &&
+        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe", "linkName"]) &&
       	isAdminForMerchant(merchantId)
       )
     }
@@ -78,7 +78,7 @@ service cloud.firestore {
       allow update: if (
       	isAdminForMerchant(existingData().merchantId) && 
         (
-          hasOnlyChangedKeys(["title", "description", "photo", "maxTicketsPerPerson"]) ||
+          hasOnlyChangedKeys(["title", "description", "photo", "maxTicketsPerPerson", "linkName"]) ||
           (!existingData().isPublished && !hasChangedKeys(["merchantId"]))
         )
       )
