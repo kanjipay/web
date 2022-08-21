@@ -12,6 +12,7 @@ export default function NavBar({
   rightElements = [],
   transparentDepth,
   opaqueDepth,
+  sidePadding = 8
 }) {
   const navigate = useNavigate()
 
@@ -60,7 +61,7 @@ export default function NavBar({
         width: "100%",
         height: 48,
         zIndex: 100,
-        maxWidth: 600,
+        maxWidth: 500,
         display: "relative",
       }}
     >
@@ -92,7 +93,7 @@ export default function NavBar({
           display: "flex",
           alignItems: "center",
           columnGap: 8,
-          padding: "0px 8px",
+          padding: `0px ${sidePadding}px`,
           boxSizing: "border-box",
         }}
       >

@@ -58,13 +58,15 @@ export default function MerchantPage({ merchant }) {
 
       <AsyncImage
         imageRef={getMerchantStorageRef(merchant.id, merchant.photo)}
-        className="headerImage"
+        style={{ width: "100%", aspectRatio: "2/1" }}
         alt={merchant.displayName}
       />
 
-      <Spacer y={4} />
+      <Spacer y={3} />
 
       <div className="content">
+        
+
         <h1 className="header-l">{merchant.displayName}</h1>
 
         {

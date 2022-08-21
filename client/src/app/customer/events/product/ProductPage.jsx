@@ -65,7 +65,7 @@ export default function ProductPage({ merchant, event, product, user }) {
   const customerFee = merchant.customerFee ?? 0.1
 
   const { width } = useWindowSize()
-  const contentWidth = Math.min(width, 600)
+  const contentWidth = Math.min(width, 500)
   const headerImageHeight = contentWidth / 2
 
   const { isPublished } = event
@@ -222,11 +222,11 @@ export default function ProductPage({ merchant, event, product, user }) {
 
       <AsyncImage
         imageRef={getEventStorageRef(event, event.photo)}
-        className="headerImage"
+        style={{ height: 48, width: "100%" }}
         alt={event.title}
       />
 
-      <Spacer y={4} />
+      <Spacer y={3} />
 
       <div className="content">
         <h1 className="header-l">{product.title}</h1>

@@ -12,11 +12,13 @@ import { eventTimeString, generateGoogleMapsLink } from "./eventHelpers"
 import { Colors } from "../../../../enums/Colors"
 import ShowMoreText from "react-show-more-text"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
 import { addMinutes, format } from "date-fns"
 import { Helmet } from "react-helmet-async"
 import useWindowSize from "../../../../utils/helpers/useWindowSize"
+import MainButton from "../../../../components/MainButton"
+import { useState } from "react"
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return (
@@ -91,8 +93,8 @@ export default function EventPage({ merchant, event, products, artists }) {
   const { eventId, merchantId } = useParams()
 
   const { width } = useWindowSize()
-  const contentWidth = Math.min(width, 600)
-  const headerImageHeight = contentWidth / 2
+  const contentWidth = Math.min(width, 500)
+  const headerImageHeight = contentWidth
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
@@ -118,13 +120,14 @@ export default function EventPage({ merchant, event, products, artists }) {
 
       <AsyncImage
         imageRef={getEventStorageRef(event, event.photo)}
-        className="headerImage"
+        style={{ width: "100%", aspectRatio: "1/1" }}
         alt={merchant.displayName}
       />
 
-      <Spacer y={4} />
+      <Spacer y={3} />
 
       <div className="content">
+        
         <h1 className="header-l">{event.title}</h1>
         {event.tags && event.tags.length > 0 && (
           <div>
@@ -170,7 +173,7 @@ export default function EventPage({ merchant, event, products, artists }) {
           </p>
         ) : (
           <div>
-            <h1 className="header-m">Get tickets</h1>
+            <h2 className="header-m">Get tickets</h2>
             <Spacer y={2} />
             {!event.isPublished && (
               <div>

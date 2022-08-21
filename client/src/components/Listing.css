@@ -2,7 +2,7 @@
   overflow: hidden;
   width: 100%;
   position: relative;
-  aspect-ratio: 2;
+  aspect-ratio: 1;
 }
 
 .Listing__image {
