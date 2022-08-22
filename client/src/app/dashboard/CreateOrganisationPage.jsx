@@ -50,7 +50,7 @@ export default function CreateOrganisationPage({ authUser }) {
       />
       <div
         style={{
-          width: isMobile ? "100%" : 600,
+          width: isMobile ? "100%" : 500,
           padding: isMobile ? 16 : 24,
           boxSizing: "border-box",
           position: "absolute",

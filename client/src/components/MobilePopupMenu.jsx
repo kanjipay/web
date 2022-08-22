@@ -19,7 +19,7 @@ export default function MobilePopupMenu({ navItems = [], buttonTheme = ButtonThe
     contentStyle={{
       backgroundColor: Colors.WHITE,
       width: "100vw",
-      maxWidth: "600px",
+      maxWidth: "500px",
       // transform: "translate(50%, 0)",
       height: "100vh"
     }}

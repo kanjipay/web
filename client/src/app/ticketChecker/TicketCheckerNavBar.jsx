@@ -21,7 +21,7 @@ export default function TicketCheckerNavBar({ title, back }) {
         width: "100%",
         height: 48,
         zIndex: 100,
-        maxWidth: 600,
+        maxWidth: 500,
         display: "relative",
       }}
     >

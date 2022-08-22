@@ -39,9 +39,11 @@ export default function CustomerEventListPage({ events }) {
           {
             upcomingEvents.length > 0 ?
               upcomingEvents.map((event) => {
+                const ticketCount = event.products.reduce((ticketCount, product) => ticketCount + product.tickets.length, 0)
+
                 return (
                   <div key={event.id}>
-                    <EventListing event={event} />
+                    <EventListing event={event} rightCornerText={`${ticketCount} tickets`} />
                     <Spacer y={3} />
                   </div>
                 )

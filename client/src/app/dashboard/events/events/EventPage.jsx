@@ -1,37 +1,20 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import Breadcrumb from "../../../../components/Breadcrumb"
-import { TextArea } from "../../../../components/Input"
 import Spacer from "../../../../components/Spacer"
 import MainButton from "../../../../components/MainButton"
-import DatePicker from "../../../../components/DatePicker"
-import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import ProductListing from "../products/ProductListing"
-import Form from "../../../../components/Form"
-import { Field, FieldDecorator, IntField } from "../../../../components/input/IntField"
-import { Colors } from "../../../../enums/Colors"
-import { ButtonTheme } from "../../../../components/ButtonTheme"
-import { getEventStorageRef } from "../../../../utils/helpers/storage"
-import { deleteDoc, serverTimestamp, updateDoc, where } from "firebase/firestore"
-import Popup from "reactjs-popup"
+import { updateDoc, where } from "firebase/firestore"
 import Collection from "../../../../enums/Collection"
-import { deleteObject } from "firebase/storage"
-import ArrayInput from "../../../../components/ArrayInput"
-import { uploadImage } from "../../../../utils/helpers/uploadImage"
-import SimpleImagePicker from "../../../../components/SimpleImagePicker"
 import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
-import { Modal } from "../../../../components/Modal"
-import { CopyToClipboardButton } from "../../../../components/CopyToClipboardButton"
-import { isMobile } from "react-device-detect"
 import TabControl from "../../../../components/TabControl"
-import QRCode from "react-qr-code"
-import { Canvg } from "canvg"
-import Dropdown from "../../../../components/input/Dropdown"
 import { NetworkManager } from "../../../../utils/NetworkManager"
 import GuestlistTab from "./GuestlistTab"
 import LoadingPage from "../../../../components/LoadingPage"
+import EventLinkTab from "./EventLinkTab"
+import EventDetailsTab from "./EventDetailsTab"
 
-function PublishInfoBanners({ merchant, hasProducts }) {
+function PublishInfoBanners({ hasProducts }) {
   const navigate = useNavigate()
   const { eventId } = useParams()
 
@@ -52,7 +35,6 @@ function PublishInfoBanners({ merchant, hasProducts }) {
       {...publishBannerProps}
     />,
   ]
-
 
   if (!hasProducts) {
     banners.push(
@@ -78,310 +60,15 @@ function PublishInfoBanners({ merchant, hasProducts }) {
   return <div>{children}</div>
 }
 
-export function CopyableUrl({ urlString }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
-      <a
-        href={urlString}
-        target="_blank"
-        rel="noreferrer"
-        style={{ textDecoration: "underline", fontWeight: "400" }}
-      >
-        {urlString}
-      </a>
-      <div className="flex-spacer"></div>
-      <CopyToClipboardButton text={urlString} />
-    </div>
-  )
-}
-
-class ImageFormat {
-  static PNG = "PNG"
-  static SVG = "SVG"
-}
-
-function EventLinkSection({ eventLinkString }) {
-  const initialQrColor = localStorage.getItem("qrQrColor") ?? Colors.BLACK.toUpperCase()
-  const [qrColor, setForegroundColor] = useState(initialQrColor.replace("#", ""))
-  const [displayQrColor, setDisplayForegroundColor] = useState(initialQrColor)
-  const [qrImageFormat, setQrImageFormat] = useState(ImageFormat.PNG)
-
-  const updateForegroundColor = event => {
-    const { value } = event.target
-    setForegroundColor(value)
-
-    if (/[0-9a-fA-F]{6}/g.test(value) || /[0-9a-fA-F]{3}/g.test(value)) {
-      setDisplayForegroundColor("#" + value)
-    }
-  }
-
-  const handleDownloadQrCode = () => {
-    const svg = document.querySelector("#event-link-qr-code")
-    const filename = `qr-code-event-link.${qrImageFormat.toLowerCase()}`
-
-    let fileUrl
-
-    switch (qrImageFormat) {
-      case ImageFormat.SVG:
-        const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
-        fileUrl = URL.createObjectURL(blob);
-        break
-      case ImageFormat.PNG:
-        const data = (new XMLSerializer()).serializeToString(svg)
-        const canvas = document.createElement("canvas")
-        const ctx = canvas.getContext('2d')
-        const canvg = Canvg.fromString(ctx, data)
-
-        canvg.start()
-
-        fileUrl = canvas.toDataURL("image/png");
-        break
-      default:
-    }
-
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = filename
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setTimeout(() => URL.revokeObjectURL(fileUrl), 5000);
-  }
-
-  return (
-    <div>
-      <h3 className="header-s">Plain link</h3>
-      <Spacer y={3} />
-      <p className="text-body-faded">
-        This is the link customers can use to view your event and buy tickets.
-      </p>
-      <Spacer y={2} />
-      <CopyableUrl urlString={eventLinkString} />
-      <Spacer y={6} />
-      <h3 className="header-s">QR code link</h3>
-
-      <Spacer y={3} />
-      <p className="text-body-faded">
-        Selling tickets on the door, or creating a promotional poster? Download a QR code that links straight to this event.
-      </p>
-      <Spacer y={3} />
-      <div  style={{
-        display: isMobile ? "block" : "flex",
-        columnGap: 24
-      }}>
-        <QRCode
-          size={200}
-          style={{ flexShrink: 0 }}
-          value={eventLinkString}
-          id="event-link-qr-code"
-          fgColor={displayQrColor}
-          bgColor={Colors.CLEAR}
-        />
-        
-
-        { isMobile && <Spacer y={3} /> }
-
-        <div style={{ flexGrow: 100, flexShrink: 100 }}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <p
-              className="text-body"
-              style={{ width: 80, flexShrink: 0 }}
-            >
-              Color
-            </p>
-            <FieldDecorator
-              style={{ flexGrow: 100, width: "auto" }}
-              field={
-                <Field
-                  value={qrColor}
-                  onChange={updateForegroundColor}
-                  maxChars={6}
-                />
-              }
-              prefix="#"
-            />
-          </div>
-          
-          <Spacer y={2} />
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <p 
-              className="text-body"
-              style={{ width: 80 }}
-            >
-              Export as
-            </p>
-            <Dropdown
-              style={{ flexGrow: 100, width: "auto" }}
-              optionList={[
-                { value: ImageFormat.PNG },
-                { value: ImageFormat.SVG },
-              ]}
-              value={qrImageFormat}
-              onChange={event => setQrImageFormat(event.target.value)}
-            />
-          </div>
-          
-          <Spacer y={2} />
-          <MainButton 
-            title="Download QR code"
-            onClick={handleDownloadQrCode}
-          />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function AttributionLinkSection({ attributionLinks }) {
+export default function EventPage({ merchant, event, products }) {
   const navigate = useNavigate()
-
-  return (
-    <div>
-      <h3 className="header-s">Attribution links</h3>
-      <Spacer y={2} />
-      <p className="text-body-faded">
-        Want to see which of your marketing efforts is bringing in sales? You
-        can use attribution links to analyse where your sales are coming from.
-      </p>
-      {attributionLinks && (
-        <div>
-          <Spacer y={2} />
-          {attributionLinks.length > 0 ? (
-            attributionLinks.map((link) => {
-              const linkUrl = new URL(window.location.href)
-              linkUrl.pathname = `/l/${link.id}`
-
-              const linkUrlString = linkUrl.href
-
-              return (
-                <div
-                  style={{
-                    padding: 16,
-                    backgroundColor: Colors.OFF_WHITE_LIGHT,
-                    display: isMobile ? "block" : "flex",
-                    alignItems: "center",
-                    columnGap: 16,
-                    marginBottom: 16,
-                  }}
-                >
-                  <div>
-                    <h4 className="header-xs">{link.displayName}</h4>
-                    <Spacer y={2} />
-                    <div style={{ display: "flex", columnGap: 8 }}>
-                      {Object.entries(link.attributionData).map(
-                        ([key, value]) => (
-                          <p
-                            style={{
-                              backgroundColor: Colors.OFF_WHITE,
-                              fontSize: 14,
-                              padding: "4px 8px",
-                            }}
-                          >
-                            {`${key} = ${value}`}
-                          </p>
-                        )
-                      )}
-                    </div>
-                    <Spacer y={2} />
-                    <p>{linkUrlString}</p>
-                  </div>
-                  {
-                    isMobile ?
-                      <Spacer y={2} /> :
-                      <div style={{ flexGrow: 100 }}></div>
-                  }
-                  
-                  <CopyToClipboardButton text={linkUrlString} />
-                </div>
-              )
-            })
-          ) : (
-            <p className="text-body">
-              You don't have any attribution links yet
-            </p>
-          )}
-        </div>
-      )}
-      <Spacer y={2} />
-      <MainButton
-        title="Create attribution link"
-        onClick={() => navigate("create-attribution-link")}
-      />
-    </div>
-  )
-}
-
-export default function EventPage({ merchant, event, products, eventRecurrence }) {
-  const navigate = useNavigate()
-  const docRef = Collection.EVENT.docRef(event.id)
   const { merchantId, eventId } = useParams()
   const [attributionLinks, setAttributionLinks] = useState(null)
   const [guestlistData, setGuestlistData] = useState(null)
-  const publishButtonRef = useRef(null)
-
-  function canPublishEvent() {
-    return products.length > 0
-  }
-
-  const handleUpdateEvent = async (data) => {
-    const promises = []
-    const file = data.photo?.file
-    const storageRef = data.photo?.storageRef
-
-    if (file) {
-      const uploadRef = getEventStorageRef(
-        event,
-        file.name
-      )
-      
-
-      data.photo = { storageRef: uploadRef }
-
-      promises.push(uploadImage(uploadRef, file))
-    }
-
-    if (!storageRef && event.photo) {
-      const existingRef = getEventStorageRef(
-        event,
-        event.photo
-      )
-
-      promises.push(deleteObject(existingRef))
-    }
-
-    let uploadData = {
-      ...data,
-      photo: file?.name ?? event.photo,
-      maxTicketsPerPerson: parseInt(data.maxTicketsPerPerson, 10),
-    }
-
-    promises.push(updateDoc(docRef, uploadData))
-
-    await Promise.all(promises)
-
-    return {
-      resultType: ResultType.SUCCESS,
-      message: "Changes saved"
-    }
-  }
 
   const handleCreateProduct = () => {
     navigate("p/create")
   }
-
-  const handleDeleteEvent = async () => {
-    await deleteDoc(docRef)
-    navigate("../..")
-  }
-
-  const handlePublishEvent = async () => {
-    await updateDoc(docRef, { isPublished: true, publishedAt: serverTimestamp() })
-  }
-
-  const eventLink = new URL(window.location.href)
-  eventLink.pathname = `/events/${event.merchantId}/${event.id}`
-  const eventLinkString = eventLink.href
 
   useEffect(() => {
     return Collection.ATTRIBUTION_LINK.queryOnChange(
@@ -397,174 +84,6 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
       setGuestlistData(res.data)
     })
   }, [eventId, merchantId])
-
-  const eventDetails = <div style={{ maxWidth: 500 }}>
-    <Form
-      initialDataSource={{
-        ...event,
-        startsAt: dateFromTimestamp(event.startsAt) ?? new Date(),
-        endsAt: dateFromTimestamp(event.endsAt) ?? new Date(),
-        publishScheduledAt: dateFromTimestamp(event.publishScheduledAt),
-        photo: event.photo ? {
-          storageRef: getEventStorageRef(
-            event,
-            event.photo
-          ),
-        } : {},
-        tags: event.tags ?? [],
-      }}
-      formGroupData={[
-        {
-          explanation: event.isPublished
-            ? "This event is published, so some fields can't be edited, and it can't be deleted."
-            : null,
-          items: [
-            { name: "title" },
-            {
-              name: "description",
-              required: false,
-              input: <TextArea />,
-            },
-            {
-              name: "tags",
-              input: <ArrayInput maxItemCount={3} input={<Field />} />,
-              required: false,
-            },
-            {
-              name: "photo",
-              input: <SimpleImagePicker isRemovable={false} />,
-              required: false
-            },
-            {
-              name: "address",
-              disabled: !!event.isPublished,
-            },
-            {
-              name: "maxTicketsPerPerson",
-              input: <IntField maxChars={3} />,
-            },
-            {
-              name: "startsAt",
-              input: <DatePicker />,
-              disabled: !!event.isPublished,
-            },
-            {
-              name: "endsAt",
-              input: <DatePicker />,
-              disabled: !!event.isPublished,
-            },
-            {
-              name: "publishScheduledAt",
-              label: "Scheduled publish date",
-              explanation:
-                "Optionally set the time you want to publish this event to customers.",
-              input: <DatePicker />,
-              required: false,
-              disabled: !!event.isPublished || !canPublishEvent(),
-            },
-          ],
-        },
-      ]}
-      onSubmit={handleUpdateEvent}
-      submitTitle="Save changes"
-    />
-    {!event.isPublished && (
-      <div ref={publishButtonRef}>
-        <Spacer y={2} />
-
-        {canPublishEvent() && (
-          <div>
-            <Popup
-              trigger={
-                <div>
-                  <MainButton
-                    title={
-                      event.publishScheduledAt
-                        ? "Publish early"
-                        : "Publish"
-                    }
-                    test-id="publish-event-button"
-                    buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                  />
-                </div>
-              }
-              modal
-            >
-              {(close) => (
-                <Modal>
-                  <h2 className="header-m">Are you sure?</h2>
-                  <Spacer y={2} />
-                  <p className="text-body-faded">
-                    Once you publish an event, it'll become visible to
-                    customers, and you won't be able to edit the start and
-                    end date or address.
-                  </p>
-                  <Spacer y={4} />
-                  <MainButton
-                    title="Publish event"
-                    test-id="confirm-publish-event-button"
-                    onClick={() => {
-                      handlePublishEvent()
-                      close()
-                    }}
-                  />
-                  <Spacer y={2} />
-                  <MainButton
-                    title="Cancel"
-                    buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                    test-id="cancel-publish-event-button"
-                    onClick={close}
-                  />
-                </Modal>
-              )}
-            </Popup>
-            <Spacer y={2} />
-          </div>
-        )}
-
-        <Popup
-          trigger={
-            <div>
-              <MainButton
-                title="Delete"
-                buttonTheme={ButtonTheme.DESTRUCTIVE}
-                test-id="delete-event-button"
-              />
-            </div>
-          }
-          modal
-        >
-          {(close) => (
-            <Modal>
-              <h2 className="header-m">Are you sure?</h2>
-              <Spacer y={2} />
-              <p className="text-body-faded">
-                Deleting events can't be reversed, so you'll have to start
-                from scratch if you change your mind.
-              </p>
-              <Spacer y={4} />
-              <MainButton
-                title="Delete event"
-                buttonTheme={ButtonTheme.DESTRUCTIVE}
-                test-id="confirm-delete-event-button"
-                onClick={() => {
-                  handleDeleteEvent()
-                  close()
-                }}
-              />
-              <Spacer y={2} />
-              <MainButton
-                title="Cancel"
-                buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-                test-id="cancel-delete-event-button"
-                onClick={close}
-              />
-            </Modal>
-          )}
-        </Popup>
-      </div>
-    )}
-  </div>
 
   const ticketTypes = <div style={{ maxWidth: 500 }}>
     {products.length > 0 ? (
@@ -604,22 +123,6 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
       </div>
     )}
   </div>
-
-  const eventLinks = event.isPublished ? (
-    <div style={{ maxWidth: 500 }}>
-      <EventLinkSection eventLinkString={eventLinkString} />
-      <Spacer y={6} />
-      <AttributionLinkSection attributionLinks={attributionLinks} />
-    </div>
-  ) : (
-    <div style={{ maxWidth: 500 }}>
-      <p className="text-body-faded">
-        Visit this link to see a preview of the event.
-      </p>
-      <Spacer y={2} />
-      <CopyableUrl urlString={eventLinkString} />
-    </div>
-  )
 
   let guestlistTab
 
@@ -676,7 +179,6 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
         !event.isPublished && <div style={{ maxWidth: 500 }}>
           <PublishInfoBanners
             merchant={merchant}
-            publishButtonRef={publishButtonRef}
             hasProducts={products.length > 0}
           />
           <Spacer y={3} />
@@ -686,9 +188,9 @@ export default function EventPage({ merchant, event, products, eventRecurrence }
       <TabControl 
         name="event-page"
         tabs={{
-          "Event details": eventDetails,
+          "Event details": <EventDetailsTab event={event} products={products} />,
           "Ticket types": ticketTypes,
-          "Event links": eventLinks,
+          "Event links": <EventLinkTab merchant={merchant} event={event} attributionLinks={attributionLinks} />,
           "Guestlist": guestlistTab
         }}
       />

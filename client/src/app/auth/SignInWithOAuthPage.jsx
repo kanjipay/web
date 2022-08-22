@@ -48,10 +48,14 @@ export default function SignInWithOAuthPage({ type }) {
       const credential = await getRedirectResult(auth)
 
       if (credential) {
+        console.log("has credential: ", credential)
         setUserId(credential.user.uid)
         const hasName = await processUserCredential(credential)
+        console.log("hasName: ", hasName)
         setHasName(hasName)
       } else {
+
+        console.log("Doesn't have credential yet, calling sign in with redirect")
         let provider
 
         switch (type) {

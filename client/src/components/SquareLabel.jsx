@@ -6,6 +6,7 @@ export default function SquareLabel({
   foregroundColor = Colors.WHITE,
   fontSize = 15,
   padding = "4px 6px",
+  style,
   ...props
 }) {
   return (
@@ -20,6 +21,8 @@ export default function SquareLabel({
           fontWeight: 500,
           display: "flex",
           alignItems: "center",
+          width: "max-content",
+          ...style
         }}
       >
         {children}

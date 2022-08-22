@@ -12,15 +12,13 @@ import { eventTimeString } from "../../../customer/events/event/eventHelpers"
 export default function EventListing({ event }) {
   const { title } = event
 
-  const width = isMobile ? "100%" : 400
-
   const image = <AsyncImage
     imageRef={getEventStorageRef(event, event.photo) }
     alt={event.title}
-    style={{ width, aspectRatio: "2 / 1" }}
+    style={{ width: isMobile ? "100%" : 200, aspectRatio: "1 / 1" }}
   />
 
-  const contents = <div style={{ width }}>
+  const contents = <div style={{ width: isMobile ? "100%" : 600 }}>
     <h3 className="header-s" style={{ lineHeight: 1 }}>{title}</h3>
     <Spacer y={2} />
     <div style={{ columnGap: 8, display: "flex" }}>

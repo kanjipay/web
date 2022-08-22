@@ -23,17 +23,15 @@ export function timePeriodString(amount, interval) {
 export default function EventRecurrenceListing({ eventRecurrence }) {
   const { merchantId, title } = eventRecurrence
 
-  const width = isMobile ? "100%" : 400
-
   const image = <AsyncImage
     imageRef={getEventRecurrenceStorageRef(merchantId, eventRecurrence.id, eventRecurrence.photo)}
     alt={eventRecurrence.title}
-    style={{ width, aspectRatio: "2 / 1" }}
+    style={{ width: isMobile ? "100%" : 200, aspectRatio: "1 / 1" }}
   />
 
   const { interval, eventPublishInterval, address, description } = eventRecurrence
 
-  const contents = <div style={{ width }}>
+  const contents = <div style={{ width: isMobile ? "100%" : 600 }}>
     <h3 className="header-s" style={{ lineHeight: 1 }}>
       {title}
     </h3>

@@ -43,14 +43,27 @@ export class TicketsController extends BaseController {
       const products = productDocs
         .map((doc) => {
           const productId = doc.id
-          const { title, description, price, eventId, sortOrder } = doc
-          const productTickets = tickets.filter(
-            (ticket) => ticket.productId === productId
-          )
+          const { title, description, price, eventId, sortOrder, purchaserInfo } = doc
+          const productTickets = tickets
+            .filter((ticket) => ticket.productId === productId)
+            .sort((ticket1, ticket2) => {
+              if (!ticket1.createdAt) { 
+                if (!ticket2.createdAt) {
+                  return 0
+                } else {
+                  return -1 
+                }
+              } else if (!ticket2.createdAt) { 
+                return 1
+              }
+              return dateFromTimestamp(ticket2.createdAt).getTime() - dateFromTimestamp(ticket1.createdAt).getTime()
+            })
+
           return {
             id: productId,
             title,
             description,
+            purchaserInfo,
             price,
             eventId,
             sortOrder,

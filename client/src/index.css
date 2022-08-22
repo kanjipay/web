@@ -4,6 +4,9 @@
   font: var(--font-body);
   text-decoration: none;
   color: black;
+}
+
+html {
   scroll-behavior: smooth;
 }
 
@@ -70,8 +73,13 @@ a:hover {
   --font-disclaimer: 0.625em "Roboto", sans-serif;
 }
 
+.fade-gradient {
+  background: rgb(24, 24, 24);
+  background: linear-gradient(180deg, rgba(24, 24, 24, 0) 0%, rgba(24, 24, 24, 1) 100%);
+}
+
 .container {
-  max-width: 600px;
+  max-width: 500px;
   min-height: 100vh;
   margin: auto;
   background-color: white;
@@ -81,7 +89,7 @@ a:hover {
 .headerImage {
   width: 100%;
   object-fit: cover;
-  aspect-ratio: 2;
+  aspect-ratio: 1;
 }
 
 .btn {
@@ -151,7 +159,7 @@ a:hover {
   bottom: 0;
   width: 100%;
   box-sizing: border-box;
-  max-width: 600px;
+  max-width: 500px;
 }
 
 .flex-spacer {

@@ -52,9 +52,9 @@ export default function SimpleImagePicker({
     <div test-id={`image-picker-${name}`}>
       <div
         style={{
-          aspectRatio: "2 / 1",
+          aspectRatio: "1 / 1",
           width: isMobile ? "100%" : "auto",
-          height: isMobile ? "auto" : 200,
+          height: isMobile ? "auto" : 250,
           backgroundColor: Colors.OFF_WHITE_LIGHT,
           cursor: "pointer",
           position: "relative",

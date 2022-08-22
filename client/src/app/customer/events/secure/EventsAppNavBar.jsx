@@ -5,7 +5,7 @@ import MobilePopupMenu from "../../../../components/MobilePopupMenu"
 import NavBar from "../../../../components/NavBar"
 import { auth } from "../../../../utils/FirebaseUtils"
 
-export default function EventsAppNavBar({ title, back, transparentDepth, opaqueDepth }) {
+export default function EventsAppNavBar({ title, back, transparentDepth, opaqueDepth, sidePadding }) {
   const [authUser, setAuthUser] = useState(auth.currentUser)
   const rightElements = []
 
@@ -41,6 +41,7 @@ export default function EventsAppNavBar({ title, back, transparentDepth, opaqueD
     back={back}
     transparentDepth={transparentDepth}
     opaqueDepth={opaqueDepth}
+    sidePadding={sidePadding}
   />
 }
 

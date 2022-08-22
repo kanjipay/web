@@ -64,6 +64,8 @@ export default function EmailLinkPage() {
           currentUrl
         )
 
+        console.log("credential: ", credential)
+
         setUserId(credential.user.uid)
 
         localStorage.removeItem("emailForSignIn")
@@ -71,6 +73,8 @@ export default function EmailLinkPage() {
         await restoreState(stateId)
 
         const hasName = await processUserCredential(credential)
+
+        console.log("got hasName: ", hasName)
 
         setHasName(hasName)
       } catch (err) {
@@ -93,6 +97,10 @@ export default function EmailLinkPage() {
     stateId,
     userId,
   ])
+
+  console.log(hasName)
+  console.log(userId)
+  console.log(emailForSignIn)
 
   useEffect(() => {
     if (hasName && userId) {

@@ -31,8 +31,8 @@ export default function ProductPage({ event, products, merchant }) {
     let update
 
     if (isPublished) {
-      const { title, description, isAvailable } = data
-      update = { title, description, isAvailable }
+      const { title, description, isAvailable, purchaserInfo } = data
+      update = { title, description, isAvailable, purchaserInfo }
     } else {
       update = {
         ...data,
@@ -90,11 +90,6 @@ export default function ProductPage({ event, products, merchant }) {
                 items: [
                   { name: "title" },
                   {
-                    name: "description",
-                    input: <TextArea />,
-                    required: false
-                  },
-                  {
                     name: "price",
                     input: <FloatField maxChars={8} />,
                     decorator: (
@@ -110,6 +105,17 @@ export default function ProductPage({ event, products, merchant }) {
                     explanation: "Once this number of tickets has been sold for this ticket type, it will show as sold out.",
                     input: <IntField />,
                     disabled: !!isPublished,
+                  },
+                  {
+                    name: "description",
+                    input: <TextArea />,
+                    required: false
+                  },
+                  {
+                    name: "purchaserInfo",
+                    explanation: "Specify information to be emailed to purchasers when they buy this ticket type.",
+                    input: <TextArea />,
+                    required: false
                   },
                   {
                     name: "releasesAt",
