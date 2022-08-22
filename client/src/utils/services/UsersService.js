@@ -69,7 +69,7 @@ export async function processUserCredential(credential) {
       }
     }
 
-    const hasName = displayName && displayName.split(" ").length >= 2
+    const hasName = !!displayName && displayName.split(" ").length >= 2
 
     if (hasName) {
       const [firstName, lastName] = displayName.split(" ")
