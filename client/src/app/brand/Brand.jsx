@@ -7,7 +7,6 @@ import { Colors } from "../../enums/Colors"
 import useWindowSize from "../../utils/helpers/useWindowSize"
 import NotFound from "../shared/NotFoundPage"
 import HomePage from "./HomePage"
-import "./HomePageOld.css"
 
 export function opacityToAlphaHex(opacity) {
   let boundedOpacity
