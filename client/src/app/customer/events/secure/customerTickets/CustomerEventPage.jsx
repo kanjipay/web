@@ -123,7 +123,18 @@ export default function CustomerEventPage({ events }) {
             return (
               <div key={product.id}>
                 <h2 className="header-s">{product.title}</h2>
+                {
+                  product.purchaserInfo && <div>
+                    <Spacer y={2} />
+                    <h4 className="header-xs">Ticket information</h4>
+                    <Spacer y={2} />
+                    <p className="text-body">
+                      {product.purchaserInfo}
+                    </p>
+                  </div>
+                }
                 <Spacer y={2} />
+                
                 {product.tickets.map((ticket, index) => {
                   return (
                     <div key={ticket.id}>

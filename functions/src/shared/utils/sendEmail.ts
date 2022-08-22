@@ -122,7 +122,7 @@ export async function sendTicketReceipt(
   const { email: toEmail, firstName } = user
   const { displayName: merchantName, currency, customerFee } = merchant
   const { title: eventTitle, address } = event
-  const { title: productTitle, price: productPrice } = product
+  const { title: productTitle, price: productPrice, purchaserInfo } = product
   const boughtAt = new Date()
 
   const { fee, total } = addFees(productPrice, quantity, customerFee, currency)
@@ -151,6 +151,7 @@ export async function sendTicketReceipt(
     eventTitle,
     eventAddress: address,
     googleMapsLink,
+    purchaserInfo,
     eventLink: `${process.env.CLIENT_URL}/events/${merchant.id}/${event.id}`,
     lineItems: [
       {

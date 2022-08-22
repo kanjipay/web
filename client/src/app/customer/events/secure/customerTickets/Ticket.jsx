@@ -17,15 +17,15 @@ export default function Ticket({ ticket, product, index }) {
   return (
     <div
       style={{
-        padding: 32,
+        padding: 16,
         backgroundColor: Colors.OFF_WHITE_LIGHT,
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+        display: "flex",
+        columnGap: 32,
         position: "relative",
       }}
     >
       <QRCode
-        size={200}
+        size={160}
         style={{ flexShrink: 0 }}
         value={ticket.id}
         bgColor={Colors.CLEAR}
@@ -63,19 +63,6 @@ export default function Ticket({ ticket, product, index }) {
           }}
         >
           {ticket.id}
-        </p>
-        <Spacer y={3} />
-        <p
-          style={{
-            fontFamily: "Roboto Mono, Roboto, sans-serif",
-            fontSize: "0.8em",
-            display: "inline-block",
-            backgroundColor: Colors.BLACK,
-            color: Colors.WHITE,
-            padding: "2px 6px",
-          }}
-        >
-          {indexString}
         </p>
       </div>
     </div>

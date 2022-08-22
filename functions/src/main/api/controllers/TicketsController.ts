@@ -43,7 +43,7 @@ export class TicketsController extends BaseController {
       const products = productDocs
         .map((doc) => {
           const productId = doc.id
-          const { title, description, price, eventId, sortOrder } = doc
+          const { title, description, price, eventId, sortOrder, purchaserInfo } = doc
           const productTickets = tickets
             .filter((ticket) => ticket.productId === productId)
             .sort((ticket1, ticket2) => {
@@ -63,6 +63,7 @@ export class TicketsController extends BaseController {
             id: productId,
             title,
             description,
+            purchaserInfo,
             price,
             eventId,
             sortOrder,

@@ -16,6 +16,17 @@ Cheers,
 {{sender}}
 `
 
+const artist2 = data => `
+Hey {{addressee}}
+
+I'm working on a new ticketing platform, Mercado. We've been working with some great bands and organisers (DJ Mona Lxsa, Scustin and House of Hibernia to name a few) and Shane from Ugolino created the project.
+
+The idea is that we're an artist-first platform, giving them a higher share of booking fees. Would love to talk more about it.
+
+Cheers,
+{{sender}}
+`
+
 const organiser = data => `
 Hey {{addressee}}
  
@@ -47,13 +58,12 @@ Cheers,
 
 const templates = {
   "Artist": artist,
+  "Artist2": artist2,
   "Organiser": organiser,
   "EventRunnerLong": eventRunnerLong,
 }
 
 export default function SalesSender() {
-  
-  
   const [addressee, setAddressee] = useState("")
   const [sender, setSender] = useState("")
   const [template, setTemplate] = useState(Object.keys(templates)[0])

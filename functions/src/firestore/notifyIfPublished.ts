@@ -28,7 +28,7 @@ export const notifyIfPublished = async (change, context) => {
     const publishedAfter = change.after.data().isPublished
     const publishedBefore = change.before.data() && change.before.data().isPublished
     if (publishedAfter && !publishedBefore){
-        const {title, address, description, startsAt, merchantId, image} = change.after.data() 
+        const {title, address, description, startsAt, merchantId } = change.after.data() 
         const eventId = change.after.id
         const eventDate = dateFromTimestamp(startsAt)
         const merchantDoc =  await db().collection(Collection.MERCHANT).doc(merchantId).get()

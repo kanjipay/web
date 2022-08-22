@@ -103,7 +103,7 @@ service cloud.firestore {
       allow update: if (
       	isAdminForMerchant(existingData().merchantId) && 
         (
-          hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity"]) ||
+          hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity", "purchaserInfo"]) ||
           (
             !isEventPublished(existingData().eventId) && 
             !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"])
