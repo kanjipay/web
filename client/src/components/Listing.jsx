@@ -6,8 +6,8 @@ import "./Listing.css"
 import SquareLabel from "./SquareLabel"
 import { useState } from "react"
 
-function Flex({ children, columnGap, style, ...props }) {
-  return <div style={{ display: "flex", alignItems: "center", ...style }}>
+export function Flex({ children, columnGap, style, ...props }) {
+  return <div style={{ display: "flex", alignItems: "center", ...style }} {...props}>
     {children}
   </div>
 }

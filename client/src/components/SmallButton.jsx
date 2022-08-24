@@ -32,6 +32,7 @@ export default function SmallButton({
     padding: "8px 16px",
     display: "flex",
     outline: "none",
+    borderRadius: 2,
     alignItems: "center",
     justifyContent: "center",
     border: `1px solid ${buttonTheme.borderColor}`,

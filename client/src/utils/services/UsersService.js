@@ -1,4 +1,4 @@
-import { updateProfile } from "firebase/auth"
+import { EmailAuthCredential, linkWithCredential, OAuthCredential, updateProfile } from "firebase/auth"
 import { getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 import Collection from "../../enums/Collection"
 import { privacyPolicyVersion } from "../constants"
@@ -11,6 +11,19 @@ export class MarketingConsent {
 }
 
 export async function processUserCredential(credential) {
+
+  const credentialToLink = localStorage.getItem("credentialToLink")
+
+  if (credentialToLink) {
+    try {
+      await linkWithCredential(credential.user, OAuthCredential.fromJSON(JSON.parse(credentialToLink)) ?? EmailAuthCredential.fromJSON(JSON.parse(credentialToLink)))
+    } catch (err) {
+      console.log("Failed to link previous provider")
+    }
+
+    sessionStorage.removeItem("credentialToLink")
+  }
+
   const authUser = credential.user
   const { uid, email, displayName } = authUser
 

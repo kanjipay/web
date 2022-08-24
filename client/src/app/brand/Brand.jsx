@@ -34,31 +34,7 @@ export function opacityToAlphaHex(opacity) {
 export function Brand() {
   const { width } = useWindowSize()
   const isMobile = width < 750
-  const [opacity, setOpacity] = useState(0)
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const opaqueDepth = 0
-      const transparentDepth = 20
-      const yOffset = window.scrollY
-      const newOpacity = Math.max(
-        Math.min(
-          (yOffset - transparentDepth) / (opaqueDepth - transparentDepth),
-          1
-        ),
-        0
-      )
-
-      setOpacity(newOpacity)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [])
-
+  
   return (
     <div>
       <header
@@ -68,7 +44,7 @@ export function Brand() {
           position: "fixed",
           zIndex: 100,
           width: "100%",
-          backgroundColor: Colors.BLACK + opacityToAlphaHex(opacity),
+          backgroundColor: Colors.WHITE + "fa",
         }}
       >
         <div
@@ -83,10 +59,10 @@ export function Brand() {
           <Link to="/">
             <h2
               style={{
-                fontFamily: "Oswald, Roboto, sans-serif",
+                fontFamily: "Rubik, Roboto, sans-serif",
                 fontWeight: 600,
-                fontSize: isMobile ? "2rem" : "2rem",
-                color: Colors.WHITE,
+                fontSize: isMobile ? "1.5rem" : "2rem",
+                color: Colors.BLACK,
               }}
             >
               Mercado
@@ -99,7 +75,7 @@ export function Brand() {
             !isMobile && <Link to="/events/s/tickets">
               <SmallButton
                 title="Event goers"
-                buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
+                buttonTheme={ButtonTheme.MONOCHROME}
               />
             </Link>
           }
@@ -108,22 +84,25 @@ export function Brand() {
             !isMobile && <Link to="/dashboard">
               <SmallButton
                 title="Organisers"
-                buttonTheme={ButtonTheme.MONOCHROME_OUTLINED_REVERSE}
+                buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
               />
             </Link>
           }
 
           {
-            isMobile && <MobilePopupMenu navItems={[
-              {
-                title: "Event goers",
-                path: "/events/s/tickets"
-              },
-              {
-                title: "Organisers",
-                path: "/dashboard"
-              }
-            ]} />
+            isMobile && <MobilePopupMenu 
+              navItems={[
+                {
+                  title: "Event goers",
+                  path: "/events/s/tickets"
+                },
+                {
+                  title: "Organisers",
+                  path: "/dashboard"
+                }
+              ]} 
+              buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
+            />
           }
         </div>
       </header>

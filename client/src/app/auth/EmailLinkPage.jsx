@@ -15,6 +15,8 @@ import { restoreState } from "../../utils/services/StateService"
 import { processUserCredential } from "../../utils/services/UsersService"
 import { updateDoc } from "firebase/firestore"
 import Collection from "../../enums/Collection"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
+import { AuthType } from "./Auth"
 
 export default function EmailLinkPage() {
   const navigate = useNavigate()
@@ -98,12 +100,10 @@ export default function EmailLinkPage() {
     userId,
   ])
 
-  console.log(hasName)
-  console.log(userId)
-  console.log(emailForSignIn)
-
   useEffect(() => {
     if (hasName && userId) {
+      AnalyticsManager.main.logEvent("Authenticate", { type: AuthType.EMAIL })
+      localStorage.setItem("lastAuthType", AuthType.EMAIL)
       navigate(successPath, { state: successState })
     }
   }, [hasName, userId, successPath, successState, navigate])

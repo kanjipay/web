@@ -40,6 +40,7 @@ export default function MainButton({
     boxSizing: "border-box",
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: 2,
     color: foregroundColor,
     cursor: props.disabled ? "mouse" : "pointer",
     ...style,
