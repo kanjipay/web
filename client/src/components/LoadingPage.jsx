@@ -1,9 +1,9 @@
 import Spinner from "../assets/Spinner"
 import Spacer from "../components/Spacer"
 
-export default function LoadingPage({ message }) {
+export default function LoadingPage({ message, ...props }) {
   return (
-    <div className="container">
+    <div className="container" {...props}>
       <div className="centred">
         <Spinner length={64} />
         <Spacer y={2} />

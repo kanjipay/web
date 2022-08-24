@@ -17,8 +17,6 @@ import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
 import { addMinutes, format } from "date-fns"
 import { Helmet } from "react-helmet-async"
 import useWindowSize from "../../../../utils/helpers/useWindowSize"
-import MainButton from "../../../../components/MainButton"
-import { useState } from "react"
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return (
@@ -61,7 +59,7 @@ export function EventDetails({ event, merchant, artists = [] }) {
                   {"Artists: "}
                   {artists.map((artist, index) => {
                     return (
-                      <span>
+                      <span key={artist.id}>
                         {index > 0 ? ", " : ""}
                         <Link
                           to={`/events/artists/${artist.id}`}

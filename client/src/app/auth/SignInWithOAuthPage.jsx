@@ -5,9 +5,6 @@ import {
   OAuthProvider,
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
-  linkWithCredential,
-  OAuthCredential,
-  EmailAuthCredential,
 } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
@@ -30,7 +27,7 @@ export class OAuthType {
   static FACEBOOK = "Facebook"
 }
 
-function providerIdToPathname(providerId) {
+export function providerIdToPathname(providerId) {
   switch (providerId) {
     case GoogleAuthProvider.PROVIDER_ID:
       return "google"
@@ -72,8 +69,6 @@ export default function SignInWithOAuthPage({ type }) {
       try {
         credential = await getRedirectResult(auth)
       } catch (err) {
-        console.log(err)
-
         const matchedEmail = err.customData.email
 
         if (err.code !== "auth/account-exists-with-different-credential" || !matchedEmail) {
