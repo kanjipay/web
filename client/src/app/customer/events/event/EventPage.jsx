@@ -5,18 +5,21 @@ import AsyncImage from "../../../../components/AsyncImage"
 import CircleIcon from "../../../../components/CircleIcon"
 import Spacer from "../../../../components/Spacer"
 import { getEventStorageRef } from "../../../../utils/helpers/storage"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import ProductListing from "../product/ProductListing"
 import EventsAppNavBar from "../secure/EventsAppNavBar"
 import { eventTimeString, generateGoogleMapsLink } from "./eventHelpers"
 import { Colors } from "../../../../enums/Colors"
 import ShowMoreText from "react-show-more-text"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
-import { useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { AnalyticsManager } from "../../../../utils/AnalyticsManager"
 import { addMinutes, format } from "date-fns"
 import { Helmet } from "react-helmet-async"
 import useWindowSize from "../../../../utils/helpers/useWindowSize"
+import MainButton from "../../../../components/MainButton"
+import { useState } from "react"
+import { formatCurrency } from "../../../../utils/helpers/money"
 
 export function EventDetails({ event, merchant, artists = [] }) {
   return (
@@ -89,17 +92,45 @@ export function EventDetails({ event, merchant, artists = [] }) {
 
 export default function EventPage({ merchant, event, products, artists }) {
   const { eventId, merchantId } = useParams()
+  const navigate = useNavigate()
 
   const { width } = useWindowSize()
   const contentWidth = Math.min(width, 500)
   const headerImageHeight = contentWidth
+  const hasAlreadyHappened =
+    new Date() >= addMinutes(dateFromTimestamp(event.endsAt), -30)
+
+  const [isTicketsButtonVisible, setIsTicketsButtonVisible] = useState(!hasAlreadyHappened)
+
+  useEffect(() => {
+    if (hasAlreadyHappened) { return }
+
+    const target = document.querySelector('#get-tickets')
+    const observer = new IntersectionObserver(entries => {
+      const shouldTicketsButtonBeVisible = !entries[0].isIntersecting && !hasAlreadyHappened
+
+      if (shouldTicketsButtonBeVisible !== isTicketsButtonVisible) {
+        setIsTicketsButtonVisible(shouldTicketsButtonBeVisible)
+      }
+    })
+
+    observer.observe(target)
+  })
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
   }, [eventId, merchantId])
 
-  const hasAlreadyHappened =
-    new Date() >= addMinutes(dateFromTimestamp(event.endsAt), -30)
+  const eligibleProducts = products.filter(product => !product.isPrivate)
+
+  const handleGetTickets = () => {
+    if (eligibleProducts.length === 1) {
+      navigate(eligibleProducts[0].id)
+    } else {
+      const element = document.getElementById("get-tickets");
+      element.scrollIntoView({ behavior: "smooth" })
+    }
+  }
 
   return (
     <div className="container">
@@ -122,10 +153,20 @@ export default function EventPage({ merchant, event, products, artists }) {
         alt={merchant.displayName}
       />
 
+      {
+        isTicketsButtonVisible && <div className="anchored-bottom">
+          <MainButton 
+            title="Get tickets" 
+            onClick={handleGetTickets}
+            sideMessage={eligibleProducts.length === 1 ? formatCurrency(eligibleProducts[0].price, merchant.currency) : null}
+            style={{ borderRadius: 0 }}
+          />
+        </div>
+      }
+
       <Spacer y={3} />
 
       <div className="content">
-        
         <h1 className="header-l">{event.title}</h1>
         {event.tags && event.tags.length > 0 && (
           <div>
@@ -148,6 +189,7 @@ export default function EventPage({ merchant, event, products, artists }) {
             </div>
           </div>
         )}
+
         <Spacer y={2} />
 
         <EventDetails event={event} merchant={merchant} artists={artists} />
@@ -171,7 +213,7 @@ export default function EventPage({ merchant, event, products, artists }) {
           </p>
         ) : (
           <div>
-            <h2 className="header-m">Get tickets</h2>
+            <h2 className="header-m" id="get-tickets">Get tickets</h2>
             <Spacer y={2} />
             {!event.isPublished && (
               <div>

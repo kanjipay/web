@@ -33,7 +33,8 @@ export default function Listing({
     style={{
       aspectRatio: "1/1",
       width: "100%",
-      position: "relative"
+      position: "relative",
+      opacity: isHovering ? 0.9 : 1
     }}
   >
     <AsyncImage

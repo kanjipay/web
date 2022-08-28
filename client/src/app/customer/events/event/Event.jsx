@@ -19,9 +19,9 @@ export default function Event({ merchant, user }) {
 
   useEffect(() => {
     return Collection.EVENT.onChange(eventId, event => {
-      if (event) {
-        setEvent(event)
-      } else {
+      setEvent(event)
+      
+      if (!event) {
         setError({
           title: "Event not found",
           body: "We couldn't find that event. Please double check you have the right link."

@@ -19,6 +19,8 @@ import Revealer from "../../components/Revealer"
 import { shouldShowAppleAuth } from "./shouldShowAppleAuth"
 import SignInWithOAuthButton from "./SignInWithOAuthButton"
 import { OAuthType } from "./SignInWithOAuthPage"
+import MainButton from "../../components/MainButton"
+import { ButtonTheme } from "../../components/ButtonTheme"
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -166,7 +168,13 @@ export default function AuthPage() {
         <SignInWithOAuthButton provider={OAuthType.FACEBOOK} onClick={handleSignInWithFacebook} />
         <Spacer y={2} />
 
-        <Revealer title="Email me a sign in link" name="auth">
+        <Revealer 
+          trigger={<MainButton 
+            title="Email me a sign in link"
+            icon="/img/emailLink.png"
+            buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+          />}
+        >
           <Form
             isFormLoading={isLoading}
             formGroupData={[

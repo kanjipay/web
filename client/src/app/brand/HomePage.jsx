@@ -13,11 +13,11 @@ import Testimonial from "./Testimonial"
 import { isMobile } from "react-device-detect"
 
 export default function HomePage() {
+  const [events, setEvents] = useState([])
+
   useEffect(() => {
     AnalyticsManager.main.viewPage("Home")
   }, [])
-
-  const [events, setEvents] = useState([])
 
   useEffect(() => {
     return Collection.EVENT.queryOnChange(
@@ -144,6 +144,29 @@ export default function HomePage() {
         />
       </div>
 
+      {/* <div style={{
+        position: "relative",
+        paddingBottom: "62.5%",
+        height: 0,
+      }}>
+        <iframe 
+          title="loom demo"
+          src="https://www.loom.com/embed/949a76f6fb8a47078159f8f9763a7c4f" 
+          frameborder="0" 
+          webkitallowfullscreen 
+          mozallowfullscreen 
+          allowfullscreen 
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            borderRadius: 8
+          }}>
+        </iframe>
+      </div> */}
+
       <Spacer y={sectionSpacing} />
 
       <h2
@@ -182,8 +205,8 @@ export default function HomePage() {
         style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-          columnGap: 128,
-          rowGap: 32,
+          columnGap: 32,
+          rowGap: isMobile ? 16 : 32,
         }}
       >
         <div
@@ -281,6 +304,8 @@ function SquareTitleBody({ title, body }) {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
+        borderRadius: 8,
+        backgroundColor: Colors.OFF_WHITE_LIGHT,
         padding: 32,
       }}
     >

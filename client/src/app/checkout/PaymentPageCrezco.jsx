@@ -16,6 +16,7 @@ export default function PaymentPageCrezco({ order }) {
   const { bankCode, countryCode, referringDeviceId } = location.state
 
   useEffect(() => {
+    localStorage.setItem("crezcoBankCode", bankCode)
     const deviceId = referringDeviceId ?? IdentityManager.main.getDeviceId()
     createPaymentAttemptCrezco(orderId, bankCode, countryCode, deviceId).then(
       (redirectUrl) => {

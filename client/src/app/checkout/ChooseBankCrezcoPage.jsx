@@ -15,26 +15,14 @@ import { IdentityManager } from "../../utils/IdentityManager"
 import { NetworkManager } from "../../utils/NetworkManager"
 import { createLink } from "../../utils/services/LinksService"
 import BankTile from "./BankTile"
-// import { useIntl } from "react-intl"
-// import { getCountryCode } from "../../utils/helpers/money"
-// import Dropdown from "../../components/input/Dropdown"
 import { cancelOrder } from "./cancelOrder"
 import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import LoadingPage from "../../components/LoadingPage"
-import { PaymentType } from "../../enums/PaymentType"
 import { formatCurrency } from "../../utils/helpers/money"
-
-function AcceptedCards() {
-  return (
-    <div style={{ display: "flex", alignItems: "center", columnGap: 16 }}>
-      <p className="text-body-faded">We accept: </p>
-      <img src="/img/visa.png" alt="Visa" style={{ height: 40 }} />
-      <img src="/img/mastercard.png" alt="Mastercard" style={{ height: 32 }} />
-      <img src="/img/amex.png" alt="American Express" style={{ height: 32 }} />
-    </div>
-  )
-}
+import { AcceptedCards } from "./AcceptedCards"
+import { CheckoutCounter } from "./Order"
+import { ButtonTheme } from "../../components/ButtonTheme"
 
 const cachedBankFileNamePrefix = ["PROD", "STAGING"].includes(
   process.env.REACT_APP_ENV_NAME
@@ -59,14 +47,13 @@ export default function ChooseBankCrezcoPage({ order }) {
   const [bankName, setBankName] = useState("")
   const [filteredBankData, setFilteredBankData] = useState([])
   const [linkId, setLinkId] = useState(null)
+  const [hasSelectedBank, setHasSelectedBank] = useState(false)
 
   const handleCountryCodeChange = (event) => {
     const countryCode = event.target.value
     localStorage.setItem("countryCode", countryCode)
     setCountryCode(countryCode)
   }
-
-  const canPayWithCard = order?.paymentTypes?.includes(PaymentType.STRIPE)
 
   const handlePayWithCard = () => navigate("../payment-stripe")
 
@@ -94,6 +81,7 @@ export default function ChooseBankCrezcoPage({ order }) {
   const handleChooseBank = (bankDatum) => {
     const code = bankDatum.bankCode
     AnalyticsManager.main.logEvent("ChooseBank", { crezcoBankCode: code })
+    setHasSelectedBank(true)
 
     setBankCode(code)
 
@@ -190,7 +178,18 @@ export default function ChooseBankCrezcoPage({ order }) {
     })
   }, [linkId, navigate])
 
-  if (bankCode) {
+  useEffect(() => {
+    if (bankCodeFromQuery && referringDeviceId) {
+      navigate("../payment", {
+        state: { bankCode: bankCodeFromQuery, countryCode, referringDeviceId },
+      })
+    }
+    
+  }, [bankCodeFromQuery, referringDeviceId, countryCode, navigate])
+
+  const shouldEmphasiseOpenBanking = order.openBankingPaymentAttempts === 0 && order.openBankingSettings !== "DEEMPHASISE"
+
+  if (bankCode && (shouldEmphasiseOpenBanking || hasSelectedBank)) {
     const bankDatum = bankData.find((d) => d.bankCode === bankCode)
 
     if (!bankDatum) return <LoadingPage />
@@ -198,6 +197,7 @@ export default function ChooseBankCrezcoPage({ order }) {
 
     return (
       <div className="container">
+        <CheckoutCounter order={order} />
         <Helmet>
           <title>Checkout | Mercado</title>
         </Helmet>
@@ -241,78 +241,52 @@ export default function ChooseBankCrezcoPage({ order }) {
 
             <Spacer y={3} />
             <p className="text-body">
-              We're redirecting you to {bankName} using Crezco to confirm your
-              payment of {formatCurrency(order.total, order.currency)}.
+              {
+                isMobile ?
+                  `We're redirecting you to ${bankName} using Crezco to confirm your payment of ${formatCurrency(order.total, order.currency)}.` :
+                  `Scan this QR code with your mobile to confirm your payment of ${formatCurrency(order.total, order.currency)}. Our partner Crezco will redirect you to ${bankName} to do this.`
+              }
             </p>
-          </div>
-        </div>
 
-        <div className="anchored-bottom">
-          <div style={{ margin: 16 }}>
-            {!isMobile && (
-              <div>
-                <div>
-                  <div style={{ display: "flex", columnGap: 32 }}>
-                    <div style={{ flexGrow: 10, textAlign: "left" }}>
-                      <h3 className="header-s">
-                        Continue on mobile (recommended)
-                      </h3>
-                      <Spacer y={2} />
-                      <p className="text-body-faded">
-                        If you have your bank’s mobile app installed, scan the
-                        QR code with your phone to confirm your payment there.
-                      </p>
+            <Spacer y={3} />
+
+            {
+              isMobile ?
+                <MainButton
+                  title={`Continue to ${bankName}`}
+                  test-id="continue-to-bank-button"
+                  onClick={handleContinueToBank}
+                /> :
+                <div style={{ flexShrink: 10 }}>
+                  {linkId ? (
+                    <QRCode size={160} value={generateLink(linkId)} />
+                  ) : (
+                    <div
+                      style={{
+                        width: 160,
+                        height: 160,
+                        position: "relative",
+                      }}
+                    >
+                      <Spinner
+                        length={32}
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, 50%)",
+                        }}
+                      />
                     </div>
-                    <div style={{ flexShrink: 10 }}>
-                      {linkId ? (
-                        <QRCode size={160} value={generateLink(linkId)} />
-                      ) : (
-                        <div
-                          style={{
-                            width: 160,
-                            height: 160,
-                            position: "relative",
-                          }}
-                        >
-                          <Spinner
-                            length={32}
-                            style={{
-                              position: "absolute",
-                              top: "50%",
-                              left: "50%",
-                              transform: "translate(-50%, 50%)",
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  )}
                   <Spacer y={3} />
-                  <OrDivider />
-                  <Spacer y={3} />
+                  <MainButton 
+                    title="I don't have my phone" 
+                    buttonTheme={ButtonTheme.CLEAN}
+                    onClick={handleContinueToBank}
+                  />
                 </div>
-              </div>
-            )}
-
-            <MainButton
-              title={isMobile ? "Continue to my bank" : "Continue on desktop"}
-              test-id="continue-to-bank-button"
-              onClick={handleContinueToBank}
-            />
-            {/* <Spacer y={1} />
-        <MainButton
-          title="Choose another bank"
-          onClick={handleChooseAnotherBank}
-          buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-        /> */}
-            {/* <Spacer y={2} />
-        <p className="text-caption">
-          By continuing you are permitting Crezco to initiate a payment from your bank account. You also agree to Crezco's
-          <a href="https://www.crezco.com/terms" target="_blank" rel="noreferrer"> Terms of Use </a>
-          and
-          <a href="https://www.crezco.com/privacy-policy" target="_blank" rel="noreferrer"> Privacy Policy</a>.
-        </p>
-        <Spacer y={3} /> */}
+            }
           </div>
         </div>
       </div>
@@ -349,6 +323,7 @@ export default function ChooseBankCrezcoPage({ order }) {
 
     return (
       <div className="container">
+        <CheckoutCounter order={order} />
         <Helmet>
           <title>Checkout | Mercado</title>
         </Helmet>
@@ -356,6 +331,19 @@ export default function ChooseBankCrezcoPage({ order }) {
 
         <div className="content">
           <Spacer y={9} />
+
+          {!shouldEmphasiseOpenBanking && <div>
+            
+            <MainButton
+              title="Pay with card"
+              onClick={handlePayWithCard}
+            />
+            <Spacer y={1} />
+            <AcceptedCards />
+            <Spacer y={3} />
+            <OrDivider />
+            <Spacer y={3} />
+          </div>}
 
           <div style={{ display: "flex", alignItems: "center" }}>
             <h2 className="header-m">Pay by bank transfer</h2>
@@ -409,44 +397,32 @@ export default function ChooseBankCrezcoPage({ order }) {
 
           <Spacer y={3} />
 
-          {filteredBankData.length > 0 ? (
+          {filteredBankData.length > 0 ? 
             <div>
-              {sections.map(
-                (section, index) =>
-                  section.data.length > 0 && (
-                    <div key={index}>
-                      <h2 className="header-s">{section.title}</h2>
-                      <Spacer y={2} />
-                      {section.data.map((datum) => {
-                        return (
-                          <div key={datum.bankCode}>
-                            <BankTile
-                              name={datum.bankName}
-                              imageRef={datum.logoUrl}
-                              onClick={() => handleChooseBank(datum)}
-                            />
-                            <Spacer y={2} />
-                          </div>
-                        )
-                      })}
-                      <Spacer y={3} />
-                    </div>
-                  )
-              )}
-              {canPayWithCard && (
-                <div>
-                  <OrDivider />
-                  <Spacer y={3} />
-                  <MainButton
-                    title="Pay with card"
-                    onClick={handlePayWithCard}
+              {sections.map((section, index) => section.data.length > 0 && <div key={index}>
+                <h2 className="header-s">{section.title}</h2>
+                <Spacer y={2} />
+                {section.data.map((datum) => <div key={datum.bankCode}>
+                  <BankTile
+                    name={datum.bankName}
+                    imageRef={datum.logoUrl}
+                    onClick={() => handleChooseBank(datum)}
                   />
-                  <Spacer y={1} />
-                  <AcceptedCards />
-                </div>
-              )}
-            </div>
-          ) : (
+                  <Spacer y={2} />
+                </div>)}
+                <Spacer y={3} />
+              </div>)}
+              {shouldEmphasiseOpenBanking && <div>
+                <OrDivider />
+                <Spacer y={3} />
+                <MainButton
+                  title="Pay with card"
+                  onClick={handlePayWithCard}
+                />
+                <Spacer y={1} />
+                <AcceptedCards />
+              </div>}
+            </div> : 
             <div style={{ textAlign: "center" }}>
               <CircleIcon
                 Icon={Discover}
@@ -457,29 +433,22 @@ export default function ChooseBankCrezcoPage({ order }) {
               <h3 className="header-s">We couldn't find that bank</h3>
               <Spacer y={1} />
 
-              {canPayWithCard ? (
-                <div>
-                  <p className="text-body-faded">
-                    Try searching for a different one, or pay with card instead.
-                  </p>
-                  <Spacer y={6} />
-                  <div style={{ maxWidth: 400, margin: "auto" }}>
-                    <MainButton
-                      title="Pay with card"
-                      onClick={handlePayWithCard}
-                    />
-                    <Spacer y={1} />
-                    <AcceptedCards />
-                  </div>
-                </div>
-              ) : (
+              <div>
                 <p className="text-body-faded">
-                  Try searching for a different one.
+                  Try searching for a different one, or pay with card instead.
                 </p>
-              )}
+                <Spacer y={6} />
+                <div style={{ maxWidth: 400, margin: "auto" }}>
+                  <MainButton
+                    title="Pay with card"
+                    onClick={handlePayWithCard}
+                  />
+                  <Spacer y={1} />
+                  <AcceptedCards />
+                </div>
+              </div>
             </div>
-          )}
-
+          }
           <Spacer y={8} />
         </div>
       </div>

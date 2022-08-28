@@ -20,6 +20,8 @@ import { formatCurrency } from "../../utils/helpers/money"
 import { OrderSummary } from "../../components/OrderSummary"
 import NavBar from "../../components/NavBar"
 import { cancelOrder } from "./cancelOrder"
+import { CheckoutCounter } from "./Order"
+
 
 export default function PaymentPageStripe({ order }) {
   const { orderId } = useParams()
@@ -40,8 +42,29 @@ export default function PaymentPageStripe({ order }) {
 
       setStripeProps({
         stripe: loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY),
+
         options: {
           clientSecret,
+          appearance: {
+            theme: 'flat',
+            variables: {
+              fontFamily: '"Roboto", sans-serif',
+              colorTextPlaceholder: Colors.GRAY_LIGHT,
+              colorText: Colors.BLACK,
+              colorBackground: Colors.OFF_WHITE_LIGHT,
+              borderRadius: "2px",
+              spacingGridColumn: "16px",
+              spacingGridRow: "16px"
+            },
+            rules: {
+              ".Label": {
+                fontFamily: '"Roboto", sans-serif',
+                fontSize: "0.9em",
+                fontWeight: 600,
+                marginBottom: "8px"
+              }
+            }
+          }
         },
       })
     })
@@ -64,7 +87,6 @@ function StripeCheckoutForm({ order, clientSecret }) {
   const stripe = useStripe()
   const elements = useElements()
   const navigate = useNavigate()
-
   const [errorData, setErrorData] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -114,6 +136,7 @@ function StripeCheckoutForm({ order, clientSecret }) {
   } else {
     return (
       <div className="container">
+        <CheckoutCounter order={order} />
         <NavBar
           title="Complete your purchase"
           back={() => cancelOrder(order.id, navigate)}
@@ -139,7 +162,7 @@ function StripeCheckoutForm({ order, clientSecret }) {
             onClick={handleSubmit}
             isLoading={isLoading}
           />
-          <Spacer y={2} />
+          <Spacer y={9} />
         </div>
       </div>
     )

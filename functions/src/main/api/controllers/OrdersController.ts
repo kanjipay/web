@@ -15,6 +15,12 @@ import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArr
 import axios from "axios"
 import { logger } from "firebase-functions/v1"
 
+enum OpenBankingSettings {
+  ON = "ON",
+  DEEMPHASISED = "DEEMPHASISED",
+  OFF = "OFF"
+}
+
 enum DeviceType {
   MOBILE = "Mobile",
   TABLET = "Tablet",
@@ -34,11 +40,15 @@ enum PaymentType {
 }
 
 function getPaymentTypes(merchant: any) {
-  const { currency, crezco } = merchant
+  const { currency, crezco, openBankingSettings } = merchant
 
   let paymentTypes = [PaymentType.STRIPE]
 
-  if (crezco?.userId && currency === "GBP") {
+  if (
+    !!crezco?.userId && 
+    currency === "GBP" && 
+    [OpenBankingSettings.ON, OpenBankingSettings.DEEMPHASISED].includes(openBankingSettings ?? OpenBankingSettings.ON)
+  ) {
     paymentTypes.push(PaymentType.OPEN_BANKING)
   }
 
@@ -416,6 +426,8 @@ export class OrdersController extends BaseController {
         }
       }
 
+      const openBankingSettings = merchant.openBankingSettings ?? OpenBankingSettings.ON
+
       const paymentTypes = getPaymentTypes(merchant)
 
       const currentTicketCount = existingTicketDocs.docs.length
@@ -513,6 +525,8 @@ export class OrdersController extends BaseController {
         customerFee,
         mercadoFee,
         paymentTypes,
+        openBankingPaymentAttempts: 0,
+        openBankingSettings,
         orderItems: [
           {
             productId,

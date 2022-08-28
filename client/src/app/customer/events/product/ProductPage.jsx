@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react"
-import AsyncImage from "../../../../components/AsyncImage"
 import { Colors } from "../../../../enums/Colors"
 import { ButtonTheme } from "../../../../components/ButtonTheme"
 import MainButton from "../../../../components/MainButton"
 import Spacer from "../../../../components/Spacer"
 import { formatCurrency } from "../../../../utils/helpers/money"
-import { getEventStorageRef } from "../../../../utils/helpers/storage"
 import LoadingPage from "../../../../components/LoadingPage"
 import { useOpenAuthPage } from "../../../auth/useOpenAuthPage"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
@@ -63,10 +61,6 @@ export default function ProductPage({ merchant, event, product, user }) {
   const [isLoading, setIsLoading] = useState(false)
 
   const customerFee = merchant.customerFee ?? 0.1
-
-  const { width } = useWindowSize()
-  const contentWidth = Math.min(width, 500)
-  const headerImageHeight = contentWidth / 2
 
   const { isPublished } = event
 
@@ -209,8 +203,6 @@ export default function ProductPage({ merchant, event, product, user }) {
     return <div className="container">
       <EventsAppNavBar
         title={product.title}
-        transparentDepth={headerImageHeight - 96}
-        opaqueDepth={headerImageHeight - 48}
         back="../.."
       />
 
@@ -220,13 +212,7 @@ export default function ProductPage({ merchant, event, product, user }) {
         </title>
       </Helmet>
 
-      <AsyncImage
-        imageRef={getEventStorageRef(event, event.photo)}
-        style={{ height: 48, width: "100%" }}
-        alt={event.title}
-      />
-
-      <Spacer y={3} />
+      <Spacer y={9} />
 
       <div className="content">
         <h1 className="header-l">{product.title}</h1>

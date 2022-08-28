@@ -72,6 +72,8 @@ export default function NavBar({
           width: "100%",
           height: "100%",
           position: "absolute",
+          padding: "0px 48px",
+          boxSizing: "border-box",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -80,7 +82,11 @@ export default function NavBar({
       >
         {
           typeof title === "string" ?
-            <h1 className="header-xs">{title}</h1> :
+            <h1 className="header-xs" style={{
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+            }}>{title}</h1> :
             title
         }
       </div>

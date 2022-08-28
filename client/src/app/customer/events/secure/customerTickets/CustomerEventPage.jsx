@@ -147,6 +147,7 @@ export default function CustomerEventPage({ events }) {
                     </div>
                   )
                 })}
+                <Spacer y={2} />
               </div>
             )
           })}

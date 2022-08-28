@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom"
 import MenuApp from "./customer/menu/MenuApp"
 import MerchantApp from "./dashboard/menu/MerchantApp"
 import { Brand } from "./brand/Brand"
@@ -16,21 +16,32 @@ import { UAParser } from "ua-parser-js"
 import Legal from "./legal/Legal"
 import EventShortLinks from "./customer/events/EventShortLinks"
 import SalesSender from "./SalesSender"
+import { download } from "./dashboard/events/events/GuestlistTab"
 
 export default function App() {
   console.log("language: ", navigator.language)
+  const location = useLocation()
 
   useEffect(() => {
     const userAgent = UAParser(navigator.userAgent)
     const browser = userAgent.browser.name
 
     if (["Instagram", "Facebook"].includes(browser)) {
-      const url = new URL(window.location.href)
-      url.protocol = "googlechrome"
+      const isAppleOS = ["iOS", "Mac OS"].includes(userAgent.os.name)
 
-      window.location.href = url.href
+      if (isAppleOS) {
+        const url = new URL(window.location.href)
+        url.protocol = "googlechrome"
+
+        window.location.href = url.href
+      } else {
+        const url = new URL(window.location.href)
+        url.protocol = "googlechromes"
+
+        window.location.href = url.href
+      }
     }
-  }, [])
+  }, [location])
 
   useEffect(() => {
     AnalyticsManager.main.logEvent(AnalyticsEvent.INITIALISE_APP)

@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom"
 import IconActionPage from "../../components/IconActionPage"
 import LoadingPage from "../../components/LoadingPage"
 import { PaymentType } from "../../enums/PaymentType"
-import { AnalyticsEvent, AnalyticsManager } from "../../utils/AnalyticsManager"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { cancelOrder } from "./cancelOrder"
 
 export default function PaymentUnsuccessfulPage({
@@ -26,6 +26,11 @@ export default function PaymentUnsuccessfulPage({
 
   const handleTryAgain = () => {
     AnalyticsManager.main.pressButton("retryPayment")
+
+    if (wasOpenBankingPayment) {
+      localStorage.removeItem("crezcoBankCode")
+    }
+    
     navigate(retryPath)
   }
 

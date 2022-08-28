@@ -1,27 +1,22 @@
+import React from "react"
 import { useState } from "react"
 import { AnalyticsManager } from "../utils/AnalyticsManager"
-import { ButtonTheme } from "./ButtonTheme"
-import MainButton from "./MainButton"
 
-export default function Revealer({ title, children, name }) {
+export default function Revealer({ trigger, children, name }) {
   const [isRevealed, setIsRevealed] = useState(false)
+
+  const Trigger = React.cloneElement(trigger, {
+    onClick: () => {
+      if (!isRevealed) {
+        setIsRevealed(true)
+        AnalyticsManager.main.pressButton("authEmailLink")
+      }
+    }
+  })
 
   return (
     <div>
-      {!isRevealed && (
-        <MainButton
-          title={title}
-          test-id={`${name}-revealer-button`}
-          buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-          onClick={() => {
-            if (!isRevealed) {
-              setIsRevealed(true)
-              AnalyticsManager.main.pressButton("authEmailLink")
-            }
-          }}
-        />
-      )}
-
+      {!isRevealed && Trigger}
       {isRevealed && children}
     </div>
   )

@@ -5,17 +5,6 @@ import { Field } from "../components/input/IntField"
 import SegmentedControl from "../components/SegmentedControl"
 import Spacer from "../components/Spacer"
 
-const artist = data => `
-Hi {{addressee}}
-
-We’ve built a new ticketing platform, Mercado. The project was created by Shane from Jazz/Rap group Ugolino, and we're working with some great promoters and groups such as Scustin, House of Hibernia, Mona Lxsa and Sail Out.
-
-We're organiser-first, giving you 7% higher revenue by sharing booking fees, and listening to feedback, building features that organisers want. I’d love to talk more about it.
-
-Cheers,
-{{sender}}
-`
-
 const artist2 = data => `
 Hey {{addressee}}
 
@@ -27,40 +16,42 @@ Cheers,
 {{sender}}
 `
 
-const organiser = data => `
-Hey {{addressee}}
- 
-I’m working on a new ticketing platform, Mercado. The project was first built for our friend Shane from Irish Jazz/Rap group Ugolino, who was disappointed with the high booking fees on other platforms.
- 
-Now we’re also working with some great Irish promoters and groups such as Scustin, House of Hibernia and Mona Lxsa, as well as a few in London.
- 
-We're organiser-first, giving you 7% higher revenue by sharing booking fees, and listening to feedback, building features that organisers want.
- 
-I’d love to talk more about it, are you free on Monday/Tuesday next week for a short call?
+const artist3 = data => `
+Hi {{addressee}}
+
+I work with Mercado and am looking to help artists earn more profit from ticket sales so thought it would be beneficial to reach out.
+
+Mercado is working with organisers across the UK and Ireland, such as House of Hibernia and Sail Out, helping them to receive the best possible profit for the shows they put on, all the while using social media marketing and analytics to sell out tickets.
+
+If the above sounds at all interesting, maybe we could organise a short phone call to chat?
+
+Let me know if a day in the next week or two works well for you.
+
+Cheers,
+Shane
+{{sender}}
 `
 
-const eventRunnerLong = data => `
-Hi {{addressee}},
+const loomInitial = data => `
+Hey {{addressee}}
 
-Are you putting on an event soon?
+I'm working on a new ticketing platform, Mercado. We've been working with some great bands and organisers (DJ Mona Lxsa, Scustin and House of Hibernia to name a few) and Shane from Ugolino created the project.
 
-I work with Mercado, helping event runners across the UK get more revenue from ticket sales so thought it would be beneficial to reach out.
-
-Mercado is a promoter-first ticketing platform. We ensure event runners receive the best possible profit for any shows, all the while using social media marketing and analytics to sell out the tickets. We’re 70% cheaper than RA and Eventbrite.
-
-If the above sounds at all interesting, maybe we could organise a short phone call to chat about your music related plans and a little more about Mercado.
-
-Let me know if a day in the next week or two works well for you?
+The idea is that we're an artist-first platform, giving them a higher share of booking fees. Would love to talk more about it. If you want something more visual, here's a video showing you through the platform: https://www.loom.com/share/949a76f6fb8a47078159f8f9763a7c4f.
 
 Cheers,
 {{sender}}
 `
 
+const loomFollowUp = data => `
+Hey {{addressee}}, thought it'd be helpful to show how the platform actually looks and works! Here's a short video going through it: https://www.loom.com/share/949a76f6fb8a47078159f8f9763a7c4f - let me know what you think
+`
+
 const templates = {
-  "Artist": artist,
   "Artist2": artist2,
-  "Organiser": organiser,
-  "EventRunnerLong": eventRunnerLong,
+  "Artist3": artist3,
+  "Loom initial": loomInitial,
+  "Loom follow up": loomFollowUp
 }
 
 export default function SalesSender() {

@@ -43,6 +43,10 @@ export default function EmailLinkPage() {
   const [hasName, setHasName] = useState(null)
 
   useEffect(() => {
+    AnalyticsManager.main.viewPage("EmailLink")
+  }, [])
+
+  useEffect(() => {
     async function handleEmailLink() {
       try {
         const currentUrl = window.location.href

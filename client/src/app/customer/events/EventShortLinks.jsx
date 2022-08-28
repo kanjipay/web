@@ -17,13 +17,13 @@ export default function EventShortLinks() {
   useEffect(() => {
     return Collection.MERCHANT.queryOnChangeGetOne(
       merchant => {
+        setMerchant(merchant)
+
         if (!merchant) {
           setError({ 
             title: "Organiser not found", 
             body: "We couldn't find that organiser. Try double checking your link."
           })
-        } else {
-          setMerchant(merchant)
         }
       },
       where("linkName", "==", merchantLinkName)
@@ -37,13 +37,13 @@ export default function EventShortLinks() {
 
     return Collection.EVENT.queryOnChangeGetOne(
       event => {
+        setEvent(event)
+
         if (!event) {
           setError({ 
             title: "Event not found",
             body: "We couldn't find that event. Try double checking your link."
           })
-        } else {
-          setEvent(event)
         }
       },
       where("linkName", "==", eventLinkName),
