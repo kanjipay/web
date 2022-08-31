@@ -8,7 +8,6 @@ import EventsApp from "./customer/events/EventsApp"
 import Checkout from "./checkout/Checkout"
 import Dashboard from "./dashboard/Dashboard"
 import Auth from "./auth/Auth"
-
 import AttributionLinkPage from "./shared/attribution/AttributionLinkPage"
 import { AnalyticsEvent, AnalyticsManager } from "../utils/AnalyticsManager"
 import TicketChecker from "./ticketChecker/TicketChecker"
@@ -16,10 +15,12 @@ import { UAParser } from "ua-parser-js"
 import Legal from "./legal/Legal"
 import EventShortLinks from "./customer/events/EventShortLinks"
 import SalesSender from "./SalesSender"
-import { download } from "./dashboard/events/events/GuestlistTab"
+import smoothscroll from 'smoothscroll-polyfill';
+import ErrorPage from "./shared/ErrorPage"
+
+smoothscroll.polyfill();
 
 export default function App() {
-  console.log("language: ", navigator.language)
   const location = useLocation()
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function App() {
       />
       <Route path="/merchant/*" element={<MerchantApp />} />
       <Route path="/auth/*" element={<Auth />} />
+      <Route path="/error" element={<ErrorPage />} />
       <Route path="/dashboard/*" element={<Dashboard />} />
       <Route path="/ticket-checker/*" element={<TicketChecker />} />
       <Route path="/legal/*" element={<Legal />} />

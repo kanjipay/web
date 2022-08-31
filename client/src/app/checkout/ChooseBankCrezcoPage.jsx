@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { isMobile } from "react-device-detect"
 import { Helmet } from "react-helmet-async"
 import QRCode from "react-qr-code"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import Discover from "../../assets/icons/Discover"
 import Spinner from "../../assets/Spinner"
 import { Colors } from "../../enums/Colors"
@@ -21,8 +21,9 @@ import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import LoadingPage from "../../components/LoadingPage"
 import { formatCurrency } from "../../utils/helpers/money"
 import { AcceptedCards } from "./AcceptedCards"
-import { CheckoutCounter } from "./Order"
+import { CheckoutCounter } from "./CheckoutCounter"
 import { ButtonTheme } from "../../components/ButtonTheme"
+import { ShimmerText } from "react-shimmer-effects"
 
 const cachedBankFileNamePrefix = ["PROD", "STAGING"].includes(
   process.env.REACT_APP_ENV_NAME
@@ -48,6 +49,7 @@ export default function ChooseBankCrezcoPage({ order }) {
   const [filteredBankData, setFilteredBankData] = useState([])
   const [linkId, setLinkId] = useState(null)
   const [hasSelectedBank, setHasSelectedBank] = useState(false)
+  const { state } = useLocation()
 
   const handleCountryCodeChange = (event) => {
     const countryCode = event.target.value
@@ -151,7 +153,7 @@ export default function ChooseBankCrezcoPage({ order }) {
   }, [bankData, bankCodeFromQuery, bankCodeFromStorage])
 
   useEffect(() => {
-    if (bankCode && !isMobile) {
+    if (bankCode && !isMobile && order) {
       if (!linkId) {
         const deviceId = IdentityManager.main.getDeviceId()
         createLink(
@@ -187,7 +189,13 @@ export default function ChooseBankCrezcoPage({ order }) {
     
   }, [bankCodeFromQuery, referringDeviceId, countryCode, navigate])
 
-  const shouldEmphasiseOpenBanking = order.openBankingPaymentAttempts === 0 && order.openBankingSettings !== "DEEMPHASISE"
+  let shouldEmphasiseOpenBanking
+
+  if (state) {
+    shouldEmphasiseOpenBanking = state.shouldEmphasiseOpenBanking
+  } else {
+    shouldEmphasiseOpenBanking = order?.openBankingPaymentAttempts === 0 && order?.openBankingSettings !== "DEEMPHASISE"
+  }
 
   if (bankCode && (shouldEmphasiseOpenBanking || hasSelectedBank)) {
     const bankDatum = bankData.find((d) => d.bankCode === bankCode)
@@ -197,7 +205,7 @@ export default function ChooseBankCrezcoPage({ order }) {
 
     return (
       <div className="container">
-        <CheckoutCounter order={order} />
+        { order && <CheckoutCounter order={order} /> }
         <Helmet>
           <title>Checkout | Mercado</title>
         </Helmet>
@@ -240,23 +248,36 @@ export default function ChooseBankCrezcoPage({ order }) {
             </div>
 
             <Spacer y={3} />
-            <p className="text-body">
-              {
-                isMobile ?
-                  `We're redirecting you to ${bankName} using Crezco to confirm your payment of ${formatCurrency(order.total, order.currency)}.` :
-                  `Scan this QR code with your mobile to confirm your payment of ${formatCurrency(order.total, order.currency)}. Our partner Crezco will redirect you to ${bankName} to do this.`
-              }
-            </p>
+            {
+              order ?
+                <p className="text-body">
+                  {
+                    isMobile ?
+                      `We're redirecting you to ${bankName} using Crezco to confirm your payment of ${formatCurrency(order.total, order.currency)}.` :
+                      `Scan this QR code with your mobile to confirm your payment of ${formatCurrency(order.total, order.currency)}. Our partner Crezco will redirect you to ${bankName} to do this.`
+                  }
+                </p> :
+                <ShimmerText line={3} />
+            }
 
             <Spacer y={3} />
 
             {
               isMobile ?
-                <MainButton
-                  title={`Continue to ${bankName}`}
-                  test-id="continue-to-bank-button"
-                  onClick={handleContinueToBank}
-                /> :
+                <div>
+                  <MainButton
+                    title={`Continue to ${bankName}`}
+                    test-id="continue-to-bank-button"
+                    onClick={handleContinueToBank}
+                    disabled={!order}
+                  />
+                  <Spacer y={1} />
+                  <MainButton
+                    title="Choose another bank"
+                    onClick={handleChooseAnotherBank}
+                    buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                  />
+                </div> :
                 <div style={{ flexShrink: 10 }}>
                   {linkId ? (
                     <QRCode size={160} value={generateLink(linkId)} />
@@ -284,6 +305,7 @@ export default function ChooseBankCrezcoPage({ order }) {
                     title="I don't have my phone" 
                     buttonTheme={ButtonTheme.CLEAN}
                     onClick={handleContinueToBank}
+                    disabled={!order}
                   />
                 </div>
             }
@@ -323,11 +345,12 @@ export default function ChooseBankCrezcoPage({ order }) {
 
     return (
       <div className="container">
-        <CheckoutCounter order={order} />
+        {order && <CheckoutCounter order={order} / >}
+        
         <Helmet>
           <title>Checkout | Mercado</title>
         </Helmet>
-        <NavBar title="Checkout" back={handleClickBack} />
+        <NavBar title="Checkout" back={order ? handleClickBack : null} />
 
         <div className="content">
           <Spacer y={9} />

@@ -4,7 +4,7 @@ import { Colors } from "../../enums/Colors"
 import { AnalyticsManager, PageName } from "../../utils/AnalyticsManager"
 import PaymentUnsuccessfulPage from "./PaymentUnsuccessfulPage"
 
-export default function PaymentFailurePage({ order }) {
+export default function PaymentFailurePage() {
   useEffect(() => {
     AnalyticsManager.main.viewPage("PaymentFailure")
   }, [])
@@ -17,7 +17,6 @@ export default function PaymentFailurePage({ order }) {
       title="Your payment failed"
       body="Don't worry, you haven't been charged"
       pageName={PageName.PAYMENT_FAILURE}
-      order={order}
     />
   )
 }

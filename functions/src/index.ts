@@ -18,6 +18,8 @@ export const main = euFunctions
       "JWKS_PRIVATE_KEY",
       "JWKS_PUBLIC_KEY",
       "SENDGRID_API_KEY",
+      "APPLE_WALLET_CERT",
+      "APPLE_WALLET_PRIVATE_KEY",
       "CREZCO_API_KEY",
       "STRIPE_CLIENT_SECRET",
       "STRIPE_PAYMENT_WEBHOOK_SECRET",

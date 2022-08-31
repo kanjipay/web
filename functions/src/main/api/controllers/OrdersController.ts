@@ -9,7 +9,6 @@ import { HttpError, HttpStatusCode } from "../../../shared/utils/errors"
 import { fetchDocument } from "../../../shared/utils/fetchDocument"
 import LoggingController from "../../../shared/utils/loggingClient"
 import { sendMenuReceiptEmail } from "../../../shared/utils/sendEmail"
-import { v4 as uuid } from "uuid"
 import MerchantStatus from "../../../shared/enums/MerchantStatus"
 import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
 import axios from "axios"
@@ -359,12 +358,13 @@ export class OrdersController extends BaseController {
       const logger = new LoggingController("Create ticket order")
 
       const userId = req.user.id
-      const { productId, quantity, deviceId, attributionData } = req.body
+      const { productId, quantity, deviceId, attributionData, orderId } = req.body
       logger.log("Read initial variables", {
         userId,
         productId,
         quantity,
         deviceId,
+        orderId
       })
 
       const { product, productError } = await fetchDocument(
@@ -497,7 +497,7 @@ export class OrdersController extends BaseController {
         logger.log("No required email domain found for ticket")
       }
 
-      const { currency, customerFee, crezco } = merchant
+      const { currency, customerFee } = merchant
       const mercadoFee = merchant.mercadoFee ?? 0
 
       const total = Math.round(price * quantity * (1 + customerFee))
@@ -508,7 +508,6 @@ export class OrdersController extends BaseController {
         price,
         customerFee,
       })
-      const orderId = uuid()
 
       const isFree = total === 0
 
@@ -573,7 +572,7 @@ export class OrdersController extends BaseController {
         .doc(orderId)
         .set(orderData)
 
-      if (!isFree){
+      if (!isFree) {
         const updateProduct = db()
         .collection(Collection.PRODUCT)
         .doc(productId)
@@ -589,19 +588,7 @@ export class OrdersController extends BaseController {
 
       await Promise.all(promises)
 
-      let redirectPath: string
-
-      if (isFree) {
-        redirectPath = `/events/s/orders/${orderId}/confirmation`
-      } else if (crezco?.userId && currency === "GBP") {
-        redirectPath = `/checkout/o/${orderId}/choose-bank`        
-      } else {
-        redirectPath = `/checkout/o/${orderId}/payment-stripe`
-      }
-
-      logger.log("Function successful", { orderId, redirectPath })
-
-      return res.status(200).json({ orderId, redirectPath })
+      return res.sendStatus(200)
     } catch (err) {
       next(err)
     }

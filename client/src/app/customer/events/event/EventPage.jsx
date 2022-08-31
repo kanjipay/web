@@ -20,13 +20,18 @@ import useWindowSize from "../../../../utils/helpers/useWindowSize"
 import MainButton from "../../../../components/MainButton"
 import { useState } from "react"
 import { formatCurrency } from "../../../../utils/helpers/money"
+import ExperimentManager, { ExperimentKey } from "../../../../utils/ExperimentManager"
+import Spotify from "react-spotify-embed"
+import Carat from "../../../../assets/icons/Carat"
+import Spinner from "../../../../assets/Spinner"
+import { ShimmerThumbnail, ShimmerTitle, ShimmerText, ShimmerButton } from "react-shimmer-effects";
 
 export function EventDetails({ event, merchant, artists = [] }) {
-  return (
-    <div>
+  if (event && merchant && artists) {
+    return <div>
       <div style={{ columnGap: 8, display: "flex" }}>
         <CircleIcon Icon={Clock} length={20} backgroundColor={Colors.CLEAR} />
-        <p className="text-body">{eventTimeString(event)}</p>
+        <p className="text-body">{eventTimeString(event)}</p> :
       </div>
       <Spacer y={1} />
       <div style={{ columnGap: 8, display: "flex" }}>
@@ -35,17 +40,22 @@ export function EventDetails({ event, merchant, artists = [] }) {
           length={20}
           backgroundColor={Colors.CLEAR}
         />
-        <p className="text-body">
-          {`${event.address} · `}
-          <a
-            href={generateGoogleMapsLink(event)}
-            target="_blank"
-            rel="noreferrer"
-            test-id="event-details-directions-link"
-          >
-            Get directions
-          </a>
-        </p>
+        {
+          event ?
+            <p className="text-body">
+              {`${event.address} · `}
+              <a
+                href={generateGoogleMapsLink(event)}
+                target="_blank"
+                rel="noreferrer"
+                test-id="event-details-directions-link"
+              >
+                Get directions
+              </a>
+            </p> :
+            <ShimmerText line={1} />
+        }
+
       </div>
       {merchant && (
         <div>
@@ -57,7 +67,7 @@ export function EventDetails({ event, merchant, artists = [] }) {
               backgroundColor={Colors.CLEAR}
             />
             <p className="text-body">
-              {artists.length > 0 && (
+              {artists?.length > 0 && (
                 <span>
                   {"Artists: "}
                   {artists.map((artist, index) => {
@@ -87,18 +97,24 @@ export function EventDetails({ event, merchant, artists = [] }) {
         </div>
       )}
     </div>
-  )
+  } else {
+    return <ShimmerText line={3} />
+  }
 }
 
 export default function EventPage({ merchant, event, products, artists }) {
   const { eventId, merchantId } = useParams()
   const navigate = useNavigate()
+  const isShowingFee = ExperimentManager.main.boolean(ExperimentKey.PROCESSING_FEE)
 
   const { width } = useWindowSize()
   const contentWidth = Math.min(width, 500)
   const headerImageHeight = contentWidth
-  const hasAlreadyHappened =
-    new Date() >= addMinutes(dateFromTimestamp(event.endsAt), -30)
+  const hasAlreadyHappened = event ?
+    new Date() >= addMinutes(dateFromTimestamp(event?.endsAt), -30) :
+    false
+
+  const processingFee = merchant?.customerFee ?? 0.1
 
   const [isTicketsButtonVisible, setIsTicketsButtonVisible] = useState(!hasAlreadyHappened)
 
@@ -118,10 +134,10 @@ export default function EventPage({ merchant, event, products, artists }) {
   })
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
-  }, [eventId, merchantId])
+    AnalyticsManager.main.viewPage("Event", { merchantId, eventId, isShowingFee })
+  }, [eventId, merchantId, isShowingFee])
 
-  const eligibleProducts = products.filter(product => !product.isPrivate)
+  const eligibleProducts = products?.filter(product => !product.isPrivate)
 
   const handleGetTickets = () => {
     if (eligibleProducts.length === 1) {
@@ -135,7 +151,7 @@ export default function EventPage({ merchant, event, products, artists }) {
   return (
     <div className="container">
       <EventsAppNavBar
-        title={event.title}
+        title={event?.title ?? <Spinner length={20} />}
         transparentDepth={headerImageHeight - 96}
         opaqueDepth={headerImageHeight - 48}
         back="../.."
@@ -143,22 +159,33 @@ export default function EventPage({ merchant, event, products, artists }) {
 
       <Helmet>
         <title>
-          {`${event.title} | ${merchant.displayName} | Mercado`}
+          {`${event?.title ?? ""} | ${merchant?.displayName ?? ""} | Mercado`}
         </title>
       </Helmet>
 
-      <AsyncImage
-        imageRef={getEventStorageRef(event, event.photo)}
-        style={{ width: "100%", aspectRatio: "1/1" }}
-        alt={merchant.displayName}
-      />
+      {
+        event ?
+          <AsyncImage
+            imageRef={getEventStorageRef(event, event.photo)}
+            style={{ width: "100%", aspectRatio: "1/1" }}
+            alt={event.title}
+          /> :
+          <ShimmerThumbnail height={headerImageHeight} />
+      }
 
       {
-        isTicketsButtonVisible && <div className="anchored-bottom">
+        isTicketsButtonVisible && event && products && merchant && <div className="anchored-bottom">
           <MainButton 
             title="Get tickets" 
             onClick={handleGetTickets}
-            sideMessage={eligibleProducts.length === 1 ? formatCurrency(eligibleProducts[0].price, merchant.currency) : null}
+            icon={eligibleProducts.length > 1 && <Carat length={20} color={Colors.WHITE} />}
+            sideMessage={
+              eligibleProducts.length === 1 ? 
+                (
+                  isShowingFee ?
+                    formatCurrency(eligibleProducts[0].price, merchant.currency) :
+                    formatCurrency(eligibleProducts[0].price * (1 + processingFee), merchant.currency)
+                ) : null}
             style={{ borderRadius: 0 }}
           />
         </div>
@@ -167,40 +194,69 @@ export default function EventPage({ merchant, event, products, artists }) {
       <Spacer y={3} />
 
       <div className="content">
-        <h1 className="header-l">{event.title}</h1>
-        {event.tags && event.tags.length > 0 && (
-          <div>
-            <Spacer y={2} />
-            <div style={{ display: "flex", columnGap: 4 }}>
-              {event.tags.map((tag) => {
-                return (
-                  <p
-                    key={tag}
-                    className="text-body"
-                    style={{
-                      padding: "4px 8px",
-                      backgroundColor: Colors.OFF_WHITE_LIGHT,
-                    }}
-                  >
-                    {tag}
-                  </p>
-                )
-              })}
+        {
+          event && merchant ?
+            <div>
+              <h1 className="header-l">{event.title}</h1>
+              {event.tags && event.tags.length > 0 && (
+                <div>
+                  <Spacer y={2} />
+                  <div style={{ display: "flex", columnGap: 4 }}>
+                    {event.tags.map((tag) => {
+                      return (
+                        <p
+                          key={tag}
+                          className="text-body"
+                          style={{
+                            padding: "4px 8px",
+                            backgroundColor: Colors.OFF_WHITE_LIGHT,
+                          }}
+                        >
+                          {tag}
+                        </p>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div> :
+            <div>
+              <ShimmerTitle />
+              <div style={{ display: "flex", columnGap: 8 }}>
+                <ShimmerButton size="sm" />
+                <ShimmerButton size="sm" />
+                <ShimmerButton size="sm" />
+              </div>
             </div>
-          </div>
-        )}
+        }
 
         <Spacer y={2} />
 
         <EventDetails event={event} merchant={merchant} artists={artists} />
 
         {
-          event.description?.length > 0 && <div>
-            <Spacer y={4} />
-            <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
-              {event.description}
-            </ShowMoreText>
-          </div>
+          event ? 
+            event.description?.length > 0 && <div>
+              <Spacer y={4} />
+              <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
+                {event.description}
+              </ShowMoreText>
+            </div> :
+            <div>
+              <Spacer y={4} />
+              <ShimmerText />
+            </div>
+        }
+
+        {
+          merchant ?
+            !!merchant?.spotify?.showsOnEvents && <div>
+              <Spacer y={4} />
+              <Spotify wide link={merchant.spotify.link} style={{ borderRadius: 2 }} />
+            </div> : <div>
+              <Spacer y={4} />
+              <ShimmerThumbnail height={90} />
+            </div>
         }
 
         <Spacer y={4} />
@@ -215,34 +271,46 @@ export default function EventPage({ merchant, event, products, artists }) {
           <div>
             <h2 className="header-m" id="get-tickets">Get tickets</h2>
             <Spacer y={2} />
-            {!event.isPublished && (
-              <div>
-                <p>
-                  {event.publishScheduledAt
-                    ? `Tickets to this event will become available on ${format(
-                        dateFromTimestamp(event.endsAt),
-                        "do MMM"
-                      )} at ${format(dateFromTimestamp(event.endsAt), "H:mm")}.`
-                    : "The event organiser hasn't made tickets available yet."}
-                </p>
-                <Spacer y={2} />
-              </div>
-            )}
-            {products
-              .filter(product => !product.isPrivate)
-              .map((product) => {
-                return (
-                  <div key={product.id}>
-                    <ProductListing
-                      product={product}
-                      currency={merchant.currency}
-                      isPublished={event.isPublished}
-                    />
-                    <Spacer y={1} />
-                  </div>
-                )
-              })
+            {
+              products && event ?
+                <div>
+                    {!event.isPublished && (
+                      <div>
+                        <p>
+                          {event.publishScheduledAt
+                            ? `Tickets to this event will become available on ${format(
+                              dateFromTimestamp(event.endsAt),
+                              "do MMM"
+                            )} at ${format(dateFromTimestamp(event.endsAt), "H:mm")}.`
+                            : "The event organiser hasn't made tickets available yet."}
+                        </p>
+                        <Spacer y={2} />
+                      </div>
+                    )}
+                    {products
+                      .filter(product => !product.isPrivate)
+                      .map((product) => {
+                        return (
+                          <div key={product.id}>
+                            <ProductListing
+                              product={product}
+                              currency={merchant.currency}
+                              processingFee={processingFee}
+                              isPublished={event.isPublished}
+                            />
+                            <Spacer y={1} />
+                          </div>
+                        )
+                      })
+                    }
+                </div> :
+                <div>
+                  <ShimmerThumbnail height={60} rounded={true} />
+                  <ShimmerThumbnail height={60} rounded={true} />
+                  <ShimmerThumbnail height={60} rounded={true} />
+                </div>
             }
+            
           </div>
         )}
         <Spacer y={8} />

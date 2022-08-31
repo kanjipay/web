@@ -36,11 +36,11 @@ export class AnalyticsManager {
     so the browser sends requests even if user closes the window 
     */
     const options = { transport: "beacon" }
-    const analytics = amplitude.getInstance()
+    const amplitudeAnalytics = amplitude.getInstance()
 
     const pseudoUserId = IdentityManager.main.getPseudoUserId()
 
-    analytics.init(
+    amplitudeAnalytics.init(
       process.env.REACT_APP_AMPLITUDE_API_KEY,
       pseudoUserId,
       options
@@ -60,9 +60,9 @@ export class AnalyticsManager {
     // so will be removed when user clears cookies, or null in private browsing mode
     // We store the uuid in localStorage, which is more persistent
     // */
-    analytics.setDeviceId(IdentityManager.main.getDeviceId())
+    amplitudeAnalytics.setDeviceId(IdentityManager.main.getDeviceId())
 
-    this.analytics = analytics
+    this.analytics = amplitudeAnalytics
   }
 
   setUserGroup(groupName, groupValue) {

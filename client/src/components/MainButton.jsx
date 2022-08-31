@@ -62,11 +62,15 @@ export default function MainButton({
         onClick={isLoading ? undefined : onClick}
         {...props}
       >
-        { !isLoading && !!icon && <img 
-          src={icon} 
-          alt="" 
-          style={{ height: 20, width: 20 }} 
-        />}
+        { 
+          !isLoading && !!icon && typeof icon === "string" ?
+            <img
+              src={icon}
+              alt=""
+              style={{ height: 20, width: 20 }}
+            /> :
+            icon
+        }
         { !isLoading && title }
       </button>
       {isLoading && (

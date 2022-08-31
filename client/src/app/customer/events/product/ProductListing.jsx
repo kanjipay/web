@@ -6,16 +6,19 @@ import { formatCurrency } from "../../../../utils/helpers/money"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { format } from "date-fns"
 import { useState } from "react"
+import ExperimentManager, { ExperimentKey } from "../../../../utils/ExperimentManager"
 
 export default function ProductListing({
   product,
   currency,
   linkPath = product.id,
+  processingFee,
   isPublished,
   ...props
 }) {
   const [isHovering, setIsHovering] = useState(false)
 
+  const isShowingFee = ExperimentManager.main.boolean(ExperimentKey.PROCESSING_FEE)
   const isSoldOut = product.soldCount + product.reservedCount >= product.capacity
   const releaseDate = dateFromTimestamp(product.releasesAt)
   const isReleased = releaseDate < new Date()
@@ -35,7 +38,7 @@ export default function ProductListing({
   if (!isPublished) {
     message = "Not published"
   } else if (isAvailable) {
-    message = formatCurrency(product.price, currency)
+    message = formatCurrency(isShowingFee ? product.price : product.price * (1 + processingFee), currency)
   } else if (!isReleased) {
     message = `Releases ${format(releaseDate, "MMM do")} at ${format(
       releaseDate,
@@ -54,6 +57,7 @@ export default function ProductListing({
         padding: "16px",
         display: "flex",
         alignItems: "center",
+        borderRadius: 2
       }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}

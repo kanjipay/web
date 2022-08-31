@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { Route, Routes, useLocation, useParams } from "react-router-dom"
 import Collection from "../../../../enums/Collection"
-import LoadingPage from "../../../../components/LoadingPage"
 import EventPage from "./EventPage"
 import { documentId, orderBy, where } from "firebase/firestore"
 import Product from "../product/Product"
@@ -9,26 +8,21 @@ import IconPage from "../../../../components/IconPage"
 import Cross from "../../../../assets/icons/Cross"
 import { Colors } from "../../../../enums/Colors"
 
-export default function Event({ merchant, user }) {
+export default function Event({ merchant, events, user }) {
   const { eventId } = useParams()
-  const location = useLocation()
-  const [event, setEvent] = useState(location.state?.event)
+  const event = events?.find(e => e.id === eventId)
   const [products, setProducts] = useState(null)
   const [artists, setArtists] = useState(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    return Collection.EVENT.onChange(eventId, event => {
-      setEvent(event)
-      
-      if (!event) {
-        setError({
-          title: "Event not found",
-          body: "We couldn't find that event. Please double check you have the right link."
-        })
-      }
-    })
-  }, [eventId])
+    if (events && !event) {
+      setError({
+        title: "Event not found",
+        body: "We couldn't find that event. Please double check you have the right link."
+      })
+    }
+  }, [events, event])
 
   useEffect(() => {
     if (!event) {
@@ -53,8 +47,16 @@ export default function Event({ merchant, user }) {
       orderBy("sortOrder", "asc")
     )
   }, [eventId])
-
-  if (event && products && artists) {
+  
+  if (error) {
+    return <IconPage
+      Icon={Cross}
+      iconBackgroundColor={Colors.RED_LIGHT}
+      iconForegroundColor={Colors.RED}
+      title={error.title}
+      body={error.body}
+    />
+  } else {
     return (
       <Routes>
         <Route
@@ -70,19 +72,9 @@ export default function Event({ merchant, user }) {
         />
         <Route
           path="/:productId/*"
-          element={<Product merchant={merchant} event={event} user={user} />}
+          element={<Product merchant={merchant} event={event} products={products} user={user} />}
         />
       </Routes>
     )
-  } else if (error) {
-    return <IconPage
-      Icon={Cross}
-      iconBackgroundColor={Colors.RED_LIGHT}
-      iconForegroundColor={Colors.RED}
-      title={error.title}
-      body={error.body}
-    />
-  } else {
-    return <LoadingPage />
   }
 }
