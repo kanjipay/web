@@ -13,6 +13,7 @@ import GuestlistTab from "./GuestlistTab"
 import LoadingPage from "../../../../components/LoadingPage"
 import EventLinkTab from "./EventLinkTab"
 import EventDetailsTab from "./EventDetailsTab"
+import ShareEventTab from "./ShareEventTab"
 
 function PublishInfoBanners({ hasProducts }) {
   const navigate = useNavigate()
@@ -191,7 +192,8 @@ export default function EventPage({ merchant, event, products }) {
           "Event details": <EventDetailsTab event={event} products={products} />,
           "Ticket types": ticketTypes,
           "Event links": <EventLinkTab merchant={merchant} event={event} attributionLinks={attributionLinks} />,
-          "Guestlist": guestlistTab
+          "Guestlist": guestlistTab, 
+          "Share": <ShareEventTab merchant={merchant} event={event}/>
         }}
       />
 
