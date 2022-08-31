@@ -84,11 +84,6 @@ export default function OrderConfirmationPage({ user }) {
             >{` ${currUser.email}`}</span>
             . The email may take a few moments to go through.
           </p>
-          <Spacer y={2} />
-          <p className="text-body-faded">
-            Alternatively, you can access your tickets by clicking the icon in
-            the top right, which takes you to your profile page.
-          </p>
 
           <Spacer y={3} />
           <h3 className="header-s">Order summary</h3>
@@ -98,12 +93,13 @@ export default function OrderConfirmationPage({ user }) {
             currency={order.currency}
             feePercentage={order.customerFee}
           />
+          <Spacer y={9} />
         </div>
 
         <div className="anchored-bottom">
           <div style={{ margin: "16px" }}>
             <MainButton
-              title="Done"
+              title="View my tickets"
               test-id="ticket-order-confirmation-done-button"
               style={{ boxSizing: "borderBox" }}
               onClick={() => navigate(`/events/s/tickets`)}

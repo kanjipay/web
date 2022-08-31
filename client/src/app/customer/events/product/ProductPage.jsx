@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react"
-import AsyncImage from "../../../../components/AsyncImage"
 import { Colors } from "../../../../enums/Colors"
 import { ButtonTheme } from "../../../../components/ButtonTheme"
 import MainButton from "../../../../components/MainButton"
 import Spacer from "../../../../components/Spacer"
 import { formatCurrency } from "../../../../utils/helpers/money"
-import { getEventStorageRef } from "../../../../utils/helpers/storage"
 import LoadingPage from "../../../../components/LoadingPage"
 import { useOpenAuthPage } from "../../../auth/useOpenAuthPage"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
@@ -27,7 +25,15 @@ import { getDoc } from "firebase/firestore"
 import { logMetaPixelEvent } from "../../../../utils/MetaPixelLogger"
 import Collection from "../../../../enums/Collection"
 import ShowMoreText from "react-show-more-text"
-import useWindowSize from "../../../../utils/helpers/useWindowSize"
+import ExperimentManager, { ExperimentKey } from "../../../../utils/ExperimentManager"
+import Spinner from "../../../../assets/Spinner"
+import { ShimmerThumbnail, ShimmerTitle, ShimmerText, ShimmerTable } from "react-shimmer-effects";
+import { IdentityManager } from "../../../../utils/IdentityManager"
+import { NetworkManager } from "../../../../utils/NetworkManager"
+import { getLatestItem } from "../../../shared/attribution/AttributionReducer"
+import { v4 as uuid } from "uuid"
+import { useCallback } from "react"
+import { useOpenErrorPage } from "../../../../utils/useOpenErrorPage"
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length === 0) {
@@ -55,20 +61,60 @@ export default function ProductPage({ merchant, event, product, user }) {
   const [quantity, setQuantity] = useState(1)
   const { productId, eventId, merchantId } = useParams()
   const openAuthPage = useOpenAuthPage()
+  const openErrorPage = useOpenErrorPage()
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
   const [isMarketingConsentApproved, setIsMarketingConsentApproved] =
     useState(true)
   const [attestationData, setAttestationData] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
+  const customerFee = merchant?.customerFee ?? 0.1
+  const isShowingFee = ExperimentManager.main.boolean(ExperimentKey.PROCESSING_FEE)
 
-  const customerFee = merchant.customerFee ?? 0.1
+  const isPublished = event?.isPublished ?? true
 
-  const { width } = useWindowSize()
-  const contentWidth = Math.min(width, 500)
-  const headerImageHeight = contentWidth / 2
+  const submitOrder = useCallback((checkoutUrlType) => {
+    const deviceId = IdentityManager.main.getDeviceId()
+    const attributionItem = getLatestItem({ eventId })
+    const orderId = uuid()
 
-  const { isPublished } = event
+    NetworkManager.post("/orders/tickets", {
+      orderId,
+      productId,
+      quantity,
+      deviceId,
+      attributionData: attributionItem?.attributionData,
+    }).then(() => {
+      NetworkManager.put(`/orders/o/${orderId}/enrich`).then(() => { })
+    })
+      .catch((error) => {
+        openErrorPage({
+          title: "The order failed",
+          description: error?.response?.data?.message,
+        })
+      })
+
+    let redirectPath
+
+    switch (checkoutUrlType) {
+      case "FREE":
+        redirectPath = `/events/s/orders/${orderId}/confirmation`
+        break;
+      case "CARD":
+        redirectPath = `/checkout/o/${orderId}/payment-stripe`
+        break;
+      case "OPEN_BANKING":
+        redirectPath = `/checkout/o/${orderId}/choose-bank`
+        break;
+      default:
+        redirectPath = `/checkout/o/${orderId}/payment-stripe`
+    }
+
+    navigate(redirectPath, {
+      state: { 
+        shouldEmphasiseOpenBanking: merchant?.openBankingSettings ? merchant.openBankingSettings === "ON" : true 
+      }
+    })
+  }, [eventId, productId, merchant, navigate, quantity, openErrorPage])
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("Product", {
@@ -93,75 +139,72 @@ export default function ProductPage({ merchant, event, product, user }) {
   useEffect(() => {
     if (!state) { return }
 
-    const { shouldCheckOut, marketingConsentStatus, quantity } = state
+    const { checkoutUrlType, marketingConsentStatus } = state
 
-    if (shouldCheckOut) {
-      setIsLoading(true)
+    if (checkoutUrlType && user) {
+      if (!user.marketingConsentStatus || user.marketingConsentStatus === MarketingConsent.PENDING) {
+        setMarketingConsent(marketingConsentStatus).then(() => { })
+      }
 
-      setMarketingConsent(marketingConsentStatus).then(() => {
-        setIsLoading(false)
-        
-        const state = {
-          productId,
-          quantity,
-          eventId,
-          backPath: pathname,
-        }
 
-        navigate("/events/s/orders/tickets", { state })
-      })
+
+      submitOrder(checkoutUrlType)
     }
-  }, [state, eventId, navigate, pathname, productId])
+  }, [state, eventId, merchant, event, product, navigate, pathname, productId, user, submitOrder])
 
   useEffect(() => {
-    const attestations = getAttestations(merchant, event, product)
+    if (merchant && event && product) {
+      const attestations = getAttestations(merchant, event, product)
 
-    const attestationData = attestations.reduce(
-      (attestationData, attestation) => {
-        attestationData[attestation] = false
-        return attestationData
-      },
-      {}
-    )
+      const attestationData = attestations.reduce(
+        (attestationData, attestation) => {
+          attestationData[attestation] = false
+          return attestationData
+        },
+        {}
+      )
 
-    setAttestationData(attestationData)
+      setAttestationData(attestationData)
+    }
   }, [merchant, event, product])
 
-  const maxQuantity = event.maxTicketsPerPerson ?? 10
+  const maxQuantity = event?.maxTicketsPerPerson ?? 10
   const minQuantity = 1
 
   const handleCheckout = () => {
-    AnalyticsManager.main.pressButton("Checkout", { eventId, productId })
+    AnalyticsManager.main.pressButton("Checkout", { eventId, productId, isShowingFee })
+
+    let checkoutUrlType
+
+    if (product.price === 0) {
+      checkoutUrlType = "FREE"
+    } else if (
+      merchant.crezco?.userId &&
+      merchant.currency === "GBP" &&
+      merchant.openBankingSettings !== "OFF"
+    ) {
+      checkoutUrlType = "OPEN_BANKING"
+    } else {
+      checkoutUrlType = "CARD"
+    }
 
     if (user && user.email) {
-      function navigateToTicketsPage() {
-        const state = {
-          productId,
-          quantity,
-          eventId,
-          backPath: pathname,
-        }
+      if (!user.marketingConsentStatus || user.marketingConsentStatus === MarketingConsent.PENDING) {
+        const marketingConsentStatus = isMarketingConsentApproved
+          ? MarketingConsent.APPROVED
+          : MarketingConsent.DECLINED
 
-        navigate("/events/s/orders/tickets", { state })
+        setMarketingConsent(marketingConsentStatus).then(() => {})
       }
 
-      setIsLoading(true)
-
-      const marketingConsentStatus = isMarketingConsentApproved
-        ? MarketingConsent.APPROVED
-        : MarketingConsent.DECLINED
-
-      setMarketingConsent(marketingConsentStatus).then(() => {
-        setIsLoading(false)
-        navigateToTicketsPage()
-      })
+      submitOrder(checkoutUrlType)
     } else {
       const marketingConsentStatus = isMarketingConsentApproved
         ? MarketingConsent.APPROVED
         : MarketingConsent.DECLINED
 
       const successState = {
-        shouldCheckOut: true,
+        checkoutUrlType,
         marketingConsentStatus,
         quantity
       }
@@ -184,7 +227,7 @@ export default function ProductPage({ merchant, event, product, user }) {
   }
 
   function getEmailDomain() {
-    return product.emailDomain ?? event.emailDomain ?? merchant.emailDomain
+    return product?.emailDomain ?? event?.emailDomain ?? merchant?.emailDomain
   }
 
   function isValidEmail() {
@@ -203,71 +246,73 @@ export default function ProductPage({ merchant, event, product, user }) {
     return (!user?.email || canBuyProduct()) && isPublished
   }
 
-  if (state?.shouldCheckOut) {
+  if (!!state?.checkoutUrlType) {
     return <LoadingPage />
   } else {
     return <div className="container">
       <EventsAppNavBar
-        title={product.title}
-        transparentDepth={headerImageHeight - 96}
-        opaqueDepth={headerImageHeight - 48}
+        title={product?.title ?? <Spinner length={20} />}
         back="../.."
       />
 
       <Helmet>
         <title>
-          {`${event.title} | ${merchant.displayName} | Mercado`}
+          {`${event?.title ?? ""} | ${merchant?.displayName ?? ""} | Mercado`}
         </title>
       </Helmet>
 
-      <AsyncImage
-        imageRef={getEventStorageRef(event, event.photo)}
-        style={{ height: 48, width: "100%" }}
-        alt={event.title}
-      />
-
-      <Spacer y={3} />
+      <Spacer y={9} />
 
       <div className="content">
-        <h1 className="header-l">{product.title}</h1>
-
         {
-          product.description?.length > 0 && <div>
-            <Spacer y={3} />
+          product ?
+            <div>
+              <h1 className="header-l">{product.title}</h1>
 
-            <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
-              {product.description}
-            </ShowMoreText>
-          </div>
+              {
+                product.description?.length > 0 && <div>
+                  <Spacer y={3} />
+
+                  <ShowMoreText lines={5} keepNewLines={true} className="text-body-faded">
+                    {product.description}
+                  </ShowMoreText>
+                </div>
+              }
+
+              {product.earliestEntryAt && (
+                <div>
+                  <Spacer y={3} />
+                  <div style={{ display: "flex", columnGap: 8 }}>
+                    <h4 className="header-xs">Earliest entry:</h4>
+                    <p>
+                      {format(
+                        dateFromTimestamp(product.earliestEntryAt),
+                        "do MMM at HH:mm"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {product.latestEntryAt && (
+                <div>
+                  <Spacer y={3} />
+                  <div style={{ display: "flex", columnGap: 8 }}>
+                    <h4 className="header-xs">Latest entry:</h4>
+                    <p>
+                      {format(dateFromTimestamp(product.latestEntryAt), "do MMM") +
+                        " at " +
+                        format(dateFromTimestamp(product.latestEntryAt), "HH:mm")}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div> :
+            <div>
+              <ShimmerTitle />
+              <ShimmerText line={3} />
+            </div>
         }
-
-        {product.earliestEntryAt && (
-          <div>
-            <Spacer y={3} />
-            <div style={{ display: "flex", columnGap: 8 }}>
-              <h4 className="header-xs">Earliest entry:</h4>
-              <p>
-                {format(
-                  dateFromTimestamp(product.earliestEntryAt),
-                  "do MMM at HH:mm"
-                )}
-              </p>
-            </div>
-          </div>
-        )}
-        {product.latestEntryAt && (
-          <div>
-            <Spacer y={3} />
-            <div style={{ display: "flex", columnGap: 8 }}>
-              <h4 className="header-xs">Latest entry:</h4>
-              <p>
-                {format(dateFromTimestamp(product.latestEntryAt), "do MMM") +
-                  " at " +
-                  format(dateFromTimestamp(product.latestEntryAt), "HH:mm")}
-              </p>
-            </div>
-          </div>
-        )}
+        
         <Spacer y={3} />
 
         <h3 className="header-s">Number of tickets</h3>
@@ -327,11 +372,16 @@ export default function ProductPage({ merchant, event, product, user }) {
 
         <h3 className="header-s">Order Summary</h3>
         <Spacer y={2} />
-        <OrderSummary
-          lineItems={[{ title: product.title, quantity, price: product.price }]}
-          currency={merchant.currency}
-          feePercentage={customerFee}
-        />
+        {
+          product && merchant ?
+            <OrderSummary
+              lineItems={[{ title: product.title, quantity, price: product.price }]}
+              currency={merchant.currency}
+              feePercentage={customerFee}
+            /> :
+            <ShimmerTable row={3} col={2} />
+        }
+        
 
         <Spacer y={6} />
 
@@ -378,26 +428,31 @@ export default function ProductPage({ merchant, event, product, user }) {
             <Spacer y={3} />
           </div>
         )}
-        <MainButton
-          title={
-            isPublished ?
-              "Checkout"
-              : "Not available"
-          }
-          sideMessage={
-            isPublished
-              ? formatCurrency(
-                Math.round(product.price * quantity * (1 + customerFee)),
-                merchant.currency
-              )
-              : undefined
-          }
-          onClick={handleCheckout}
-          isLoading={isLoading}
-          disabled={!isEnabled()}
-          style={{ boxSizing: "borderBox" }}
-          test-id="product-cta-button"
-        />
+
+        {
+          product && event && merchant ?
+            <MainButton
+              title={
+                isPublished ?
+                  "Checkout"
+                  : "Not available"
+              }
+              sideMessage={
+                isPublished
+                  ? formatCurrency(
+                    Math.round(product.price * quantity * (1 + customerFee)),
+                    merchant.currency
+                  )
+                  : undefined
+              }
+              onClick={handleCheckout}
+              disabled={!isEnabled()}
+              style={{ boxSizing: "borderBox" }}
+              test-id="product-cta-button"
+            /> :
+            <ShimmerThumbnail height={48} rounded />
+        }
+        
 
         {(!user || user.marketingConsentStatus === MarketingConsent.PENDING) && (
           <div>

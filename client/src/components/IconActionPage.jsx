@@ -18,7 +18,9 @@ export default function IconActionPage({
   secondaryAction,
   secondaryIsLoading = false,
   name = "",
-  showsButtonsAtBottom = null
+  showsButtonsAtBottom = null,
+  style,
+  ...props
 }) {
   const buttons = (
     <div style={{ margin: "16px" }}>
@@ -58,7 +60,7 @@ export default function IconActionPage({
   }
 
   return (
-    <div className="container">
+    <div className="container" style={style} {...props}>
       <div className="centred-top" style={{ width: isMobile ? 311 : 400 }}>
         <CircleIcon
           length={120}

@@ -36,7 +36,7 @@ export default function CreateOrganisationPage({ authUser }) {
   }
 
   return (
-    <div style={{ position: "relative", height: "100%", backgroundColor: Colors.RED, width: "100%" }}>
+    <div style={{ position: "relative", height: "100%", width: "100%" }}>
       <img
         alt=""
         src="/img/club_floor.jpg"

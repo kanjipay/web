@@ -9,11 +9,12 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import AttributionContextProvider from "./app/shared/attribution/AttributionContext"
 import { IntlProvider } from "react-intl"
-// import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
 import Environment from "./enums/Environment"
 import ScrollToTop from "./app/ScrollToTop"
+import { GrowthBookProvider } from "@growthbook/growthbook-react";
+import ExperimentManager from "./utils/ExperimentManager"
 
 if (process.env.REACT_APP_ENV_NAME === Environment.PROD) {
   Sentry.init({
@@ -33,12 +34,13 @@ ReactDOM.render(
         <HelmetProvider>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <IntlProvider locale={navigator.language} defaultLocale="en-GB">
-              <BrowserRouter>
-                <ScrollToTop />
-                <App />
-              </BrowserRouter>
+              <GrowthBookProvider growthbook={ExperimentManager.main.growthbook}>
+                <BrowserRouter>
+                  <ScrollToTop />
+                  <App />
+                </BrowserRouter>
+              </GrowthBookProvider>
             </IntlProvider>
-            
           </LocalizationProvider>
         </HelmetProvider>
       </AttributionContextProvider>

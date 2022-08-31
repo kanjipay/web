@@ -39,6 +39,7 @@ export function Field({
     height: 48,
     padding: "0 12px",
     width: "100%",
+    borderRadius: 2,
     ...style
   }
 

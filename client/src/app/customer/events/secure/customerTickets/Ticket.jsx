@@ -1,15 +1,12 @@
-import { display } from "@mui/system"
 import QRCode from "react-qr-code"
 import { Colors } from "../../../../../enums/Colors"
 import Spacer from "../../../../../components/Spacer"
 import { format } from "date-fns"
 import { dateFromTimestamp } from "../../../../../utils/helpers/time"
-import useWindowSize from "../../../../../utils/helpers/useWindowSize"
+import { isMobile } from "react-device-detect"
 
 export default function Ticket({ ticket, product, index }) {
   let indexString = index.toString()
-  const { width } = useWindowSize()
-  const isMobile = width < 750
 
   while (indexString.length < 3) {
     indexString = "0" + indexString
@@ -19,7 +16,7 @@ export default function Ticket({ ticket, product, index }) {
       style={{
         padding: 16,
         backgroundColor: Colors.OFF_WHITE_LIGHT,
-        display: "flex",
+        display: isMobile ? "block" : "flex",
         columnGap: 32,
         position: "relative",
       }}
@@ -31,6 +28,7 @@ export default function Ticket({ ticket, product, index }) {
         bgColor={Colors.CLEAR}
         fgColor={Colors.BLACK}
       />
+      
       <div style={{ flexGrow: 100 }}>
         {isMobile && <Spacer y={3} />}
         <h3 className="header-s" style={{ lineHeight: 1 }}>

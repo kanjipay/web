@@ -20,6 +20,8 @@ import { formatCurrency } from "../../utils/helpers/money"
 import { OrderSummary } from "../../components/OrderSummary"
 import NavBar from "../../components/NavBar"
 import { cancelOrder } from "./cancelOrder"
+import { CheckoutCounter } from "./CheckoutCounter"
+import { ShimmerText, ShimmerThumbnail } from "react-shimmer-effects"
 
 export default function PaymentPageStripe({ order }) {
   const { orderId } = useParams()
@@ -30,6 +32,8 @@ export default function PaymentPageStripe({ order }) {
   }, [orderId])
 
   useEffect(() => {
+    if (!order) { return }
+    
     const deviceId = IdentityManager.main.getDeviceId()
 
     NetworkManager.post("/payment-attempts/stripe", {
@@ -40,31 +44,89 @@ export default function PaymentPageStripe({ order }) {
 
       setStripeProps({
         stripe: loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY),
+
         options: {
           clientSecret,
+          appearance: {
+            theme: 'flat',
+            variables: {
+              fontFamily: '"Roboto", sans-serif',
+              colorTextPlaceholder: Colors.GRAY_LIGHT,
+              colorText: Colors.BLACK,
+              colorBackground: Colors.OFF_WHITE_LIGHT,
+              borderRadius: "2px",
+              spacingGridColumn: "16px",
+              spacingGridRow: "16px"
+            },
+            rules: {
+              ".Label": {
+                fontFamily: '"Roboto", sans-serif',
+                fontSize: "0.9em",
+                fontWeight: 600,
+                marginBottom: "8px"
+              }
+            }
+          }
         },
       })
     })
-  }, [orderId])
+  }, [orderId, order])
 
   if (stripeProps) {
-    const clientSecret = stripeProps.options.clientSecret
-
     return (
       <Elements {...stripeProps}>
-        <StripeCheckoutForm order={order} clientSecret={clientSecret} />
+        <StripeCheckoutForm order={order} stripeProps={stripeProps} />
       </Elements>
     )
   } else {
-    return <LoadingPage />
+    return <StripeDummyPage order={order} />
   }
 }
 
-function StripeCheckoutForm({ order, clientSecret }) {
+function StripeDummyPage({ order }) {
+  const navigate = useNavigate()
+
+  return <div className="container">
+    {order && <CheckoutCounter order={order} />}
+    <NavBar
+      title="Complete your purchase"
+      back={order ? () => cancelOrder(order.id, navigate) : null}
+    />
+    <div className="content">
+      <Spacer y={9} />
+      <h3 className="header-s">Order summary</h3>
+      <Spacer y={2} />
+      {
+        order ?
+          <OrderSummary
+            lineItems={order.orderItems}
+            currency={order.currency}
+            feePercentage={order.customerFee}
+          /> :
+          <ShimmerText line={4} />
+      }
+
+      <Spacer y={3} />
+      <h3 className="header-s">Payment details</h3>
+      <Spacer y={2} />
+      <ShimmerThumbnail height={200} />
+
+      <Spacer y={4} />
+      <MainButton
+        title="Complete purchase"
+        test-id="stripe-payment-button"
+        sideMessage={order ? formatCurrency(order.total, order.currency) : null}
+        disabled={true}
+      />
+      <Spacer y={9} />
+    </div>
+  </div>
+}
+
+function StripeCheckoutForm({ order, stripeProps }) {
   const stripe = useStripe()
   const elements = useElements()
   const navigate = useNavigate()
-
   const [errorData, setErrorData] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -97,9 +159,7 @@ function StripeCheckoutForm({ order, clientSecret }) {
     return
   }
 
-  if (!stripe || !elements) {
-    return <LoadingPage />
-  } else if (errorData) {
+  if (errorData) {
     return (
       <IconActionPage
         Icon={Cross}
@@ -114,23 +174,34 @@ function StripeCheckoutForm({ order, clientSecret }) {
   } else {
     return (
       <div className="container">
+        {order && <CheckoutCounter order={order} />}
         <NavBar
           title="Complete your purchase"
-          back={() => cancelOrder(order.id, navigate)}
+          back={order ? () => cancelOrder(order.id, navigate) : null}
         />
         <div className="content">
           <Spacer y={9} />
           <h3 className="header-s">Order summary</h3>
           <Spacer y={2} />
-          <OrderSummary
-            lineItems={order.orderItems}
-            currency={order.currency}
-            feePercentage={order.customerFee}
-          />
+          {
+            order ?
+              <OrderSummary
+                lineItems={order.orderItems}
+                currency={order.currency}
+                feePercentage={order.customerFee}
+              /> :
+              <ShimmerText line={4} />
+          }
+          
           <Spacer y={3} />
           <h3 className="header-s">Payment details</h3>
           <Spacer y={2} />
-          <PaymentElement />
+          {
+            stripe && elements ?
+              <PaymentElement /> :
+              <ShimmerThumbnail height={200} />
+          }
+          
           <Spacer y={4} />
           <MainButton
             title="Complete purchase"
@@ -138,8 +209,9 @@ function StripeCheckoutForm({ order, clientSecret }) {
             sideMessage={formatCurrency(order.total, order.currency)}
             onClick={handleSubmit}
             isLoading={isLoading}
+            disabled={!order || !stripe || !elements || !stripeProps}
           />
-          <Spacer y={2} />
+          <Spacer y={9} />
         </div>
       </div>
     )

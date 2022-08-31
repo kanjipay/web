@@ -31,14 +31,14 @@ export class ButtonTheme {
 
   static MONOCHROME_OUTLINED = new ButtonTheme(
     Colors.CLEAR,
-    "#00000022",
+    "#00000008",
     Colors.BLACK,
     Colors.BLACK
   )
 
   static MONOCHROME_OUTLINED_REVERSE = new ButtonTheme(
     Colors.CLEAR,
-    "#FFFFFF22",
+    "#FFFFFF08",
     Colors.WHITE,
     Colors.WHITE
   )

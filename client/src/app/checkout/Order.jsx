@@ -18,32 +18,28 @@ export default function Order() {
     return Collection.ORDER.onChange(orderId, setOrder)
   }, [orderId])
 
-  return order ? (
-    <Routes>
-      <Route path="payment" element={<PaymentPageCrezco order={order} />} />
-      <Route
-        path="payment-stripe"
-        element={<PaymentPageStripe order={order} />}
-      />
-      <Route
-        path="choose-bank"
-        element={<ChooseBankCrezcoPage order={order} />}
-      />
-      <Route
-        path="mobile-handover"
-        element={<MobileHandoverPage order={order} />}
-      />
-      <Route path="mobile-finished" element={<MobileFinishedPage />} />
-      <Route
-        path="payment-failure"
-        element={<PaymentFailurePage order={order} />}
-      />
-      <Route
-        path="payment-cancelled"
-        element={<PaymentCancelledPage order={order} />}
-      />
-    </Routes>
-  ) : (
-    <LoadingPage />
-  )
+  return <Routes>
+    <Route path="payment" element={<PaymentPageCrezco order={order} />} />
+    <Route
+      path="payment-stripe"
+      element={<PaymentPageStripe order={order} />}
+    />
+    <Route
+      path="choose-bank"
+      element={<ChooseBankCrezcoPage order={order} />}
+    />
+    <Route
+      path="mobile-handover"
+      element={<MobileHandoverPage />}
+    />
+    <Route path="mobile-finished" element={<MobileFinishedPage />} />
+    <Route
+      path="payment-failure"
+      element={<PaymentFailurePage />}
+    />
+    <Route
+      path="payment-cancelled"
+      element={<PaymentCancelledPage />}
+    />
+  </Routes>
 }

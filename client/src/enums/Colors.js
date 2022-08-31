@@ -6,6 +6,7 @@ export class Colors {
   static PRIMARY_DARK = "#051320"
   static OFF_WHITE = "#ebebeb"
   static OFF_WHITE_LIGHT = "#f8f8f8"
+  static FACEBOOK_BLUE = "#1778f2"
   static GRAY = "#444"
   static GRAY_LIGHT = "#888"
   static WHITE = "#ffffff"

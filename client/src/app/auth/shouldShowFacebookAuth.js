@@ -1,6 +1,6 @@
 import { UAParser } from "ua-parser-js"
 
-export function shouldShowGoogleAuth() {
+export function shouldShowFacebookAuth() {
   const userAgent = UAParser(navigator.userAgent)
   const browser = userAgent.browser.name
 
@@ -12,6 +12,7 @@ export function shouldShowGoogleAuth() {
       "Chromium",
       "Edge",
       "Brave",
+      "Firefox",
     ].includes(browser)
   ) {
     return true

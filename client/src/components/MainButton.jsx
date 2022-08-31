@@ -7,6 +7,7 @@ import { Colors } from "../enums/Colors"
 export default function MainButton({
   buttonTheme = ButtonTheme.MONOCHROME,
   title,
+  icon,
   sideMessage,
   style,
   isLoading = false,
@@ -32,7 +33,7 @@ export default function MainButton({
 
   const buttonStyle = {
     backgroundColor,
-    height: "48px",
+    height: 48,
     width: "100%",
     border: `1px solid ${buttonTheme.borderColor}`,
     display: "flex",
@@ -40,6 +41,8 @@ export default function MainButton({
     boxSizing: "border-box",
     alignItems: "center",
     justifyContent: "center",
+    columnGap: 8,
+    borderRadius: 2,
     color: foregroundColor,
     cursor: props.disabled ? "mouse" : "pointer",
     ...style,
@@ -59,7 +62,16 @@ export default function MainButton({
         onClick={isLoading ? undefined : onClick}
         {...props}
       >
-        {isLoading ? "" : title}
+        { 
+          !isLoading && !!icon && typeof icon === "string" ?
+            <img
+              src={icon}
+              alt=""
+              style={{ height: 20, width: 20 }}
+            /> :
+            icon
+        }
+        { !isLoading && title }
       </button>
       {isLoading && (
         <div className="centred">
@@ -78,6 +90,7 @@ export default function MainButton({
             top: 0,
             right: 0,
             fontWeight: 500,
+            borderRadius: "0 2px 2px 0",
             color: Colors.WHITE,
             backgroundColor: Colors.OFF_BLACK_LIGHT,
             cursor: "pointer"

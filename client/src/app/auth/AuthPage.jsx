@@ -16,19 +16,24 @@ import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { saveState } from "../../utils/services/StateService"
 import { shouldShowGoogleAuth } from "./shouldShowGoogleAuth"
 import Revealer from "../../components/Revealer"
-import { SignInWithGoogleButton } from "./SignInWithGoogleButton"
-import SignInWithAppleButton from "./SignInWithAppleButton"
 import { shouldShowAppleAuth } from "./shouldShowAppleAuth"
+import SignInWithOAuthButton from "./SignInWithOAuthButton"
+import { OAuthType } from "./SignInWithOAuthPage"
+import MainButton from "../../components/MainButton"
+import { ButtonTheme } from "../../components/ButtonTheme"
 
 export default function AuthPage() {
   const navigate = useNavigate()
-  const { search } = useLocation()
+  const { search, state } = useLocation()
 
   const [searchParams] = useSearchParams()
   const backPath = base64.decode(searchParams.get("back"))
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [emailForLink, setEmailForLink] = useState(state?.emailForLink)
+
+  const lastAuthType = localStorage.getItem("lastAuthType")
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("Auth")
@@ -40,6 +45,10 @@ export default function AuthPage() {
 
   const handleSignInWithGoogle = () => {
     navigate({ pathname: "google", search })
+  }
+
+  const handleSignInWithFacebook = () => {
+    navigate({ pathname: "facebook", search })
   }
 
   const handleTryAnotherWay = () => setError(null)
@@ -75,6 +84,44 @@ export default function AuthPage() {
       })
   }
 
+  useEffect(() => {
+    if (emailForLink && !isLoading) {
+      setEmailForLink(null)
+      
+      async function signInWEmail() {
+        setIsLoading(true)
+
+        const email = emailForLink
+
+        const stateId = await saveState()
+
+        const redirectUrl = new URL(window.location.href)
+        redirectUrl.pathname = "/auth/email-link"
+        redirectUrl.searchParams.append("stateId", stateId)
+
+        sendSignInLinkToEmail(auth, email, {
+          url: redirectUrl.href,
+          handleCodeInApp: true,
+        })
+          .then(() => {
+            localStorage.setItem("emailForSignIn", email)
+            navigate({ pathname: "email-link-sent", search }, { state: { email } })
+          })
+          .catch((error) => {
+            const errorCode = error.code
+            const errorMessage = error.message
+
+            setError({
+              title: "Something went wrong",
+              body: "We're sorry, but we couldn't send you an email link. Try logging in a different way, or checking back later.",
+            })
+          })
+      }
+
+      signInWEmail()
+    }
+  }, [emailForLink, isLoading, navigate, search])
+
   if (error) {
     return (
       <IconActionPage
@@ -92,26 +139,42 @@ export default function AuthPage() {
   } else {
 
     return <div className="container">
-      <NavBar title="Sign in" back={backPath} />
+      <NavBar title="Log in or sign up" back={backPath} />
 
       <div className="content">
         <Spacer y={9} />
 
+        {
+          lastAuthType && <div>
+            <p className="text-body-faded">You previously signed in with {lastAuthType}.</p>
+            <Spacer y={3} />
+          </div>
+        }
+
         {shouldShowAppleAuth() && (
           <div>
-            <SignInWithAppleButton onClick={handleSignInWithApple} />
+            <SignInWithOAuthButton provider={OAuthType.APPLE} onClick={handleSignInWithApple} />
             <Spacer y={2} />
           </div>
         )}
 
         {shouldShowGoogleAuth() && (
           <div>
-            <SignInWithGoogleButton onClick={handleSignInWithGoogle} />
+            <SignInWithOAuthButton provider={OAuthType.GOOGLE} onClick={handleSignInWithGoogle} />
             <Spacer y={2} />
           </div>
         )}
 
-        <Revealer title="Email me a sign in link" name="auth">
+        <SignInWithOAuthButton provider={OAuthType.FACEBOOK} onClick={handleSignInWithFacebook} />
+        <Spacer y={2} />
+
+        <Revealer 
+          trigger={<MainButton 
+            title="Email me a sign in link"
+            icon="/img/emailLink.png"
+            buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+          />}
+        >
           <Form
             isFormLoading={isLoading}
             formGroupData={[

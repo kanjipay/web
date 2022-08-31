@@ -39,7 +39,7 @@ export default class Collection {
 
     this.onChange = (docId, callback) => {
       return onSnapshot(this.docRef(docId), (doc) => {
-        if (doc.exists) {
+        if (doc.exists()) {
           callback({ id: doc.id, ...doc.data() })
         } else {
           callback(null)

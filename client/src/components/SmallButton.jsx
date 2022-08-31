@@ -29,9 +29,10 @@ export default function SmallButton({
 
   const buttonStyle = {
     backgroundColor,
-    padding: "8px 16px",
+    padding: "4px 8px",
     display: "flex",
     outline: "none",
+    borderRadius: 2,
     alignItems: "center",
     justifyContent: "center",
     border: `1px solid ${buttonTheme.borderColor}`,

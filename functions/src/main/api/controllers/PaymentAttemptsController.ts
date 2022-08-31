@@ -187,6 +187,7 @@ export class PaymentAttemptsController extends BaseController {
         crezcoBankCode,
         countryCode
       )
+      
       if (paymentError) {
         next(paymentError)
         return
@@ -208,13 +209,25 @@ export class PaymentAttemptsController extends BaseController {
         currency,
       }
 
-      await db()
+      const createPaymentAttempt = db()
         .collection(Collection.PAYMENT_ATTEMPT)
         .doc(paymentAttemptId)
         .set(paymentAttemptData)
         .catch(
           new ErrorHandler(HttpStatusCode.INTERNAL_SERVER_ERROR, next).handle
         )
+
+      const updateOrder = db()
+        .collection(Collection.ORDER)
+        .doc(orderId)
+        .update({
+          openBankingPaymentAttempts: firestore.FieldValue.increment(1)
+        })
+
+      await Promise.all([
+        updateOrder,
+        createPaymentAttempt
+      ])
 
       logger.log("Payment attempt doc added", { paymentAttemptData })
       return res.status(200).json({ redirectUrl })

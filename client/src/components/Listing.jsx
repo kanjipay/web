@@ -6,8 +6,8 @@ import "./Listing.css"
 import SquareLabel from "./SquareLabel"
 import { useState } from "react"
 
-function Flex({ children, columnGap, style, ...props }) {
-  return <div style={{ display: "flex", alignItems: "center", ...style }}>
+export function Flex({ children, columnGap, style, ...props }) {
+  return <div style={{ display: "flex", alignItems: "center", ...style }} {...props}>
     {children}
   </div>
 }
@@ -33,7 +33,8 @@ export default function Listing({
     style={{
       aspectRatio: "1/1",
       width: "100%",
-      position: "relative"
+      position: "relative",
+      opacity: isHovering ? 0.9 : 1
     }}
   >
     <AsyncImage

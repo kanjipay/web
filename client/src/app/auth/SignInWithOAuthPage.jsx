@@ -3,6 +3,8 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   OAuthProvider,
+  FacebookAuthProvider,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
@@ -20,9 +22,26 @@ import Spacer from "../../components/Spacer"
 import Form from "../../components/Form"
 
 export class OAuthType {
-  static GOOGLE = "GOOGLE"
-  static APPLE = "APPLE"
+  static GOOGLE = "Google"
+  static APPLE = "Apple"
+  static FACEBOOK = "Facebook"
 }
+
+export function providerIdToPathname(providerId) {
+  switch (providerId) {
+    case GoogleAuthProvider.PROVIDER_ID:
+      return "google"
+    case FacebookAuthProvider.PROVIDER_ID:
+      return "facebook"
+    case "apple.com":
+      return "apple"
+    case "emailLink":
+      return "email-link"
+    default:
+      return ""
+  }
+}
+
 
 export default function SignInWithOAuthPage({ type }) {
   const navigate = useNavigate()
@@ -45,17 +64,40 @@ export default function SignInWithOAuthPage({ type }) {
         return
       }
 
-      const credential = await getRedirectResult(auth)
+      let credential
+
+      try {
+        credential = await getRedirectResult(auth)
+      } catch (err) {
+        const matchedEmail = err.customData.email
+
+        if (err.code !== "auth/account-exists-with-different-credential" || !matchedEmail) {
+          throw err;
+        }
+
+        let methods = await fetchSignInMethodsForEmail(auth, matchedEmail)
+        let oldProvider = providerIdToPathname(methods[0])
+
+        const erroredCredential = OAuthProvider.credentialFromError(err) ?? FacebookAuthProvider.credentialFromError(err) ?? GoogleAuthProvider.credentialFromError(err)
+
+        if (!!erroredCredential) {
+          localStorage.setItem("credentialToLink", JSON.stringify(erroredCredential.toJSON()))
+
+          if (oldProvider === "email-link") {
+            navigate({ pathname: "/auth", search }, { state: { emailForLink: matchedEmail } })
+          } else {
+            navigate({ pathname: `/auth/${oldProvider}`, search })
+          }
+          
+          return
+        }
+      }
 
       if (credential) {
-        console.log("has credential: ", credential)
         setUserId(credential.user.uid)
         const hasName = await processUserCredential(credential)
-        console.log("hasName: ", hasName)
         setHasName(hasName)
       } else {
-
-        console.log("Doesn't have credential yet, calling sign in with redirect")
         let provider
 
         switch (type) {
@@ -68,23 +110,28 @@ export default function SignInWithOAuthPage({ type }) {
             provider = new GoogleAuthProvider()
             provider.addScope("email")
             break
+          case OAuthType.FACEBOOK:
+            provider = new FacebookAuthProvider()
+            provider.addScope("email")
+            break
           default:
             break
         }
 
-        provider.setCustomParameters({ locale: "en" })
         signInWithRedirect(auth, provider)
       }
     }
 
     handleSuccessfulAuth()
-  }, [type, userId])
+  }, [type, userId, navigate, search])
 
   useEffect(() => {
     if (hasName && userId) {
+      AnalyticsManager.main.logEvent("Authenticate", { type })
+      localStorage.setItem("lastAuthType", type)
       navigate(successPath, { state: successState })
     }
-  }, [hasName, userId, navigate, successPath, successState])
+  }, [hasName, userId, navigate, successPath, successState, type])
 
   const handleTryAnotherWay = () => {
     navigate({ pathname: "/auth", search })
