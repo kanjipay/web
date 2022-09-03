@@ -15,17 +15,13 @@ export default function CustomerTickets() {
     })
   }, [])
 
-  if (events) {
-    return (
-      <Routes>
-        <Route path="/" element={<CustomerEventListPage events={events} />} />
-        <Route
-          path="/:eventId"
-          element={<CustomerEventPage events={events} />}
-        />
-      </Routes>
-    )
-  } else {
-    return <LoadingPage />
-  }
+  return (
+    <Routes>
+      <Route path="/" element={<CustomerEventListPage events={events} />} />
+      <Route
+        path="/:eventId"
+        element={<CustomerEventPage events={events} />}
+      />
+    </Routes>
+  )
 }

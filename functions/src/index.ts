@@ -20,6 +20,7 @@ export const main = euFunctions
       "SENDGRID_API_KEY",
       "APPLE_WALLET_CERT",
       "APPLE_WALLET_PRIVATE_KEY",
+      "APPLE_WALLET_PASSWORD",
       "CREZCO_API_KEY",
       "STRIPE_CLIENT_SECRET",
       "STRIPE_PAYMENT_WEBHOOK_SECRET",

@@ -17,6 +17,7 @@ import EventShortLinks from "./customer/events/EventShortLinks"
 import SalesSender from "./SalesSender"
 import smoothscroll from 'smoothscroll-polyfill';
 import ErrorPage from "./shared/ErrorPage"
+import * as BrowserFS from "browserfs"
 
 smoothscroll.polyfill();
 
@@ -46,6 +47,18 @@ export default function App() {
 
   useEffect(() => {
     AnalyticsManager.main.logEvent(AnalyticsEvent.INITIALISE_APP)
+
+    BrowserFS.install(window);
+    // Configures BrowserFS to use the LocalStorage file system.
+    BrowserFS.configure({
+      fs: "LocalStorage"
+    }, function (e) {
+      if (e) {
+        // An error happened!
+        throw e;
+      }
+      // Otherwise, BrowserFS is ready-to-use!
+    });
   }, [])
 
   return (

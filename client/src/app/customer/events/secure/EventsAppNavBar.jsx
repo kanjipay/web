@@ -23,6 +23,10 @@ export default function EventsAppNavBar({ title, back, transparentDepth, opaqueD
           path: "/events/s/tickets"
         },
         {
+          title: "Event organisers",
+          path: "/dashboard"
+        },
+        {
           title: "Sign out",
           action: async () => { 
             await auth.signOut()
