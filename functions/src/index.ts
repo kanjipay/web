@@ -25,8 +25,7 @@ export const main = euFunctions
       "STRIPE_PAYMENT_WEBHOOK_SECRET",
       "IP_GEOLOCATION_API_KEY",
       "GOOGLE_MAPS_API_KEY",
-      "STRIPE_WEBHOOK_SECRETS",
-      "GOOGLE_TICKET_SERVICE_ACCOUNT"
+      "STRIPE_WEBHOOK_SECRETS"
     ],
     minInstances: envProjectId === "mercadopay" ? 1 : 0,
   })

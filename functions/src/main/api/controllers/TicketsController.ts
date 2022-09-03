@@ -7,7 +7,6 @@ import { dateFromTimestamp } from "../../../shared/utils/time"
 import { fetchDocument } from "../../../shared/utils/fetchDocument"
 import { Template } from "@walletpass/pass-js"
 import { format } from "date-fns"
-import { createGooglePassUrl, GoogleTicketDetails } from "../../../shared/utils/googleWallet"
 import * as getRawBody from "raw-body"
 import * as base64 from "base-64"
 
@@ -35,26 +34,6 @@ async function generateTemplate() {
 }
 
 export class TicketsController extends BaseController {
-  generateGooglePass = async (req, res, next) => {
-    const classId = 'mercado'
-    const issuerId = '3388000000022129284'
-    const { ticketId } = req.body
-    const body = `ticket Id ${ticketId}`
-    const header = body
-    const ticketHolderName = 'test'
-    const ticketDetails: GoogleTicketDetails = {
-      ticketId, 
-      header,
-      body,
-      ticketHolderName,
-      qrCodeValue: 'test'
-    }
-    console.log('here')
-    const googlePassUrl = await createGooglePassUrl(classId, issuerId, ticketDetails)
-    console.log('here2')
-    return res.status(200).json({ googlePassUrl })
-  }
-
   generateApplePass = async (req, res, next) => {
     try {
       const { ticketId } = req.params

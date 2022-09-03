@@ -23,6 +23,7 @@ export default function OrderConfirmationPage({ user }) {
   const { clearItems } = useAttribution()
   const [wasAttributionCleared, setWasAttributionCleared] = useState(false)
 
+
   useEffect(() => {
     AnalyticsManager.main.viewPage("TicketOrderConfirmation", { orderId })
   }, [orderId])
@@ -93,6 +94,11 @@ export default function OrderConfirmationPage({ user }) {
             currency={order.currency}
             feePercentage={order.customerFee}
           />
+          <Spacer y={2} />
+          <a href={order.googlePassUrl} >
+            Add to Google wallet
+          </a>
+
           <Spacer y={9} />
         </div>
 

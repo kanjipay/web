@@ -7,6 +7,9 @@ import { fetchDocument } from "./fetchDocument"
 import { sendTicketReceipt, sendTicketSaleAlert } from "./sendEmail"
 import { fetchDocumentsInArray } from "./fetchDocumentsInArray"
 import { FieldPath } from "@google-cloud/firestore"
+import { createGooglePassUrl, GoogleTicketDetails } from "./googleWallet"
+import * as base64 from "base-64"
+
 
 export async function processSuccessfulTicketsOrder(
   merchant,
@@ -16,21 +19,16 @@ export async function processSuccessfulTicketsOrder(
   userId: string,
   quantity: number
 ) {
-
   const { id: merchantId, currency, customerFee } = merchant
   const { id: eventId, title: eventTitle, endsAt: eventEndsAt } = event
   const { id: productId, title: productTitle, price: productPrice } = product
   const logger = new LoggingController("processSuccessfulTicketsOrder")
-
   logger.log("Creating tickets", { quantity })
-
   const ticketIds = []
   const batch = db().batch()
-
   for (let i = 0; i < quantity; i++) {
     const ticketId = uuid()
     ticketIds.push(ticketId)
-
     const ticketData = {
       createdAt: firestore.FieldValue.serverTimestamp(),
       productId,
@@ -41,16 +39,13 @@ export async function processSuccessfulTicketsOrder(
       orderId,
       wasUsed: false,
     }
-
     if (i == 0) {
       logger.log("Generated ticket data", {
         ticketData,
         quantity,
       })
     }
-
     const ticketRef = db().collection(Collection.TICKET).doc(ticketId)
-
     batch.set(ticketRef, ticketData)
   }
 
@@ -68,9 +63,26 @@ export async function processSuccessfulTicketsOrder(
     addTickets,
     updateProduct,
   ])
-
   const { firstName, lastName } = user
+  const ticketHolderName = firstName + ' ' + lastName
+  const header = `order ${orderId}`
+  const body = `order ${orderId}`
   const boughtAt = new Date()
+  const ticketDetails: GoogleTicketDetails = {
+    ticketId: orderId, header , body, ticketHolderName, qrCodeValue: orderId
+  }
+  const credentials = JSON.parse(base64.decode(process.env.SERVICE_ACCOUNT))
+  const classId = 'mercado'
+  const issuerId = '3388000000022129284'
+  const googlePassUrl = await createGooglePassUrl(credentials, classId, issuerId, ticketDetails)
+  console.log('google pass url')
+  console.log(googlePassUrl)
+  await db()
+    .collection(Collection.ORDER)
+    .doc(orderId)
+    .update({
+      googlePassUrl
+    })  
 
   await sendTicketReceipt(
     merchant,
@@ -79,6 +91,7 @@ export async function processSuccessfulTicketsOrder(
     user,
     quantity,
     ticketIds,
+    googlePassUrl,
   )
 
   const customerName = firstName + " " + lastName

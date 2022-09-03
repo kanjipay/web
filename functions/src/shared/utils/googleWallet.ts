@@ -1,6 +1,5 @@
 import {GoogleAuth} from 'google-auth-library';
 import * as jwt from "jsonwebtoken"
-import * as base64 from "base-64"
 
 export type GoogleTicketDetails = {
   ticketId: string;
@@ -10,11 +9,11 @@ export type GoogleTicketDetails = {
   qrCodeValue: string;
 }
 
-const CREDENTIALS = JSON.parse(base64.decode(process.env.SERVICE_ACCOUNT))
-console.log(CREDENTIALS)
-export async function createGooglePassUrl(classId: string, issuerId: string, ticketDetails: GoogleTicketDetails) {
+
+export async function createGooglePassUrl(credentials, classId: string, issuerId: string, ticketDetails: GoogleTicketDetails) {
+  const {client_email, private_key} = credentials
   const httpClient = new GoogleAuth({
-    credentials: CREDENTIALS,
+    credentials,
     scopes: 'https://www.googleapis.com/auth/wallet_object.issuer'
   });
   const {ticketId, header, body, ticketHolderName, qrCodeValue} = ticketDetails
@@ -44,7 +43,7 @@ export async function createGooglePassUrl(classId: string, issuerId: string, tic
   });
   console.log(res)
   const claims = {
-    iss: CREDENTIALS.client_email,
+    iss: client_email,
     aud: 'google',
     origins: ['www.mercadopay.co'],
     typ: 'savetowallet',
@@ -54,7 +53,7 @@ export async function createGooglePassUrl(classId: string, issuerId: string, tic
       }],
     }
   };
-  const token = jwt.sign(claims, CREDENTIALS.private_key, { algorithm: 'RS256' });
+  const token = jwt.sign(claims, private_key, { algorithm: 'RS256' });
   console.log(token)
   return `https://pay.google.com/gp/v/save/${token}`;
 }
