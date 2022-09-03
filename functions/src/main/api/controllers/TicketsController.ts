@@ -24,6 +24,8 @@ async function generateTemplate() {
   const cert = base64.decode(process.env.APPLE_WALLET_CERT)
   const privateKey = base64.decode(process.env.APPLE_WALLET_PRIVATE_KEY)
 
+
+
   template.setCertificate(cert)
   template.setPrivateKey(privateKey)
   // await template.images.add("logo", "/icon-192px.png")

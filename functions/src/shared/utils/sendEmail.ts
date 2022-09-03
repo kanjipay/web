@@ -111,6 +111,7 @@ export async function sendTicketReceipt(
   user,
   quantity: number,
   ticketIds: string[],
+  googlePassUrl: string
 ) {
   logger.log("Sending ticket receipt", {
     merchant,
@@ -163,6 +164,7 @@ export async function sendTicketReceipt(
     total,
     fee,
     tickets,
+    googlePassUrl
   }
   return sendEmail([toEmail], TemplateName.TICKET_RECEIPT, data)
 }
