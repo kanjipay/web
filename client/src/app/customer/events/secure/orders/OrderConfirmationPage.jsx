@@ -15,6 +15,14 @@ import EventsAppNavBar from "../EventsAppNavBar"
 import { Helmet } from "react-helmet-async"
 import { logMetaPixelEvent } from "../../../../../utils/MetaPixelLogger"
 import { getDoc } from "firebase/firestore"
+import { ButtonTheme } from "../../../../../components/ButtonTheme"
+import { UAParser } from "ua-parser-js"
+
+function shouldShowGoogleTicket() {
+  const userAgent = UAParser(navigator.userAgent)
+  return userAgent.os.name === 'Android'
+}
+
 
 export default function OrderConfirmationPage({ user }) {
   const { orderId } = useParams()
@@ -95,10 +103,16 @@ export default function OrderConfirmationPage({ user }) {
             feePercentage={order.customerFee}
           />
           <Spacer y={2} />
-          <a href={order.googlePassUrl} >
-            Add to Google wallet
-          </a>
 
+          {shouldShowGoogleTicket() && (
+          <a href={order.googlePassUrl} >
+            <MainButton 
+              title="Save to google wallet"
+              icon="/img/google.png"
+              buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+            />
+          </a>
+          )}
           <Spacer y={9} />
         </div>
 

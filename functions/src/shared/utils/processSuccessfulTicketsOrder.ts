@@ -7,7 +7,7 @@ import { fetchDocument } from "./fetchDocument"
 import { sendTicketReceipt, sendTicketSaleAlert } from "./sendEmail"
 import { fetchDocumentsInArray } from "./fetchDocumentsInArray"
 import { FieldPath } from "@google-cloud/firestore"
-import { createGooglePassUrl, GoogleTicketDetails } from "./googleWallet"
+import { createGooglePassUrl, GoogleTicketDetail } from "./googleWallet"
 import * as base64 from "base-64"
 
 
@@ -25,7 +25,13 @@ export async function processSuccessfulTicketsOrder(
   const logger = new LoggingController("processSuccessfulTicketsOrder")
   logger.log("Creating tickets", { quantity })
   const ticketIds = []
+  const googleTicketDetails = []
+  const header = `order ${orderId}`
+  const body = `order ${orderId}`
   const batch = db().batch()
+  const {user} = await fetchDocument(Collection.USER, userId)
+  const {firstName, lastName} = user
+  const ticketHolderName = firstName + ' ' + lastName
   for (let i = 0; i < quantity; i++) {
     const ticketId = uuid()
     ticketIds.push(ticketId)
@@ -39,6 +45,14 @@ export async function processSuccessfulTicketsOrder(
       orderId,
       wasUsed: false,
     }
+    const ticketDetail: GoogleTicketDetail = {
+      ticketId,
+      eventId,
+      header,
+      body,
+      ticketHolderName
+    }
+    googleTicketDetails.push(ticketDetail)
     if (i == 0) {
       logger.log("Generated ticket data", {
         ticketData,
@@ -58,23 +72,15 @@ export async function processSuccessfulTicketsOrder(
       soldCount: firestore.FieldValue.increment(quantity),
     })
 
-  const [{ user }] = await Promise.all([
-    fetchDocument(Collection.USER, userId),
+  await Promise.all([
     addTickets,
     updateProduct,
   ])
-  const { firstName, lastName } = user
-  const ticketHolderName = firstName + ' ' + lastName
-  const header = `order ${orderId}`
-  const body = `order ${orderId}`
   const boughtAt = new Date()
-  const ticketDetails: GoogleTicketDetails = {
-    ticketId: orderId, header , body, ticketHolderName, qrCodeValue: orderId
-  }
   const credentials = JSON.parse(base64.decode(process.env.SERVICE_ACCOUNT))
   const classId = 'mercado'
   const issuerId = '3388000000022129284'
-  const googlePassUrl = await createGooglePassUrl(credentials, classId, issuerId, ticketDetails)
+  const googlePassUrl = await createGooglePassUrl(credentials, classId, issuerId, googleTicketDetails)
   console.log('google pass url')
   console.log(googlePassUrl)
   await db()

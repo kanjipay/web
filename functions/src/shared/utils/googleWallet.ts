@@ -1,26 +1,20 @@
 import {GoogleAuth} from 'google-auth-library';
 import * as jwt from "jsonwebtoken"
 
-export type GoogleTicketDetails = {
+export type GoogleTicketDetail = {
   ticketId: string;
+  eventId: string;
   header: string; 
   body: string; 
   ticketHolderName: string;
-  qrCodeValue: string;
 }
 
-
-export async function createGooglePassUrl(credentials, classId: string, issuerId: string, ticketDetails: GoogleTicketDetails) {
-  const {client_email, private_key} = credentials
-  const httpClient = new GoogleAuth({
-    credentials,
-    scopes: 'https://www.googleapis.com/auth/wallet_object.issuer'
-  });
-  const {ticketId, header, body, ticketHolderName, qrCodeValue} = ticketDetails
-  const objectId = `${issuerId}.${ticketId.replace(/[^\w.-]/g, '_')}-${classId}`;
+async function  createGooglePassTicket(classId: string, issuerId: string, ticketDetail: GoogleTicketDetail, httpClient: GoogleAuth){
+  const {ticketId, eventId, header, body, ticketHolderName} = ticketDetail
   const objectUrl = 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketObject/';
   const objectPayload = {
-    "id":objectId,
+    "id":ticketId,
+    eventId, 
     "classId": `${issuerId}.${classId}`,
     "textModulesData": [
       {
@@ -31,17 +25,32 @@ export async function createGooglePassUrl(credentials, classId: string, issuerId
     "barcode": {
       "kind": "walletobjects#barcode",
       "type": "qrCode",
-      "value": qrCodeValue
+      "value": ticketId
     },
     "state": "active",
     ticketHolderName,
   }
-  const res = await httpClient.request({
+  return httpClient.request({
     url: objectUrl,
     method: 'POST',
     data: objectPayload
   });
-  console.log(res)
+}
+
+
+export async function createGooglePassUrl(credentials, classId: string, issuerId: string, ticketDetails: Array<GoogleTicketDetail>) {
+  const {client_email, private_key} = credentials
+  const httpClient = new GoogleAuth({
+    credentials,
+    scopes: 'https://www.googleapis.com/auth/wallet_object.issuer'
+  });
+  const promises = []
+  const ticketIds = []
+  ticketDetails.forEach((ticketDetail) => {
+    promises.push(createGooglePassTicket(classId, issuerId, ticketDetail, httpClient))
+    ticketIds.push(ticketDetail.ticketId)
+  })
+  await Promise.all(promises)
   const claims = {
     iss: client_email,
     aud: 'google',
@@ -49,7 +58,7 @@ export async function createGooglePassUrl(credentials, classId: string, issuerId
     typ: 'savetowallet',
     payload: {
       eventTicketObjects: [{
-        id: objectId
+        id: ticketIds
       }],
     }
   };
