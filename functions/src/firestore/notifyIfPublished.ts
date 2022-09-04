@@ -8,7 +8,7 @@ import { subDays } from "date-fns"
 import { firestore } from "firebase-admin"
 import { fetchDocumentsInArray } from "../shared/utils/fetchDocumentsInArray"
 import OrderStatus from "../shared/enums/OrderStatus"
-
+import { createGooglePassEventClass } from "../shared/utils/googleWallet"
 
 const getConsentingUsers = async (merchantId: string) : Promise<Array<string>> => {
     const oldestDate = subDays(new Date(), 90)
@@ -35,6 +35,7 @@ export const notifyIfPublished = async (change, context) => {
         const merchantName =  merchantDoc.data().displayName
         const consentUserEmails = await getConsentingUsers(merchantId)
         const eventData = {
+            eventId,
             merchantName,
             eventName:title,
             address,
@@ -52,7 +53,7 @@ export const notifyIfPublished = async (change, context) => {
             subject: "New Event",
         }
         logger.log("email params", emailParams)
-        await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams)])
+        await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams), createGooglePassEventClass(eventData)])
     }
    } catch (err) {
     logger.error(err)

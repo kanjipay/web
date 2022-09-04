@@ -8,8 +8,6 @@ import { sendTicketReceipt, sendTicketSaleAlert } from "./sendEmail"
 import { fetchDocumentsInArray } from "./fetchDocumentsInArray"
 import { FieldPath } from "@google-cloud/firestore"
 import { createGooglePassUrl, GoogleTicketDetail } from "./googleWallet"
-import * as base64 from "base-64"
-
 
 export async function processSuccessfulTicketsOrder(
   merchant,
@@ -77,12 +75,8 @@ export async function processSuccessfulTicketsOrder(
     updateProduct,
   ])
   const boughtAt = new Date()
-  const credentials = JSON.parse(base64.decode(process.env.SERVICE_ACCOUNT))
-  const classId = 'mercado'
-  const issuerId = '3388000000022129284'
-  const googlePassUrl = await createGooglePassUrl(credentials, classId, issuerId, googleTicketDetails)
-  console.log('google pass url')
-  console.log(googlePassUrl)
+  const googlePassUrl = await createGooglePassUrl(eventId, googleTicketDetails)
+  logger.log(`googlePassUrl ${googlePassUrl}`)
   await db()
     .collection(Collection.ORDER)
     .doc(orderId)

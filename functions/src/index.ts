@@ -25,7 +25,8 @@ export const main = euFunctions
       "STRIPE_PAYMENT_WEBHOOK_SECRET",
       "IP_GEOLOCATION_API_KEY",
       "GOOGLE_MAPS_API_KEY",
-      "STRIPE_WEBHOOK_SECRETS"
+      "STRIPE_WEBHOOK_SECRETS",
+      "GOOGLE_WALLET_ISSUER_ID"
     ],
     minInstances: envProjectId === "mercadopay" ? 1 : 0,
   })
@@ -50,6 +51,6 @@ export const cronMarketing = euFunctions
 
 
 export const eventCreate = euFunctions
-  .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
+  .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY", "GOOGLE_WALLET_ISSUER_ID"] })
   .firestore.document('Event/{eventId}')
   .onWrite(notifyIfPublished)
