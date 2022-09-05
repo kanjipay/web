@@ -46,13 +46,11 @@ export async function createGooglePassEventClass(eventId: string, eventData){
     },
     "reviewStatus": "underReview"
   };
-  const result = await httpClient.request({
+  await httpClient.request({
     url: classUrl,
     method: 'POST',
     data: classPayload
   });
-  logger.log('tried making class')
-  logger.log(result)
   logger.log({googlePassId:id})
   return id
 }
