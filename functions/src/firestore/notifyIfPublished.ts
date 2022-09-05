@@ -17,14 +17,13 @@ const getConsentingUsers = async (merchantId: string) : Promise<Array<string>> =
     const userQuery = db().collection(Collection.USER).where("marketingConsentStatus","==", "APPROVED")
     const marketingConsentUsers = await fetchDocumentsInArray(userQuery,  firestore.FieldPath.documentId(),[...purchaserIds])
     const consentUserEmails =  marketingConsentUsers.map((u) => u.email)
-    logger.log(`ticketPurchasers ${ticketPurchasers} marketingConsentUsers ${marketingConsentUsers}
-    consentUsers ${consentUserEmails}`)
+    logger.log({ticketPurchasers,marketingConsentUsers,consentUserEmails})
     return consentUserEmails
 }
 
 export const notifyIfPublished = async (change, context) => {
    try {
-    logger.log(`change ${change} context ${context}`)
+    logger.log({change,context})
     const publishedAfter = change.after.data().isPublished
     const publishedBefore = change.before.data() && change.before.data().isPublished
     if (publishedAfter && !publishedBefore){
@@ -42,16 +41,15 @@ export const notifyIfPublished = async (change, context) => {
             description,
             ticketLink:`${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         }
-        logger.log(consentUserEmails)
-        logger.log(eventData)
+        logger.log({consentUserEmails, eventData})
         const emailText =  `New event published \n env ${process.env.ENVIRONMENT} \n merchant ${merchantName} \n title ${title} \n description ${description} \n startsAt ${eventDate}`
         const emailParams = {
             to: "team@mercadopay.co",
             from: "team@mercadopay.co",
-            text:emailText,
+            text: emailText,
             subject: "New Event",
         }
-        logger.log("email params", emailParams)
+        logger.log({emailParams})
         await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams), createGooglePassEventClass(eventId, eventData)])
     }
    } catch (err) {
