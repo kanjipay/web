@@ -37,7 +37,7 @@ export const notifyIfPublished = async (change, context) => {
             merchantName,
             eventName:title,
             address,
-            startsAt:eventDate,
+            startsAt:eventDate.toISOString(),
             description,
             ticketLink:`${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         }
@@ -50,7 +50,7 @@ export const notifyIfPublished = async (change, context) => {
             subject: "New Event",
         }
         logger.log({emailParams})
-        await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams), createGooglePassEventClass(eventId, eventData)])
+        await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams), createGooglePassEventClass(eventId,address, eventData)])
     }
    } catch (err) {
     logger.error(err)

@@ -16,15 +16,13 @@ function getCredentials(){
 export type GoogleTicketDetail = {
   ticketId: string;
   eventId: string;
-  header: string; 
-  body: string; 
   ticketHolderName: string;
 }
 
-export async function createGooglePassEventClass(eventId: string, eventData){
+export async function createGooglePassEventClass(eventId: string, location:string,   eventData){
   logger.log('creating event class')
   const {issuerId, httpClient} = getCredentials()
-  const { merchantName, eventName, eventDate, description} = eventData
+  const { merchantName, eventName, eventDate} = eventData
   const classUrl = 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketClass/';
   logger.log(eventDate) // todo add
   const id = `${issuerId}.${eventId}`
@@ -36,14 +34,34 @@ export async function createGooglePassEventClass(eventId: string, eventData){
         "language": "en-US",
         "value": eventName
       },
-      "textModulesData": [
-      {
-        "header": eventName,
-        "body": description,
-        "id": 'description'
-      }],
-      "EventDateTime":{'start':eventDate}
     },
+    "heroImage": {
+        "sourceUri": {
+          "uri": "https://mercadopay.co/img/festival_crowd.jpg",
+          "description": "Mercado events"
+        }
+      },
+      "textModulesData": [
+        {
+          "header": "Test text module header",
+          "body": "Test text module body"
+        }
+      ],
+      "venue": {
+        "name": {
+          "defaultValue": {
+            "language": "en-US",
+            "value": location
+          }
+        },
+        "address": {
+          "defaultValue": {
+            "language": "en-US",
+            "value": location
+          }
+        },
+      },
+    "dateTime":{'start':eventDate},
     "reviewStatus": "underReview"
   };
   await httpClient.request({
@@ -57,18 +75,12 @@ export async function createGooglePassEventClass(eventId: string, eventData){
 
 async function  createGooglePassTicket(classId: string, ticketDetail: GoogleTicketDetail, id: string){
   const {issuerId, httpClient} = getCredentials()
-  const {ticketId, eventId, header, body, ticketHolderName} = ticketDetail
+  const {ticketId, eventId, ticketHolderName} = ticketDetail
   const objectUrl = 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketObject/';
   const objectPayload = {
     id,
     eventId, 
     "classId":`${issuerId}.${classId}`,
-    "textModulesData": [
-      {
-        header,
-        body
-      }
-    ],
     "barcode": {
       "kind": "walletobjects#barcode",
       "type": "qrCode",
@@ -110,3 +122,16 @@ export async function createGooglePassUrl(classId: string, ticketDetails: Array<
 }
 
 
+const eventData = { merchantName: 'wallet5', eventName: 'wallet wallet', eventDate: '1985-04-12T23:20:50.52Z'}
+
+const ticket1 : GoogleTicketDetail = {
+  ticketId:'123abc',
+  eventId: 'wallet88',
+  ticketHolderName: 'Neo Zane'
+}
+
+createGooglePassEventClass('wallet88', 'the pub',   eventData).then(() => {
+  createGooglePassUrl('wallet88',[ticket1]).then((response) => {
+    console.log(response)
+  })
+})

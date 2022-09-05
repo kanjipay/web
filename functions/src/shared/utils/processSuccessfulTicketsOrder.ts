@@ -24,8 +24,6 @@ export async function processSuccessfulTicketsOrder(
   logger.log("Creating tickets", { quantity })
   const ticketIds = []
   const googleTicketDetails = []
-  const header = `order ${orderId}`
-  const body = `order ${orderId}`
   const batch = db().batch()
   const {user} = await fetchDocument(Collection.USER, userId)
   const {firstName, lastName} = user
@@ -46,8 +44,6 @@ export async function processSuccessfulTicketsOrder(
     const ticketDetail: GoogleTicketDetail = {
       ticketId,
       eventId,
-      header,
-      body,
       ticketHolderName
     }
     googleTicketDetails.push(ticketDetail)
