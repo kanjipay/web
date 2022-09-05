@@ -11,7 +11,7 @@ export async function cancelOrder(orderId, navigate) {
   navigate(res.data.redirectPath)
 }
 
-export function redirectOrderIfNeeded(order, navigate, clearBasket = null) {
+export function redirectOrderIfNeeded(order, navigate) {
   const orderId = order.id
   const { status } = order
 
@@ -22,7 +22,6 @@ export function redirectOrderIfNeeded(order, navigate, clearBasket = null) {
           navigate(`/events/s/orders/${orderId}/confirmation`)
           break
         case OrderType.MENU:
-          clearBasket()
           navigate(`/menu/orders/${orderId}/confirmation`)
           break
         default:

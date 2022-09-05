@@ -5,14 +5,12 @@ import CircleIcon from "../../components/CircleIcon"
 import Spacer from "../../components/Spacer"
 import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
-import useBasket from "../customer/menu/basket/useBasket"
 import { redirectOrderIfNeeded } from "./cancelOrder"
 
 export default function MobileHandoverPage() {
   // Should be polling order for status paid
   const { orderId } = useParams()
   const navigate = useNavigate()
-  const { clearBasket } = useBasket()
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("CheckoutMobileHandover", { orderId })
@@ -20,9 +18,9 @@ export default function MobileHandoverPage() {
 
   useEffect(() => {
     return Collection.ORDER.onChange(orderId, (order) => {
-      redirectOrderIfNeeded(order, navigate, clearBasket)
+      redirectOrderIfNeeded(order, navigate)
     })
-  }, [orderId, navigate, clearBasket])
+  }, [orderId, navigate])
 
   return (
     <div className="container">

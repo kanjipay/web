@@ -4,6 +4,7 @@ import { cronFunction } from "./cron/cron"
 import { notifyIfPublished } from "./firestore/notifyIfPublished"
 import { backupFirestore } from "./cron/backupFirestore"
 import { retargetOrders } from "./cron/retargetingEmail"
+import applePayApp from "./applePayApp"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 const euFunctions = functions.region("europe-west2")
@@ -54,3 +55,8 @@ export const eventCreate = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
   .firestore.document('Event/{eventId}')
   .onWrite(notifyIfPublished)
+
+export const applePay = functions
+  .region("us-central1")
+  .runWith({ secrets: ["APPLE_PAY_VERIFICATION"] })
+  .https.onRequest(applePayApp)

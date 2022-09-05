@@ -1,8 +1,0 @@
-.PaymentOption {
-  padding: 16px;
-  background-image: linear-gradient(
-    var(--color-off-white-light),
-    var(--color-clear)
-  );
-  border-radius: 16px;
-}

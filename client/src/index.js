@@ -4,9 +4,6 @@ import "./index.css"
 import { HelmetProvider } from "react-helmet-async"
 import { BrowserRouter } from "react-router-dom"
 import App from "./app/App"
-import BasketContextProvider from "./app/customer/menu/basket/BasketContext"
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
 import AttributionContextProvider from "./app/shared/attribution/AttributionContext"
 import { IntlProvider } from "react-intl"
 import * as Sentry from "@sentry/react";
@@ -29,22 +26,18 @@ console.log("environment: ", process.env.REACT_APP_ENV_NAME)
 
 ReactDOM.render(
   <React.StrictMode>
-    <BasketContextProvider>
-      <AttributionContextProvider>
-        <HelmetProvider>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <IntlProvider locale={navigator.language} defaultLocale="en-GB">
-              <GrowthBookProvider growthbook={ExperimentManager.main.growthbook}>
-                <BrowserRouter>
-                  <ScrollToTop />
-                  <App />
-                </BrowserRouter>
-              </GrowthBookProvider>
-            </IntlProvider>
-          </LocalizationProvider>
-        </HelmetProvider>
-      </AttributionContextProvider>
-    </BasketContextProvider>
+    <AttributionContextProvider>
+      <HelmetProvider>
+        <IntlProvider locale={navigator.language} defaultLocale="en-GB">
+          <GrowthBookProvider growthbook={ExperimentManager.main.growthbook}>
+            <BrowserRouter>
+              <ScrollToTop />
+              <App />
+            </BrowserRouter>
+          </GrowthBookProvider>
+        </IntlProvider>
+      </HelmetProvider>
+    </AttributionContextProvider>
   </React.StrictMode>,
   document.getElementById("root")
 )

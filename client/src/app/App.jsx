@@ -1,7 +1,5 @@
 import React, { useEffect } from "react"
 import { Route, Routes, useLocation } from "react-router-dom"
-import MenuApp from "./customer/menu/MenuApp"
-import MerchantApp from "./dashboard/menu/MerchantApp"
 import { Brand } from "./brand/Brand"
 import OneTimeLinkPage from "./shared/OneTimeLinkPage"
 import EventsApp from "./customer/events/EventsApp"
@@ -17,7 +15,6 @@ import EventShortLinks from "./customer/events/EventShortLinks"
 import SalesSender from "./SalesSender"
 import smoothscroll from 'smoothscroll-polyfill';
 import ErrorPage from "./shared/ErrorPage"
-import * as BrowserFS from "browserfs"
 
 smoothscroll.polyfill();
 
@@ -47,24 +44,11 @@ export default function App() {
 
   useEffect(() => {
     AnalyticsManager.main.logEvent(AnalyticsEvent.INITIALISE_APP)
-
-    BrowserFS.install(window);
-    // Configures BrowserFS to use the LocalStorage file system.
-    BrowserFS.configure({
-      fs: "LocalStorage"
-    }, function (e) {
-      if (e) {
-        // An error happened!
-        throw e;
-      }
-      // Otherwise, BrowserFS is ready-to-use!
-    });
   }, [])
 
   return (
     <Routes>
       <Route path="/xlx-v" element={<SalesSender />} />
-      <Route path="/menu/*" element={<MenuApp />} />
       <Route path="/events/*" element={<EventsApp />} />
       <Route path="/e/:merchantLinkName" element={<EventShortLinks />} />
       <Route path="/e/:merchantLinkName/:eventLinkName" element={<EventShortLinks />} />
@@ -74,7 +58,6 @@ export default function App() {
         path="/l/:attributionLinkId"
         element={<AttributionLinkPage />}
       />
-      <Route path="/merchant/*" element={<MerchantApp />} />
       <Route path="/auth/*" element={<Auth />} />
       <Route path="/error" element={<ErrorPage />} />
       <Route path="/dashboard/*" element={<Dashboard />} />
