@@ -120,18 +120,3 @@ export async function createGooglePassUrl(classId: string, ticketDetails: Array<
   const token = jwt.sign(claims, private_key, { algorithm: 'RS256' });
   return `https://pay.google.com/gp/v/save/${token}`;
 }
-
-
-const eventData = { merchantName: 'wallet5', eventName: 'wallet wallet', eventDate: '1985-04-12T23:20:50.52Z'}
-
-const ticket1 : GoogleTicketDetail = {
-  ticketId:'123abc',
-  eventId: 'wallet88',
-  ticketHolderName: 'Neo Zane'
-}
-
-createGooglePassEventClass('wallet88', 'the pub',   eventData).then(() => {
-  createGooglePassUrl('wallet88',[ticket1]).then((response) => {
-    console.log(response)
-  })
-})
