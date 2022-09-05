@@ -1,6 +1,7 @@
 import {GoogleAuth} from 'google-auth-library';
 import * as jwt from "jsonwebtoken"
 import * as base64 from "base-64"
+import { logger } from 'firebase-functions/v1';
 
 function getCredentials(){
   const credentials = JSON.parse(base64.decode(process.env.SERVICE_ACCOUNT))
@@ -21,10 +22,11 @@ export type GoogleTicketDetail = {
 }
 
 export async function createGooglePassEventClass(eventData){
+  logger.log('creating event class')
   const {issuerId, httpClient} = getCredentials()
   const {eventId, merchantName, eventName, eventDate, description} = eventData
   const classUrl = 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketClass/';
-  console.log(eventDate) // todo add
+  logger.log(eventDate) // todo add
   
   const classPayload = {
     "id": `${issuerId}.${eventId}`,
@@ -49,7 +51,7 @@ export async function createGooglePassEventClass(eventData){
     method: 'POST',
     data: classPayload
   });
-  console.log(result)
+  logger.log(result)
 }
 
 async function  createGooglePassTicket(classId: string, ticketDetail: GoogleTicketDetail, id: string){
