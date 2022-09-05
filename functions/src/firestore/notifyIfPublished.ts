@@ -35,7 +35,6 @@ export const notifyIfPublished = async (change, context) => {
         const merchantName =  merchantDoc.data().displayName
         const consentUserEmails = await getConsentingUsers(merchantId)
         const eventData = {
-            eventId,
             merchantName,
             eventName:title,
             address,
@@ -53,7 +52,7 @@ export const notifyIfPublished = async (change, context) => {
             subject: "New Event",
         }
         logger.log("email params", emailParams)
-        await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams), createGooglePassEventClass(eventData)])
+        await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams), createGooglePassEventClass(eventId, eventData)])
     }
    } catch (err) {
     logger.error(err)

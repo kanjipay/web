@@ -21,15 +21,15 @@ export type GoogleTicketDetail = {
   ticketHolderName: string;
 }
 
-export async function createGooglePassEventClass(eventData){
+export async function createGooglePassEventClass(eventId: string, eventData){
   logger.log('creating event class')
   const {issuerId, httpClient} = getCredentials()
-  const {eventId, merchantName, eventName, eventDate, description} = eventData
+  const { merchantName, eventName, eventDate, description} = eventData
   const classUrl = 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketClass/';
   logger.log(eventDate) // todo add
-  
+  const id = `${issuerId}.${eventId}`
   const classPayload = {
-    "id": `${issuerId}.${eventId}`,
+    id,
     "issuerName":merchantName,
     "eventName": {
       "defaultValue": {
@@ -51,7 +51,10 @@ export async function createGooglePassEventClass(eventData){
     method: 'POST',
     data: classPayload
   });
+  logger.log('tried making class')
   logger.log(result)
+  logger.log({googlePassId:id})
+  return id
 }
 
 async function  createGooglePassTicket(classId: string, ticketDetail: GoogleTicketDetail, id: string){
