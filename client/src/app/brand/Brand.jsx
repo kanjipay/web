@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { Link, Route, Routes } from "react-router-dom"
 import { ButtonTheme } from "../../components/ButtonTheme"
 import MobilePopupMenu from "../../components/MobilePopupMenu"

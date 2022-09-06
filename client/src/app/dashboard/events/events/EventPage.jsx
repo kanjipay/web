@@ -128,12 +128,11 @@ export default function EventPage({ merchant, event, products }) {
 
   if (guestlistData) {
     guestlistTab = <div style={{ maxWidth: 500 }}>
-      <GuestlistTab event={event} guestlistData={guestlistData} />
-      <Spacer y={3} />
-      
       <Link to={`/ticket-checker/${merchantId}/${eventId}/checker`}>
         <MainButton title="Scan tickets for this event" />
       </Link>
+      <Spacer y={3} />
+      <GuestlistTab event={event} guestlistData={guestlistData} />
     </div>
   } else {
     guestlistTab = <LoadingPage />

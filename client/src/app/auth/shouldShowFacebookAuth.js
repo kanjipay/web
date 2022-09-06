@@ -1,22 +1,22 @@
-import { UAParser } from "ua-parser-js"
+// import { UAParser } from "ua-parser-js"
 
 export function shouldShowFacebookAuth() {
-  const userAgent = UAParser(navigator.userAgent)
-  const browser = userAgent.browser.name
+  // const userAgent = UAParser(navigator.userAgent)
+  // const browser = userAgent.browser.name
 
-  if (
-    [
-      "Safari",
-      "Mobile Safari",
-      "Chrome",
-      "Chromium",
-      "Edge",
-      "Brave",
-      "Firefox",
-    ].includes(browser)
-  ) {
-    return true
-  }
+  // if (
+  //   [
+  //     "Safari",
+  //     "Mobile Safari",
+  //     "Chrome",
+  //     "Chromium",
+  //     "Edge",
+  //     "Brave",
+  //     "Firefox",
+  //   ].includes(browser)
+  // ) {
+  //   return true
+  // }
 
   return false
 }

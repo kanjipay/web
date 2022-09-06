@@ -21,6 +21,7 @@ import SignInWithOAuthButton from "./SignInWithOAuthButton"
 import { OAuthType } from "./SignInWithOAuthPage"
 import MainButton from "../../components/MainButton"
 import { ButtonTheme } from "../../components/ButtonTheme"
+import { shouldShowFacebookAuth } from "./shouldShowFacebookAuth"
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -165,8 +166,12 @@ export default function AuthPage() {
           </div>
         )}
 
-        <SignInWithOAuthButton provider={OAuthType.FACEBOOK} onClick={handleSignInWithFacebook} />
-        <Spacer y={2} />
+        {shouldShowFacebookAuth() && <div>
+          <SignInWithOAuthButton provider={OAuthType.FACEBOOK} onClick={handleSignInWithFacebook} />
+          <Spacer y={2} />
+        </div>}
+
+        
 
         <Revealer 
           trigger={<MainButton 

@@ -31,7 +31,7 @@ export function EventDetails({ event, merchant, artists = [] }) {
     return <div>
       <div style={{ columnGap: 8, display: "flex" }}>
         <CircleIcon Icon={Clock} length={20} backgroundColor={Colors.CLEAR} />
-        <p className="text-body">{eventTimeString(event)}</p> :
+        <p className="text-body">{eventTimeString(event)}</p>
       </div>
       <Spacer y={1} />
       <div style={{ columnGap: 8, display: "flex" }}>
@@ -40,22 +40,17 @@ export function EventDetails({ event, merchant, artists = [] }) {
           length={20}
           backgroundColor={Colors.CLEAR}
         />
-        {
-          event ?
-            <p className="text-body">
-              {`${event.address} · `}
-              <a
-                href={generateGoogleMapsLink(event)}
-                target="_blank"
-                rel="noreferrer"
-                test-id="event-details-directions-link"
-              >
-                Get directions
-              </a>
-            </p> :
-            <ShimmerText line={1} />
-        }
-
+        <p className="text-body">
+          {`${event.address} · `}
+          <a
+            href={generateGoogleMapsLink(event)}
+            target="_blank"
+            rel="noreferrer"
+            test-id="event-details-directions-link"
+          >
+            Get directions
+          </a>
+        </p>
       </div>
       {merchant && (
         <div>
@@ -174,7 +169,7 @@ export default function EventPage({ merchant, event, products, artists }) {
       }
 
       {
-        isTicketsButtonVisible && event && products && merchant && <div className="anchored-bottom">
+        isTicketsButtonVisible && !hasAlreadyHappened && event && products && merchant && <div className="anchored-bottom">
           <MainButton 
             title="Get tickets" 
             onClick={handleGetTickets}

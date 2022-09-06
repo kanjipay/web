@@ -8,10 +8,8 @@ import { PaymentType } from "../../enums/PaymentType"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { IdentityManager } from "../../utils/IdentityManager"
 import { NetworkManager } from "../../utils/NetworkManager"
-import useBasket from "../customer/menu/basket/useBasket"
 
 export default function RedirectPageCrezco() {
-  const { clearBasket } = useBasket()
   const [searchParams] = useSearchParams()
   const paymentAttemptId = searchParams.get("paymentAttemptId")
   const navigate = useNavigate()
@@ -51,9 +49,7 @@ export default function RedirectPageCrezco() {
       return
     }
 
-    const currentDeviceId = IdentityManager.main.getDeviceId()
-
-    const { status, deviceId, orderId } = paymentAttempt
+    const { status, orderId } = paymentAttempt
 
     switch (status) {
       case PaymentAttemptStatus.SUCCESSFUL:
@@ -75,10 +71,6 @@ export default function RedirectPageCrezco() {
           case OrderType.TICKETS:
             navigate(`/events/s/orders/${orderId}/confirmation`)
             break
-          case OrderType.MENU:
-            clearBasket()
-            navigate(`/menu/orders/${orderId}/confirmation`)
-            break
           default:
         }
         break
@@ -89,7 +81,7 @@ export default function RedirectPageCrezco() {
         break
       default:
     }
-  }, [paymentAttempt, order, navigate, clearBasket])
+  }, [paymentAttempt, order, navigate])
 
   // The payment attempt status change relies on our webhook endpoint being called, which may not happen if the provider errors
   // Should wait 4 seconds then poll the payments endpoint every 1 second

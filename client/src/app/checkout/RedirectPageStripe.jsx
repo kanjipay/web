@@ -7,14 +7,12 @@ import OrderType from "../../enums/OrderType"
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus"
 import { PaymentType } from "../../enums/PaymentType"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
-import useBasket from "../customer/menu/basket/useBasket"
 
 export default function RedirectPageStripe() {
   const [paymentAttempt, setPaymentAttempt] = useState(null)
   const [order, setOrder] = useState(null)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { clearBasket } = useBasket()
 
   const stripePaymentIntentId = searchParams.get("payment_intent")
 
@@ -54,10 +52,6 @@ export default function RedirectPageStripe() {
           case OrderType.TICKETS:
             navigate(`/events/s/orders/${orderId}/confirmation`)
             break
-          case OrderType.MENU:
-            clearBasket()
-            navigate(`/menu/orders/${orderId}/confirmation`)
-            break
           default:
         }
         break
@@ -71,7 +65,7 @@ export default function RedirectPageStripe() {
         break
       default:
     }
-  }, [paymentAttempt, order, navigate, clearBasket])
+  }, [paymentAttempt, order, navigate])
 
   return <LoadingPage />
 }
