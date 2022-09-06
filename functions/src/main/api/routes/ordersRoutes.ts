@@ -71,6 +71,8 @@ ordersRoutes.put("/o/:orderId/enrich", authenticate, ordersController.enrich)
 
 ordersRoutes.put("/o/:orderId/abandon", authenticate, ordersController.abandon)
 
+ordersRoutes.get("/o/:orderId/apple-pass", authenticate, ordersController.fetchApplePasses)
+
 ordersRoutes.post(
   "/tickets",
   validate({ body: createOrderWithTicketsSchema }),

@@ -6,7 +6,6 @@ import { formatCurrency } from "../../../../utils/helpers/money"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { format } from "date-fns"
 import { useState } from "react"
-import ExperimentManager, { ExperimentKey } from "../../../../utils/ExperimentManager"
 
 export default function ProductListing({
   product,
@@ -17,8 +16,6 @@ export default function ProductListing({
   ...props
 }) {
   const [isHovering, setIsHovering] = useState(false)
-
-  const isShowingFee = ExperimentManager.main.boolean(ExperimentKey.PROCESSING_FEE)
   const isSoldOut = product.soldCount + product.reservedCount >= product.capacity
   const releaseDate = dateFromTimestamp(product.releasesAt)
   const isReleased = releaseDate < new Date()
@@ -38,7 +35,7 @@ export default function ProductListing({
   if (!isPublished) {
     message = "Not published"
   } else if (isAvailable) {
-    message = formatCurrency(isShowingFee ? product.price : product.price * (1 + processingFee), currency)
+    message = formatCurrency(product.price, currency)
   } else if (!isReleased) {
     message = `Releases ${format(releaseDate, "MMM do")} at ${format(
       releaseDate,

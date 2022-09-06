@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import LoadingPage from "../../../../../components/LoadingPage"
 import MainButton from "../../../../../components/MainButton"
 import { OrderSummary } from "../../../../../components/OrderSummary"
@@ -15,22 +15,65 @@ import EventsAppNavBar from "../EventsAppNavBar"
 import { Helmet } from "react-helmet-async"
 import { logMetaPixelEvent } from "../../../../../utils/MetaPixelLogger"
 import { getDoc } from "firebase/firestore"
+import { UAParser } from "ua-parser-js"
+import { NetworkManager } from "../../../../../utils/NetworkManager"
+import { download } from "../../../../dashboard/events/events/GuestlistTab"
 
 export default function OrderConfirmationPage({ user }) {
   const { orderId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [order, setOrder] = useState(null)
   const { clearItems } = useAttribution()
   const [wasAttributionCleared, setWasAttributionCleared] = useState(false)
+  const userAgent = UAParser(navigator.userAgent)
+  const isAppleOS = ["iOS", "Mac OS"].includes(userAgent.os.name)
+  const [applePassData, setApplePassData] = useState(null)
+  const [wasApplePassButtonPressed, setWasApplePassButtonPressed] = useState(false)
 
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("TicketOrderConfirmation", { orderId })
+
+    function base64ToBuffer(str) {
+      str = window.atob(str); // creates a ASCII string
+      var buffer = new ArrayBuffer(str.length),
+        view = new Uint8Array(buffer);
+      for (var i = 0; i < str.length; i++) {
+        view[i] = str.charCodeAt(i);
+      }
+      return buffer;
+    }
+
+    async function fetchApplePasses() {
+      const res = await NetworkManager.get(`/orders/o/${orderId}/apple-pass`)
+      const { passStrings, passesString } = res.data
+      const passBuffers = passStrings.map(base64ToBuffer)
+      const passesBuffer = base64ToBuffer(passesString)
+
+      setApplePassData({ passBuffers, passesBuffer })
+    }
+
+    fetchApplePasses()
+
+    return Collection.ORDER.onChange(orderId, setOrder)
   }, [orderId])
 
   useEffect(() => {
-    return Collection.ORDER.onChange(orderId, setOrder)
-  }, [orderId])
+    if (!applePassData || !wasApplePassButtonPressed) { return }
+
+    setWasApplePassButtonPressed(false)
+
+    const { passesBuffer, passBuffers } = applePassData
+
+    if (passBuffers.length > 1) {
+      download(location, passesBuffer, userAgent.os.name === "iOS" ? "passes.pkpasses" : "passes.zip", "application/vnd.apple.pkpasses")
+    } else {
+      download(location, passBuffers[0], "pass.pkpass", "application/vnd.apple.pkpass")
+    }
+  }, [applePassData, wasApplePassButtonPressed, location, userAgent.os.name])
+
+  const handleFetchApplePasses = () => setWasApplePassButtonPressed(true)
 
   useEffect(() => {
     if (!order) {
@@ -83,7 +126,7 @@ export default function OrderConfirmationPage({ user }) {
               className="text-body-faded"
               style={{ fontWeight: 500 }}
             >{` ${currUser.email}`}</span>
-            . The email may take a few moments to go through.
+            . The email may take a few moments to go through, and be sure to check your spam folder.
           </p>
 
           <Spacer y={3} />
@@ -94,23 +137,26 @@ export default function OrderConfirmationPage({ user }) {
             currency={order.currency}
             feePercentage={order.customerFee}
           />
+          <Spacer y={3} />
+          <h3 className="header-s">View my tickets</h3>
           <Spacer y={2} />
-          <a href={order.googlePassUrl} >
-            Add to Google wallet
-          </a>
-
+          {
+            isAppleOS && <div>
+              <MainButton
+                title="Add to Apple Wallet"
+                icon="/img/apple.png"
+                isLoading={wasApplePassButtonPressed && !applePassData}
+                onClick={handleFetchApplePasses}
+              />
+              <Spacer y={2} />
+            </div>
+          }
+          <MainButton
+            title="View online"
+            test-id="ticket-order-confirmation-done-button"
+            onClick={() => navigate(`/events/s/tickets`)}
+          />
           <Spacer y={9} />
-        </div>
-
-        <div className="anchored-bottom">
-          <div style={{ margin: "16px" }}>
-            <MainButton
-              title="View my tickets"
-              test-id="ticket-order-confirmation-done-button"
-              style={{ boxSizing: "borderBox" }}
-              onClick={() => navigate(`/events/s/tickets`)}
-            />
-          </div>
         </div>
       </div>
     )

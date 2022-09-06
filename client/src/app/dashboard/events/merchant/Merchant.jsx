@@ -17,10 +17,10 @@ import AnalyticsPage from "../analytics/AnalyticsPage"
 import CrezcoConnectRedirectPage from "./CrezcoConnectRedirectPage"
 import Events from "../events/Events"
 import SettingsPage from "./SettingsPage"
-import ConnectCrezcoPage from "./ConnectCrezcoPage"
 import Discover from "../../../../assets/icons/Discover"
 import UsersPage from "./UsersPage"
 import { isMobile } from "react-device-detect"
+import StripeConnectRedirectPage from "./StripeConnectRedirectPage"
 
 function SidebarItem({ title, Icon, ...props }) {
   const [isHovering, setIsHovering] = useState(false)
@@ -150,8 +150,8 @@ export default function Merchant({ user }) {
               element={<CrezcoConnectRedirectPage />}
             />
             <Route
-              path="connect-crezco"
-              element={<ConnectCrezcoPage user={user} />}
+              path="stripe-connected"
+              element={<StripeConnectRedirectPage />}
             />
           </Routes>
         </div>

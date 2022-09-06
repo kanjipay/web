@@ -1,14 +1,11 @@
 import { formatCurrency } from "../utils/helpers/money"
 import { Colors } from "../enums/Colors"
-import ExperimentManager, { ExperimentKey } from "../utils/ExperimentManager";
 
 export function OrderSummary({ lineItems, currency, feePercentage = 0 }) {
   const totalWithoutFee = lineItems.reduce((total, lineItem) => {
     const { price, quantity } = lineItem
     return total + price * quantity
   }, 0)
-
-  const isShowingFee = ExperimentManager.main.boolean(ExperimentKey.PROCESSING_FEE)
 
   const fee = Math.round(totalWithoutFee * feePercentage)
 
@@ -41,13 +38,13 @@ export function OrderSummary({ lineItems, currency, feePercentage = 0 }) {
             <p>{title}</p>
             <div style={{ flexGrow: 100 }}></div>
             <p test-name="order-summary-line-item-amount">
-              {formatCurrency(isShowingFee ? price : price * (1 + feePercentage), currency)}
+              {formatCurrency(price, currency)}
             </p>
           </div>
         )
       })}
 
-      {feePercentage && feePercentage > 0 && isShowingFee && (
+      {feePercentage && feePercentage > 0 && (
         <div style={itemStyle}>
           <p>Processing fee</p>
           <div style={{ flexGrow: 100 }}></div>

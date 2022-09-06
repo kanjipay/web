@@ -19,6 +19,7 @@ import {
 import stripe from "../../../shared/utils/stripeClient"
 import { processPaymentUpdate } from "../../webhooks/processPaymentUpdate"
 import Stripe from "stripe"
+import { StripeStatus } from "../../../shared/enums/StripeStatus"
 
 const crezcoPaymentStatuses = {
   New: PaymentAttemptStatus.PENDING, // Payment has been created internally, authorisation has not been attempted
@@ -56,6 +57,28 @@ export class PaymentAttemptsController extends BaseController {
 
       const { total, currency, merchantId } = order
 
+      logger.log(`Retrieving merchant with id ${merchantId}`)
+
+      const { merchant, merchantError } = await fetchDocument(
+        Collection.MERCHANT,
+        merchantId
+      )
+
+      if (merchantError) {
+        next(merchantError)
+        return
+      }
+
+      let isStripeConnect = false
+      let stripeAccountId = null
+
+      if (!!merchant.stripe) {
+        const { accountId, status: stripeStatus } = merchant.stripe
+
+        isStripeConnect = !!accountId && stripeStatus === StripeStatus.CHARGES_ENABLED
+        stripeAccountId = accountId
+      }
+
       const stripePaymentIntentData: Stripe.PaymentIntentCreateParams = {
         amount: total,
         currency: currency.toLowerCase(),
@@ -64,12 +87,34 @@ export class PaymentAttemptsController extends BaseController {
         },
       }
 
+      if (isStripeConnect) {
+        const mercadoFee = merchant.mercadoFee ?? 0
+        const customerFee = merchant.customerFee ?? 0
+
+        let mercadoFeeCents = 0
+
+        if (mercadoFee > 0) {
+          if (customerFee > mercadoFee) {
+            const totalWithoutCustomerFee = Math.round(total / (1 + customerFee))
+            mercadoFeeCents = Math.round(totalWithoutCustomerFee * mercadoFee)
+          } else {
+            logger.warn("Customer fee smaller than mercado fee and mercado fee exists", { customerFee, mercadoFee })
+          }
+        }
+
+        stripePaymentIntentData["application_fee_amount"] = mercadoFeeCents
+      }
+
+      const stripeRequestOptions = isStripeConnect ? { stripeAccount: stripeAccountId } : undefined
+
       logger.log("Creating stripe payment intent", {
         stripePaymentIntentData,
+        stripeRequestOptions
       })
 
       const paymentIntent = await stripe.paymentIntents.create(
         stripePaymentIntentData,
+        stripeRequestOptions
       )
 
       logger.log("Stripe payment intent created", { paymentIntent })
@@ -103,7 +148,7 @@ export class PaymentAttemptsController extends BaseController {
 
       logger.log("Payment attempt added")
 
-      return res.status(200).json({ clientSecret})
+      return res.status(200).json({ clientSecret, stripeAccountId })
     } catch (err) {
       next(err)
     }

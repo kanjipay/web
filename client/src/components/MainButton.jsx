@@ -63,13 +63,15 @@ export default function MainButton({
         {...props}
       >
         { 
-          !isLoading && !!icon && typeof icon === "string" ?
-            <img
-              src={icon}
-              alt=""
-              style={{ height: 20, width: 20 }}
-            /> :
-            icon
+          !isLoading && !!icon && (
+            typeof icon === "string" ?
+              <img
+                src={icon}
+                alt=""
+                style={{ height: 20, width: 20 }}
+              /> :
+              icon
+          )
         }
         { !isLoading && title }
       </button>

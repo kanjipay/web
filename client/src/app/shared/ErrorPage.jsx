@@ -13,6 +13,5 @@ export default function ErrorPage() {
     iconForegroundColor={Colors.RED}
     title={title}
     body={body}
-    
   />
 }

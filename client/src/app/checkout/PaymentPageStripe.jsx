@@ -9,7 +9,6 @@ import {
   PaymentElement,
 } from "@stripe/react-stripe-js"
 import { useNavigate, useParams } from "react-router-dom"
-import LoadingPage from "../../components/LoadingPage"
 import Spacer from "../../components/Spacer"
 import MainButton from "../../components/MainButton"
 import IconActionPage from "../../components/IconActionPage"
@@ -22,17 +21,21 @@ import NavBar from "../../components/NavBar"
 import { cancelOrder } from "./cancelOrder"
 import { CheckoutCounter } from "./CheckoutCounter"
 import { ShimmerText, ShimmerThumbnail } from "react-shimmer-effects"
+import OrderStatus from "../../enums/OrderStatus"
+import Tick from "../../assets/icons/Tick"
 
 export default function PaymentPageStripe({ order }) {
   const { orderId } = useParams()
   const [stripeProps, setStripeProps] = useState(null)
+  const navigate = useNavigate()
+  const [isCancellingOrder, setIsCancellingOrder] = useState(null)
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("StripePayment", { orderId })
   }, [orderId])
 
   useEffect(() => {
-    if (!order) { return }
+    if (!order || !!stripeProps || order?.status !== OrderStatus.PENDING) { return }
     
     const deviceId = IdentityManager.main.getDeviceId()
 
@@ -40,11 +43,11 @@ export default function PaymentPageStripe({ order }) {
       orderId,
       deviceId,
     }).then((res) => {
-      const { clientSecret } = res.data
+      const { clientSecret, stripeAccountId } = res.data
+      const stripeOptions = !!stripeAccountId ? { stripeAccount: stripeAccountId } : undefined
 
       setStripeProps({
-        stripe: loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY),
-
+        stripe: loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY, stripeOptions),
         options: {
           clientSecret,
           appearance: {
@@ -70,9 +73,36 @@ export default function PaymentPageStripe({ order }) {
         },
       })
     })
-  }, [orderId, order])
+  }, [orderId, order, stripeProps])
 
-  if (stripeProps) {
+  const handleRefreshOrder = async () => {
+    setIsCancellingOrder(true)
+    await cancelOrder(orderId, navigate);
+    setIsCancellingOrder(false)
+  };
+
+  if (order?.status === OrderStatus.ABANDONED) {
+    return <IconActionPage
+      Icon={Cross}
+      iconBackgroundColor={Colors.RED_LIGHT}
+      iconForegroundColor={Colors.RED}
+      title="Order timed out"
+      body="Your order has timed out, but you can refresh it below."
+      primaryActionTitle="Refresh order"
+      primaryAction={handleRefreshOrder}
+      primaryIsLoading={isCancellingOrder}
+    />
+  } else if (order?.status === OrderStatus.PAID) {
+    return <IconActionPage
+      Icon={Tick}
+      iconBackgroundColor={Colors.OFF_WHITE_LIGHT}
+      iconForegroundColor={Colors.BLACK}
+      title="Order paid"
+      body="You've already paid for this order."
+      primaryActionTitle="View confirmation"
+      primaryAction={() => navigate(`/events/s/orders/${order.id}/confirmation`)}
+    />
+  } else if (stripeProps) {
     return (
       <Elements {...stripeProps}>
         <StripeCheckoutForm order={order} stripeProps={stripeProps} />
@@ -206,7 +236,7 @@ function StripeCheckoutForm({ order, stripeProps }) {
           <MainButton
             title="Complete purchase"
             test-id="stripe-payment-button"
-            sideMessage={formatCurrency(order.total, order.currency)}
+            sideMessage={order ? formatCurrency(order.total, order.currency) : undefined}
             onClick={handleSubmit}
             isLoading={isLoading}
             disabled={!order || !stripe || !elements || !stripeProps}

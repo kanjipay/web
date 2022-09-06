@@ -33,7 +33,7 @@ export default function OrderTicketsPage() {
           orderId,
           orderType: OrderType.TICKETS,
         })
-        NetworkManager.put(`/orders/o/${orderId}/enrich`).then(() => {})
+        NetworkManager.put(`/orders/o/${orderId}/enrich`, { locale: navigator.language }).then(() => {})
 
         navigate(redirectPath)
       })

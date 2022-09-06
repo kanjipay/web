@@ -21,7 +21,6 @@
   "main": "lib/index.js",
   "dependencies": {
     "@google-cloud/error-reporting": "^3.0.1",
-    "@mft/moneyhub-api-client": "^4.16.0",
     "@sendgrid/mail": "^7.6.2",
     "@types/chai": "^4.3.1",
     "@walletpass/pass-js": "^6.9.1",
@@ -37,7 +36,9 @@
     "firebase": "^9.8.2",
     "firebase-admin": "^10.2.0",
     "firebase-functions": "^3.21.2",
+    "gm": "^1.23.1",
     "jsonwebtoken": "^8.5.1",
+    "jszip": "^3.10.1",
     "jwk-to-pem": "^2.0.5",
     "mocha": "^10.0.0",
     "raw-body": "^2.5.1",
@@ -48,8 +49,10 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.17.2",
+    "@types/adm-zip": "^0.5.0",
     "@types/base-64": "^1.0.0",
     "@types/express-useragent": "^1.0.2",
+    "@types/gm": "^1.18.12",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/jwk-to-pem": "^2.0.1",
     "@types/mocha": "^9.1.1",

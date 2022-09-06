@@ -20,7 +20,6 @@ import useWindowSize from "../../../../utils/helpers/useWindowSize"
 import MainButton from "../../../../components/MainButton"
 import { useState } from "react"
 import { formatCurrency } from "../../../../utils/helpers/money"
-import ExperimentManager, { ExperimentKey } from "../../../../utils/ExperimentManager"
 import Spotify from "react-spotify-embed"
 import Carat from "../../../../assets/icons/Carat"
 import Spinner from "../../../../assets/Spinner"
@@ -100,8 +99,6 @@ export function EventDetails({ event, merchant, artists = [] }) {
 export default function EventPage({ merchant, event, products, artists }) {
   const { eventId, merchantId } = useParams()
   const navigate = useNavigate()
-  const isShowingFee = ExperimentManager.main.boolean(ExperimentKey.PROCESSING_FEE)
-
   const { width } = useWindowSize()
   const contentWidth = Math.min(width, 500)
   const headerImageHeight = contentWidth
@@ -129,8 +126,8 @@ export default function EventPage({ merchant, event, products, artists }) {
   })
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("Event", { merchantId, eventId, isShowingFee })
-  }, [eventId, merchantId, isShowingFee])
+    AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
+  }, [eventId, merchantId])
 
   const eligibleProducts = products?.filter(product => !product.isPrivate)
 
@@ -176,11 +173,9 @@ export default function EventPage({ merchant, event, products, artists }) {
             icon={eligibleProducts.length > 1 && <Carat length={20} color={Colors.WHITE} />}
             sideMessage={
               eligibleProducts.length === 1 ? 
-                (
-                  isShowingFee ?
-                    formatCurrency(eligibleProducts[0].price, merchant.currency) :
-                    formatCurrency(eligibleProducts[0].price * (1 + processingFee), merchant.currency)
-                ) : null}
+                formatCurrency(eligibleProducts[0].price, merchant.currency) : 
+                null
+            }
             style={{ borderRadius: 0 }}
           />
         </div>
