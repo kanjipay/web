@@ -13,6 +13,8 @@ import MerchantStatus from "../../../shared/enums/MerchantStatus"
 import { fetchDocumentsInArray } from "../../../shared/utils/fetchDocumentsInArray"
 import axios from "axios"
 import { logger } from "firebase-functions/v1"
+import { generateTicketPass } from "../../../shared/utils/applePass/generateTicketPass"
+import * as JSZip from "jszip"
 
 enum OpenBankingSettings {
   ON = "ON",
@@ -71,28 +73,34 @@ async function getGender(userId: string) {
   if (existingUserGender) {
     logger.log("Gender exists on user", { existingUserGender })
     gender = existingUserGender
-  } else {
-    const url = "https://api.genderize.io"
-    logger.log("No gender on user, retrieving from endpoint", { url })
-    const { data: genderResData } = await axios.get(url, {
-      params: {
-        name: firstName,
-      },
-    })
+  } else if (firstName) {
+    try {
+      const url = "https://api.genderize.io"
+      logger.log("No gender on user, retrieving from endpoint", { url })
+      const { data: genderResData } = await axios.get(url, {
+        params: {
+          name: firstName,
+        },
+      })
 
-    const { gender: genderFromApi, probability } = genderResData
+      const { gender: genderFromApi, probability } = genderResData
 
-    logger.log("Got response from gender api", { ...genderResData })
+      logger.log("Got response from gender api", { ...genderResData })
 
-    if (probability > 0.95) {
-      gender = genderFromApi === "male" ? Gender.MALE : Gender.FEMALE
-    } else {
-      gender = Gender.NOT_DETERMINED
+      if (probability > 0.95) {
+        gender = genderFromApi === "male" ? Gender.MALE : Gender.FEMALE
+      } else {
+        gender = Gender.NOT_DETERMINED
+      }
+
+      logger.log("Updating user with gender", { gender, userId })
+
+      await db().collection(Collection.USER).doc(userId).update({ gender })
+    } catch (err) {
+      logger.log("error retrieving from genderize", err)
     }
-
-    logger.log("Updating user with gender", { gender, userId })
-
-    await db().collection(Collection.USER).doc(userId).update({ gender })
+  } else {
+    gender = Gender.NOT_DETERMINED
   }
 
   return [gender, null]
@@ -589,6 +597,45 @@ export class OrdersController extends BaseController {
       await Promise.all(promises)
 
       return res.sendStatus(200)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  fetchApplePasses = async (req, res, next) => {
+    try {
+      const userId = req.user.id
+      const { orderId } = req.params
+
+      const ticketSnapshot = await db()
+        .collection(Collection.TICKET)
+        .where("userId", "==", userId)
+        .where("orderId", "==", orderId)
+        .get()
+
+      const ticketIds = ticketSnapshot.docs.map(doc => doc.id)
+      const eventId = ticketSnapshot.docs[0].data().eventId
+
+      const { event, eventError } = await fetchDocument(Collection.EVENT, eventId)
+
+      if (eventError) {
+        next(eventError)
+        return
+      }
+
+      const passBuffers = await Promise.all(ticketIds.map(ticketId => generateTicketPass(event, ticketId)))
+      const passStrings = passBuffers.map(buffer => buffer.toString("base64"))
+
+      const zip = new JSZip()
+
+      passStrings.forEach((passString, index) => {
+        zip.file(`${index}.pkpass`, passString, { base64: true })
+      })
+
+      const passesBuffer = await zip.generateAsync({ type: "nodebuffer" })
+      const passesString = passesBuffer.toString("base64")
+
+      return res.status(200).json({ passStrings, passesString })
     } catch (err) {
       next(err)
     }

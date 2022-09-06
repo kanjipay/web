@@ -13,7 +13,7 @@ import { sendgridClient } from "../../../shared/utils/sendgridClient"
 export class MerchantsController extends BaseController {
   create = async (req, res, next) => {
     try {
-      const userId = req.user.id
+      const userId: string = req.user.id
       logger.log("Merchant creation started")
 
       const {
@@ -52,22 +52,6 @@ export class MerchantsController extends BaseController {
         .doc(merchantId)
         .set(merchantData)
 
-      const mercadoAdmins = JSON.parse(process.env.MERCADO_ADMINS) // always add Mercado devs to new organisations
-      const organisationMemberships = [...new Set([...mercadoAdmins, userId])]
-      logger.log("adding memberships: ", organisationMemberships)
-      await Promise.all([
-        createMerchant,
-        organisationMemberships.map((memberId) => {
-          createMembership(
-            memberId,
-            merchantId,
-            displayName,
-            OrganisationRole.ADMIN
-          )
-        }),
-      ])
-
-      logger.log(`Successfully created merchant with id ${merchantId}`)
       const emailParams = {
         to: "team@mercadopay.co",
         from: "team@mercadopay.co",
@@ -76,8 +60,41 @@ export class MerchantsController extends BaseController {
         subject: "New Merchant",
       }
       logger.log("email params", emailParams)
-      await sendgridClient().send(emailParams)
-      logger.log("email sent successfully")
+
+      const sendMerchantCreationEmail = sendgridClient().send(emailParams)
+
+      const createUserMembership = createMembership(
+        userId,
+        merchantId,
+        displayName,
+        OrganisationRole.ADMIN
+      )
+
+      try {
+        const mercadoAdmins: string[] = JSON.parse(process.env.MERCADO_ADMINS) // always add Mercado devs to new organisations
+
+        logger.log("adding memberships: ", mercadoAdmins)
+
+        await Promise.all(mercadoAdmins.map(memberId => {
+          createMembership(
+            memberId,
+            merchantId,
+            displayName,
+            OrganisationRole.ADMIN
+          )
+        }))
+      } catch (err) {
+        console.log(err)
+      }
+      
+      await Promise.all([
+        createMerchant,
+        createUserMembership,
+        sendMerchantCreationEmail
+      ])
+
+      logger.log(`Successfully created merchant with id ${merchantId}`)
+      
       return res.status(200).json({ merchantId })
     } catch (err) {
       logger.log(err)

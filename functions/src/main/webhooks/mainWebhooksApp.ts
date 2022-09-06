@@ -9,7 +9,7 @@ const mainWebhooksApp = express()
 setCors(mainWebhooksApp, true)
 
 mainWebhooksApp.post("/crezco", handleCrezcoWebhook)
-mainWebhooksApp.post("/stripe", handleStripePaymentUpdate(true)) // temporary during migration
+mainWebhooksApp.post("/stripe", handleStripePaymentUpdate(true))
 mainWebhooksApp.post("/stripe-payment-update", handleStripePaymentUpdate(false))
 mainWebhooksApp.post("/vonage", handleVonageWebhook)
 

@@ -13,6 +13,7 @@ import GuestlistTab from "./GuestlistTab"
 import LoadingPage from "../../../../components/LoadingPage"
 import EventLinkTab from "./EventLinkTab"
 import EventDetailsTab from "./EventDetailsTab"
+import ConnectPaymentMethodsBanner from "../merchant/ConnectPaymentMethodsBanner"
 
 function PublishInfoBanners({ hasProducts }) {
   const navigate = useNavigate()
@@ -161,19 +162,7 @@ export default function EventPage({ merchant, event, products }) {
           <Spacer y={3} />
         </div>
       }
-      {
-        !merchant.crezco?.userId &&  <div style={{ maxWidth: 500 }}>
-        <ResultBanner
-            resultType={ResultType.INFO}
-            message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
-            action={() => {
-              navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
-            }}
-            actionTitle="Connect payments"
-          />
-          <Spacer y={3} />
-        </div>
-      }
+      <ConnectPaymentMethodsBanner merchant={merchant} />
       {
         !event.isPublished && <div style={{ maxWidth: 500 }}>
           <PublishInfoBanners

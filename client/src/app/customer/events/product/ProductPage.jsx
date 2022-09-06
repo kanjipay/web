@@ -69,6 +69,7 @@ export default function ProductPage({ merchant, event, product, user }) {
   const [attestationData, setAttestationData] = useState({})
   const customerFee = merchant?.customerFee ?? 0.1
   const isShowingFee = ExperimentManager.main.boolean(ExperimentKey.PROCESSING_FEE)
+  const [isLoading, setIsLoading] = useState(false)
 
   const isPublished = event?.isPublished ?? true
 
@@ -77,27 +78,12 @@ export default function ProductPage({ merchant, event, product, user }) {
     const attributionItem = getLatestItem({ eventId })
     const orderId = uuid()
 
-    NetworkManager.post("/orders/tickets", {
-      orderId,
-      productId,
-      quantity,
-      deviceId,
-      attributionData: attributionItem?.attributionData,
-    }).then(() => {
-      NetworkManager.put(`/orders/o/${orderId}/enrich`).then(() => { })
-    })
-      .catch((error) => {
-        openErrorPage({
-          title: "The order failed",
-          description: error?.response?.data?.message,
-        })
-      })
-
     let redirectPath
 
     switch (checkoutUrlType) {
       case "FREE":
         redirectPath = `/events/s/orders/${orderId}/confirmation`
+        setIsLoading(true)
         break;
       case "CARD":
         redirectPath = `/checkout/o/${orderId}/payment-stripe`
@@ -109,11 +95,31 @@ export default function ProductPage({ merchant, event, product, user }) {
         redirectPath = `/checkout/o/${orderId}/payment-stripe`
     }
 
-    navigate(redirectPath, {
-      state: { 
-        shouldEmphasiseOpenBanking: merchant?.openBankingSettings ? merchant.openBankingSettings === "ON" : true 
-      }
+    NetworkManager.post("/orders/tickets", {
+      orderId,
+      productId,
+      quantity,
+      deviceId,
+      attributionData: attributionItem?.attributionData,
+    }).then(() => {
+      NetworkManager.put(`/orders/o/${orderId}/enrich`).then(() => { })
+      navigate(redirectPath)
+      setIsLoading(false)
     })
+      .catch((error) => {
+        openErrorPage({
+          title: "The order failed",
+          description: error?.response?.data?.message,
+        })
+      })
+
+    if (checkoutUrlType !== "FREE") {
+      navigate(redirectPath, {
+        state: {
+          shouldEmphasiseOpenBanking: merchant?.openBankingSettings ? merchant.openBankingSettings === "ON" : true
+        }
+      })
+    }
   }, [eventId, productId, merchant, navigate, quantity, openErrorPage])
 
   useEffect(() => {
@@ -447,6 +453,7 @@ export default function ProductPage({ merchant, event, product, user }) {
               }
               onClick={handleCheckout}
               disabled={!isEnabled()}
+              isLoading={isLoading}
               style={{ boxSizing: "borderBox" }}
               test-id="product-cta-button"
             /> :

@@ -32,6 +32,7 @@ export default function ResultBanner({
   message,
   action = undefined,
   actionTitle = undefined,
+  isLoading = false
 }) {
   const bannerStyle = {
     backgroundColor: resultType.backgroundColor,
@@ -51,7 +52,7 @@ export default function ResultBanner({
         <span style={{ color: resultType.textColor }}>{message}</span>
         <div className="flex-spacer"></div>
         {action && actionTitle && (
-          <SmallButton title={actionTitle} onClick={action} />
+          <SmallButton title={actionTitle} onClick={action} isLoading={isLoading} />
         )}
       </div>
     </div>

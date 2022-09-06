@@ -11,6 +11,7 @@ async function generateTemplate(): Promise<Template> {
     formatVersion: 1,
     passTypeIdentifier: "pass.com.mercadopay.passes.ticket",
     organizationName: "Mercado",
+    logoText: "Mercado",
     teamIdentifier: "WS27NVRTBG",
     foregroundColor: "rgb(255, 255, 255)",
     backgroundColor: "rgb(60, 65, 76)",
