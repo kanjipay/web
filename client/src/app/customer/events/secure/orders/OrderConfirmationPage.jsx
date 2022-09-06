@@ -15,9 +15,15 @@ import EventsAppNavBar from "../EventsAppNavBar"
 import { Helmet } from "react-helmet-async"
 import { logMetaPixelEvent } from "../../../../../utils/MetaPixelLogger"
 import { getDoc } from "firebase/firestore"
+import { ButtonTheme } from "../../../../../components/ButtonTheme"
 import { UAParser } from "ua-parser-js"
 import { NetworkManager } from "../../../../../utils/NetworkManager"
 import { download } from "../../../../dashboard/events/events/GuestlistTab"
+
+function shouldShowGoogleTicket() {
+  const userAgent = UAParser(navigator.userAgent)
+  return userAgent.os.name === 'Android'
+}
 
 export default function OrderConfirmationPage({ user }) {
   const { orderId } = useParams()
@@ -140,6 +146,19 @@ export default function OrderConfirmationPage({ user }) {
           <Spacer y={3} />
           <h3 className="header-s">View my tickets</h3>
           <Spacer y={2} />
+
+          {shouldShowGoogleTicket() && (
+          <div>
+          <a href={order.googlePassUrl} >
+            <MainButton 
+              title="Save to google wallet"
+              icon="/img/google.png"
+              buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+            />
+          </a>
+           <Spacer y={2} />
+          </div>
+          )}
           {
             isAppleOS && <div>
               <MainButton

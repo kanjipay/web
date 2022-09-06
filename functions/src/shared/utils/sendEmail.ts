@@ -47,14 +47,16 @@ export async function sendEmail(
     templateId,
   })
 
-  return sendgridClient().send({
-    to: toEmails,
-    from: fromEmail,
-    fromname: fromName,
-    dynamic_template_data: data,
-    template_id: templateId,
-    attachments: attachmentData
-  })
+  if(toEmails.length > 0){
+    return sendgridClient().send({
+      to: toEmails,
+      from: fromEmail,
+      fromname: fromName,
+      dynamic_template_data: data,
+      template_id: templateId,
+      attachments: attachmentData
+    })  
+  }
 }
 
 export async function sendMenuReceiptEmail(

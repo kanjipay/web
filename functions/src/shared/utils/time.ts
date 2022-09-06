@@ -8,3 +8,4 @@ export function dateFromTimestamp(timestamp) {
 export function longFormat(date: Date) {
   return `${format(date, "MMM d")} at ${format(date, "HH:mm")}`
 }
+
