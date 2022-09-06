@@ -116,6 +116,7 @@ export async function sendTicketReceipt(
   user,
   quantity: number,
   ticketIds: string[],
+  googlePassUrl: string
 ) {
   logger.log("Sending ticket receipt", {
     merchant,
@@ -168,6 +169,7 @@ export async function sendTicketReceipt(
     total,
     fee,
     tickets,
+    googlePassUrl
   }
 
   const passBuffers = await Promise.all(ticketIds.map(ticketId => generateTicketPass(event, ticketId)))

@@ -31,6 +31,7 @@ export default function OrderConfirmationPage({ user }) {
   const [applePassData, setApplePassData] = useState(null)
   const [wasApplePassButtonPressed, setWasApplePassButtonPressed] = useState(false)
 
+
   useEffect(() => {
     AnalyticsManager.main.viewPage("TicketOrderConfirmation", { orderId })
 
@@ -155,7 +156,6 @@ export default function OrderConfirmationPage({ user }) {
             test-id="ticket-order-confirmation-done-button"
             onClick={() => navigate(`/events/s/tickets`)}
           />
-          
           <Spacer y={9} />
         </div>
       </div>

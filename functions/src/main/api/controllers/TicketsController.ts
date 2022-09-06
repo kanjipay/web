@@ -34,6 +34,8 @@ async function generateTemplate() {
   const privateKey = base64.decode(process.env.APPLE_WALLET_PRIVATE_KEY)
   const password = process.env.APPLE_WALLET_PASSWORD
 
+
+
   template.setCertificate(cert)
   template.setPrivateKey(privateKey, password)
 
