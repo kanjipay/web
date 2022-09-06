@@ -25,7 +25,6 @@ import { getDoc } from "firebase/firestore"
 import { logMetaPixelEvent } from "../../../../utils/MetaPixelLogger"
 import Collection from "../../../../enums/Collection"
 import ShowMoreText from "react-show-more-text"
-import ExperimentManager, { ExperimentKey } from "../../../../utils/ExperimentManager"
 import Spinner from "../../../../assets/Spinner"
 import { ShimmerThumbnail, ShimmerTitle, ShimmerText, ShimmerTable } from "react-shimmer-effects";
 import { IdentityManager } from "../../../../utils/IdentityManager"
@@ -68,7 +67,6 @@ export default function ProductPage({ merchant, event, product, user }) {
     useState(true)
   const [attestationData, setAttestationData] = useState({})
   const customerFee = merchant?.customerFee ?? 0.1
-  const isShowingFee = ExperimentManager.main.boolean(ExperimentKey.PROCESSING_FEE)
   const [isLoading, setIsLoading] = useState(false)
 
   const isPublished = event?.isPublished ?? true
@@ -102,7 +100,7 @@ export default function ProductPage({ merchant, event, product, user }) {
       deviceId,
       attributionData: attributionItem?.attributionData,
     }).then(() => {
-      NetworkManager.put(`/orders/o/${orderId}/enrich`).then(() => { })
+      NetworkManager.put(`/orders/o/${orderId}/enrich`, { locale: navigator.language }).then(() => { })
       navigate(redirectPath)
       setIsLoading(false)
     })
@@ -178,7 +176,7 @@ export default function ProductPage({ merchant, event, product, user }) {
   const minQuantity = 1
 
   const handleCheckout = () => {
-    AnalyticsManager.main.pressButton("Checkout", { eventId, productId, isShowingFee })
+    AnalyticsManager.main.pressButton("Checkout", { eventId, productId })
 
     let checkoutUrlType
 

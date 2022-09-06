@@ -299,6 +299,7 @@ export class OrdersController extends BaseController {
   enrich = async (req, res, next) => {
     try {
       const { orderId } = req.params
+      const locale = req.body?.locale
       const userId: string = req.user.id
 
       logger.log("Enriching order data", { orderId, userId })
@@ -334,6 +335,7 @@ export class OrdersController extends BaseController {
 
       const orderUpdate = {
         gender,
+        locale,
         isExistingUser: isExisting,
         ...userAgentData,
       }

@@ -223,5 +223,10 @@
     "bankCode": "yorkshirebuildingsociety",
     "bankName": "Yorkshire Building Society",
     "logoUrl": "https://images.yapily.com/image/eeb082df-042f-4ec8-bbc4-7e6cd9f9d124?size=0"
+  },
+  {
+    "bankCode": "abn-amro-nl",
+    "bankName": "ABN Amro Netherlands",
+    "logoUrl": "https://images.yapily.com/image/257ab08f-5b52-463a-86db-c9573be70449?size=0"
   }
 ]
