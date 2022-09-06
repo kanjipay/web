@@ -3,7 +3,7 @@
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "build": "tsc",
-    "serve": "npm run build:dev && firebase serve --only functions",
+    "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
@@ -38,6 +38,8 @@
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.5",
     "mocha": "^10.0.0",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.37",
     "raw-body": "^2.5.1",
     "selenium-stealth": "^1.0.1",
     "sha256": "^0.2.0",

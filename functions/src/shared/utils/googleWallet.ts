@@ -19,20 +19,30 @@ export type GoogleTicketDetail = {
   ticketHolderName: string;
 }
 
-export async function createGooglePassEventClass(eventId: string, location:string,   eventData){
+export type GoogleEventData = {
+  eventId: string, 
+  merchantName: string, 
+  eventName: string, 
+  startDate: string, 
+  description: string,
+  location: string
+}
+
+
+
+export async function createGooglePassEventClass(eventData: GoogleEventData){
   logger.log('creating event class')
   const {issuerId, httpClient} = getCredentials()
-  const { merchantName, eventName, eventDate, description} = eventData
   const classUrl = 'https://walletobjects.googleapis.com/walletobjects/v1/eventTicketClass/';
-  logger.log(eventDate) // todo add
-  const id = `${issuerId}.${eventId}`
+  logger.log({eventData}) 
+  const id = `${issuerId}.${eventData.eventId}`
   const classPayload = {
     id,
-    "issuerName":merchantName,
+    "issuerName":eventData.merchantName,
     "eventName": {
       "defaultValue": {
         "language": "en-US",
-        "value": eventName
+        "value": eventData.eventName
       },
     },
     "heroImage": {
@@ -43,27 +53,28 @@ export async function createGooglePassEventClass(eventId: string, location:strin
       },
       "textModulesData": [
         {
-          header:eventName,
-          body:description,
+          "header":eventData.eventName,
+          "body":eventData.description,
         }
       ],
       "venue": {
         "name": {
           "defaultValue": {
             "language": "en-US",
-            "value": location
+            "value": eventData.location
           }
         },
         "address": {
           "defaultValue": {
             "language": "en-US",
-            "value": location
+            "value": eventData.location
           }
         },
       },
-    "dateTime":{'start':eventDate},
+    "dateTime":{"start":eventData.startDate},
     "reviewStatus": "underReview"
   };
+  logger.log({classPayload})
   await httpClient.request({
     url: classUrl,
     method: 'POST',
@@ -118,5 +129,7 @@ export async function createGooglePassUrl(classId: string, ticketDetails: Array<
     }
   };
   const token = jwt.sign(claims, private_key, { algorithm: 'RS256' });
-  return `https://pay.google.com/gp/v/save/${token}`;
+  const googlePassLink =  `https://pay.google.com/gp/v/save/${token}`;
+  logger.log({googlePassLink});
+  return googlePassLink
 }
