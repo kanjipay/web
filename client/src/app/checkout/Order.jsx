@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Route, Routes, useParams } from "react-router-dom"
-import LoadingPage from "../../components/LoadingPage"
 import PaymentCancelledPage from "./PaymentCancelledPage"
 import PaymentFailurePage from "./PaymentFailurePage"
 import MobileHandoverPage from "./MobileHandoverPage"

@@ -1,7 +1,5 @@
 import React, { useEffect } from "react"
 import { Route, Routes, useLocation } from "react-router-dom"
-import MenuApp from "./customer/menu/MenuApp"
-import MerchantApp from "./dashboard/menu/MerchantApp"
 import { Brand } from "./brand/Brand"
 import OneTimeLinkPage from "./shared/OneTimeLinkPage"
 import EventsApp from "./customer/events/EventsApp"
@@ -51,7 +49,6 @@ export default function App() {
   return (
     <Routes>
       <Route path="/xlx-v" element={<SalesSender />} />
-      <Route path="/menu/*" element={<MenuApp />} />
       <Route path="/events/*" element={<EventsApp />} />
       <Route path="/e/:merchantLinkName" element={<EventShortLinks />} />
       <Route path="/e/:merchantLinkName/:eventLinkName" element={<EventShortLinks />} />
@@ -61,7 +58,6 @@ export default function App() {
         path="/l/:attributionLinkId"
         element={<AttributionLinkPage />}
       />
-      <Route path="/merchant/*" element={<MerchantApp />} />
       <Route path="/auth/*" element={<Auth />} />
       <Route path="/error" element={<ErrorPage />} />
       <Route path="/dashboard/*" element={<Dashboard />} />

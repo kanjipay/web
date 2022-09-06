@@ -10,22 +10,15 @@ import Spacer from "../../../../components/Spacer"
 import Collection from "../../../../enums/Collection"
 import { getMerchantStorageRef } from "../../../../utils/helpers/storage"
 import { uploadImage } from "../../../../utils/helpers/uploadImage"
-import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
+import { ResultType } from "../../../../components/ResultBanner"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import TabControl from "../../../../components/TabControl"
 import { useState } from "react"
-import MainButton from "../../../../components/MainButton"
-import { CopyableUrl } from "../../../../components/CopyableUrl"
+import ConnectPaymentMethodsBanner from "./ConnectPaymentMethodsBanner"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
-  const navigate = useNavigate()
   const [linkName, setLinkName] = useState(merchant.linkName)
-
-  const updateLinkName = event => {
-    const { value } = event.target
-
-  }
 
   const handleSaveDetails = async (data) => {
     const promises = []
@@ -111,15 +104,6 @@ export default function SettingsPage({ merchant }) {
   const brandedLinkUrl = new URL(window.location.href)
   brandedLinkUrl.pathname = linkName ? `/l/${linkName}` : "/l/your-name-here"
 
-  const linkTab = <div style={{ maxWidth: 500 }}>
-    <p className="text-body-faded">Create a short, branded link for your page.</p>
-    <Spacer y={2} />
-    <CopyableUrl urlString={brandedLinkUrl.href} />
-    <Field value={linkName} onChange={updateLinkName} />
-    <Spacer y={2} />
-    <MainButton title="Save changes" />
-  </div>
-
   const bankDetailsTab = <div style={{ maxWidth: 500 }}>
     <Form
       initialDataSource={merchant}
@@ -175,22 +159,7 @@ export default function SettingsPage({ merchant }) {
     <Spacer y={2} />
     <h1 className="header-l">Organiser Settings</h1>
     <Spacer y={3}/>
-    <div style={{ maxWidth: 500 }}>
-      {
-        !merchant.crezco?.userId && <div style={{ maxWidth: 500 }}>
-          <ResultBanner
-            resultType={ResultType.INFO}
-            message="Connect with our payment partner, Crezco to reduce fees and get earlier payouts."
-            action={() => {
-              navigate(`/dashboard/o/${merchant.id}/connect-crezco`)
-            }}
-            actionTitle="Connect payments"
-          />
-          <Spacer y={3} />
-        </div>
-      }
-    </div>
-
+    <ConnectPaymentMethodsBanner merchant={merchant} />
     <TabControl tabs={{ 
       "Basic details": basicSettingsTab,
       "Bank details": bankDetailsTab

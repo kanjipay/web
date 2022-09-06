@@ -30,6 +30,16 @@
     "logoUrl": "https://images.yapily.com/image/33543712-4ef8-49af-9836-dd8aadfb478a?size=0"
   },
   {
+    "bankCode": "revolut_eu-sandbox",
+    "bankName": "Revolut EU",
+    "logoUrl": "https://img.icons8.com/ultraviolet/80/000000/bank-building.png"
+  },
+  {
+    "bankCode": "revolut-sandbox",
+    "bankName": "Revolut",
+    "logoUrl": "https://images.yapily.com/image/da4c1973-3ae9-4385-860b-b14672bcf4fe?size=0"
+  },
+  {
     "bankCode": "yapily-mock",
     "bankName": "Yapily Mock",
     "logoUrl": "https://images.yapily.com/image/4bbb9c1b-29e0-4cc9-8d01-b2ad2fcd57a3?size=0"

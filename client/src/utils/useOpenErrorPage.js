@@ -14,6 +14,6 @@ export function useOpenErrorPage() {
     const actualBackPath = backPath ?? location.pathname
     const search = `?back=${base64.encode(actualBackPath)}&state=${base64.encode(state)}`
 
-    navigate({ pathname: "/error", search })
+    navigate({ pathname: "/error", search }, { state: { title, body }})
   }
 }
