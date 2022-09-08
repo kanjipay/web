@@ -142,6 +142,7 @@ export default function OrderConfirmationPage({ user }) {
           <Spacer y={3} />
           <h3 className="header-s">View my tickets</h3>
           <Spacer y={2} />
+          <div>
           <a href={order.googlePassUrl} >
             <MainButton 
               title="Save to google wallet"
@@ -152,7 +153,7 @@ export default function OrderConfirmationPage({ user }) {
 
            <Spacer y={2} />
           </div>
-          )}
+  
           {
             isAppleOS && <div>
               <MainButton
