@@ -18,10 +18,6 @@ import { getDoc } from "firebase/firestore"
 import { ButtonTheme } from "../../../../../components/ButtonTheme"
 import { UAParser } from "ua-parser-js"
 
-function shouldShowGoogleTicket() {
-  const userAgent = UAParser(navigator.userAgent)
-  return userAgent.os.name === 'Android'
-}
 
 
 export default function OrderConfirmationPage({ user }) {
@@ -103,8 +99,6 @@ export default function OrderConfirmationPage({ user }) {
             feePercentage={order.customerFee}
           />
           <Spacer y={2} />
-
-          {shouldShowGoogleTicket() && (
           <a href={order.googlePassUrl} >
             <MainButton 
               title="Save to google wallet"
@@ -112,7 +106,6 @@ export default function OrderConfirmationPage({ user }) {
               buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
             />
           </a>
-          )}
           <Spacer y={9} />
         </div>
 
