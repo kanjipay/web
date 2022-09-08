@@ -1,15 +1,10 @@
 import Spacer from "../../../../components/Spacer"
 import Form, { generateValidator } from "../../../../components/Form"
-import { TextArea } from "../../../../components/Input"
 import DatePicker from "../../../../components/DatePicker"
-import { IntField } from "../../../../components/input/IntField"
 import Breadcrumb from "../../../../components/Breadcrumb"
-import { serverTimestamp, setDoc } from "firebase/firestore"
+import { getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore"
 import Collection from "../../../../enums/Collection"
 import { useNavigate, useParams } from "react-router-dom"
-import { getEventRecurrenceStorageRef, getEventStorageRef } from "../../../../utils/helpers/storage"
-import { uploadImage } from "../../../../utils/helpers/uploadImage"
-import SimpleImagePicker from "../../../../components/SimpleImagePicker"
 import CheckBox from "../../../../components/CheckBox"
 import TimeIntervalPicker from "../../../../components/TimeIntervalPicker"
 import { TimeInterval } from "../../../../enums/TimeInterval"
@@ -31,6 +26,18 @@ export default function CreateEventPage() {
       eventPublishInterval,
       eventCreateInterval
     } = data
+
+    const eventQuery = query(
+      Collection.EVENT.ref,
+      where("title", "==", title),
+      where("merchantId", "==", merchantId)
+    )
+
+    const eventSnapshot = await getDocs(eventQuery)
+
+    const eventCount = eventSnapshot.docs.length
+    const encodedTitle = title.toLowerCase().replace(/[ /]/g, "-").replace(/[^a-z0-9-]/g, "")
+    const linkName = eventCount > 0 ? `${encodedTitle}-${eventCount}` : encodedTitle
 
     if (isRecurring) {
       const eventRecurrenceId = uuid()
@@ -59,6 +66,7 @@ export default function CreateEventPage() {
         title,
         address,
         startsAt,
+        linkName,
         endsAt,
         maxTicketsPerPerson: 10,
         isPublished: false,

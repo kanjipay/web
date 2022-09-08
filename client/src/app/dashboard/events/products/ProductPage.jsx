@@ -97,14 +97,12 @@ export default function ProductPage({ event, products, merchant }) {
                         prefix={getCurrencySymbol(merchant.currency)}
                       />
                     ),
-                    disabled: !!isPublished,
                   },
                   {
                     name: "capacity",
                     label: "Maximum capacity",
                     explanation: "Once this number of tickets has been sold for this ticket type, it will show as sold out.",
                     input: <IntField />,
-                    disabled: !!isPublished,
                   },
                   {
                     name: "description",
@@ -122,7 +120,6 @@ export default function ProductPage({ event, products, merchant }) {
                     label: "Release date",
                     input: <DatePicker />,
                     required: false,
-                    disabled: !!isPublished,
                   },
                   {
                     name: "earliestEntryAt",

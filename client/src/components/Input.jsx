@@ -147,6 +147,7 @@ export function TextArea({ placeholder, style, ...props }) {
   return (
     <textarea
       test-id={`textarea-${props.name}`}
+      spellCheck={true}
       placeholder={placeholder}
       style={{
         ...textInputStyle,

@@ -5,6 +5,23 @@ import { Field } from "../components/input/IntField"
 import SegmentedControl from "../components/SegmentedControl"
 import Spacer from "../components/Spacer"
 
+const og = data => `
+Hey {{addressee}},
+
+I work with Mercado and am looking to help artists and event runners across the UK get a higher revenue from ticket sales so thought it would be beneficial to reach out.
+
+Mercado is an Artist First ticketing platform ensuring those who put on the events receive the best possible profit for any shows, all the while using social media marketing and analytics to sell out the tickets.
+
+We’re not currently looking for anything in return, just to help artists out as much as we can.
+
+If the above sounds at all interesting, maybe we could organise a short phone call to chat about your music related plans and a little more about Mercado.
+
+Let me know if a day in the next week or two works well for you?
+
+Cheers,
+{{sender}}
+`
+
 const artist2 = data => `
 Hey {{addressee}}
 
@@ -48,9 +65,9 @@ Hey {{addressee}}, thought it'd be helpful to show how the platform actually loo
 `
 
 const templates = {
+  "OG": og,
   "Artist2": artist2,
   "Artist3": artist3,
-  "Loom initial": loomInitial,
   "Loom follow up": loomFollowUp
 }
 

@@ -1,10 +1,10 @@
 import * as functions from "firebase-functions"
 import mainApp from "./main/mainApp"
 import { cronFunction } from "./cron/cron"
-import { notifyIfPublished } from "./firestore/notifyIfPublished"
 import { backupFirestore } from "./cron/backupFirestore"
 import { retargetOrders } from "./cron/retargetingEmail"
 import applePayApp from "./applePayApp"
+import { onEventWrite } from "./firestore/onEventWrite"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 const euFunctions = functions.region("europe-west2")
@@ -51,10 +51,10 @@ export const cronMarketing = euFunctions
   .onRun(retargetOrders)
 
 
-export const eventCreate = euFunctions
+export const eventWrite = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY", "GOOGLE_WALLET_ISSUER_ID"] })
   .firestore.document('Event/{eventId}')
-  .onWrite(notifyIfPublished)
+  .onWrite(onEventWrite)
 
 export const applePay = functions
   .region("us-central1")
