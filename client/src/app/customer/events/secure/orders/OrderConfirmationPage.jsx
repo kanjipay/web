@@ -145,7 +145,7 @@ export default function OrderConfirmationPage({ user }) {
           <div>
           <a href={order.googlePassUrl} >
             <MainButton 
-              title="Save to google wallet"
+              title="Add to Google Wallet"
               icon="/img/google.png"
               buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
             />
