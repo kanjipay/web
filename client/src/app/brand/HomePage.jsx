@@ -11,13 +11,17 @@ import EventListing from "../customer/events/event/EventListing"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import Testimonial from "./Testimonial"
 import { isMobile } from "react-device-detect"
+import { ShimmerThumbnail } from "react-shimmer-effects"
 
 export default function HomePage() {
-  const [events, setEvents] = useState([])
+  const [events, setEvents] = useState(null)
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("Home")
   }, [])
+
+  const { width } = useWindowSize()
+  const contentWidth = Math.min(width, 1200) - 32
 
   useEffect(() => {
     return Collection.EVENT.queryOnChange(
@@ -101,29 +105,46 @@ export default function HomePage() {
       </h2>
       <Spacer y={3} />
       <div style={{ display: isMobile ? "block" : "flex", columnGap: 24 }}>
-        {events.map((event) => {
-          const listing = (
-            <EventListing
-              key={event.id}
-              event={event}
-              style={{ width: isMobile ? "auto" : "calc(33% - 16px)", borderRadius: 8, overflow: "hidden" }}
-              linkPath={`/events/${event.merchantId}/${event.id}`}
-            />
-          )
+        {
+          events ?
+            events.map((event) => {
+              const listing = (
+                <EventListing
+                  key={event.id}
+                  event={event}
+                  style={{ width: isMobile ? "auto" : "calc(33% - 16px)", borderRadius: 8, overflow: "hidden" }}
+                  linkPath={`/events/${event.merchantId}/${event.id}`}
+                />
+              )
 
-          if (isMobile) {
-            return (
-              <div>
-                <div style={{ borderRadius: 8, overflow: "hidden" }}>
-                  {listing}
+              if (isMobile) {
+                return (
+                  <div>
+                    <div style={{ borderRadius: 8, overflow: "hidden" }}>
+                      {listing}
+                    </div>
+                    <Spacer y={3} />
+                  </div>
+                )
+              } else {
+                return listing
+              }
+            }) :
+            [1, 2, 3].map(() => {
+              const height = isMobile ? contentWidth : (contentWidth - 24 * 2) / 3
+              if (isMobile) {
+                return <div>
+                  <ShimmerThumbnail height={height} width="auto" rounded />
+                  <Spacer y={3} />
                 </div>
-                <Spacer y={3} />
-              </div>
-            )
-          } else {
-            return listing
-          }
-        })}
+              } else {
+                return <div style={{ flexGrow: 100 }}>
+                  <ShimmerThumbnail height={height} rounded />
+                </div>
+              }
+              
+            })
+        }
       </div>
 
       <Spacer y={sectionSpacing} />

@@ -2,6 +2,7 @@ import amplitude from "amplitude-js"
 import { IdentityManager } from "./IdentityManager"
 import { hotjar } from "react-hotjar"
 import Environment from "../enums/Environment"
+import { UAParser } from "ua-parser-js"
 
 export class AnalyticsEvent {
   static VIEW_PAGE = "ViewPage"
@@ -61,6 +62,15 @@ export class AnalyticsManager {
     // We store the uuid in localStorage, which is more persistent
     // */
     amplitudeAnalytics.setDeviceId(IdentityManager.main.getDeviceId())
+
+    const userAgent = UAParser(navigator.userAgent)
+
+    amplitudeAnalytics.setUserProperties({
+      browser: userAgent.browser.name,
+      os: userAgent.os.name,
+      deviceType: userAgent.device.type,
+      locale: navigator.language
+    })
 
     this.analytics = amplitudeAnalytics
   }

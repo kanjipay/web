@@ -2,6 +2,9 @@ import { format } from "date-fns"
 import { formatCurrency } from "./formatCurrency"
 import { logger } from "firebase-functions/v1"
 import { sendgridClient } from "./sendgridClient"
+import { constants as applePassConstants } from "@walletpass/pass-js"
+import { generateTicketPass } from "./applePass/generateTicketPass"
+import * as JSZip from "jszip"
 
 const fromEmail = "team@mercadopay.co"
 const fromName = " Mercado Team"
@@ -30,7 +33,8 @@ function addFees(productPrice, quantity, customerFee, currency) {
 export async function sendEmail(
   toEmails: Array<string>,
   templateName: TemplateName,
-  data: unknown
+  data: unknown,
+  attachmentData?: Array<{ content: string, filename: string, type: string, disposition: string }>,
 ) {
   const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
 
@@ -42,6 +46,7 @@ export async function sendEmail(
     data,
     templateId,
   })
+
   if(toEmails.length > 0){
     return sendgridClient().send({
       to: toEmails,
@@ -49,6 +54,7 @@ export async function sendEmail(
       fromname: fromName,
       dynamic_template_data: data,
       template_id: templateId,
+      attachments: attachmentData
     })  
   }
 }
@@ -167,7 +173,38 @@ export async function sendTicketReceipt(
     tickets,
     googlePassUrl
   }
-  return sendEmail([toEmail], TemplateName.TICKET_RECEIPT, data)
+
+  const passBuffers = await Promise.all(ticketIds.map(ticketId => generateTicketPass(event, ticketId)))
+
+  const attachmentData = passBuffers.map((buffer, index) => {
+    return {
+      content: buffer.toString("base64"),
+      filename: `${index}.pkpass`,
+      type: applePassConstants.PASS_MIME_TYPE,
+      disposition: "attachment"
+    }
+  })
+
+  if (passBuffers.length > 1) {
+    const passStrings = passBuffers.map(buffer => buffer.toString("base64"))
+
+    const zip = new JSZip()
+
+    passStrings.forEach((passString, index) => {
+      zip.file(`${index}.pkpass`, passString, { base64: true })
+    })
+
+    const passesBuffer = await zip.generateAsync({ type: "nodebuffer" })
+    
+    attachmentData.push({
+      content: passesBuffer.toString("base64"),
+      filename: "bundle.pkpasses",
+      type: "application/vnd.apple.pkpasses",
+      disposition: "attachment"
+    })
+  }
+
+  return sendEmail([toEmail], TemplateName.TICKET_RECEIPT, data, attachmentData)
 }
 
 export async function sendTicketSaleAlert(

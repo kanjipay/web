@@ -60,18 +60,15 @@ export default function EventPage({ event, products, merchant }) {
             <Spinner />
           </div>
         )}
-      </div>
-
-      <div className="anchored-bottom">
-        <div style={{ padding: 16 }}>
-          <MainButton title="Scan tickets" onClick={handleScanTickets} />
-          <Spacer y={2} />
-          <MainButton
-            title="See guestlist"
-            buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-            onClick={handleSeeGuestlist}
-          />
-        </div>
+        <Spacer y={2} />
+        <MainButton title="Scan tickets" onClick={handleScanTickets} />
+        <Spacer y={2} />
+        <MainButton
+          title="See guestlist"
+          buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+          onClick={handleSeeGuestlist}
+        />
+        <Spacer y={8} />
       </div>
     </div>
   )
