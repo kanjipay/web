@@ -107,29 +107,34 @@ async function  createGooglePassTicket(classId: string, ticketDetail: GoogleTick
   });
 }
 
-
 export async function createGooglePassUrl(classId: string, ticketDetails: Array<GoogleTicketDetail>) {
-  const {credentials, issuerId} = getCredentials()
-  const {client_email, private_key} = credentials
-  const promises = []
-  const eventTicketObjects = []
-  ticketDetails.forEach((ticketDetail) => {
-    const id = `${issuerId}.${ticketDetail.ticketId.replace(/[^\w.-]/g, '_')}-${classId}`;
-    promises.push(createGooglePassTicket(classId, ticketDetail, id))
-    eventTicketObjects.push({id})
-  })
-  await Promise.all(promises)
-  const claims = {
-    iss: client_email,
-    aud: 'google',
-    origins: ['www.mercadopay.co'],
-    typ: 'savetowallet',
-    payload: {
-      eventTicketObjects
-    }
-  };
-  const token = jwt.sign(claims, private_key, { algorithm: 'RS256' });
-  const googlePassLink =  `https://pay.google.com/gp/v/save/${token}`;
-  logger.log({googlePassLink});
-  return googlePassLink
+  try {
+    const {credentials, issuerId} = getCredentials()
+    const {client_email, private_key} = credentials
+    const promises = []
+    const eventTicketObjects = []
+    ticketDetails.forEach((ticketDetail) => {
+      const id = `${issuerId}.${ticketDetail.ticketId.replace(/[^\w.-]/g, '_')}-${classId}`;
+      promises.push(createGooglePassTicket(classId, ticketDetail, id))
+      eventTicketObjects.push({id})
+    })
+    await Promise.all(promises)
+    const claims = {
+      iss: client_email,
+      aud: 'google',
+      origins: ['www.mercadopay.co'],
+      typ: 'savetowallet',
+      payload: {
+        eventTicketObjects
+      }
+    };
+    const token = jwt.sign(claims, private_key, { algorithm: 'RS256' });
+    const googlePassLink =  `https://pay.google.com/gp/v/save/${token}`;
+    logger.log({googlePassLink});
+    return googlePassLink
+  }
+  catch (error) {
+    logger.error(error);
+    return ''
+  }
 }

@@ -20,10 +20,6 @@ import { UAParser } from "ua-parser-js"
 import { NetworkManager } from "../../../../../utils/NetworkManager"
 import { download } from "../../../../dashboard/events/events/GuestlistTab"
 
-function shouldShowGoogleTicket() {
-  const userAgent = UAParser(navigator.userAgent)
-  return userAgent.os.name === 'Android'
-}
 
 export default function OrderConfirmationPage({ user }) {
   const { orderId } = useParams()
@@ -146,8 +142,6 @@ export default function OrderConfirmationPage({ user }) {
           <Spacer y={3} />
           <h3 className="header-s">View my tickets</h3>
           <Spacer y={2} />
-
-          {shouldShowGoogleTicket() && (
           <div>
           <a href={order.googlePassUrl} >
             <MainButton 
@@ -156,9 +150,10 @@ export default function OrderConfirmationPage({ user }) {
               buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
             />
           </a>
+
            <Spacer y={2} />
           </div>
-          )}
+  
           {
             isAppleOS && <div>
               <MainButton
