@@ -35,6 +35,7 @@ import { useCallback } from "react"
 import { useOpenErrorPage } from "../../../../utils/useOpenErrorPage"
 import IconPage from "../../../../components/IconPage"
 import Cross from "../../../../assets/icons/Cross"
+import IconActionPage from "../../../../components/IconActionPage"
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length === 0) {
@@ -286,12 +287,14 @@ export default function ProductPage({ merchant, event, product, user }) {
       message = "The event organiser set this ticket type as not available."
     }
     
-    return <IconPage 
+    return <IconActionPage 
       Icon={Cross}
       iconBackgroundColor={Colors.RED_LIGHT}
       iconForegroundColor={Colors.RED}
-      title="Product unavailable"
+      title="Ticket type unavailable"
       body={message}
+      primaryAction={() => navigate("../..")}
+      primaryActionTitle="Back to event"
     />
   } else {
     return <div className="container">
