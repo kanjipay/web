@@ -33,6 +33,8 @@ import { getLatestItem } from "../../../shared/attribution/AttributionReducer"
 import { v4 as uuid } from "uuid"
 import { useCallback } from "react"
 import { useOpenErrorPage } from "../../../../utils/useOpenErrorPage"
+import IconPage from "../../../../components/IconPage"
+import Cross from "../../../../assets/icons/Cross"
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length === 0) {
@@ -150,8 +152,6 @@ export default function ProductPage({ merchant, event, product, user }) {
         setMarketingConsent(marketingConsentStatus).then(() => { })
       }
 
-
-
       submitOrder(checkoutUrlType)
     }
   }, [state, eventId, merchant, event, product, navigate, pathname, productId, user, submitOrder])
@@ -250,8 +250,49 @@ export default function ProductPage({ merchant, event, product, user }) {
     return (!user?.email || canBuyProduct()) && isPublished
   }
 
+  const releaseDate = dateFromTimestamp(product?.releasesAt)
+  const releaseEndDate = dateFromTimestamp(product?.releaseEndsAt)
+
+  const currDate = new Date()
+  const isUnreleased = !!product && !!releaseDate && releaseDate > currDate
+  const isExpired = !!product && !!releaseEndDate && releaseEndDate < currDate
+  const isSoldOut = !!product && product.soldCount + product.reservedCount >= product.capacity
+
+  const isProductUnavailable = !!product && (
+    !product.isAvailable ||
+    isUnreleased ||
+    isExpired ||
+    isSoldOut
+  )
+
   if (!!state?.checkoutUrlType) {
     return <LoadingPage />
+  } else if (isProductUnavailable) {
+    let message = "This ticket is unavailable"
+
+    if (isSoldOut) {
+      message = "This ticket type is sold out."
+    } else if (isUnreleased) {
+      message = `This ticket type releases ${format(releaseDate, "MMM do")} at ${format(
+        releaseDate,
+        "H:mm"
+      )}.`
+    } else if (isExpired) {
+      message = `The release of this ticket type ended ${format(releaseEndDate, "MMM do")} at ${format(
+        releaseEndDate,
+        "H:mm"
+      )}.`
+    } else if (!product?.isAvailable) {
+      message = "The event organiser set this ticket type as not available."
+    }
+    
+    return <IconPage 
+      Icon={Cross}
+      iconBackgroundColor={Colors.RED_LIGHT}
+      iconForegroundColor={Colors.RED}
+      title="Product unavailable"
+      body={message}
+    />
   } else {
     return <div className="container">
       <EventsAppNavBar
