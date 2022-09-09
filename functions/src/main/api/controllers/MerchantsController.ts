@@ -25,10 +25,20 @@ export class MerchantsController extends BaseController {
         organiserTermsVersion
       } = req.body
 
+      const merchantSnapshot = await db()
+        .collection(Collection.MERCHANT)
+        .where("displayName", "==", displayName)
+        .get()
+
+      const merchantCount = merchantSnapshot.docs.length
+      const displayNameEncoded = displayName.toLowerCase().replace(" ", "-").replace("/", "-").replaceAll(/[^a-z0-9-]/gi, "")
+      const linkName = merchantCount > 0 ? `${displayNameEncoded}-${merchantCount}` : displayNameEncoded
+
       const merchantId = uuid()
       const merchantData = {
         companyName,
         displayName,
+        linkName,
         currency,
         sortCode,
         accountNumber,

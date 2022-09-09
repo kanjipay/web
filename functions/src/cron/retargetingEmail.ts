@@ -97,7 +97,7 @@ export const retargetOrders = async (context) => {
         batch.update(db().collection(Collection.USER).doc(userId),{lastMarketingEmailDate: currentDate})
     })
     await batch.commit()
-    const result = await sendgridClient().send(messageArray)
+    const result = await sendgridClient().sendMultiple(messageArray)
     logger.log({result})
   } catch (err) {
     logger.error(err)

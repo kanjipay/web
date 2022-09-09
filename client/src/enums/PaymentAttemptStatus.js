@@ -3,4 +3,5 @@ export default class PaymentAttemptStatus {
   static CANCELLED = "CANCELLED"
   static FAILED = "FAILED"
   static SUCCESSFUL = "SUCCESSFUL"
+  static ACCEPTED = "ACCEPTED"
 }

@@ -1,6 +1,6 @@
 import { updateDoc } from "firebase/firestore"
 import { deleteObject } from "firebase/storage"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import Form from "../../../../components/Form"
 import { TextArea } from "../../../../components/Input"
 import Dropdown from "../../../../components/input/Dropdown"
@@ -13,20 +13,15 @@ import { uploadImage } from "../../../../utils/helpers/uploadImage"
 import { ResultType } from "../../../../components/ResultBanner"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import TabControl from "../../../../components/TabControl"
-import { useState } from "react"
 import ConnectPaymentMethodsBanner from "./ConnectPaymentMethodsBanner"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
-  const [linkName, setLinkName] = useState(merchant.linkName)
 
   const handleSaveDetails = async (data) => {
     const promises = []
     const file = data.photo?.file
     const storageRef = data.photo?.storageRef
-
-    console.log("hasFile: ", !!file)
-    console.log("hasStorageRef: ", !!storageRef)
 
     if (file) {
       const merchantRef = getMerchantStorageRef(merchantId, file.name)
@@ -42,11 +37,21 @@ export default function SettingsPage({ merchant }) {
       )
     }
 
+    const update = {
+      ...data,
+      photo: file?.name ?? merchant.photo,
+      spotify: {
+        showsOnEvents: !!data.spotifyLink && data.spotifyLink.length > 0,
+        link: data.spotifyLink ?? ""
+      }
+    }
+
+    delete update.spotifyLink
+
+    console.log(update)
+
     promises.push(
-      updateDoc(Collection.MERCHANT.docRef(merchantId), {
-        ...data,
-        photo: file?.name ?? merchant.photo,
-      })
+      updateDoc(Collection.MERCHANT.docRef(merchantId), update)
     )
 
     await Promise.all(promises)
@@ -68,6 +73,7 @@ export default function SettingsPage({ merchant }) {
         photo: merchant.photo ? {
           storageRef: getMerchantStorageRef(merchantId, merchant.photo),
         } : {},
+        spotifyLink: merchant.spotify?.link ?? ""
       }}
       formGroupData={[
         {
@@ -93,6 +99,11 @@ export default function SettingsPage({ merchant }) {
               label: "Business address",
               required: false
             },
+            {
+              name: "spotifyLink",
+              explanation: "Set a link to a Spotify track or playlist to be shown on your events pages to showcase your music.",
+              required: false
+            }
           ],
         },
       ]}
@@ -100,9 +111,6 @@ export default function SettingsPage({ merchant }) {
       submitTitle="Save changes"
     />
   </div>
-
-  const brandedLinkUrl = new URL(window.location.href)
-  brandedLinkUrl.pathname = linkName ? `/l/${linkName}` : "/l/your-name-here"
 
   const bankDetailsTab = <div style={{ maxWidth: 500 }}>
     <Form

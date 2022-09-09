@@ -58,7 +58,7 @@ service cloud.firestore {
     	allow read;
       
       allow update: if (
-        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe", "linkName"]) &&
+        hasOnlyChangedKeys(["address", "displayName", "description", "companyName", "photo", "currency", "stripe", "linkName", "spotify"]) &&
       	isAdminForMerchant(merchantId)
       )
     }
@@ -77,10 +77,7 @@ service cloud.firestore {
       allow create: if isAdminForMerchant(incomingData().merchantId)
       allow update: if (
       	isAdminForMerchant(existingData().merchantId) && 
-        (
-          hasOnlyChangedKeys(["title", "description", "photo", "maxTicketsPerPerson", "linkName"]) ||
-          (!existingData().isPublished && !hasChangedKeys(["merchantId"]))
-        )
+        !hasChangedKeys(["merchantId"])
       )
       allow delete: if (
         isAdminForMerchant(existingData().merchantId) &&
@@ -102,13 +99,7 @@ service cloud.firestore {
       allow create: if isAdminForMerchant(incomingData().merchantId)
       allow update: if (
       	isAdminForMerchant(existingData().merchantId) && 
-        (
-          hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity", "purchaserInfo"]) ||
-          (
-            !isEventPublished(existingData().eventId) && 
-            !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"])
-          )
-        )
+        !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"])
       )
       allow delete: if (
         isAdminForMerchant(existingData().merchantId) &&

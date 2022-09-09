@@ -58,7 +58,11 @@ export const notifyIfPublished = async (change, context) => {
             subject: "New Event",
         }
         logger.log({emailParams})
-        await Promise.all([sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),sendgridClient().send(emailParams), createGooglePassEventClass(googleEventData)])
+        await Promise.all([
+            sendEmail(consentUserEmails, TemplateName.NEW_EVENT, eventData),
+            sendgridClient().send(emailParams),
+            createGooglePassEventClass(googleEventData)
+        ])
     }
    } catch (err) {
     logger.error(err)

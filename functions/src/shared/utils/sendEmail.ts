@@ -15,7 +15,8 @@ export enum TemplateName {
   INVITE = "INVITE",
   TICKET_SALE_ALERT = "TICKET_SALE_ALERT",
   NEW_EVENT = "NEW_EVENT",
-  RETARGET = "RETARGET"
+  RETARGET = "RETARGET",
+  EVENT_CHANGE = "EVENT_CHANGE"
 }
 
 function addFees(productPrice, quantity, customerFee, currency) {
@@ -48,7 +49,7 @@ export async function sendEmail(
   })
 
   if(toEmails.length > 0){
-    return sendgridClient().send({
+    return sendgridClient().sendMultiple({
       to: toEmails,
       from: fromEmail,
       fromname: fromName,

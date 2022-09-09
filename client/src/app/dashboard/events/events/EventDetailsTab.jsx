@@ -6,12 +6,12 @@ import Popup from "reactjs-popup"
 import ArrayInput from "../../../../components/ArrayInput"
 import { ButtonTheme } from "../../../../components/ButtonTheme"
 import DatePicker from "../../../../components/DatePicker"
-import Form from "../../../../components/Form"
+import Form, { generateValidator } from "../../../../components/Form"
 import { TextArea } from "../../../../components/Input"
 import { Field, IntField } from "../../../../components/input/IntField"
 import MainButton from "../../../../components/MainButton"
 import { Modal } from "../../../../components/Modal"
-import { ResultType } from "../../../../components/ResultBanner"
+import ResultBanner, { ResultType } from "../../../../components/ResultBanner"
 import SimpleImagePicker from "../../../../components/SimpleImagePicker"
 import Spacer from "../../../../components/Spacer"
 import Collection from "../../../../enums/Collection"
@@ -48,7 +48,6 @@ export default function EventDetailsTab({ event, products }) {
         file.name
       )
 
-
       data.photo = { storageRef: uploadRef }
 
       promises.push(uploadImage(uploadRef, file))
@@ -80,6 +79,16 @@ export default function EventDetailsTab({ event, products }) {
   }
 
   return <div style={{ maxWidth: 500 }}>
+    {
+      event.isPublished && <div>
+        <ResultBanner 
+          resultType={ResultType.INFO} 
+          message="This event is published, so if you change the event address or start/end time, we'll email your ticket purchasers."
+        />
+        <Spacer y={3} />
+      </div>
+    }
+    
     <Form
       initialDataSource={{
         ...event,
@@ -118,7 +127,6 @@ export default function EventDetailsTab({ event, products }) {
             },
             {
               name: "address",
-              disabled: !!event.isPublished,
             },
             {
               name: "maxTicketsPerPerson",
@@ -127,12 +135,10 @@ export default function EventDetailsTab({ event, products }) {
             {
               name: "startsAt",
               input: <DatePicker />,
-              disabled: !!event.isPublished,
             },
             {
               name: "endsAt",
               input: <DatePicker />,
-              disabled: !!event.isPublished,
             },
             {
               name: "publishScheduledAt",
@@ -145,6 +151,12 @@ export default function EventDetailsTab({ event, products }) {
             },
           ],
         },
+      ]}
+      validators={[
+        generateValidator(
+          (data) => data.startsAt < data.endsAt,
+          "The start date of your event must be before the end date."
+        ),
       ]}
       onSubmit={handleUpdateEvent}
       submitTitle="Save changes"
@@ -177,8 +189,7 @@ export default function EventDetailsTab({ event, products }) {
                   <Spacer y={2} />
                   <p className="text-body-faded">
                     Once you publish an event, it'll become visible to
-                    customers, and you won't be able to edit the start and
-                    end date or address.
+                    customers.
                   </p>
                   <Spacer y={4} />
                   <MainButton

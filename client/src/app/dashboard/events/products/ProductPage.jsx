@@ -2,7 +2,7 @@ import { deleteDoc, updateDoc } from "firebase/firestore"
 import { useNavigate, useParams } from "react-router-dom"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import DatePicker from "../../../../components/DatePicker"
-import Form from "../../../../components/Form"
+import Form, { generateValidator } from "../../../../components/Form"
 import { TextArea } from "../../../../components/Input"
 import {
   FieldDecorator,
@@ -28,17 +28,10 @@ export default function ProductPage({ event, products, merchant }) {
   const isPublished = event?.isPublished
 
   const handleUpdateProduct = async (data) => {
-    let update
-
-    if (isPublished) {
-      const { title, description, isAvailable, purchaserInfo } = data
-      update = { title, description, isAvailable, purchaserInfo }
-    } else {
-      update = {
-        ...data,
-        price: parseFloat(data.price) * 100,
-        capacity: parseInt(data.capacity, 10),
-      }
+    const update = {
+      ...data,
+      price: parseFloat(data.price) * 100,
+      capacity: parseInt(data.capacity, 10),
     }
 
     await updateDoc(docRef, update)
@@ -78,6 +71,7 @@ export default function ProductPage({ event, products, merchant }) {
             initialDataSource={{
               ...product,
               releasesAt: dateFromTimestamp(product.releasesAt),
+              releaseEndsAt: dateFromTimestamp(product.releaseEndsAt),
               earliestEntryAt: dateFromTimestamp(product.earliestEntryAt),
               latestEntryAt: dateFromTimestamp(product.latestEntryAt),
               price: product.price / 100,
@@ -97,14 +91,12 @@ export default function ProductPage({ event, products, merchant }) {
                         prefix={getCurrencySymbol(merchant.currency)}
                       />
                     ),
-                    disabled: !!isPublished,
                   },
                   {
                     name: "capacity",
                     label: "Maximum capacity",
                     explanation: "Once this number of tickets has been sold for this ticket type, it will show as sold out.",
                     input: <IntField />,
-                    disabled: !!isPublished,
                   },
                   {
                     name: "description",
@@ -119,10 +111,17 @@ export default function ProductPage({ event, products, merchant }) {
                   },
                   {
                     name: "releasesAt",
-                    label: "Release date",
+                    label: "Release start date",
+                    explanation: "Set a time when this ticket becomes available for purchase. If you leave this blank, the ticket will be available when the event is published.",
                     input: <DatePicker />,
                     required: false,
-                    disabled: !!isPublished,
+                  },
+                  {
+                    name: "releaseEndsAt",
+                    label: "Release end date",
+                    explanation: "Set a time when this ticket stops being available for purchase. If you leave this blank, the ticket will be available until the event ends.",
+                    input: <DatePicker />,
+                    required: false,
                   },
                   {
                     name: "earliestEntryAt",
@@ -151,6 +150,16 @@ export default function ProductPage({ event, products, merchant }) {
                   },
                 ],
               },
+            ]}
+            validators={[
+              generateValidator(
+                (data) => !data.releasesAt || !data.releaseEndsAt || data.releasesAt < data.releaseEndsAt,
+                "The release start date of your ticket type must be before the release end date."
+              ),
+              generateValidator(
+                (data) => !data.earliestEntryAt || !data.latestEntryAt || data.earliestEntryAt < data.latestEntryAt,
+                "The earliest entry time of your ticket type must be before the latest entry time."
+              ),
             ]}
             onSubmit={handleUpdateProduct}
             submitTitle="Save changes"
