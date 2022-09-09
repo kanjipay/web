@@ -87,29 +87,6 @@ export default function CreateProductPage({ event, products, merchant }) {
                     explanation: "Once this number of tickets has been sold for this ticket type, it will show as sold out.",
                     input: <IntField />,
                   },
-                  // {
-                  //   name: "releasesAt",
-                  //   label: "Release date",
-                  //   explanation: "Set a date for the ticket to become available. Leave this blank to make tickets available immediately (as long as the event is published).",
-                  //   required: false,
-                  //   input: <DatePicker />,
-                  // },
-                  // {
-                  //   name: "earliestEntryAt",
-                  //   label: "Earliest entry",
-                  //   explanation:
-                  //     "Set the earliest time event goers will be admitted with this ticket.",
-                  //   input: <DatePicker />,
-                  //   required: false,
-                  // },
-                  // {
-                  //   name: "latestEntryAt",
-                  //   label: "Latest entry",
-                  //   explanation:
-                  //     "Set the latest time event goers will be admitted with this ticket.",
-                  //   input: <DatePicker />,
-                  //   required: false,
-                  // },
                 ],
               },
             ]}

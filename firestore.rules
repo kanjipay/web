@@ -99,13 +99,7 @@ service cloud.firestore {
       allow create: if isAdminForMerchant(incomingData().merchantId)
       allow update: if (
       	isAdminForMerchant(existingData().merchantId) && 
-        (
-          hasOnlyChangedKeys(["title", "description", "sortOrder", "isAvailable", "capacity", "purchaserInfo", "price"]) ||
-          (
-            !isEventPublished(existingData().eventId) && 
-            !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"])
-          )
-        )
+        !hasChangedKeys(["merchantId", "eventId", "reservedCount", "soldCount"])
       )
       allow delete: if (
         isAdminForMerchant(existingData().merchantId) &&

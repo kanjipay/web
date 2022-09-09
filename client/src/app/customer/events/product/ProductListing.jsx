@@ -16,14 +16,20 @@ export default function ProductListing({
   ...props
 }) {
   const [isHovering, setIsHovering] = useState(false)
-  const isSoldOut = product.soldCount + product.reservedCount >= product.capacity
+  
+  const currDate = new Date()
   const releaseDate = dateFromTimestamp(product.releasesAt)
-  const isReleased = releaseDate < new Date()
+  const releaseEndDate = dateFromTimestamp(product.releaseEndsAt)
+
+  const isUnreleased = !!releaseDate && releaseDate > currDate
+  const isExpired = !!releaseEndDate && releaseEndDate < currDate
+  const isSoldOut = product.soldCount + product.reservedCount >= product.capacity
+
   const isAvailable =
     product.isAvailable &&
-    product.soldCount + product.reservedCount < product.capacity &&
-    isReleased &&
-    isPublished
+    !isSoldOut &&
+    !isUnreleased &&
+    !isExpired
   const backgroundColor = isAvailable ? 
     (isHovering ? Colors.OFF_BLACK_LIGHT : Colors.BLACK) : 
     Colors.OFF_WHITE
@@ -32,13 +38,16 @@ export default function ProductListing({
 
   let message
 
-  if (!isPublished) {
-    message = "Not published"
-  } else if (isAvailable) {
+  if (isAvailable) {
     message = formatCurrency(product.price, currency)
-  } else if (!isReleased) {
+  } else if (isUnreleased) {
     message = `Releases ${format(releaseDate, "MMM do")} at ${format(
       releaseDate,
+      "H:mm"
+    )}`
+  } else if (isExpired) {
+    message = `Release ended ${format(releaseEndDate, "MMM do")} at ${format(
+      releaseEndDate,
       "H:mm"
     )}`
   } else if (isSoldOut) {

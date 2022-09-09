@@ -142,17 +142,18 @@ export default function OrderConfirmationPage({ user }) {
           <Spacer y={3} />
           <h3 className="header-s">View my tickets</h3>
           <Spacer y={2} />
-          <div>
-          <a href={order.googlePassUrl} >
-            <MainButton 
-              title="Add to Google Wallet"
-              icon="/img/google.png"
-              buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-            />
-          </a>
-
-           <Spacer y={2} />
-          </div>
+          {
+            !!order.googlePassUrl && <div>
+              <a href={order.googlePassUrl} >
+                <MainButton
+                  title="Add to Google Wallet"
+                  icon="/img/google.png"
+                  buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+                />
+              </a>
+              <Spacer y={2} />
+            </div>
+          }
   
           {
             isAppleOS && <div>

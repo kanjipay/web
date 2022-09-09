@@ -6,7 +6,7 @@ import Popup from "reactjs-popup"
 import ArrayInput from "../../../../components/ArrayInput"
 import { ButtonTheme } from "../../../../components/ButtonTheme"
 import DatePicker from "../../../../components/DatePicker"
-import Form from "../../../../components/Form"
+import Form, { generateValidator } from "../../../../components/Form"
 import { TextArea } from "../../../../components/Input"
 import { Field, IntField } from "../../../../components/input/IntField"
 import MainButton from "../../../../components/MainButton"
@@ -151,6 +151,12 @@ export default function EventDetailsTab({ event, products }) {
             },
           ],
         },
+      ]}
+      validators={[
+        generateValidator(
+          (data) => data.startsAt < data.endsAt,
+          "The start date of your event must be before the end date."
+        ),
       ]}
       onSubmit={handleUpdateEvent}
       submitTitle="Save changes"
