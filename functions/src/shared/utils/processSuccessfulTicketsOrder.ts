@@ -85,7 +85,6 @@ export async function processSuccessfulTicketsOrder(
     // if still errors, log the error but don't abort payment attempt
     catch (error){
       logger.error(`failed to create default ticket ${{googleTicketDetails, error}}`)
-      googlePassUrl = await createGooglePassUrl(eventId, googleTicketDetails)  
     }
   }
   logger.log(`googlePassUrl ${googlePassUrl}`)
