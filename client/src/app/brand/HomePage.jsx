@@ -52,6 +52,10 @@ export default function HomePage() {
     <div style={{ maxWidth: 1200, padding: "0 16px", margin: "auto" }}>
       <Helmet>
         <title>Mercado - Putting event runners first</title>
+        <meta property="og:title" content="Mercado - putting event runners first" />
+        <meta name="description" content="Mercado helps artists and organisers get paid fairly for their work. We're the only ticketing platform that gives most of our booking fee back to the event organiser." />
+        <meta property="og:description" content="Mercado helps artists and organisers get paid fairly for their work. We're the only ticketing platform that gives most of our booking fee back to the event organiser." />
+        <meta property="og:type" content="website" />
       </Helmet>
 
       <Spacer y={isMobile ? 16 : 20} />
