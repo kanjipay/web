@@ -108,7 +108,6 @@ async function  createGooglePassTicket(classId: string, ticketDetail: GoogleTick
 }
 
 export async function createGooglePassUrl(classId: string, ticketDetails: Array<GoogleTicketDetail>) {
-  try {
     const {credentials, issuerId} = getCredentials()
     const {client_email, private_key} = credentials
     const promises = []
@@ -132,9 +131,5 @@ export async function createGooglePassUrl(classId: string, ticketDetails: Array<
     const googlePassLink =  `https://pay.google.com/gp/v/save/${token}`;
     logger.log({googlePassLink});
     return googlePassLink
-  }
-  catch (error) {
-    logger.error(error);
-    return ''
-  }
+
 }

@@ -71,7 +71,22 @@ export async function processSuccessfulTicketsOrder(
     updateProduct,
   ])
   const boughtAt = new Date()
-  const googlePassUrl = await createGooglePassUrl(eventId, googleTicketDetails)
+  let googlePassUrl: string = ''
+  // try and make ticket with specific event id details
+  try {
+    googlePassUrl = await createGooglePassUrl(eventId, googleTicketDetails)
+  }
+  // if event doesn't exist, fall back to the 'default' Mercado ticket class
+  catch (error) {
+    try {
+      logger.log(`failed to create ticket ${{eventId, googleTicketDetails, error}}`)
+      googlePassUrl = await createGooglePassUrl('default', googleTicketDetails)  
+    }
+    // if still errors, log the error but don't abort payment attempt
+    catch (error){
+      logger.error(`failed to create default ticket ${{googleTicketDetails, error}}`)
+    }
+  }
   logger.log(`googlePassUrl ${googlePassUrl}`)
   await db()
     .collection(Collection.ORDER)
