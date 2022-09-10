@@ -72,6 +72,7 @@ export async function processSuccessfulTicketsOrder(
   ])
   const boughtAt = new Date()
   let googlePassUrl: string = ''
+  
   // try and make ticket with specific event id details
   try {
     googlePassUrl = await createGooglePassUrl(eventId, googleTicketDetails)
