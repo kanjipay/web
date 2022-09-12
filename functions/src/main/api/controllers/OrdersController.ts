@@ -616,6 +616,12 @@ export class OrdersController extends BaseController {
         .get()
 
       const ticketIds = ticketSnapshot.docs.map(doc => doc.id)
+
+      if (ticketIds.length === 0) {
+        next(new HttpError(HttpStatusCode.BAD_REQUEST, "Tickets not found"))
+        return
+      }
+
       const eventId = ticketSnapshot.docs[0].data().eventId
 
       const { event, eventError } = await fetchDocument(Collection.EVENT, eventId)
