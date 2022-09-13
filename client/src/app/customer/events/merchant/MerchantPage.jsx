@@ -19,8 +19,9 @@ export default function MerchantPage({ merchant, events }) {
   const contentWidth = Math.min(width, 500)
   const headerImageHeight = contentWidth / 2
 
-  const upcomingEvents = events?.filter(e => dateFromTimestamp(e.endsAt) > new Date())
-  const pastEvents = events?.filter(e => dateFromTimestamp(e.endsAt) <= new Date())
+  const publishedEvents = events?.filter(e => e.isPublished)
+  const upcomingEvents = publishedEvents?.filter(e => dateFromTimestamp(e.endsAt) > new Date())
+  const pastEvents = publishedEvents?.filter(e => dateFromTimestamp(e.endsAt) <= new Date())
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("TicketMerchant", { merchantId })
@@ -47,8 +48,6 @@ export default function MerchantPage({ merchant, events }) {
           /> :
           <ShimmerThumbnail height={headerImageHeight} />
       }
-
-      
 
       <Spacer y={3} />
 

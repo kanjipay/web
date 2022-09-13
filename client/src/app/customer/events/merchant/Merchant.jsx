@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 import { Route, Routes, useLocation, useParams } from "react-router-dom"
 import Cross from "../../../../assets/icons/Cross"
 import IconPage from "../../../../components/IconPage"
-import LoadingPage from "../../../../components/LoadingPage"
 import Collection from "../../../../enums/Collection"
 import { Colors } from "../../../../enums/Colors"
 import Event from "../event/Event"
@@ -34,7 +33,6 @@ export default function Merchant({ user }) {
     return Collection.EVENT.queryOnChange(
       setEvents,
       where("merchantId", "==", merchantId),
-      where("isPublished", "==", true),
       orderBy("endsAt", "desc")
     )
   }, [merchantId])

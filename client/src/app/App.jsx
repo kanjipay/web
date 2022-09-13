@@ -15,11 +15,14 @@ import EventShortLinks from "./customer/events/EventShortLinks"
 import SalesSender from "./SalesSender"
 import smoothscroll from 'smoothscroll-polyfill';
 import ErrorPage from "./shared/ErrorPage"
+import { useRef } from "react"
+import TawkMessengerReact from '@tawk.to/tawk-messenger-react';
 
 smoothscroll.polyfill();
 
 export default function App() {
   const location = useLocation()
+  const chatRef = useRef()
 
   useEffect(() => {
     const userAgent = UAParser(navigator.userAgent)
@@ -46,26 +49,43 @@ export default function App() {
     AnalyticsManager.main.logEvent(AnalyticsEvent.INITIALISE_APP)
   }, [])
 
-  return (
-    <Routes>
-      <Route path="/xlx-v" element={<SalesSender />} />
-      <Route path="/events/*" element={<EventsApp />} />
-      <Route path="/e/:merchantLinkName" element={<EventShortLinks />} />
-      <Route path="/e/:merchantLinkName/:eventLinkName" element={<EventShortLinks />} />
-      <Route path="/checkout/*" element={<Checkout />} />
-      <Route path="/link/:linkId" element={<OneTimeLinkPage />} />
-      <Route
-        path="/l/:attributionLinkId"
-        element={<AttributionLinkPage />}
-      />
-      <Route path="/auth/*" element={<Auth />} />
-      <Route path="/error" element={<ErrorPage />} />
-      <Route path="/dashboard/*" element={<Dashboard />} />
-      <Route path="/ticket-checker/*" element={<TicketChecker />} />
-      <Route path="/legal/*" element={<Legal />} />
+  const tawkData = JSON.parse(process.env.REACT_APP_TAWK)
 
-      {/* Brand pages */}
-      <Route path="*" element={<Brand />} />
-    </Routes>
+  const hideWidget = chatRef.current?.hideWidget
+
+  useEffect(() => {
+    if (hideWidget) {
+      hideWidget()
+    }
+  }, [hideWidget])
+
+  return (
+    <div>
+      <TawkMessengerReact
+        ref={chatRef}
+        propertyId={tawkData.propertyId}
+        widgetId={tawkData.widgetId}
+      />
+      <Routes>
+        <Route path="/xlx-v" element={<SalesSender />} />
+        <Route path="/events/*" element={<EventsApp />} />
+        <Route path="/e/:merchantLinkName" element={<EventShortLinks />} />
+        <Route path="/e/:merchantLinkName/:eventLinkName" element={<EventShortLinks />} />
+        <Route path="/checkout/*" element={<Checkout />} />
+        <Route path="/link/:linkId" element={<OneTimeLinkPage />} />
+        <Route
+          path="/l/:attributionLinkId"
+          element={<AttributionLinkPage />}
+        />
+        <Route path="/auth/*" element={<Auth />} />
+        <Route path="/error" element={<ErrorPage />} />
+        <Route path="/dashboard/*" element={<Dashboard />} />
+        <Route path="/ticket-checker/*" element={<TicketChecker />} />
+        <Route path="/legal/*" element={<Legal />} />
+
+        {/* Brand pages */}
+        <Route path="*" element={<Brand chatRef={chatRef} />} />
+      </Routes>
+    </div>
   )
 }

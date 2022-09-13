@@ -29,7 +29,7 @@ export default function HomePage() {
       where("isPublished", "==", true),
       where("startsAt", ">", new Date()),
       orderBy("startsAt", "asc"),
-      limit(3)
+      limit(5)
     )
   }, [])
 
@@ -111,7 +111,7 @@ export default function HomePage() {
       <div style={{ display: isMobile ? "block" : "flex", columnGap: 24 }}>
         {
           events ?
-            events.map((event) => {
+            events.filter(e => e.isDiscoverable !== false).slice(0, 3).map((event) => {
               const listing = (
                 <EventListing
                   key={event.id}

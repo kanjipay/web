@@ -6,6 +6,7 @@ import { Colors } from "../../enums/Colors"
 import useWindowSize from "../../utils/helpers/useWindowSize"
 import NotFound from "../shared/NotFoundPage"
 import HomePage from "./HomePage"
+import { useEffect } from "react"
 
 export function opacityToAlphaHex(opacity) {
   let boundedOpacity
@@ -30,9 +31,22 @@ export function opacityToAlphaHex(opacity) {
   return alphaHexString
 }
 
-export function Brand() {
+export function Brand({ chatRef }) {
   const { width } = useWindowSize()
   const isMobile = width < 750
+  const showWidget = chatRef.current?.showWidget
+
+  useEffect(() => {
+    const chatElement = chatRef.current
+
+    if (showWidget) {
+      showWidget()
+    }
+
+    return () => {
+      chatElement.hideWidget()
+    }
+  }, [showWidget, chatRef])
   
   return (
     <div>

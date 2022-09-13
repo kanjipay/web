@@ -111,18 +111,25 @@ export default function EventPage({ merchant, event, products, artists }) {
   const [isTicketsButtonVisible, setIsTicketsButtonVisible] = useState(!hasAlreadyHappened)
 
   useEffect(() => {
-    if (hasAlreadyHappened) { return }
+    if (hasAlreadyHappened || !event?.isPublished) { return }
 
-    const target = document.querySelector('#get-tickets')
-    const observer = new IntersectionObserver(entries => {
-      const shouldTicketsButtonBeVisible = !entries[0].isIntersecting && !hasAlreadyHappened
+    try {
+      const target = document.querySelector('#get-tickets')
 
-      if (shouldTicketsButtonBeVisible !== isTicketsButtonVisible) {
-        setIsTicketsButtonVisible(shouldTicketsButtonBeVisible)
-      }
-    })
+      const observer = new IntersectionObserver(entries => {
+        const shouldTicketsButtonBeVisible = !entries[0].isIntersecting && !hasAlreadyHappened
 
-    observer.observe(target)
+        if (shouldTicketsButtonBeVisible !== isTicketsButtonVisible) {
+          setIsTicketsButtonVisible(shouldTicketsButtonBeVisible)
+        }
+      })
+
+      observer.observe(target)
+    } catch (err) {
+      
+    }
+
+    
   })
 
   useEffect(() => {
@@ -251,48 +258,54 @@ export default function EventPage({ merchant, event, products, artists }) {
 
         <Spacer y={4} />
 
-        {hasAlreadyHappened ? (
-          <p>
+        {
+          hasAlreadyHappened && <p>
             This event ended on{" "}
             {format(dateFromTimestamp(event.endsAt), "do MMM")} at{" "}
             {format(dateFromTimestamp(event.endsAt), "H:mm")}.
           </p>
-        ) : (
-          <div>
+        }
+
+        {
+          !hasAlreadyHappened && !event?.isPublished && <p>This event isn't published yet.</p>
+        }
+
+        {
+          !hasAlreadyHappened && event?.isPublished && <div>
             <h2 className="header-m" id="get-tickets">Get tickets</h2>
             <Spacer y={2} />
             {
               products && event ?
                 <div>
-                    {!event.isPublished && (
-                      <div>
-                        <p>
-                          {event.publishScheduledAt
-                            ? `Tickets to this event will become available on ${format(
-                              dateFromTimestamp(event.endsAt),
-                              "do MMM"
-                            )} at ${format(dateFromTimestamp(event.endsAt), "H:mm")}.`
-                            : "The event organiser hasn't made tickets available yet."}
-                        </p>
-                        <Spacer y={2} />
-                      </div>
-                    )}
-                    {products
-                      .filter(product => !product.isPrivate)
-                      .map((product) => {
-                        return (
-                          <div key={product.id}>
-                            <ProductListing
-                              product={product}
-                              currency={merchant.currency}
-                              processingFee={processingFee}
-                              isPublished={event.isPublished}
-                            />
-                            <Spacer y={1} />
-                          </div>
-                        )
-                      })
-                    }
+                  {!event.isPublished && (
+                    <div>
+                      <p>
+                        {event.publishScheduledAt
+                          ? `Tickets to this event will become available on ${format(
+                            dateFromTimestamp(event.endsAt),
+                            "do MMM"
+                          )} at ${format(dateFromTimestamp(event.endsAt), "H:mm")}.`
+                          : "The event organiser hasn't made tickets available yet."}
+                      </p>
+                      <Spacer y={2} />
+                    </div>
+                  )}
+                  {products
+                    .filter(product => !product.isPrivate)
+                    .map((product) => {
+                      return (
+                        <div key={product.id}>
+                          <ProductListing
+                            product={product}
+                            currency={merchant.currency}
+                            processingFee={processingFee}
+                            isPublished={event.isPublished}
+                          />
+                          <Spacer y={1} />
+                        </div>
+                      )
+                    })
+                  }
                 </div> :
                 <div>
                   <ShimmerThumbnail height={60} rounded={true} />
@@ -300,9 +313,8 @@ export default function EventPage({ merchant, event, products, artists }) {
                   <ShimmerThumbnail height={60} rounded={true} />
                 </div>
             }
-            
           </div>
-        )}
+        }
         <Spacer y={8} />
       </div>
     </div>

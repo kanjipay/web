@@ -9,6 +9,7 @@
     "@sentry/tracing": "^7.7.0",
     "@stripe/react-stripe-js": "^1.8.1",
     "@stripe/stripe-js": "^1.31.0",
+    "@tawk.to/tawk-messenger-react": "^2.0.1",
     "@walletpass/pass-js": "^6.9.1",
     "amplitude-js": "^8.17.0",
     "axios": "^0.26.0",

@@ -91,6 +91,20 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "endsAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Event",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "merchantId",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "startsAt",
           "order": "DESCENDING"
         }
