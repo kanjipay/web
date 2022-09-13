@@ -13,18 +13,18 @@ async function findConcludedEvents(){
       .where("endsAt", ">", subDays(new Date(),1))
       .where("isPublished", "==", true)
       .get()
-    logger.log("Got concluded events", {
-      concludedEvents: concludedEventSnapshot.docs.length,
-    })
+    logger.log(`Got concluded events n ${concludedEventSnapshot.docs.length}`)
     return concludedEventSnapshot
 }
 
 async function sendEventEmails(eventDocs){
   let messageParams = []
+  logger.log('sending event emails')
   eventDocs.forEach(event=>{
     const {merchantId, title} = event.data()
     const eventId = event.id
     const emailText =  `New event finished \n env ${process.env.ENVIRONMENT} \n merchant ${merchantId} \n event ${eventId} \n description ${title} \n`
+    logger.log({emailText})
     const messageParam = {
         to: "team@mercadopay.co",
         from: "team@mercadopay.co",
@@ -35,6 +35,7 @@ async function sendEventEmails(eventDocs){
     messageParams.push(messageParam)
   })
   if (messageParams.length > 0){
+    logger.log('sending emails')
     await sendgridClient().sendMultiple(messageParams)
   }
 }
@@ -44,7 +45,7 @@ export const createSalesSummary = async () => {
     logger.log("Find events to send summary emails")
     const concludedEvents = await findConcludedEvents()
     logger.log({concludedEvents})
-    await sendEventEmails(concludedEvents)
+    await sendEventEmails(concludedEvents.docs)
     logger.log('done')
   } catch (err) {
     logger.error(err)
