@@ -81,7 +81,7 @@ function prepareEmailData(retargetOrders, notRecentlyContacted, recentPurchasers
     return {messageArray, userIds}
 }
 
-export const retargetOrders = async (context) => {
+export const retargetOrders = async () => {
   try {
     logger.log("Find Orders for Retargeting Email")
     const retargetEvents = await findRetargetEvents()
