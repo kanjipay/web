@@ -38,7 +38,7 @@ export const cron10m = euFunctions
 
 export const cronDaily = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
-  .pubsub.schedule("every 10 minutes")
+  .pubsub.schedule("0 11 * * *")
   .timeZone('Europe/London')
   .onRun(cronFunctionDaily)
 
