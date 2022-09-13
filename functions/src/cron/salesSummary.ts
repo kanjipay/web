@@ -2,12 +2,7 @@ import { logger } from "firebase-functions/v1"
 import Collection from "../shared/enums/Collection"
 import { db } from "../shared/utils/admin"
 import { subDays } from "date-fns"
-import { firestore } from "firebase-admin"
-import { TemplateName } from "../shared/utils/sendEmail"
 import { sendgridClient } from "../shared/utils/sendgridClient"
-import OrderStatus from "../shared/enums/OrderStatus"
-import PaymentAttemptStatus from "../shared/enums/PaymentAttemptStatus"
-import {BigQuery} from '@google-cloud/bigquery';
 
 
 async function findConcludedEvents(){
