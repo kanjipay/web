@@ -294,7 +294,8 @@ export class PaymentAttemptsController extends BaseController {
       if (!isPending) {
         const [, error] = await processPaymentUpdate(
           paymentAttemptId,
-          paymentAttemptStatus
+          paymentAttemptStatus,
+          "CREZCO"
         )
         if (error) {
           next(error)

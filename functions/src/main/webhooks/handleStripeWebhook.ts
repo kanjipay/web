@@ -53,7 +53,8 @@ export const handleStripePaymentUpdate = (usesConnect: boolean) => {
       const [, error] = await processPaymentUpdate(
         paymentAttempt.id,
         paymentAttemptStatus,
-        paymentAttempt.orderId
+        "STRIPE",
+        paymentAttempt.orderId,
       )
   
       if (error) {
