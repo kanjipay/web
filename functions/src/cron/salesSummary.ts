@@ -36,16 +36,19 @@ async function createEventData(eventDoc){
   let totalStripeFees = 0
   let totalMerchantBookingFees = 0
   let totalMercadoBookingFees = 0
+  let totalAlreadyPaidOut = 0
   eventDocs.forEach((eventDoc)=>{
     const {customerFee, mercadoFee, orderItems, paymentType} = eventDoc.data()
-    if(paymentType != 'CREZCO'){
+    if(paymentType == 'CREZCO'){
       totalStripeFees += STRIPE_FIXED_FEE
     } // once not missing for any live events, change to == STRIPE
     orderItems.forEach((orderItem) => {
       const {price, quantity} = orderItem
       const value = price * quantity
       totalFaceValue += value
-      if(paymentType != 'CREZCO'){
+      if(paymentType == 'CREZCO'){
+        totalAlreadyPaidOut += value * (1+customerFee)
+      }else{
         totalStripeFees += (value * STRIPE_VARIABLE_FEE)
       } // once not missing for any live events, change to == STRIPE
       const merchantBookingFee = (customerFee-mercadoFee) * value
@@ -56,6 +59,7 @@ async function createEventData(eventDoc){
     })
   })
   const merchantEarnings = totalFaceValue + totalMerchantBookingFees - totalStripeFees
+  const toPayOut = totalAlreadyPaidOut - merchantEarnings
   const eventDetails = {env:process.env.ENVIRONMENT,
                         merchantId,
                         eventId,
@@ -65,7 +69,8 @@ async function createEventData(eventDoc){
                         totalFaceValue,
                         totalStripeFees,
                         totalMerchantBookingFees,
-                        totalMercadoBookingFees
+                        totalMercadoBookingFees, 
+                        toPayOut
                       }
   const emailText =  `New event finished 
                         ${JSON.stringify(eventDetails)}}`
