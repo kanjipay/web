@@ -11,10 +11,12 @@ const STRIPE_VARIABLE_FEE = 0.14
 
 async function findConcludedEvents(){
     // get events finished within last 24 hours
+    const timeNow = new Date()
+    logger.log(`time now ${timeNow}`)
     const concludedEventSnapshot = await db()
       .collection(Collection.EVENT)
-      .where("endsAt", "<", new Date())
-      .where("endsAt", ">", subDays(new Date(),1))
+      .where("endsAt", "<", timeNow)
+      .where("endsAt", ">", subDays(timeNow,1))
       .where("isPublished", "==", true)
       .get()
     logger.log(`Got concluded events n ${concludedEventSnapshot.docs.length}`)
@@ -46,8 +48,10 @@ async function createEventData(eventDoc){
       if(paymentType != 'CREZCO'){
         totalStripeFees += (value * STRIPE_VARIABLE_FEE)
       } // once not missing for any live events, change to == STRIPE
-      totalMerchantBookingFees += (customerFee-mercadoFee) * value
-      totalMercadoBookingFees += mercadoFee * value
+      const merchantBookingFee = (customerFee-mercadoFee) * value
+      const mercadoBookingFee = mercadoFee * value
+      totalMerchantBookingFees += merchantBookingFee  || 0
+      totalMercadoBookingFees +=  mercadoBookingFee || 0
       totalTickets += quantity
     })
   })
@@ -63,9 +67,8 @@ async function createEventData(eventDoc){
                         totalMerchantBookingFees,
                         totalMercadoBookingFees
                       }
-
   const emailText =  `New event finished 
-                        ${eventDetails}`
+                        ${JSON.stringify(eventDetails)}}`
   logger.log({emailText})
   const messageParam = {
       to: "team@mercadopay.co",
@@ -73,16 +76,21 @@ async function createEventData(eventDoc){
       text: emailText,
       subject: "New Event finished",
   }
+  logger.log({messageParam})
   return messageParam
 }
 async function sendEventEmails(eventDocs){
   let messageParams = []
   logger.log('sending event emails')
-  eventDocs.forEach(eventDoc=>{
-    messageParams.push(createEventData(eventDoc))
-  })
+  let messageParam
+  await Promise.all(eventDocs.map(async (eventDoc) => {
+    messageParam = await createEventData(eventDoc)
+    logger.log({messageParam})
+    messageParams.push(messageParam)
+  }))
   if (messageParams.length > 0){
     logger.log('sending emails')
+    logger.log({messageParams})
     await sendgridClient().sendMultiple(messageParams)
   }
 }
