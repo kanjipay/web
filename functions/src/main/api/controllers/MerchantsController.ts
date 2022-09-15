@@ -97,7 +97,7 @@ export class MerchantsController extends BaseController {
           )
         }))
       } catch (err) {
-        console.log(err)
+        logger.error(err)
       }
       
       await Promise.all([
