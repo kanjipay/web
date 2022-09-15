@@ -6,7 +6,7 @@ import { addDays } from "date-fns"
 import { firestore } from "firebase-admin"
 import { fetchDocument } from "../../../../shared/utils/fetchDocument"
 import { sendInvites } from "../../../../shared/utils/sendEmail"
-import { fetchDocumentsInArray } from "../../../../shared/utils/fetchDocumentsInArray"
+import { getMerchantUsers } from "../../../../shared/utils/getMerchantUsers"
 
 export class MerchantUsersController extends BaseController {
   sendInvites = async (req, res, next) => {
@@ -75,23 +75,8 @@ export class MerchantUsersController extends BaseController {
   getUsers = async (req, res, next) => {
     try {
       const { merchantId } = req.params
+      const users = await getMerchantUsers(merchantId)
 
-      const membershipsSnapshot = await db()
-        .collection(Collection.MEMBERSHIP)
-        .where("merchantId", "==", merchantId)
-        .get()
-
-      if (membershipsSnapshot.docs.length === 0) {
-        return []
-      }
-
-      const userIds = membershipsSnapshot.docs.map((doc) => doc.data().userId)
-
-      const users = await fetchDocumentsInArray(
-        db().collection(Collection.USER),
-        firestore.FieldPath.documentId(),
-        userIds
-      )
 
       res.status(200).json(users)
     } catch (err) {

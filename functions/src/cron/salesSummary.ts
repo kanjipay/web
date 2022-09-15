@@ -4,6 +4,7 @@ import { db } from "../shared/utils/admin"
 import { subDays } from "date-fns"
 import { sendgridClient } from "../shared/utils/sendgridClient"
 import OrderStatus from "../shared/enums/OrderStatus"
+import { getMerchantUsers } from "../shared/utils/getMerchantUsers"
 
 const STRIPE_FIXED_FEE = 0.2
 
@@ -23,8 +24,35 @@ async function findConcludedEvents(){
     return concludedEventSnapshot
 }
 
+async function sendOrganiserEmail(merchantId){
+  const merchantUserDocs = await getMerchantUsers(merchantId)
+  const merchantEmails = merchantUserDocs.map((user) => {user.email})
+  const text = `Congratulations for putting on your event. 
+
+  Our payment processing partner, Stripe, pays out within 7 working days of the event and we transfer the funds shortly afterwards.
+  
+  We will pay out to the account details provided when you registered with us. Please get in contact if you would like to change these.
+
+  If you have connected to Stripe Connect, then you will get paid out directly by Stripe.
+
+  Regards,
+  
+  Mercado`
+
+  const messageParam = {
+    to: merchantEmails,
+    from: "team@mercadopay.co",
+    text,
+    subject: "New Event finished",
+  }
+  sendgridClient().send(messageParam)
+}
+
 async function createEventData(eventDoc){
   const {merchantId, title} = eventDoc.data()
+  // send an external email
+  await sendOrganiserEmail(merchantId)
+  // for now, send an internal email with billing calculations while we check the figures are correct
   const eventId = eventDoc.id
   const eventDocs = await db()
   .collection(Collection.ORDER)
