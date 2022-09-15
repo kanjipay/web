@@ -26,25 +26,28 @@ async function findConcludedEvents(){
 
 async function sendOrganiserEmail(merchantId){
   const merchantUserDocs = await getMerchantUsers(merchantId)
-  const merchantEmails = merchantUserDocs.map((user) => {user.email})
+  const merchantEmails = merchantUserDocs.map((user) => {return user.email})
+  logger.log({merchantUserDocs, merchantEmails})
   const text = `Congratulations for putting on your event. 
 
-  Our payment processing partner, Stripe, pays out within 7 working days of the event and we transfer the funds shortly afterwards.
+Our payment processing partner, Stripe, pays out within 7 working days of the event and we transfer the funds shortly afterwards.
   
-  We will pay out to the account details provided when you registered with us. Please get in contact if you would like to change these.
+We will pay out to the account details provided when you registered with us. Please get in contact if you would like to change these.
 
-  If you have connected to Stripe Connect, then you will get paid out directly by Stripe.
+If you have connected to Stripe Connect, then you will get paid out directly by Stripe.
 
-  Regards,
+Regards,
   
-  Mercado`
+Mercado`
 
   const messageParam = {
-    to: merchantEmails,
+    to: [...merchantEmails],
     from: "team@mercadopay.co",
     text,
     subject: "New Event finished",
   }
+  logger.log('sending merchant message')
+  logger.log({merchantMessage:messageParam})
   sendgridClient().send(messageParam)
 }
 
