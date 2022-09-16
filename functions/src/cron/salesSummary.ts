@@ -29,7 +29,7 @@ async function sendOrganiserEmail(merchantId, eventName){
   const merchantEmails = merchantUserDocs.map((user) => {return user.email})
   logger.log({merchantUserDocs, merchantEmails})
   const text = `Hi, 
-  
+
 Congratulations for putting on your event ${eventName}. 
 
 Our payment processing partner, Stripe, pays out within 7 working days of the event and we transfer the funds shortly afterwards.
@@ -72,14 +72,14 @@ async function createEventData(eventDoc){
   let totalAlreadyPaidOut = 0
   eventDocs.forEach((eventDoc)=>{
     const {customerFee, mercadoFee, orderItems, paymentType} = eventDoc.data()
-    if(paymentType == 'CREZCO'){
+    if(paymentType != 'OPEN_BANKING'){
       totalStripeFees += STRIPE_FIXED_FEE
     } // once not missing for any live events, change to == STRIPE
     orderItems.forEach((orderItem) => {
       const {price, quantity} = orderItem
       const value = price * quantity
       totalFaceValue += value
-      if(paymentType == 'CREZCO'){
+      if(paymentType == 'OPEN_BANKING'){
         totalAlreadyPaidOut += value * (1+customerFee)
       }else{
         totalStripeFees += (value * STRIPE_VARIABLE_FEE)
