@@ -86,7 +86,9 @@ export const handleCrezcoWebhook = async (req, res, next) => {
     const [, error] = await processPaymentUpdate(
       paymentAttempt.id,
       paymentAttemptStatus,
-      paymentAttempt.orderId
+      "OPEN_BANKING",
+      paymentAttempt.orderId,
+
     )
 
     if (error) {

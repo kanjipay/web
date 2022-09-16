@@ -11,7 +11,9 @@ import LoggingController from "../../shared/utils/loggingClient"
 export async function processPaymentUpdate(
   paymentAttemptId: string,
   paymentAttemptStatus: PaymentAttemptStatus,
-  orderId: string | null = null
+  paymentType: string,
+  orderId: string | null = null,
+  
 ) {
   const logger = new LoggingController("Process payment update")
 
@@ -77,6 +79,8 @@ export async function processPaymentUpdate(
       const orderUpdate = {
         status: OrderStatus.PAID,
         paidAt: firestore.FieldValue.serverTimestamp(),
+        paymentType
+        
       }
 
       if (type === OrderType.TICKETS && !wereTicketsCreated) {

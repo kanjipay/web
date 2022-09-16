@@ -31,7 +31,6 @@ export default function App() {
       if (isAppleOS) {
         const url = new URL(window.location.href)
         url.protocol = "googlechrome"
-
         window.location.href = url.href
       } else {
         // attempt to redirect to Chrome from Android + Instagram/Facebook webview to increase usability
