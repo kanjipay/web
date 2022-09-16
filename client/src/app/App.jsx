@@ -31,13 +31,10 @@ export default function App() {
       if (isAppleOS) {
         const url = new URL(window.location.href)
         url.protocol = "googlechrome"
-
-        window.location.href = url.href
+        window.open(window.location.href.replace('https', 'http'), "_blank")
+        //window.location.href = url.href
       } else {
-        const url = new URL(window.location.href)
-        url.protocol = "googlechromes"
-
-        window.location.href = url.href
+        window.location = `intent:${window.location.href}#Intent;end';`
       }
     }
   }, [location])
