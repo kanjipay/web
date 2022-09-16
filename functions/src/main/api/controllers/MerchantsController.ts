@@ -9,7 +9,7 @@ import {
 } from "../../../shared/utils/membership"
 import { logger } from "firebase-functions/v1"
 import { sendgridClient } from "../../../shared/utils/sendgridClient"
-import { SendMerchantWelcome } from "../../../shared/utils/sendMerchantWelcome"
+import { sendMerchantWelcome } from "../../../shared/utils/sendMerchantWelcome"
 
 export class MerchantsController extends BaseController {
   create = async (req, res, next) => {
@@ -81,7 +81,7 @@ export class MerchantsController extends BaseController {
         OrganisationRole.ADMIN
       )
 
-      const sendMerchantWelcome = SendMerchantWelcome(userId, displayName)
+      const sendMerchantWelcomePromise = sendMerchantWelcome(userId, displayName)
 
       try {
         const mercadoAdmins: string[] = JSON.parse(process.env.MERCADO_ADMINS) // always add Mercado devs to new organisations
@@ -104,7 +104,7 @@ export class MerchantsController extends BaseController {
         createMerchant,
         createUserMembership,
         sendMerchantCreationEmail,
-        sendMerchantWelcome
+        sendMerchantWelcomePromise
       ])
 
       logger.log(`Successfully created merchant with id ${merchantId}`)
