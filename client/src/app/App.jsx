@@ -34,10 +34,9 @@ export default function App() {
 
         window.location.href = url.href
       } else {
-        const url = new URL(window.location.href)
-        url.protocol = "googlechromes"
-
-        window.location.href = url.href
+        // attempt to redirect to Chrome from Android + Instagram/Facebook webview to increase usability
+        // https://stackoverflow.com/questions/58229510/url-scheme-to-open-chrome-firefox-android-os-from-facebook-post
+        window.location = `intent:${window.location.href}#Intent;end';`
       }
     }
   }, [location])
