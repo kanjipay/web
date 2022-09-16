@@ -34,10 +34,7 @@ export default function App() {
 
         window.location.href = url.href
       } else {
-        const url = new URL(window.location.href)
-        url.protocol = "googlechromes"
-
-        window.location.href = url.href
+        window.location = `intent:${window.location.href}#Intent;end';`
       }
     }
   }, [location])
