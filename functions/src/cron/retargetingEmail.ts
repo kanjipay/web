@@ -59,9 +59,7 @@ function prepareEmailData(retargetOrders, notRecentlyContacted, recentPurchasers
         const {userId, eventId, merchantId, orderItems} = event.data()
         const eventUrl = `${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         const consentUser = notRecentlyContacted.find(doc => doc.id = userId)
-        if ( consentUser
-          // && !recentPurchasers.has(userId) && !userIds.includes(userId)
-          ) {
+        if ( consentUser && !recentPurchasers.has(userId) && !userIds.includes(userId)) {
             const message = {
                         to: consentUser.email,
                         from:  'team@mercadopay.co',
