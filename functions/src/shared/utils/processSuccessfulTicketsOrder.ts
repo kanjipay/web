@@ -85,7 +85,7 @@ export async function processSuccessfulTicketsOrder(
     }
     // if still errors, log the error but don't abort payment attempt
     catch (error){
-      logger.error(`failed to create default ticket ${{googleTicketDetails, error}}`)
+      logger.error(`failed to create default ticket ${JSON.stringify(googleTicketDetails)} ${JSON.stringify(error)}}`)     
     }
   }
   logger.log(`googlePassUrl ${googlePassUrl}`)

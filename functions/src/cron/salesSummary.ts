@@ -24,11 +24,13 @@ async function findConcludedEvents(){
     return concludedEventSnapshot
 }
 
-async function sendOrganiserEmail(merchantId){
+async function sendOrganiserEmail(merchantId, eventName){
   const merchantUserDocs = await getMerchantUsers(merchantId)
   const merchantEmails = merchantUserDocs.map((user) => {return user.email})
   logger.log({merchantUserDocs, merchantEmails})
-  const text = `Congratulations for putting on your event. 
+  const text = `Hi, 
+  
+Congratulations for putting on your event ${eventName}. 
 
 Our payment processing partner, Stripe, pays out within 7 working days of the event and we transfer the funds shortly afterwards.
   
@@ -54,7 +56,7 @@ Mercado`
 async function createEventData(eventDoc){
   const {merchantId, title} = eventDoc.data()
   // send an external email
-  await sendOrganiserEmail(merchantId)
+  await sendOrganiserEmail(merchantId, title)
   // for now, send an internal email with billing calculations while we check the figures are correct
   const eventId = eventDoc.id
   const eventDocs = await db()
