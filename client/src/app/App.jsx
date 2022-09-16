@@ -31,9 +31,10 @@ export default function App() {
       if (isAppleOS) {
         const url = new URL(window.location.href)
         url.protocol = "googlechrome"
-        window.open(window.location.href.replace('https', 'http'), "_blank")
-        //window.location.href = url.href
+        window.location.href = url.href
       } else {
+        // attempt to redirect to Chrome from Android + Instagram/Facebook webview to increase usability
+        // https://stackoverflow.com/questions/58229510/url-scheme-to-open-chrome-firefox-android-os-from-facebook-post
         window.location = `intent:${window.location.href}#Intent;end';`
       }
     }
