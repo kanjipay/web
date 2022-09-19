@@ -10,6 +10,8 @@ import { ShimmerThumbnail, ShimmerTitle, ShimmerText, ShimmerButton } from "reac
 import useWindowSize from "../../../utils/helpers/useWindowSize";
 import EventsAppNavBar from "./secure/EventsAppNavBar";
 import Spinner from "../../../assets/Spinner";
+import { Container } from "../../brand/FAQsPage";
+import Content from "../../../components/layout/Content";
 
 export default function EventShortLinks() {
   const { merchantLinkName, eventLinkName } = useParams()
@@ -84,7 +86,7 @@ export default function EventShortLinks() {
     </div>
   } else {
     return <div style={{ backgroundColor: Colors.OFF_WHITE_LIGHT }}>
-      <div className="container">
+      <Container>
         <EventsAppNavBar
           title={<Spinner length={20} />}
           transparentDepth={headerImageHeight - 96}
@@ -93,7 +95,7 @@ export default function EventShortLinks() {
         />
         <ShimmerThumbnail height={headerImageHeight} />
         <Spacer y={3} />
-        <div className="content">
+        <Content>
           {
             eventLinkName ?
               <div>
@@ -134,8 +136,8 @@ export default function EventShortLinks() {
               </div>
           }
           <Spacer y={8} />
-        </div>
-      </div>
+        </Content>
+      </Container>
     </div>
   }
 }

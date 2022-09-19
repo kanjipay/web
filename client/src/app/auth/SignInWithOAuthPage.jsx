@@ -20,6 +20,8 @@ import { updateDoc } from "firebase/firestore"
 import Collection from "../../enums/Collection"
 import Spacer from "../../components/Spacer"
 import Form from "../../components/Form"
+import { Container } from "../brand/FAQsPage"
+import Content from "../../components/layout/Content"
 
 export class OAuthType {
   static GOOGLE = "Google"
@@ -41,7 +43,6 @@ export function providerIdToPathname(providerId) {
       return ""
   }
 }
-
 
 export default function SignInWithOAuthPage({ type }) {
   const navigate = useNavigate()
@@ -138,6 +139,8 @@ export default function SignInWithOAuthPage({ type }) {
   }
 
   const handleNameSubmit = async (data) => {
+    AnalyticsManager.main.pressButton("ProvideNameAfterAuth")
+    
     const { firstName, lastName } = data
 
     await updateDoc(Collection.USER.docRef(userId), {
@@ -162,9 +165,8 @@ export default function SignInWithOAuthPage({ type }) {
     )
   } else if (hasName === false) {
     return (
-      <div className="container">
-        <div className="content">
-          <Spacer y={4} />
+      <Container>
+        <Content paddingTop={32}>
           <Form
             formGroupData={[
               {
@@ -179,8 +181,8 @@ export default function SignInWithOAuthPage({ type }) {
             submitTitle="Submit"
           />
           <Spacer y={6} />
-        </div>
-      </div>
+        </Content>
+      </Container>
     )
   } else {
     return <LoadingPage message="Signing you in" />

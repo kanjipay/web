@@ -21,8 +21,11 @@ import IconPage from "../../../../../components/IconPage"
 import Cross from "../../../../../assets/icons/Cross"
 import useWindowSize from "../../../../../utils/helpers/useWindowSize"
 import { ShimmerThumbnail, ShimmerTitle, ShimmerText } from "react-shimmer-effects"
-import { EventDetails } from "../../event/EventPage"
 import Spinner from "../../../../../assets/Spinner"
+import { Container } from "../../../../brand/FAQsPage"
+import Content from "../../../../../components/layout/Content"
+import { Anchor, Body } from "../../../../auth/AuthPage"
+import { Flex } from "../../../../../components/Listing"
 
 export default function CustomerEventPage({ events }) {
   const { eventId } = useParams()
@@ -31,9 +34,7 @@ export default function CustomerEventPage({ events }) {
   const headerImageHeight = contentWidth
   const event = events?.find((event) => event.id === eventId)
 
-  useEffect(() => {
-    AnalyticsManager.main.viewPage("CustomerEvent", { eventId })
-  }, [eventId])
+  useEffect(() => AnalyticsManager.main.viewPage("CustomerEvent", { eventId }), [eventId])
 
   if (events && !event) {
     return (
@@ -48,7 +49,7 @@ export default function CustomerEventPage({ events }) {
   }
 
   return (
-    <div className="container">
+    <Container>
       <EventsAppNavBar
         title={event?.title ?? <Spinner length={20} />}
         transparentDepth={headerImageHeight - 96}
@@ -70,9 +71,7 @@ export default function CustomerEventPage({ events }) {
           <ShimmerThumbnail height={headerImageHeight} />
       }
 
-      <Spacer y={4} />
-
-      <div className="content">
+      <Content paddingTop={32}>
         {
           event ?
             <h1 className="header-l">{event.title}</h1> :
@@ -84,42 +83,38 @@ export default function CustomerEventPage({ events }) {
         {
           event ?
             <div>
-              <div style={{ columnGap: 8, display: "flex" }}>
+              <Flex columnGap={8}>
                 <CircleIcon Icon={Clock} length={20} backgroundColor={Colors.CLEAR} />
-                <p className="text-body">{eventTimeString(event)}</p>
-              </div>
+                <Body>{eventTimeString(event)}</Body>
+              </Flex>
               <Spacer y={1} />
-              <div style={{ columnGap: 8, display: "flex" }}>
+              <Flex columnGap={8}>
                 <CircleIcon
                   Icon={Location}
                   length={20}
                   backgroundColor={Colors.CLEAR}
                 />
-                <p className="text-body">
+                <Body>
                   {`${event.address} · `}
-                  <a
+                  <Anchor
                     href={generateGoogleMapsLink(event)}
-                    target="_blank"
-                    rel="noreferrer"
                     test-id="event-details-directions-link"
-                  >
-                    Get directions
-                  </a>
-                </p>
-              </div>
+                  >Get directions</Anchor>
+                </Body>
+              </Flex>
               <Spacer y={1} />
-              <div style={{ columnGap: 8, display: "flex" }}>
+              <Flex columnGap={8}>
                 <CircleIcon
                   Icon={User}
                   length={20}
                   backgroundColor={Colors.CLEAR}
                 />
-                <p className="text-body">
+                <Body>
                   <Link to={`/events/${event.merchantId}`} test-id="event-details-organiser-link">
                     View organiser
                   </Link>
-                </p>
-              </div>
+                </Body>
+              </Flex>
             </div> :
             <ShimmerText line={3} />
         }
@@ -136,41 +131,35 @@ export default function CustomerEventPage({ events }) {
         <Spacer y={4} />
 
         <h1 className="header-m">Your tickets</h1>
+
         <Spacer y={2} />
 
         {
           event ?
             event.products.map((product) => {
-              return (
-                <div key={product.id}>
-                  <h2 className="header-s">{product.title}</h2>
-                  {
-                    product.purchaserInfo && <div>
-                      <Spacer y={2} />
-                      <h4 className="header-xs">Ticket information</h4>
-                      <Spacer y={2} />
-                      <p className="text-body">
-                        {product.purchaserInfo}
-                      </p>
-                    </div>
-                  }
-                  <Spacer y={2} />
+              return <div key={product.id}>
+                <h2 className="header-s">{product.title}</h2>
+                {
+                  product.purchaserInfo && <div>
+                    <Spacer y={2} />
+                    <h4 className="header-xs">Ticket information</h4>
+                    <Spacer y={2} />
+                    <p className="text-body">
+                      {product.purchaserInfo}
+                    </p>
+                  </div>
+                }
+                <Spacer y={2} />
 
-                  {product.tickets.map((ticket, index) => {
-                    return (
-                      <div key={ticket.id}>
-                        <Ticket
-                          ticket={ticket}
-                          product={product}
-                          index={index + 1}
-                        />
-                        <Spacer y={2} />
-                      </div>
-                    )
-                  })}
-                  <Spacer y={2} />
-                </div>
-              )
+                {product.tickets.map((ticket, index) => <Ticket
+                  key={ticket.id}
+                  ticket={ticket}
+                  product={product}
+                  index={index + 1}
+                  style={{ marginBottom: 16 }}
+                />)}
+                <Spacer y={2} />
+              </div>
             }) :
             <div>
               <ShimmerThumbnail height={200} />
@@ -180,7 +169,7 @@ export default function CustomerEventPage({ events }) {
               <ShimmerThumbnail height={200} />
             </div>
         }
-      </div>
-    </div>
+      </Content>
+    </Container>
   )
 }

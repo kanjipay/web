@@ -8,9 +8,7 @@ export default function EmailLinkSentPage() {
   const { state } = useLocation()
   const email = state?.email
 
-  useEffect(() => {
-    AnalyticsManager.main.viewPage("EmailLinkSent")
-  }, [])
+  useEffect(() => AnalyticsManager.main.viewPage("EmailLinkSent"), [])
 
   return (
     <IconPage

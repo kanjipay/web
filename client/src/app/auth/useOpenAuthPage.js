@@ -9,6 +9,7 @@ export function useOpenAuthPage() {
     successPath,
     successState = {},
     showsBack = true,
+    message,
     backPath,
   }) => {
     const actualBackPath = backPath ?? location.pathname
@@ -26,6 +27,9 @@ export function useOpenAuthPage() {
         pathname: "/auth",
         search,
       },
+      {
+        state: { message }
+      }
     )
   }
 }

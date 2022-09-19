@@ -36,22 +36,17 @@ export class AnalyticsManager {
     This makes amplitude use browser's navigate.sendBeacon API, 
     so the browser sends requests even if user closes the window 
     */
-    const options = { transport: "beacon" }
-    const amplitudeAnalytics = amplitude.getInstance()
-
     const pseudoUserId = IdentityManager.main.getPseudoUserId()
+    const options = { transport: "beacon" }
+    this.analytics = amplitude.getInstance()
 
-    amplitudeAnalytics.init(
+    this.analytics.init(
       process.env.REACT_APP_AMPLITUDE_API_KEY,
-      pseudoUserId,
+      undefined,
       options
     )
 
-    if (
-      [Environment.PROD, Environment.STAGING].includes(
-        process.env.REACT_APP_ENV_NAME
-      )
-    ) {
+    if ([Environment.PROD, Environment.STAGING].includes(process.env.REACT_APP_ENV_NAME)) {
       hotjar.initialize(process.env.REACT_APP_HOTJAR_ID, 6)
       hotjar.identify(pseudoUserId)
     }
@@ -61,22 +56,26 @@ export class AnalyticsManager {
     // so will be removed when user clears cookies, or null in private browsing mode
     // We store the uuid in localStorage, which is more persistent
     // */
-    amplitudeAnalytics.setDeviceId(IdentityManager.main.getDeviceId())
+    this.analytics.setDeviceId(IdentityManager.main.getDeviceId())
+    this.analytics.setUserId(pseudoUserId)
 
     const userAgent = UAParser(navigator.userAgent)
 
-    amplitudeAnalytics.setUserProperties({
+    this.analytics.setUserProperties({
       browser: userAgent.browser.name,
       os: userAgent.os.name,
       deviceType: userAgent.device.type,
       locale: navigator.language
     })
-
-    this.analytics = amplitudeAnalytics
   }
 
   setUserGroup(groupName, groupValue) {
     this.analytics.setGroup(groupName, groupValue)
+  }
+
+  setUserId(userId) {
+    this.analytics.setUserId(userId)
+    hotjar.identify(userId)
   }
 
   logEvent(name, properties = {}) {

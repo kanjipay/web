@@ -25,7 +25,7 @@ export const notifyIfPublished = async (change, context) => {
    try {
     logger.log({change,context})
     const publishedAfter = change.after.data().isPublished
-    const publishedBefore = change.before.data() && change.before.data().isPublished
+    const publishedBefore = !!change.before.data() && change.before.data().isPublished
     if (publishedAfter && !publishedBefore){
         const {title, address, description, startsAt, merchantId } = change.after.data() 
         const eventId = change.after.id

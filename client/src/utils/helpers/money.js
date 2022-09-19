@@ -1,5 +1,5 @@
-export function formatCurrency(int, currencyCode = "GBP") {
-  return getCurrencySymbol(currencyCode) + (int / 100).toFixed(2).toString()
+export function formatCurrency(int, currencyCode = "GBP", showPence = true) {
+  return getCurrencySymbol(currencyCode) + (int / 100).toFixed(showPence ? 2 : 0).toString()
 }
 
 const languageCodeToCurrencyCode = {

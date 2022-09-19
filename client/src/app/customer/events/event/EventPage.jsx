@@ -1,14 +1,9 @@
-import Clock from "../../../../assets/icons/Clock"
-import User from "../../../../assets/icons/User"
-import Location from "../../../../assets/icons/Location"
 import AsyncImage from "../../../../components/AsyncImage"
-import CircleIcon from "../../../../components/CircleIcon"
 import Spacer from "../../../../components/Spacer"
 import { getEventStorageRef } from "../../../../utils/helpers/storage"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import ProductListing from "../product/ProductListing"
 import EventsAppNavBar from "../secure/EventsAppNavBar"
-import { eventTimeString, generateGoogleMapsLink } from "./eventHelpers"
 import { Colors } from "../../../../enums/Colors"
 import ShowMoreText from "react-show-more-text"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
@@ -24,77 +19,11 @@ import Spotify from "react-spotify-embed"
 import Carat from "../../../../assets/icons/Carat"
 import Spinner from "../../../../assets/Spinner"
 import { ShimmerThumbnail, ShimmerTitle, ShimmerText, ShimmerButton } from "react-shimmer-effects";
-
-export function EventDetails({ event, merchant, artists = [] }) {
-  if (event && merchant && artists) {
-    return <div>
-      <div style={{ columnGap: 8, display: "flex" }}>
-        <CircleIcon Icon={Clock} length={20} backgroundColor={Colors.CLEAR} />
-        <p className="text-body">{eventTimeString(event)}</p>
-      </div>
-      <Spacer y={1} />
-      <div style={{ columnGap: 8, display: "flex" }}>
-        <CircleIcon
-          Icon={Location}
-          length={20}
-          backgroundColor={Colors.CLEAR}
-        />
-        <p className="text-body">
-          {`${event.address} · `}
-          <a
-            href={generateGoogleMapsLink(event)}
-            target="_blank"
-            rel="noreferrer"
-            test-id="event-details-directions-link"
-          >
-            Get directions
-          </a>
-        </p>
-      </div>
-      {merchant && (
-        <div>
-          <Spacer y={1} />
-          <div style={{ columnGap: 8, display: "flex" }}>
-            <CircleIcon
-              Icon={User}
-              length={20}
-              backgroundColor={Colors.CLEAR}
-            />
-            <p className="text-body">
-              {artists?.length > 0 && (
-                <span>
-                  {"Artists: "}
-                  {artists.map((artist, index) => {
-                    return (
-                      <span key={artist.id}>
-                        {index > 0 ? ", " : ""}
-                        <Link
-                          to={`/events/artists/${artist.id}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          test-name="event-details-artist-link"
-                        >
-                          {artist.name}
-                        </Link>
-                      </span>
-                    )
-                  })}
-                  {". "}
-                </span>
-              )}
-              Organised by{" "}
-              <Link to="../.." test-id="event-details-organiser-link">
-                {merchant.displayName}
-              </Link>
-            </p>
-          </div>
-        </div>
-      )}
-    </div>
-  } else {
-    return <ShimmerText line={3} />
-  }
-}
+import { EventDetails } from "./EventDetails"
+import { Container } from "../../../brand/FAQsPage"
+import Content from "../../../../components/layout/Content"
+import { Flex } from "../../../../components/Listing"
+import { Body } from "../../../auth/AuthPage"
 
 export default function EventPage({ merchant, event, products, artists }) {
   const { eventId, merchantId } = useParams()
@@ -128,13 +57,9 @@ export default function EventPage({ merchant, event, products, artists }) {
     } catch (err) {
       
     }
-
-    
   })
 
-  useEffect(() => {
-    AnalyticsManager.main.viewPage("Event", { merchantId, eventId })
-  }, [eventId, merchantId])
+  useEffect(() => AnalyticsManager.main.viewPage("Event", { merchantId, eventId }), [eventId, merchantId])
 
   const eligibleProducts = products?.filter(product => !product.isPrivate)
 
@@ -148,7 +73,7 @@ export default function EventPage({ merchant, event, products, artists }) {
   }
 
   return (
-    <div className="container">
+    <Container>
       <EventsAppNavBar
         title={event?.title ?? <Spinner length={20} />}
         transparentDepth={headerImageHeight - 96}
@@ -188,9 +113,7 @@ export default function EventPage({ merchant, event, products, artists }) {
         </div>
       }
 
-      <Spacer y={3} />
-
-      <div className="content">
+      <Content paddingTop={24}>
         {
           event && merchant ?
             <div>
@@ -198,7 +121,7 @@ export default function EventPage({ merchant, event, products, artists }) {
               {event.tags && event.tags.length > 0 && (
                 <div>
                   <Spacer y={2} />
-                  <div style={{ display: "flex", columnGap: 4 }}>
+                  <Flex columnGap={4}>
                     {event.tags.map((tag) => {
                       return (
                         <p
@@ -213,17 +136,17 @@ export default function EventPage({ merchant, event, products, artists }) {
                         </p>
                       )
                     })}
-                  </div>
+                  </Flex>
                 </div>
               )}
             </div> :
             <div>
               <ShimmerTitle />
-              <div style={{ display: "flex", columnGap: 8 }}>
+              <Flex columnGap={8}>
                 <ShimmerButton size="sm" />
                 <ShimmerButton size="sm" />
                 <ShimmerButton size="sm" />
-              </div>
+              </Flex>
             </div>
         }
 
@@ -258,17 +181,13 @@ export default function EventPage({ merchant, event, products, artists }) {
 
         <Spacer y={4} />
 
-        {
-          hasAlreadyHappened && <p>
-            This event ended on{" "}
-            {format(dateFromTimestamp(event.endsAt), "do MMM")} at{" "}
-            {format(dateFromTimestamp(event.endsAt), "H:mm")}.
-          </p>
-        }
+        {hasAlreadyHappened && <Body>
+          This event ended on{" "}
+          {format(dateFromTimestamp(event.endsAt), "do MMM")} at{" "}
+          {format(dateFromTimestamp(event.endsAt), "H:mm")}.
+        </Body>}
 
-        {
-          !hasAlreadyHappened && !event?.isPublished && <p>This event isn't published yet.</p>
-        }
+        {!hasAlreadyHappened && !event?.isPublished && <Body>This event isn't published yet.</Body>}
 
         {
           !hasAlreadyHappened && event?.isPublished && <div>
@@ -316,7 +235,7 @@ export default function EventPage({ merchant, event, products, artists }) {
           </div>
         }
         <Spacer y={8} />
-      </div>
-    </div>
+      </Content>
+    </Container>
   )
 }

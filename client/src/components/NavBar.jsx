@@ -4,6 +4,8 @@ import { ButtonTheme } from "./ButtonTheme"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import Back from "../assets/icons/Back"
+import FlexSpacer from "./layout/FlexSpacer"
+import { Flex } from "./Listing"
 
 export default function NavBar({
   back,
@@ -61,7 +63,7 @@ export default function NavBar({
         width: "100%",
         height: 48,
         zIndex: 100,
-        maxWidth: 500,
+        maxWidth: "inherit",
         display: "relative",
       }}
     >
@@ -91,18 +93,13 @@ export default function NavBar({
         }
       </div>
 
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          display: "flex",
-          alignItems: "center",
-          columnGap: 8,
-          padding: `0px ${sidePadding}px`,
-          boxSizing: "border-box",
-        }}
-      >
+      <Flex columnGap={8} style={{
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        padding: `0px ${sidePadding}px`,
+        boxSizing: "border-box",
+      }}>
         {back && (
           <div className="NavBar__item">
             <IconButton
@@ -115,11 +112,11 @@ export default function NavBar({
         {leftElements.map((e, index) => (
           <div key={index}>{e}</div>
         ))}
-        <div className="flex-spacer" />
+        <FlexSpacer />
         {rightElements.map((e, index) => (
           <div key={index}>{e}</div>
         ))}
-      </div>
+      </Flex>
     </div>
   )
 }

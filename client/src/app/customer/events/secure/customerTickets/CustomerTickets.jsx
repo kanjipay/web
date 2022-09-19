@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Route, Routes } from "react-router-dom"
-import LoadingPage from "../../../../../components/LoadingPage"
 import { NetworkManager } from "../../../../../utils/NetworkManager"
 import CustomerEventPage from "./CustomerEventPage"
 import CustomerEventListPage from "./CustomerEventsListPage"

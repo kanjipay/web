@@ -1,6 +1,7 @@
 import { addDoc, deleteDoc, getDoc } from "firebase/firestore"
 import Collection from "../../enums/Collection"
-import { LocalStorageKeys } from "../IdentityManager"
+import { AnalyticsManager } from "../AnalyticsManager"
+import { IdentityManager, LocalStorageKeys } from "../IdentityManager"
 
 export async function saveState(additionalData = {}) {
   const localStorageKeys = [
@@ -27,7 +28,6 @@ export async function saveState(additionalData = {}) {
 
 export async function restoreState(stateId, shouldDelete = true) {
   try {
-    console.log("restoring state with id ", stateId)
     const docRef = Collection.STATE.docRef(stateId)
     const stateDoc = await getDoc(docRef)
 
@@ -43,6 +43,13 @@ export async function restoreState(stateId, shouldDelete = true) {
 
     if (shouldDelete) {
       await deleteDoc(docRef)
+    }
+
+    const newPseudoUserId = localStorage.getItem(LocalStorageKeys.PSEUDO_USER_ID)
+
+    if (newPseudoUserId) {
+      IdentityManager.main.setPseudoUserId(newPseudoUserId)
+      AnalyticsManager.main.setUserId(newPseudoUserId)
     }
 
     return localStorageData

@@ -7,65 +7,82 @@ import Checkout from "./checkout/Checkout"
 import Dashboard from "./dashboard/Dashboard"
 import Auth from "./auth/Auth"
 import AttributionLinkPage from "./shared/attribution/AttributionLinkPage"
-import { AnalyticsEvent, AnalyticsManager } from "../utils/AnalyticsManager"
 import TicketChecker from "./ticketChecker/TicketChecker"
 import { UAParser } from "ua-parser-js"
-import Legal from "./legal/Legal"
 import EventShortLinks from "./customer/events/EventShortLinks"
 import SalesSender from "./SalesSender"
-import smoothscroll from 'smoothscroll-polyfill';
 import ErrorPage from "./shared/ErrorPage"
-import { useRef } from "react"
-import TawkMessengerReact from '@tawk.to/tawk-messenger-react';
-
-smoothscroll.polyfill();
+import Tawk from "./shared/Tawk"
+import { Flex } from "../components/Listing"
+import { Colors } from "../enums/Colors"
+import Cross from "../assets/icons/Cross"
+import IconButton from "../components/IconButton"
+import { useState } from "react"
 
 export default function App() {
-  const location = useLocation()
-  const chatRef = useRef()
+  const userAgent = UAParser(navigator.userAgent)
+  const browser = userAgent.browser.name
+  const isMetaWebview = ["Instagram", "Facebook"].includes(browser)
+  const isIos = ["iOS"].includes(userAgent.os.name)
+  const [isMetaBannerClosed, setIsMetaBannerClosed] = useState(false)
 
   useEffect(() => {
-    const userAgent = UAParser(navigator.userAgent)
-    const browser = userAgent.browser.name
+    if (isMetaWebview && isIos) {
+      const baseUrl = new URL(window.location.href)
+      const baseUrlString = baseUrl.href
 
-    if (["Instagram", "Facebook"].includes(browser)) {
-      const isAppleOS = ["iOS", "Mac OS"].includes(userAgent.os.name)
+      // const safariUrl = "x-web-search://?" +  baseUrlString
+      const chromeUrl = baseUrlString.replace("https://", "googlechrome://")
+      const firefoxUrl = "firefox://open-url?url=" + baseUrlString.replace("https://", "")
+      const braveUrl = "brave://open-url?url=" + baseUrlString.replace("https://", "")
+      const duckDuckGoUrl = baseUrlString.replace("https://", "ddgQuickLink://")
+      const edgeUrl = baseUrlString.replace("https://", "microsoft-edge-https://")
 
-      if (isAppleOS) {
-        const url = new URL(window.location.href)
-        url.protocol = "googlechrome"
+      let i = 0
 
-        window.location.href = url.href
-      } else {
-        const url = new URL(window.location.href)
-        url.protocol = "googlechromes"
+      for (const url of [chromeUrl, firefoxUrl, braveUrl, duckDuckGoUrl, edgeUrl]) {
+        setTimeout(() => {
+          window.location.href = url
+        }, i * 100)
 
-        window.location.href = url.href
+        i += 1
       }
+
+      // window.location.href = safariUrl
     }
-  }, [location])
-
-  useEffect(() => {
-    AnalyticsManager.main.logEvent(AnalyticsEvent.INITIALISE_APP)
-  }, [])
-
-  const tawkData = JSON.parse(process.env.REACT_APP_TAWK)
-
-  const hideWidget = chatRef.current?.hideWidget
-
-  useEffect(() => {
-    if (hideWidget) {
-      hideWidget()
-    }
-  }, [hideWidget])
+  }, [isMetaWebview, isIos])
 
   return (
     <div>
-      <TawkMessengerReact
-        ref={chatRef}
-        propertyId={tawkData.propertyId}
-        widgetId={tawkData.widgetId}
-      />
+      {
+        isMetaWebview && !isMetaBannerClosed && <Flex columnGap={16} style={{ 
+          padding: 8, 
+          position: "fixed", 
+          zIndex: 200, 
+          backgroundColor: Colors.BLACK, 
+          width: "100%",
+          boxSizing: "border-box",
+          maxWidth: 500,
+          borderBottom: `1px solid ${Colors.WHITE}`
+        }}>
+          <p 
+            style={{ 
+              flexShrink: 100,
+              flexGrow: 0,
+              color: Colors.WHITE,
+            }}
+          >
+            You're browsing on {browser}, so some features may not work. Tap the dots on the top right and select "Open in {isIos ? "browser" : "Chrome"}" for a better experience.
+          </p>
+          <IconButton
+            length={20}
+            Icon={Cross}
+            style={{ flexShrink: 0 }}
+            onClick={() => setIsMetaBannerClosed(true)}
+          />
+        </Flex>
+      }
+      <Tawk />
       <Routes>
         <Route path="/xlx-v" element={<SalesSender />} />
         <Route path="/events/*" element={<EventsApp />} />
@@ -81,10 +98,9 @@ export default function App() {
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/dashboard/*" element={<Dashboard />} />
         <Route path="/ticket-checker/*" element={<TicketChecker />} />
-        <Route path="/legal/*" element={<Legal />} />
 
         {/* Brand pages */}
-        <Route path="*" element={<Brand chatRef={chatRef} />} />
+        <Route path="*" element={<Brand />} />
       </Routes>
     </div>
   )

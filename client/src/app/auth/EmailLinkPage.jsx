@@ -8,7 +8,6 @@ import Form, { generateValidator } from "../../components/Form"
 import IconActionPage from "../../components/IconActionPage"
 import { Field } from "../../components/input/IntField"
 import LoadingPage from "../../components/LoadingPage"
-import Spacer from "../../components/Spacer"
 import { auth } from "../../utils/FirebaseUtils"
 import { validateEmail } from "../../utils/helpers/validation"
 import { restoreState } from "../../utils/services/StateService"
@@ -17,6 +16,8 @@ import { updateDoc } from "firebase/firestore"
 import Collection from "../../enums/Collection"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { AuthType } from "./Auth"
+import { Container } from "../brand/FAQsPage"
+import Content from "../../components/layout/Content"
 
 export default function EmailLinkPage() {
   const navigate = useNavigate()
@@ -43,8 +44,13 @@ export default function EmailLinkPage() {
   const [hasName, setHasName] = useState(null)
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("EmailLink")
-  }, [])
+    restoreState(stateId).then(() => {
+      AnalyticsManager.main.viewPage("EmailLink")
+    })
+    .catch(err => {
+      console.error(err)
+    })
+  }, [stateId])
 
   useEffect(() => {
     async function handleEmailLink() {
@@ -70,21 +76,15 @@ export default function EmailLinkPage() {
           currentUrl
         )
 
-        console.log("credential: ", credential)
-
         setUserId(credential.user.uid)
 
         localStorage.removeItem("emailForSignIn")
 
-        await restoreState(stateId)
-
         const hasName = await processUserCredential(credential)
-
-        console.log("got hasName: ", hasName)
 
         setHasName(hasName)
       } catch (err) {
-        console.log(err)
+        console.error(err)
 
         setError({
           title: "Something went wrong",
@@ -114,10 +114,13 @@ export default function EmailLinkPage() {
 
   const handleEmailSubmit = async (data) => {
     const { email } = data
+    AnalyticsManager.main.pressButton("ConfirmEmailOnAuth")
     setEmailForSignIn(email)
   }
 
   const handleNameSubmit = async (data) => {
+    AnalyticsManager.main.pressButton("ProvideNameAfterAuth")
+    
     const { firstName, lastName } = data
 
     await updateDoc(Collection.USER.docRef(userId), {
@@ -144,56 +147,52 @@ export default function EmailLinkPage() {
         primaryAction={handleError}
       />
     )
-  } else if (hasName === false) {
-    return (
-      <div className="container">
-        <div className="content">
-          <Spacer y={4} />
-          <Form
-            formGroupData={[
-              {
-                explanation: "Fill in your name to complete your profile.",
-                items: [
-                  { name: "firstName" },
-                  { name: "lastName" }
-              ],
-              },
-            ]}
-            onSubmit={handleNameSubmit}
-            submitTitle="Submit"
-          />
-          <Spacer y={6} />
-        </div>
-      </div>
-    )
-  } else if (!emailForSignIn) {
-    return (
-      <div className="container">
-        <div className="content">
-          <Spacer y={4} />
-          <Form
-            formGroupData={[
-              {
-                explanation:
-                  "It looks like you've switched devices. Please enter your email again for added security.",
-                items: [
-                  {
-                    name: "email",
-                    validators: [
-                      generateValidator(validateEmail, "Invalid email"),
-                    ],
-                    input: <Field type="email" placeholder="Email" />,
-                  },
-                ],
-              },
-            ]}
-            onSubmit={handleEmailSubmit}
-            submitTitle="Submit"
-          />
-          <Spacer y={6} />
-        </div>
-      </div>
-    )
+  } else if (hasName === false || !emailForSignIn) {
+    return <Container>
+      <Content paddingTop={32}>
+        {
+          hasName === false ?
+            <Form
+              formGroupData={[
+                {
+                  explanation: "Fill in your name to complete your profile.",
+                  items: [
+                    { 
+                      name: "firstName",
+                      input: <Field autocomplete="given-name" />
+                    },
+                    { 
+                      name: "lastName",
+                      input: <Field autocomplete="family-name" />
+                    }
+                  ],
+                },
+              ]}
+              onSubmit={handleNameSubmit}
+              submitTitle="Submit"
+            /> :
+            <Form
+              formGroupData={[
+                {
+                  explanation:
+                    "It looks like you've switched browsers. Please enter your email again for added security.",
+                  items: [
+                    {
+                      name: "email",
+                      validators: [
+                        generateValidator(validateEmail, "Invalid email"),
+                      ],
+                      input: <Field type="email" placeholder="Email" autocomplete="email" />,
+                    },
+                  ],
+                },
+              ]}
+              onSubmit={handleEmailSubmit}
+              submitTitle="Submit"
+            />
+        }
+      </Content>
+    </Container>
   } else {
     return <LoadingPage message="Signing you in..." />
   }

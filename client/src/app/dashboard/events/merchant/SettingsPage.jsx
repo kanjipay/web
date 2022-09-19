@@ -13,7 +13,7 @@ import { uploadImage } from "../../../../utils/helpers/uploadImage"
 import { ResultType } from "../../../../components/ResultBanner"
 import Breadcrumb from "../../../../components/Breadcrumb"
 import TabControl from "../../../../components/TabControl"
-import ConnectPaymentMethodsBanner from "./ConnectPaymentMethodsBanner"
+import { ConnectCrezcoBanner, ConnectStripeBanner } from "./ConnectPaymentMethodsBanner"
 
 export default function SettingsPage({ merchant }) {
   const { merchantId } = useParams()
@@ -167,7 +167,11 @@ export default function SettingsPage({ merchant }) {
     <Spacer y={2} />
     <h1 className="header-l">Organiser Settings</h1>
     <Spacer y={3}/>
-    <ConnectPaymentMethodsBanner merchant={merchant} />
+    <div style={{ maxWidth: 500 }}>
+      <ConnectCrezcoBanner merchant={merchant} />
+      <ConnectStripeBanner merchant={merchant} />
+    </div>
+    <Spacer y={3} />
     <TabControl tabs={{ 
       "Basic details": basicSettingsTab,
       "Bank details": bankDetailsTab

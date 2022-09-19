@@ -31,11 +31,14 @@ import { IdentityManager } from "../../../../utils/IdentityManager"
 import { NetworkManager } from "../../../../utils/NetworkManager"
 import { getLatestItem } from "../../../shared/attribution/AttributionReducer"
 import { v4 as uuid } from "uuid"
-import { useCallback } from "react"
 import { useOpenErrorPage } from "../../../../utils/useOpenErrorPage"
-import IconPage from "../../../../components/IconPage"
 import Cross from "../../../../assets/icons/Cross"
 import IconActionPage from "../../../../components/IconActionPage"
+import { Container } from "../../../brand/FAQsPage"
+import Content from "../../../../components/layout/Content"
+import { Body, Caption } from "../../../auth/AuthPage"
+import { Flex } from "../../../../components/Listing"
+import FlexSpacer from "../../../../components/layout/FlexSpacer"
 
 function combineIntoUniqueArray(...arrays) {
   if (arrays.length === 0) {
@@ -73,8 +76,9 @@ export default function ProductPage({ merchant, event, product, user }) {
   const [isLoading, setIsLoading] = useState(false)
 
   const isPublished = event?.isPublished ?? true
+  const isAuthenticated = !!user?.email
 
-  const submitOrder = useCallback((checkoutUrlType) => {
+  const submitOrder = (checkoutUrlType) => {
     const deviceId = IdentityManager.main.getDeviceId()
     const attributionItem = getLatestItem({ eventId })
     const orderId = uuid()
@@ -121,16 +125,16 @@ export default function ProductPage({ merchant, event, product, user }) {
         }
       })
     }
-  }, [eventId, productId, merchant, navigate, quantity, openErrorPage])
+  }
 
   useEffect(() => {
     AnalyticsManager.main.viewPage("Product", {
       productId,
       eventId,
       merchantId,
-      isAuthenticated: !!user?.email,
+      isAuthenticated,
     })
-  })
+  }, [productId, eventId, merchantId, isAuthenticated])
 
   useEffect(() => {
     if (!merchantId || !productId || !user) {
@@ -142,20 +146,6 @@ export default function ProductPage({ merchant, event, product, user }) {
       logMetaPixelEvent(metaPixelId, user, "ViewContent", {}) // todo add data with productId
     })
   }, [merchantId, productId, user])
-
-  useEffect(() => {
-    if (!state) { return }
-
-    const { checkoutUrlType, marketingConsentStatus } = state
-
-    if (checkoutUrlType && user) {
-      if (!user.marketingConsentStatus || user.marketingConsentStatus === MarketingConsent.PENDING) {
-        setMarketingConsent(marketingConsentStatus).then(() => { })
-      }
-
-      submitOrder(checkoutUrlType)
-    }
-  }, [state, eventId, merchant, event, product, navigate, pathname, productId, user, submitOrder])
 
   useEffect(() => {
     if (merchant && event && product) {
@@ -177,8 +167,6 @@ export default function ProductPage({ merchant, event, product, user }) {
   const minQuantity = 1
 
   const handleCheckout = () => {
-    AnalyticsManager.main.pressButton("Checkout", { eventId, productId })
-
     let checkoutUrlType
 
     if (product.price === 0) {
@@ -192,6 +180,8 @@ export default function ProductPage({ merchant, event, product, user }) {
     } else {
       checkoutUrlType = "CARD"
     }
+
+    AnalyticsManager.main.pressButton("Checkout", { eventId, productId, checkoutType: checkoutUrlType, isAuthenticated })
 
     if (user && user.email) {
       if (!user.marketingConsentStatus || user.marketingConsentStatus === MarketingConsent.PENDING) {
@@ -215,8 +205,9 @@ export default function ProductPage({ merchant, event, product, user }) {
       }
       
       openAuthPage({
-        successPath: pathname,
+        successPath: pathname + "/redirect",
         successState,
+        message: `Log in to continue buying tickets to ${event.title}.`,
         showsBack: true,
         backPath: pathname,
       })
@@ -227,6 +218,7 @@ export default function ProductPage({ merchant, event, product, user }) {
     openAuthPage({
       successPath: pathname,
       showsBack: true,
+      message: "Log in with the email you want to send tickets to.",
       backPath: pathname,
     })
   }
@@ -244,11 +236,7 @@ export default function ProductPage({ merchant, event, product, user }) {
     const hasAgreedToAttestations = Object.values(attestationData).every(
       (x) => x
     )
-    return hasAgreedToAttestations && isValidEmail()
-  }
-
-  function isEnabled() {
-    return (!user?.email || canBuyProduct()) && isPublished
+    return hasAgreedToAttestations && (!user?.email || isValidEmail()) && isPublished
   }
 
   const releaseDate = dateFromTimestamp(product?.releasesAt)
@@ -266,9 +254,7 @@ export default function ProductPage({ merchant, event, product, user }) {
     isSoldOut
   )
 
-  if (!!state?.checkoutUrlType) {
-    return <LoadingPage />
-  } else if (isProductUnavailable) {
+  if (isProductUnavailable) {
     let message = "This ticket is unavailable"
 
     if (isSoldOut) {
@@ -297,7 +283,7 @@ export default function ProductPage({ merchant, event, product, user }) {
       primaryActionTitle="Back to event"
     />
   } else {
-    return <div className="container">
+    return <Container>
       <EventsAppNavBar
         title={product?.title ?? <Spinner length={20} />}
         back="../.."
@@ -309,9 +295,7 @@ export default function ProductPage({ merchant, event, product, user }) {
         </title>
       </Helmet>
 
-      <Spacer y={9} />
-
-      <div className="content">
+      <Content>
         {
           product ?
             <div>
@@ -379,10 +363,7 @@ export default function ProductPage({ merchant, event, product, user }) {
             <h3 className="header-s">Email address</h3>
             <Spacer y={2} />
 
-            <div
-              className="flex-container"
-              style={{ columnGap: 8, justifyContent: "left" }}
-            >
+            <Flex columnGap={8}>
               {getEmailDomain() &&
                 !validateEmail(user.email, getEmailDomain()) ? (
                 <p className="text-body-faded">
@@ -407,13 +388,13 @@ export default function ProductPage({ merchant, event, product, user }) {
                   .
                 </p>
               )}
-              <div className="flex-spacer" />
+              <FlexSpacer />
               <SmallButton
                 title="Change"
                 buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
                 onClick={handleChangeEmail}
               />
-            </div>
+            </Flex>
             <Spacer y={4} />
           </div>
         )}
@@ -430,52 +411,33 @@ export default function ProductPage({ merchant, event, product, user }) {
             <ShimmerTable row={3} col={2} />
         }
         
-
         <Spacer y={6} />
 
-        {user?.email &&
-          validateEmail(user.email, getEmailDomain()) &&
-          Object.keys(attestationData).map((attestation) => {
-            return (
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    columnGap: 16,
-                    alignItems: "center",
-                  }}
-                >
-                  <CheckBox
-                    length={20}
-                    color={Colors.GRAY_LIGHT}
-                    value={attestationData[attestation]}
-                    onChange={(event) =>
-                      setAttestationData({
-                        ...attestationData,
-                        [attestation]: event.target.value,
-                      })
-                    }
-                    test-name="product-attestation-checkbox"
-                  />
-                  <p className="text-body">{attestation}</p>
-                </div>
-                <Spacer y={3} />
-              </div>
-            )
-          })}
+        {
+          Object.keys(attestationData).map((attestation) => <Flex columnGap={16} style={{ marginBottom: 24 }}>
+            <CheckBox
+              length={20}
+              color={Colors.GRAY_LIGHT}
+              value={attestationData[attestation]}
+              onChange={(event) =>
+                setAttestationData({
+                  ...attestationData,
+                  [attestation]: event.target.value,
+                })
+              }
+              test-name="product-attestation-checkbox"
+            />
+            <p className="text-body">{attestation}</p>
+          </Flex>)
+        }
 
-        {!user?.email && getEmailDomain() && (
-          <div>
-            <p className="text-body-faded">
-              {"You'll need an email ending in "}
-              <span className="text-body" style={{ fontWeight: 500 }}>
-                {"@" + getEmailDomain()}
-              </span>
-              {" to buy tickets to this event."}
-            </p>
-            <Spacer y={3} />
-          </div>
-        )}
+        {!user?.email && getEmailDomain() && <Body style={{ marginBottom: 24 }} isFaded>
+          {"You'll need an email ending in "}
+          <span className="text-body" style={{ fontWeight: 500 }}>
+            {"@" + getEmailDomain()}
+          </span>
+          {" to buy tickets to this event."}
+        </Body>}
 
         {
           product && event && merchant ?
@@ -494,7 +456,7 @@ export default function ProductPage({ merchant, event, product, user }) {
                   : undefined
               }
               onClick={handleCheckout}
-              disabled={!isEnabled()}
+              disabled={!canBuyProduct()}
               isLoading={isLoading}
               style={{ boxSizing: "borderBox" }}
               test-id="product-cta-button"
@@ -503,30 +465,18 @@ export default function ProductPage({ merchant, event, product, user }) {
         }
         
 
-        {(!user || user.marketingConsentStatus === MarketingConsent.PENDING) && (
-          <div>
-            <Spacer y={2} />
-            <div
-              style={{ display: "flex", columnGap: 8, alignItems: "center" }}
-            >
-              <CheckBox
-                length={20}
-                color={Colors.GRAY_LIGHT}
-                value={isMarketingConsentApproved}
-                onChange={(event) =>
-                  setIsMarketingConsentApproved(event.target.value)
-                }
-                test-id="product-marketing-consent-status"
-              />
-              <p className="text-caption">
-                Get notified when this organiser has another relevant event on
-                soon (recommended).
-              </p>
-            </div>
-          </div>
-        )}
-        <Spacer y={3} />
-      </div>
-    </div>
+        {(!user || user.marketingConsentStatus === MarketingConsent.PENDING) && <Flex columnGap={8} style={{ marginTop: 16 }}>
+          <CheckBox
+            length={20}
+            color={Colors.GRAY_LIGHT}
+            value={isMarketingConsentApproved}
+            onChange={(event) => setIsMarketingConsentApproved(event.target.value)}
+            test-id="product-marketing-consent-status"
+          />
+          <Caption>Get notified when this organiser has another relevant event on
+            soon (recommended).</Caption>
+        </Flex>}
+      </Content>
+    </Container>
   }
 }

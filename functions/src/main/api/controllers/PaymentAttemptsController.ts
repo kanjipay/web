@@ -74,8 +74,7 @@ export class PaymentAttemptsController extends BaseController {
 
       if (!!merchant.stripe) {
         const { accountId, status: stripeStatus } = merchant.stripe
-
-        isStripeConnect = !!accountId && stripeStatus === StripeStatus.CHARGES_ENABLED
+        isStripeConnect = !!accountId && stripeStatus === StripeStatus.CHARGES_ENABLED && currency !== "GBP"
         stripeAccountId = accountId
       }
 

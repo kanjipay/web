@@ -6,7 +6,6 @@ import OrderType from "../../enums/OrderType"
 import PaymentAttemptStatus from "../../enums/PaymentAttemptStatus"
 import { PaymentType } from "../../enums/PaymentType"
 import { AnalyticsManager } from "../../utils/AnalyticsManager"
-import { IdentityManager } from "../../utils/IdentityManager"
 import { NetworkManager } from "../../utils/NetworkManager"
 
 export default function RedirectPageCrezco() {

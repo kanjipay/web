@@ -1,12 +1,17 @@
 import { Link, Route, Routes } from "react-router-dom"
 import { ButtonTheme } from "../../components/ButtonTheme"
+import FlexSpacer from "../../components/layout/FlexSpacer"
+import { Flex } from "../../components/Listing"
 import MobilePopupMenu from "../../components/MobilePopupMenu"
 import SmallButton from "../../components/SmallButton"
 import { Colors } from "../../enums/Colors"
 import useWindowSize from "../../utils/helpers/useWindowSize"
+import Legal from "../legal/Legal"
 import NotFound from "../shared/NotFoundPage"
+import FAQsPage from "./FAQsPage"
+import Footer from "./Footer"
 import HomePage from "./HomePage"
-import { useEffect } from "react"
+import PricingPage from "./PricingPage"
 
 export function opacityToAlphaHex(opacity) {
   let boundedOpacity
@@ -31,22 +36,11 @@ export function opacityToAlphaHex(opacity) {
   return alphaHexString
 }
 
-export function Brand({ chatRef }) {
+export function Brand() {
   const { width } = useWindowSize()
   const isMobile = width < 750
-  const showWidget = chatRef.current?.showWidget
 
-  useEffect(() => {
-    const chatElement = chatRef.current
-
-    if (showWidget) {
-      showWidget()
-    }
-
-    return () => {
-      chatElement.hideWidget()
-    }
-  }, [showWidget, chatRef])
+  const calendlyLink = "https://calendly.com/matt-at-mercado/demo"
   
   return (
     <div>
@@ -60,15 +54,10 @@ export function Brand({ chatRef }) {
           backgroundColor: Colors.WHITE + "fa",
         }}
       >
-        <div
-          style={{
-            margin: "auto",
-            columnGap: 16,
-            maxWidth: 1200,
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+        <Flex columnGap={16} style={{
+          margin: "auto",
+          maxWidth: 1200,
+        }}>
           <Link to="/">
             <h2
               style={{
@@ -82,42 +71,41 @@ export function Brand({ chatRef }) {
             </h2>
           </Link>
 
-          <div className="flex-spacer"></div>
-
-          {
-            !isMobile && <Link to="/events/s/tickets">
-              <SmallButton
-                title="Event goers"
-                buttonTheme={ButtonTheme.MONOCHROME}
-              />
-            </Link>
-          }
-
-          {
-            !isMobile && <Link to="/dashboard">
-              <SmallButton
-                title="Organisers"
-                buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-              />
-            </Link>
-          }
-
-          {
-            isMobile && <MobilePopupMenu 
-              navItems={[
-                {
-                  title: "Event goers",
-                  path: "/events/s/tickets"
-                },
-                {
-                  title: "Organisers",
-                  path: "/dashboard"
-                }
-              ]} 
-              buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
+          {!isMobile && <a href={calendlyLink} style={{ marginLeft: 16 }}>Book a demo</a>}
+          {!isMobile && <Link to="/pricing" style={{ marginLeft: 16 }}>Pricing</Link>}
+          <FlexSpacer />
+          {!isMobile && <Link to="/events/s/tickets">
+            <SmallButton
+              title="Event goers"
+              buttonTheme={ButtonTheme.MONOCHROME}
             />
-          }
-        </div>
+          </Link>}
+
+          {!isMobile && <Link to="/dashboard">
+            <SmallButton
+              title="Organisers"
+              buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+            />
+          </Link>}
+
+          {isMobile && <MobilePopupMenu
+            navItems={[
+              {
+                title: "Pricing",
+                path: "Pricing"
+              },
+              {
+                title: "Event goers",
+                path: "/events/s/tickets"
+              },
+              {
+                title: "Organisers",
+                path: "/dashboard"
+              }
+            ]}
+            buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
+          />}
+        </Flex>
       </header>
 
       <div
@@ -129,24 +117,14 @@ export function Brand({ chatRef }) {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/:customerSegmentId" element={<HomePage />} />
+          <Route path="/faqs" element={<FAQsPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/legal/*" element={<Legal />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
 
-      <footer style={{ backgroundColor: Colors.BLACK }}>
-        <div
-          style={{
-            margin: "auto",
-            maxWidth: 1200,
-            padding: "64px 16px",
-          }}
-        >
-          <p style={{ color: Colors.WHITE }}>
-            Copyright 2022 Kanjipay Ltd. All rights reserved. Company number:
-            13931899.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

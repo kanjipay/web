@@ -12,6 +12,9 @@ import { useParams } from "react-router-dom"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import Spinner from "../../../../assets/Spinner"
 import { ShimmerThumbnail, ShimmerTitle, ShimmerText } from "react-shimmer-effects";
+import { Container } from "../../../brand/FAQsPage"
+import Content from "../../../../components/layout/Content"
+import { Body } from "../../../auth/AuthPage"
 
 export default function MerchantPage({ merchant, events }) {
   const { merchantId } = useParams()
@@ -28,7 +31,7 @@ export default function MerchantPage({ merchant, events }) {
   }, [merchantId])
 
   return (
-    <div className="container">
+    <Container>
       <EventsAppNavBar
         title={merchant ? merchant.displayName : <Spinner length={20} />}
         transparentDepth={headerImageHeight - 96}
@@ -49,9 +52,7 @@ export default function MerchantPage({ merchant, events }) {
           <ShimmerThumbnail height={headerImageHeight} />
       }
 
-      <Spacer y={3} />
-
-      <div className="content">
+      <Content paddingTop={24}>
         {
           merchant ?
             <div>
@@ -84,7 +85,7 @@ export default function MerchantPage({ merchant, events }) {
                 <EventListing event={event} />
                 <Spacer y={3} />
               </div>) :
-              <p>No upcoming events</p>
+              <Body>No upcoming events</Body>
               :
             <div>
               <ShimmerThumbnail height={headerImageHeight - 32} rounded={true} />
@@ -103,7 +104,7 @@ export default function MerchantPage({ merchant, events }) {
                 <EventListing event={event} />
                 <Spacer y={3} />
               </div>) :
-              <p>No past events</p>
+              <Body>No past events</Body>
             :
             <div>
               <ShimmerThumbnail height={headerImageHeight - 32} rounded={true} />
@@ -112,7 +113,7 @@ export default function MerchantPage({ merchant, events }) {
         }
 
         <Spacer y={6} />
-      </div>
-    </div>
+      </Content>
+    </Container>
   )
 }
