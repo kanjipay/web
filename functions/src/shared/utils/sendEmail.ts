@@ -16,7 +16,8 @@ export enum TemplateName {
   TICKET_SALE_ALERT = "TICKET_SALE_ALERT",
   NEW_EVENT = "NEW_EVENT",
   RETARGET = "RETARGET",
-  EVENT_CHANGE = "EVENT_CHANGE"
+  EVENT_CHANGE = "EVENT_CHANGE",
+  MERCHANT_WELCOME = "MERCHANT_WELCOME"
 }
 
 function addFees(productPrice, quantity, customerFee, currency) {

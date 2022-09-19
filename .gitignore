@@ -4,4 +4,6 @@
 **/node_modules
 **/build
 **/lib
-.env**
+/client/.env**
+/scripts/.env**
+/seed/.env**

@@ -37,7 +37,7 @@ async function findRetargetEvents(){
 }
 
 async function findRecentPurchasers(){
-    // get paid orderrs within 48 hours
+    // get paid orders within 48 hours
     const paidOrderSnapshot = await db()
       .collection(Collection.ORDER)
       .where("createdAt", ">", subDays(new Date(), 2))
@@ -59,11 +59,10 @@ function prepareEmailData(retargetOrders, notRecentlyContacted, recentPurchasers
         const {userId, eventId, merchantId, orderItems} = event.data()
         const eventUrl = `${process.env.CLIENT_URL}/events/${merchantId}/${eventId}`
         const consentUser = notRecentlyContacted.find(doc => doc.id = userId)
-        if (consentUser && !recentPurchasers.has(userId) && !userIds.includes(userId)) {
+        if ( consentUser && !recentPurchasers.has(userId) && !userIds.includes(userId)) {
             const message = {
                         to: consentUser.email,
                         from:  'team@mercadopay.co',
-                        fromname: "Mercado Team",
                         dynamic_template_data: {eventUrl, eventTitle: orderItems[0].eventTitle},
                         template_id: templateId,
                         asm: {
@@ -81,7 +80,7 @@ function prepareEmailData(retargetOrders, notRecentlyContacted, recentPurchasers
     return {messageArray, userIds}
 }
 
-export const retargetOrders = async (context) => {
+export const retargetOrders = async () => {
   try {
     logger.log("Find Orders for Retargeting Email")
     const retargetEvents = await findRetargetEvents()
@@ -97,8 +96,12 @@ export const retargetOrders = async (context) => {
         batch.update(db().collection(Collection.USER).doc(userId),{lastMarketingEmailDate: currentDate})
     })
     await batch.commit()
-    const result = await sendgridClient().sendMultiple(messageArray)
-    logger.log({result})
+    if (messageArray.length > 0){
+      logger.log(messageArray)
+      const result = await sendgridClient().sendMultiple(messageArray)
+      logger.log({result})
+  
+    }
   } catch (err) {
     logger.error(err)
   }

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { Route, Routes, useLocation } from "react-router-dom"
+import { Route, Routes } from "react-router-dom"
 import { Brand } from "./brand/Brand"
 import OneTimeLinkPage from "./shared/OneTimeLinkPage"
 import EventsApp from "./customer/events/EventsApp"
@@ -25,32 +25,37 @@ export default function App() {
   const isMetaWebview = ["Instagram", "Facebook"].includes(browser)
   const isIos = ["iOS"].includes(userAgent.os.name)
   const [isMetaBannerClosed, setIsMetaBannerClosed] = useState(false)
+  const os = userAgent.os.name
 
   useEffect(() => {
-    if (isMetaWebview && isIos) {
-      const baseUrl = new URL(window.location.href)
-      const baseUrlString = baseUrl.href
+    if (isMetaWebview) {
+      switch (os) {
+        case "iOS":
+          const baseUrl = new URL(window.location.href)
+          const baseUrlString = baseUrl.href
+          const chromeUrl = baseUrlString.replace("https://", "googlechrome://")
+          const firefoxUrl = "firefox://open-url?url=" + baseUrlString.replace("https://", "")
+          const braveUrl = "brave://open-url?url=" + baseUrlString.replace("https://", "")
+          // const duckDuckGoUrl = baseUrlString.replace("https://", "ddgQuickLink://")
+          // const edgeUrl = baseUrlString.replace("https://", "microsoft-edge-https://")
 
-      // const safariUrl = "x-web-search://?" +  baseUrlString
-      const chromeUrl = baseUrlString.replace("https://", "googlechrome://")
-      const firefoxUrl = "firefox://open-url?url=" + baseUrlString.replace("https://", "")
-      const braveUrl = "brave://open-url?url=" + baseUrlString.replace("https://", "")
-      const duckDuckGoUrl = baseUrlString.replace("https://", "ddgQuickLink://")
-      const edgeUrl = baseUrlString.replace("https://", "microsoft-edge-https://")
+          let i = 0
 
-      let i = 0
+          for (const url of [chromeUrl, firefoxUrl, braveUrl]) {
+            setTimeout(() => {
+              window.location.href = url
+            }, i * 100)
 
-      for (const url of [chromeUrl, firefoxUrl, braveUrl, duckDuckGoUrl, edgeUrl]) {
-        setTimeout(() => {
-          window.location.href = url
-        }, i * 100)
-
-        i += 1
+            i += 1
+          }
+          break
+        case "Android":
+          window.location = `intent:${window.location.href}#Intent;end';`
+          break
+        default:
       }
-
-      // window.location.href = safariUrl
     }
-  }, [isMetaWebview, isIos])
+  }, [isMetaWebview, os])
 
   return (
     <div>

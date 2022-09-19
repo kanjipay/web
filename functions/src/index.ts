@@ -1,8 +1,6 @@
 import * as functions from "firebase-functions"
 import mainApp from "./main/mainApp"
-import { cronFunction } from "./cron/cron"
-import { backupFirestore } from "./cron/backupFirestore"
-import { retargetOrders } from "./cron/retargetingEmail"
+import { cronFunction, cronFunctionDaily } from "./cron/cron"
 import applePayApp from "./applePayApp"
 import { onEventWrite } from "./firestore/onEventWrite"
 
@@ -38,17 +36,11 @@ export const cron10m = euFunctions
   .pubsub.schedule("every 10 minutes")
   .onRun(cronFunction)
 
-export const cronBackup = euFunctions
-  .runWith({ secrets: ["SERVICE_ACCOUNT"] })
-  .pubsub.schedule("0 1 * * *")
-  .timeZone('Europe/London')
-  .onRun(backupFirestore)
-
-export const cronMarketing = euFunctions
+export const cronDaily = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY"] })
   .pubsub.schedule("0 11 * * *")
   .timeZone('Europe/London')
-  .onRun(retargetOrders)
+  .onRun(cronFunctionDaily)
 
 
 export const eventWrite = euFunctions
