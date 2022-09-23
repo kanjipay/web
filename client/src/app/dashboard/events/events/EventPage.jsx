@@ -13,52 +13,47 @@ import GuestlistTab from "./GuestlistTab"
 import LoadingPage from "../../../../components/LoadingPage"
 import EventLinkTab from "./EventLinkTab"
 import EventDetailsTab from "./EventDetailsTab"
-import ConnectPaymentMethodsBanner from "../merchant/ConnectPaymentMethodsBanner"
+import { ConnectCrezcoBanner, ConnectStripeBanner } from "../merchant/ConnectPaymentMethodsBanner"
+import StripeStatus from "../../../../enums/StripeStatus"
+import TicketTypesTab from "./TicketTypesTab"
 
-function PublishInfoBanners({ hasProducts }) {
+export function ProductWarningBanner({ productCount }) {
   const navigate = useNavigate()
+
+  return productCount === 0 && <div>
+    <ResultBanner
+      resultType={ResultType.INFO}
+      message="You need to create at least one ticket type before you can publish this event."
+      action={() => {
+        navigate("p/create")
+      }}
+      actionTitle="Create"
+    />
+    <Spacer y={1} />
+  </div>
+}
+
+export function canPublishEvent(productCount, merchant) {
+  const hasConnectedStripeIfNeeded = merchant.stripe?.status === StripeStatus.CHARGES_ENABLED || merchant.currency === "GBP"
+  return productCount > 0 && hasConnectedStripeIfNeeded
+}
+
+export function PublishBanner({ isPublished, productCount, merchant }) {
   const { eventId } = useParams()
+  const eventRef = Collection.EVENT.docRef(eventId)
+  const publishBannerProps = canPublishEvent(productCount, merchant) ? {
+    action: async () => await updateDoc(eventRef, { isPublished: true }),
+    actionTitle: "Publish"
+  } : {}
 
-  let publishBannerProps = {}
-
-  if (hasProducts) {
-    const eventRef = Collection.EVENT.docRef(eventId)
-    publishBannerProps = {
-      action: async () => await updateDoc(eventRef, { isPublished: true }),
-      actionTitle: "Publish"
-    }
-  }
-
-  const banners = [
+  return !isPublished && <div>
     <ResultBanner
       resultType={ResultType.INFO}
       message="This event isn't published yet. You'll need to publish it before it shows to customers."
       {...publishBannerProps}
-    />,
-  ]
-
-  if (!hasProducts) {
-    banners.push(
-      <ResultBanner
-        resultType={ResultType.INFO}
-        message="You need to create at least one ticket type before you can publish this event."
-        action={() => {
-          navigate("p/create")
-        }}
-        actionTitle="Create"
-      />
-    )
-  }
-
-  const children = banners.flatMap((banner, index) => {
-    if (index === 0) {
-      return [banner]
-    } else {
-      return [<Spacer y={2} />, banner]
-    }
-  })
-
-  return <div>{children}</div>
+    />
+    <Spacer y={1} />
+  </div>
 }
 
 export default function EventPage({ merchant, event, products }) {
@@ -66,10 +61,6 @@ export default function EventPage({ merchant, event, products }) {
   const { merchantId, eventId } = useParams()
   const [attributionLinks, setAttributionLinks] = useState(null)
   const [guestlistData, setGuestlistData] = useState(null)
-
-  const handleCreateProduct = () => {
-    navigate("p/create")
-  }
 
   useEffect(() => {
     return Collection.ATTRIBUTION_LINK.queryOnChange(
@@ -85,45 +76,6 @@ export default function EventPage({ merchant, event, products }) {
       setGuestlistData(res.data)
     })
   }, [eventId, merchantId])
-
-  const ticketTypes = <div style={{ maxWidth: 500 }}>
-    {products.length > 0 ? (
-      <div>
-        <MainButton
-          title="Create new ticket type"
-          onClick={handleCreateProduct}
-          test-id="create-product-button"
-          style={{ padding: "0 16px" }}
-        />
-        <Spacer y={3} />
-        {products.map((product) => {
-          return (
-            <div key={product.id}>
-              <ProductListing
-                product={product}
-                currency={merchant.currency}
-              />
-              <Spacer y={2} />
-            </div>
-          )
-        })}
-      </div>
-    ) : (
-      <div>
-        <p>
-          You don't have any ticket types for this event yet. You'll need
-          at least one before you can publish the event.
-        </p>
-        <Spacer y={3} />
-        <MainButton
-          title="Create ticket type"
-          onClick={handleCreateProduct}
-          test-id="create-product-button"
-          style={{ padding: "0 16px" }}
-        />
-      </div>
-    )}
-  </div>
 
   let guestlistTab
 
@@ -162,22 +114,21 @@ export default function EventPage({ merchant, event, products }) {
           <Spacer y={3} />
         </div>
       }
-      <ConnectPaymentMethodsBanner merchant={merchant} />
-      {
-        !event.isPublished && <div style={{ maxWidth: 500 }}>
-          <PublishInfoBanners
-            merchant={merchant}
-            hasProducts={products.length > 0}
-          />
-          <Spacer y={3} />
-        </div>
-      }
+      
+      <div style={{ maxWidth: 500 }}>
+        <PublishBanner isPublished={event.isPublished} productCount={products.length} merchant={merchant} />
+        <ConnectCrezcoBanner merchant={merchant} />
+        <ConnectStripeBanner merchant={merchant} />
+        <ProductWarningBanner productCount={products.length} />
+      </div>
+
+      <Spacer y={3} />
       
       <TabControl 
         name="event-page"
         tabs={{
-          "Event details": <EventDetailsTab event={event} products={products} />,
-          "Ticket types": ticketTypes,
+          "Event details": <EventDetailsTab event={event} products={products} merchant={merchant} />,
+          "Ticket types": <TicketTypesTab products={products} merchant={merchant} />,
           "Event links": <EventLinkTab merchant={merchant} event={event} attributionLinks={attributionLinks} />,
           "Guestlist": guestlistTab
         }}

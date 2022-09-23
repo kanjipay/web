@@ -19,7 +19,9 @@ import { ButtonTheme } from "../../../../../components/ButtonTheme"
 import { UAParser } from "ua-parser-js"
 import { NetworkManager } from "../../../../../utils/NetworkManager"
 import { download } from "../../../../dashboard/events/events/GuestlistTab"
-
+import { Container } from "../../../../brand/FAQsPage"
+import Content from "../../../../../components/layout/Content"
+import OrderStatus from "../../../../../enums/OrderStatus"
 
 export default function OrderConfirmationPage({ user }) {
   const { orderId } = useParams()
@@ -33,10 +35,13 @@ export default function OrderConfirmationPage({ user }) {
   const [applePassData, setApplePassData] = useState(null)
   const [wasApplePassButtonPressed, setWasApplePassButtonPressed] = useState(false)
 
-
   useEffect(() => {
     AnalyticsManager.main.viewPage("TicketOrderConfirmation", { orderId })
+    
+    return Collection.ORDER.onChange(orderId, setOrder)
+  }, [orderId])
 
+  useEffect(() => {
     function base64ToBuffer(str) {
       str = window.atob(str); // creates a ASCII string
       var buffer = new ArrayBuffer(str.length),
@@ -48,6 +53,8 @@ export default function OrderConfirmationPage({ user }) {
     }
 
     async function fetchApplePasses() {
+      if (order?.status !== OrderStatus.PAID) { return }
+
       const res = await NetworkManager.get(`/orders/o/${orderId}/apple-pass`)
       const { passStrings, passesString } = res.data
       const passBuffers = passStrings.map(base64ToBuffer)
@@ -57,12 +64,12 @@ export default function OrderConfirmationPage({ user }) {
     }
 
     fetchApplePasses()
-
-    return Collection.ORDER.onChange(orderId, setOrder)
-  }, [orderId])
+  }, [orderId, order?.status])
 
   useEffect(() => {
     if (!applePassData || !wasApplePassButtonPressed) { return }
+
+    AnalyticsManager.main.pressButton("AddToAppleWallet")
 
     setWasApplePassButtonPressed(false)
 
@@ -89,9 +96,7 @@ export default function OrderConfirmationPage({ user }) {
   }, [order, user])
 
   useEffect(() => {
-    if (!order || wasAttributionCleared) {
-      return
-    }
+    if (!order || wasAttributionCleared) { return }
 
     const { eventId, eventRecurrenceId } = order
 
@@ -105,25 +110,18 @@ export default function OrderConfirmationPage({ user }) {
 
   if (order) {
     return (
-      <div className="container">
+      <Container>
         <EventsAppNavBar title="Your tickets" />
 
         <Helmet>
           <title>Your order | Mercado</title>
         </Helmet>
 
-        <div className="content">
-          <Spacer y={9} />
-
-          <ResultBanner
-            resultType={ResultType.SUCCESS}
-            message="Your payment was successful"
-          />
-          <Spacer y={3} />
+        <Content>
           <h1 className="header-l">Enjoy your event!</h1>
           <Spacer y={2} />
           <p className="text-body-faded">
-            We just emailed your tickets to your email address
+            We just emailed your tickets to
             <span
               className="text-body-faded"
               style={{ fontWeight: 500 }}
@@ -132,14 +130,7 @@ export default function OrderConfirmationPage({ user }) {
           </p>
 
           <Spacer y={3} />
-          <h3 className="header-s">Order summary</h3>
-          <Spacer y={2} />
-          <OrderSummary
-            lineItems={order.orderItems}
-            currency={order.currency}
-            feePercentage={order.customerFee}
-          />
-          <Spacer y={3} />
+
           <h3 className="header-s">View my tickets</h3>
           <Spacer y={2} />
           {
@@ -154,7 +145,7 @@ export default function OrderConfirmationPage({ user }) {
               <Spacer y={2} />
             </div>
           }
-  
+
           {
             isAppleOS && <div>
               <MainButton
@@ -167,13 +158,22 @@ export default function OrderConfirmationPage({ user }) {
             </div>
           }
           <MainButton
-            title="View online"
+            title="See my tickets"
             test-id="ticket-order-confirmation-done-button"
             onClick={() => navigate(`/events/s/tickets`)}
           />
-          <Spacer y={9} />
-        </div>
-      </div>
+
+          <Spacer y={3} />
+
+          <h3 className="header-s">Order summary</h3>
+          <Spacer y={2} />
+          <OrderSummary
+            lineItems={order.orderItems}
+            currency={order.currency}
+            feePercentage={order.customerFee}
+          />
+        </Content>
+      </Container>
     )
   } else {
     return <LoadingPage />

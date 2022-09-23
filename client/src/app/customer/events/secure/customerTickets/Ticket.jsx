@@ -5,7 +5,7 @@ import { format } from "date-fns"
 import { dateFromTimestamp } from "../../../../../utils/helpers/time"
 import { isMobile } from "react-device-detect"
 
-export default function Ticket({ ticket, product, index }) {
+export default function Ticket({ ticket, product, index, style, ...props }) {
   let indexString = index.toString()
 
   while (indexString.length < 3) {
@@ -19,7 +19,9 @@ export default function Ticket({ ticket, product, index }) {
         display: isMobile ? "block" : "flex",
         columnGap: 32,
         position: "relative",
+        ...style
       }}
+      {...props}
     >
       <QRCode
         size={160}

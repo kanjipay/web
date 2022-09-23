@@ -1,11 +1,20 @@
+import { useState } from "react"
+import { useEffect } from "react"
+import { isMobile } from "react-device-detect"
 import { Link, Route, Routes } from "react-router-dom"
 import { ButtonTheme } from "../../components/ButtonTheme"
+import FlexSpacer from "../../components/layout/FlexSpacer"
+import { Flex } from "../../components/Listing"
 import MobilePopupMenu from "../../components/MobilePopupMenu"
 import SmallButton from "../../components/SmallButton"
 import { Colors } from "../../enums/Colors"
 import useWindowSize from "../../utils/helpers/useWindowSize"
+import Legal from "../legal/Legal"
 import NotFound from "../shared/NotFoundPage"
+import FAQsPage from "./FAQsPage"
+import Footer from "./Footer"
 import HomePage from "./HomePage"
+import PricingPage from "./PricingPage"
 
 export function opacityToAlphaHex(opacity) {
   let boundedOpacity
@@ -30,82 +39,100 @@ export function opacityToAlphaHex(opacity) {
   return alphaHexString
 }
 
-export function Brand() {
-  const { width } = useWindowSize()
-  const isMobile = width < 750
-  
-  return (
-    <div>
-      <header
-        style={{
-          padding: 16,
-          boxSizing: "border-box",
-          position: "fixed",
-          zIndex: 100,
-          width: "100%",
-          backgroundColor: Colors.WHITE + "fa",
-        }}
-      >
-        <div
+function BrandNavBar({ isSeeThrough = false }) {
+  const foregroundColor = isSeeThrough ? Colors.WHITE : Colors.BLACK
+  return <header
+    style={{
+      padding: "8px 8px 8px 16px",
+      boxSizing: "border-box",
+      position: "fixed",
+      zIndex: 100,
+      width: "100%",
+      backgroundColor: isSeeThrough ? Colors.CLEAR : Colors.WHITE + "fa",
+    }}
+  >
+    <Flex columnGap={16} style={{
+      margin: "auto",
+      maxWidth: 1200,
+    }}>
+      <Link to="/">
+        <h2
           style={{
-            margin: "auto",
-            columnGap: 16,
-            maxWidth: 1200,
-            display: "flex",
-            alignItems: "center",
+            fontFamily: "Rubik, Roboto, sans-serif",
+            fontWeight: 600,
+            fontSize: isMobile ? "1.5rem" : "2rem",
+            color: foregroundColor
           }}
         >
-          <Link to="/">
-            <h2
-              style={{
-                fontFamily: "Rubik, Roboto, sans-serif",
-                fontWeight: 600,
-                fontSize: isMobile ? "1.5rem" : "2rem",
-                color: Colors.BLACK,
-              }}
-            >
-              Mercado
-            </h2>
-          </Link>
+          Mercado
+        </h2>
+      </Link>
 
-          <div className="flex-spacer"></div>
+      {!isMobile && <Link to="/pricing" style={{ marginLeft: 16, color: foregroundColor }}>Pricing</Link>}
+      <FlexSpacer />
+      {!isMobile && <Link to="/events/s/tickets">
+        <SmallButton
+          title="Event goers"
+          buttonTheme={isSeeThrough ? ButtonTheme.MONOCHROME_REVERSED: ButtonTheme.MONOCHROME}
+        />
+      </Link>}
 
+      {!isMobile && <Link to="/dashboard">
+        <SmallButton
+          title="Organisers"
+          buttonTheme={isSeeThrough ? ButtonTheme.MONOCHROME_OUTLINED_REVERSE : ButtonTheme.MONOCHROME_OUTLINED}
+        />
+      </Link>}
+
+      {isMobile && <MobilePopupMenu
+        navItems={[
           {
-            !isMobile && <Link to="/events/s/tickets">
-              <SmallButton
-                title="Event goers"
-                buttonTheme={ButtonTheme.MONOCHROME}
-              />
-            </Link>
-          }
-
+            title: "Home",
+            path: "/"
+          },
           {
-            !isMobile && <Link to="/dashboard">
-              <SmallButton
-                title="Organisers"
-                buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-              />
-            </Link>
-          }
-
+            title: "Pricing",
+            path: "/pricing"
+          },
           {
-            isMobile && <MobilePopupMenu 
-              navItems={[
-                {
-                  title: "Event goers",
-                  path: "/events/s/tickets"
-                },
-                {
-                  title: "Organisers",
-                  path: "/dashboard"
-                }
-              ]} 
-              buttonTheme={ButtonTheme.MONOCHROME_REVERSED}
-            />
+            title: "Event goers",
+            path: "/events/s/tickets"
+          },
+          {
+            title: "Organisers",
+            path: "/dashboard"
           }
-        </div>
-      </header>
+        ]}
+        buttonTheme={isSeeThrough ? ButtonTheme.MONOCHROME : ButtonTheme.MONOCHROME_REVERSED}
+      />}
+    </Flex>
+  </header>
+}
 
+export function Brand() {
+  const { height } = useWindowSize()
+
+  function scrolledPast() {
+    return window.scrollY > (isMobile ? height * 0.4 - 64 : height - 64)
+  }
+
+  const [hasScrolledPast, setHasScrolledPast] = useState(scrolledPast())
+
+  const handleScroll = () => setHasScrolledPast(scrolledPast())
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  })
+  return (
+    <div>
+      <Routes>
+        <Route path="/" element={<BrandNavBar isSeeThrough={!hasScrolledPast} />} />
+        <Route path="*" element={<BrandNavBar />}/>
+      </Routes>
       <div
         style={{
           margin: "auto",
@@ -115,24 +142,14 @@ export function Brand() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/:customerSegmentId" element={<HomePage />} />
+          <Route path="/faqs" element={<FAQsPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/legal/*" element={<Legal />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
 
-      <footer style={{ backgroundColor: Colors.BLACK }}>
-        <div
-          style={{
-            margin: "auto",
-            maxWidth: 1200,
-            padding: "64px 16px",
-          }}
-        >
-          <p style={{ color: Colors.WHITE }}>
-            Copyright 2022 Kanjipay Ltd. All rights reserved. Company number:
-            13931899.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

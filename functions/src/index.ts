@@ -25,7 +25,8 @@ export const main = euFunctions
       "IP_GEOLOCATION_API_KEY",
       "GOOGLE_MAPS_API_KEY",
       "STRIPE_WEBHOOK_SECRETS",
-      "GOOGLE_WALLET_ISSUER_ID"
+      "GOOGLE_WALLET_ISSUER_ID",
+      "AIRTABLE_API_KEY"
     ],
     minInstances: envProjectId === "mercadopay" ? 1 : 0,
   })

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Route, Routes, useLocation, useParams } from "react-router-dom"
+import { Route, Routes, useParams } from "react-router-dom"
 import Collection from "../../../../enums/Collection"
 import EventPage from "./EventPage"
 import { documentId, orderBy, where } from "firebase/firestore"

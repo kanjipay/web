@@ -18,8 +18,9 @@ import Collection from "../../../../enums/Collection"
 import { getEventStorageRef } from "../../../../utils/helpers/storage"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { uploadImage } from "../../../../utils/helpers/uploadImage"
+import { canPublishEvent } from "./EventPage"
 
-export default function EventDetailsTab({ event, products }) {
+export default function EventDetailsTab({ event, products, merchant }) {
   const navigate = useNavigate()
   const docRef = Collection.EVENT.docRef(event.id)
   const publishButtonRef = useRef(null)
@@ -31,10 +32,6 @@ export default function EventDetailsTab({ event, products }) {
 
   const handlePublishEvent = async () => {
     await updateDoc(docRef, { isPublished: true, publishedAt: serverTimestamp() })
-  }
-
-  function canPublishEvent() {
-    return products.length > 0
   }
 
   const handleUpdateEvent = async (data) => {
@@ -147,7 +144,7 @@ export default function EventDetailsTab({ event, products }) {
                 "Optionally set the time you want to publish this event to customers.",
               input: <DatePicker />,
               required: false,
-              disabled: !!event.isPublished || !canPublishEvent(),
+              disabled: !!event.isPublished || !canPublishEvent(products.length, merchant),
             },
           ],
         },
@@ -165,7 +162,7 @@ export default function EventDetailsTab({ event, products }) {
       <div ref={publishButtonRef}>
         <Spacer y={2} />
 
-        {canPublishEvent() && (
+        {canPublishEvent(products.length, merchant) && (
           <div>
             <Popup
               trigger={

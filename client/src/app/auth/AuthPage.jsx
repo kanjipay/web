@@ -4,7 +4,6 @@ import { sendSignInLinkToEmail } from "firebase/auth"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Colors } from "../../enums/Colors"
 import NavBar from "../../components/NavBar"
-import Spacer from "../../components/Spacer"
 import { validateEmail } from "../../utils/helpers/validation"
 import LoadingPage from "../../components/LoadingPage"
 import IconActionPage from "../../components/IconActionPage"
@@ -21,7 +20,94 @@ import SignInWithOAuthButton from "./SignInWithOAuthButton"
 import { OAuthType } from "./SignInWithOAuthPage"
 import MainButton from "../../components/MainButton"
 import { ButtonTheme } from "../../components/ButtonTheme"
-import { shouldShowFacebookAuth } from "./shouldShowFacebookAuth"
+import { Container } from "../brand/FAQsPage"
+import Content from "../../components/layout/Content"
+
+export function FixedBottom({ children, padding = 16, style, ...props }) {
+  return <div style={{ 
+    position: "fixed", 
+    bottom: 0,
+    maxWidth: "inherit",
+    zIndex: 100,
+    width: "100%",
+    boxSizing: "border-box",
+    padding,
+    ...style
+  }} {...props}>
+    {children}
+  </div>
+}
+
+export function Caption({ children, style, ...props }) {
+  return <p 
+    style={{
+      fontSize: 12,
+      color: Colors.GRAY_LIGHT,
+      ...style
+    }}
+    {...props}
+  >
+    {children}
+  </p>
+}
+
+export function Body({ children, isFaded, style, ...props }) {
+  return <p
+    style={{
+      fontSize: 16,
+      color: isFaded ? Colors.GRAY_LIGHT : Colors.BLACK,
+      fontFamily: "Roboto, sans-serif",
+      ...style
+    }}
+    {...props}
+  >
+    {children}
+  </p>
+}
+
+export function FeedbackProvider({ children, isInline = false, style, ...props }) {
+  const [isHovering, setIsHovering] = useState(false)
+  const [isPressed, setIsPressed] = useState(false)
+
+  return <div
+    onMouseEnter={() => setIsHovering(true)}
+    onMouseLeave={() => setIsHovering(false)}
+    onMouseDown={() => setIsPressed(true)}
+    onMouseUp={() => setIsPressed(false)}
+    onTouchStart={() => setIsPressed(true)}
+    onTouchEnd={() => setIsPressed(false)}
+    style={{
+      display: "inline",
+      cursor: "pointer",
+      ...style
+    }}
+    {...props}
+  >
+    {children(isHovering, isPressed)}
+  </div>
+}
+
+export function Anchor({ children, href, newTab = true, isDark = false, style, ...props }) {
+  if (newTab) {
+    props["rel"] = "noreferrer"
+    props["target"] = "_blank"
+  }
+
+  return <FeedbackProvider isInline>{(isHovering) => <a
+    href={href}
+    style={{
+      textDecoration: "none",
+      color: isDark ? (isHovering ? Colors.WHITE : Colors.OFF_WHITE) : (isHovering ? Colors.GRAY : Colors.BLACK),
+      fontWeight: 600,
+      ...style
+    }}
+    {...props}
+  >
+    {children}
+  </a>}</FeedbackProvider>
+}
+
+
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -34,27 +120,18 @@ export default function AuthPage() {
   const [error, setError] = useState(null)
   const [emailForLink, setEmailForLink] = useState(state?.emailForLink)
 
+  const message = state?.message
+
   const lastAuthType = localStorage.getItem("lastAuthType")
 
-  useEffect(() => {
-    AnalyticsManager.main.viewPage("Auth")
-  }, [])
+  useEffect(() => AnalyticsManager.main.viewPage("Auth"), [])
 
-  const handleSignInWithApple = () => {
-    navigate({ pathname: "apple", search })
-  }
-
-  const handleSignInWithGoogle = () => {
-    navigate({ pathname: "google", search })
-  }
-
-  const handleSignInWithFacebook = () => {
-    navigate({ pathname: "facebook", search })
-  }
-
+  const handleSignInWithApple = () => navigate({ pathname: "apple", search })
+  const handleSignInWithGoogle = () => navigate({ pathname: "google", search })
   const handleTryAnotherWay = () => setError(null)
 
   const handleSendEmailLink = async (data) => {
+    AnalyticsManager.main.pressButton("SendEmailLink")
     setIsLoading(true)
 
     const { email } = data
@@ -123,6 +200,11 @@ export default function AuthPage() {
     }
   }, [emailForLink, isLoading, navigate, search])
 
+  let topText = []
+
+  if (message) { topText.push(message)}
+  if (lastAuthType) { topText.push(`You previously logged in with ${lastAuthType}.`)}
+
   if (error) {
     return (
       <IconActionPage
@@ -138,48 +220,25 @@ export default function AuthPage() {
   } else if (isLoading) {
     return <LoadingPage />
   } else {
-
-    return <div className="container">
+    return <Container>
       <NavBar title="Log in or sign up" back={backPath} />
 
-      <div className="content">
-        <Spacer y={9} />
+      <Content>
+        {topText.length > 0 && <Body style={{ marginBottom: 24 }}>{topText.join(" ")}</Body>}
 
-        {
-          lastAuthType && <div>
-            <p className="text-body-faded">You previously signed in with {lastAuthType}.</p>
-            <Spacer y={3} />
-          </div>
-        }
+        {shouldShowAppleAuth() && <SignInWithOAuthButton
+          provider={OAuthType.APPLE}
+          onClick={handleSignInWithApple}
+          style={{ marginBottom: 16 }}
+        />}
 
-        {shouldShowAppleAuth() && (
-          <div>
-            <SignInWithOAuthButton provider={OAuthType.APPLE} onClick={handleSignInWithApple} />
-            <Spacer y={2} />
-          </div>
-        )}
+        {shouldShowGoogleAuth() && <SignInWithOAuthButton
+          provider={OAuthType.GOOGLE}
+          onClick={handleSignInWithGoogle}
+          style={{ marginBottom: 16 }}
+        />}
 
-        {shouldShowGoogleAuth() && (
-          <div>
-            <SignInWithOAuthButton provider={OAuthType.GOOGLE} onClick={handleSignInWithGoogle} />
-            <Spacer y={2} />
-          </div>
-        )}
-
-        {shouldShowFacebookAuth() && <div>
-          <SignInWithOAuthButton provider={OAuthType.FACEBOOK} onClick={handleSignInWithFacebook} />
-          <Spacer y={2} />
-        </div>}
-
-        
-
-        <Revealer 
-          trigger={<MainButton 
-            title="Email me a sign in link"
-            icon="/img/emailLink.png"
-            buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
-          />}
-        >
+        {!shouldShowAppleAuth() && !shouldShowGoogleAuth() ?
           <Form
             isFormLoading={isLoading}
             formGroupData={[
@@ -195,23 +254,42 @@ export default function AuthPage() {
             ]}
             onSubmit={handleSendEmailLink}
             submitTitle="Send email link"
-          />
-        </Revealer>
-
-        <Spacer y={2} />
-        <p className="text-caption">
-          By continuing, you agree to our{" "}
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="/legal/privacy-policy"
+          /> :
+          <Revealer
+            trigger={<MainButton
+              title="Email me a sign in link"
+              icon="/img/emailLink.png"
+              buttonTheme={ButtonTheme.MONOCHROME_OUTLINED}
+            />}
           >
-            Privacy Policy
-          </a>.
-        </p>
+            <Form
+              isFormLoading={isLoading}
+              formGroupData={[
+                {
+                  items: [
+                    {
+                      name: "email",
+                      validators: [generateValidator(validateEmail, "Invalid email")],
+                      input: <Field type="email" autocomplete="email" />,
+                    },
+                  ],
+                },
+              ]}
+              onSubmit={handleSendEmailLink}
+              submitTitle="Send email link"
+            />
+          </Revealer>
+        }
+      </Content>
 
-        <Spacer y={6} />
-      </div>
-    </div>
+      {!lastAuthType && <FixedBottom>
+        <Caption style={{ textAlign: "center" }}>
+          By continuing, you agree to our{" "}
+          <Anchor href="/legal/privacy-policy">
+            Privacy Policy
+          </Anchor>.
+        </Caption>
+      </FixedBottom>}
+    </Container>
   }
 }

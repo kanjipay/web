@@ -23,19 +23,23 @@ import { CheckoutCounter } from "./CheckoutCounter"
 import { ShimmerText, ShimmerThumbnail } from "react-shimmer-effects"
 import OrderStatus from "../../enums/OrderStatus"
 import Tick from "../../assets/icons/Tick"
+import { Container } from "../brand/FAQsPage"
+import Content from "../../components/layout/Content"
+import { Body } from "../auth/AuthPage"
 
 export default function PaymentPageStripe({ order }) {
   const { orderId } = useParams()
   const [stripeProps, setStripeProps] = useState(null)
   const navigate = useNavigate()
   const [isCancellingOrder, setIsCancellingOrder] = useState(null)
+  const [hasCreatedPaymentAttempt, setHasCreatedPaymentAttempt] = useState(false)
+
+  useEffect(() => AnalyticsManager.main.viewPage("StripePayment", { orderId }), [orderId])
 
   useEffect(() => {
-    AnalyticsManager.main.viewPage("StripePayment", { orderId })
-  }, [orderId])
+    if (!order || !!stripeProps || order?.status !== OrderStatus.PENDING || hasCreatedPaymentAttempt) { return }
 
-  useEffect(() => {
-    if (!order || !!stripeProps || order?.status !== OrderStatus.PENDING) { return }
+    setHasCreatedPaymentAttempt(true)
     
     const deviceId = IdentityManager.main.getDeviceId()
 
@@ -73,7 +77,7 @@ export default function PaymentPageStripe({ order }) {
         },
       })
     })
-  }, [orderId, order, stripeProps])
+  }, [orderId, order, stripeProps, hasCreatedPaymentAttempt])
 
   const handleRefreshOrder = async () => {
     setIsCancellingOrder(true)
@@ -116,14 +120,13 @@ export default function PaymentPageStripe({ order }) {
 function StripeDummyPage({ order }) {
   const navigate = useNavigate()
 
-  return <div className="container">
+  return <Container>
     {order && <CheckoutCounter order={order} />}
     <NavBar
       title="Complete your purchase"
       back={order ? () => cancelOrder(order.id, navigate) : null}
     />
-    <div className="content">
-      <Spacer y={9} />
+    <Content>
       <h3 className="header-s">Order summary</h3>
       <Spacer y={2} />
       {
@@ -148,23 +151,19 @@ function StripeDummyPage({ order }) {
         sideMessage={order ? formatCurrency(order.total, order.currency) : null}
         disabled={true}
       />
-      <Spacer y={9} />
-    </div>
-  </div>
+    </Content>
+  </Container>
 }
 
 function StripeCheckoutForm({ order, stripeProps }) {
   const stripe = useStripe()
   const elements = useElements()
   const navigate = useNavigate()
-  const [errorData, setErrorData] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleError = async (event) => {
-    setErrorData(null)
-  }
-
   const handleSubmit = async (event) => {
+    AnalyticsManager.main.pressButton("SubmitCardPaymentForm")
     setIsLoading(true)
 
     const redirectUrl = new URL(window.location.href)
@@ -178,72 +177,65 @@ function StripeCheckoutForm({ order, stripeProps }) {
     })
 
     if (result.error) {
-      setErrorData({
-        title: "Something went wrong",
-        description: result.error.message,
-      })
+      const message = result.error.type === "card_error" && result.error.message
+
+      AnalyticsManager.main.logEvent("TriggerCardPaymentError", { error: result.error.code })
+
+      if (message) {
+        setErrorMessage(message)
+      }
     }
 
     setIsLoading(false)
 
     return
   }
-
-  if (errorData) {
-    return (
-      <IconActionPage
-        Icon={Cross}
-        iconBackgroundColor={Colors.RED_LIGHT}
-        iconForegroundColor={Colors.RED}
-        title={errorData.title}
-        body={errorData.description}
-        primaryActionTitle="Go back"
-        primaryAction={handleError}
+  
+  return (
+    <Container>
+      {order && <CheckoutCounter order={order} />}
+      <NavBar
+        title="Complete your purchase"
+        back={order ? () => cancelOrder(order.id, navigate) : null}
       />
-    )
-  } else {
-    return (
-      <div className="container">
-        {order && <CheckoutCounter order={order} />}
-        <NavBar
-          title="Complete your purchase"
-          back={order ? () => cancelOrder(order.id, navigate) : null}
+      <Content>
+        <h3 className="header-s">Order summary</h3>
+        <Spacer y={2} />
+        {
+          order ?
+            <OrderSummary
+              lineItems={order.orderItems}
+              currency={order.currency}
+              feePercentage={order.customerFee}
+            /> :
+            <ShimmerText line={4} />
+        }
+        
+        <Spacer y={3} />
+        <h3 className="header-s">Payment details</h3>
+        <Spacer y={2} />
+        {
+          stripe && elements ?
+            <PaymentElement /> :
+            <ShimmerThumbnail height={200} />
+        }
+        
+        <Spacer y={4} />
+        <MainButton
+          title="Complete purchase"
+          test-id="stripe-payment-button"
+          sideMessage={order ? formatCurrency(order.total, order.currency) : undefined}
+          onClick={handleSubmit}
+          isLoading={isLoading}
+          disabled={!order || !stripe || !elements || !stripeProps}
         />
-        <div className="content">
-          <Spacer y={9} />
-          <h3 className="header-s">Order summary</h3>
-          <Spacer y={2} />
-          {
-            order ?
-              <OrderSummary
-                lineItems={order.orderItems}
-                currency={order.currency}
-                feePercentage={order.customerFee}
-              /> :
-              <ShimmerText line={4} />
-          }
-          
-          <Spacer y={3} />
-          <h3 className="header-s">Payment details</h3>
-          <Spacer y={2} />
-          {
-            stripe && elements ?
-              <PaymentElement /> :
-              <ShimmerThumbnail height={200} />
-          }
-          
-          <Spacer y={4} />
-          <MainButton
-            title="Complete purchase"
-            test-id="stripe-payment-button"
-            sideMessage={order ? formatCurrency(order.total, order.currency) : undefined}
-            onClick={handleSubmit}
-            isLoading={isLoading}
-            disabled={!order || !stripe || !elements || !stripeProps}
-          />
-          <Spacer y={9} />
-        </div>
-      </div>
-    )
-  }
+        {
+          errorMessage && <div>
+            <Spacer y={2} />
+            <Body style={{ color: Colors.RED }}>{errorMessage}</Body>
+          </div>
+        }
+      </Content>
+    </Container>
+  )
 }

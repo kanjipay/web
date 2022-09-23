@@ -6,10 +6,6 @@
   color: black;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 ::selection {
   background: black;
   color: white;

@@ -5,7 +5,9 @@ import Spacer from "../../../../components/Spacer"
 import { formatCurrency } from "../../../../utils/helpers/money"
 import { dateFromTimestamp } from "../../../../utils/helpers/time"
 import { format } from "date-fns"
-import { useState } from "react"
+import { FeedbackProvider } from "../../../auth/AuthPage"
+import { Flex } from "../../../../components/Listing"
+import FlexSpacer from "../../../../components/layout/FlexSpacer"
 
 export default function ProductListing({
   product,
@@ -15,8 +17,6 @@ export default function ProductListing({
   isPublished,
   ...props
 }) {
-  const [isHovering, setIsHovering] = useState(false)
-  
   const currDate = new Date()
   const releaseDate = dateFromTimestamp(product.releasesAt)
   const releaseEndDate = dateFromTimestamp(product.releaseEndsAt)
@@ -30,9 +30,7 @@ export default function ProductListing({
     !isSoldOut &&
     !isUnreleased &&
     !isExpired
-  const backgroundColor = isAvailable ? 
-    (isHovering ? Colors.OFF_BLACK_LIGHT : Colors.BLACK) : 
-    Colors.OFF_WHITE
+  
 
   const textColor = isAvailable ? Colors.WHITE : Colors.BLACK
 
@@ -56,17 +54,17 @@ export default function ProductListing({
     message = "Unavailable"
   }
 
-  const productListing = (
-    <div
+  const productListing = <FeedbackProvider style={{ cursor: isAvailable ? "pointer" : "mouse" }}>{isHovering => {
+    const backgroundColor = isAvailable ?
+      (isHovering ? Colors.OFF_BLACK_LIGHT : Colors.BLACK) :
+      Colors.OFF_WHITE
+
+    return <Flex 
       style={{
         backgroundColor,
-        padding: "16px",
-        display: "flex",
-        alignItems: "center",
+        padding: 16,
         borderRadius: 2
       }}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
       test-name="product-listing"
       {...props}
     >
@@ -90,10 +88,10 @@ export default function ProductListing({
           {message}
         </p>
       </div>
-      <div className="flex-spacer" />
+      <FlexSpacer />
       {isAvailable && <Forward length={20} color={Colors.WHITE} />}
-    </div>
-  )
+    </Flex>
+  }}</FeedbackProvider>
 
   return isAvailable ? (
     <Link to={linkPath} state={{ product }}>

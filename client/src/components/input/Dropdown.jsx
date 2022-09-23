@@ -12,6 +12,7 @@ export default function Dropdown({
   allowsNull = false,
   width = 320,
   position = "bottom left",
+  placeholder = "Select an option",
   ...props
 }) {
   const currOption = optionList.find((option) => option.value === value)
@@ -37,7 +38,7 @@ export default function Dropdown({
           color: disabled || !value ? Colors.GRAY_LIGHT : Colors.BLACK,
         }}
       >
-        {currOption?.label ?? currOption?.value ?? "Select an option"}
+        {currOption?.label ?? currOption?.value ?? placeholder}
       </p>
     </div>
   )

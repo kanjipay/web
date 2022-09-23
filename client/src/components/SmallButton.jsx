@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { FeedbackProvider } from "../app/auth/AuthPage"
 import Spinner from "../assets/Spinner"
+import { Colors } from "../enums/Colors"
 import { ButtonTheme } from "./ButtonTheme"
 
 export default function SmallButton({
@@ -10,53 +11,45 @@ export default function SmallButton({
   onClick,
   ...props
 }) {
-  const [isPressed, setIsPressed] = useState(false)
-  const [isHovering, setIsHovering] = useState(false)
 
-  let backgroundColor
+  return <FeedbackProvider isInline={false}>{(isHovering, isPressed) => {
+    let backgroundColor
 
-  if (props.disabled) {
-    backgroundColor = buttonTheme.disabledBackgroundColor
-  } else if (isPressed || isHovering) {
-    backgroundColor = buttonTheme.pressedBackgroundColor
-  } else {
-    backgroundColor = buttonTheme.backgroundColor
-  }
+    if (props.disabled) {
+      backgroundColor = buttonTheme.disabledBackgroundColor
+    } else if (isPressed || isHovering) {
+      backgroundColor = buttonTheme.pressedBackgroundColor
+    } else {
+      backgroundColor = buttonTheme.backgroundColor
+    }
 
-  const foregroundColor = props.disabled
-    ? buttonTheme.disabledForegroundColor
-    : buttonTheme.foregroundColor
+    const foregroundColor = props.disabled
+      ? buttonTheme.disabledForegroundColor
+      : buttonTheme.foregroundColor
 
-  const buttonStyle = {
-    backgroundColor,
-    padding: "4px 8px",
-    display: "flex",
-    outline: "none",
-    borderRadius: 2,
-    alignItems: "center",
-    justifyContent: "center",
-    border: `1px solid ${buttonTheme.borderColor}`,
-    boxSizing: "border-box",
-    color: foregroundColor,
-    cursor: props.disabled ? "mouse" : "pointer",
-    ...style,
-  }
+    const buttonStyle = {
+      backgroundColor,
+      padding: "6px 10px",
+      display: "flex",
+      outline: "none",
+      borderRadius: 2,
+      alignItems: "center",
+      fontWeight: 500,
+      justifyContent: "center",
+      border: `2px solid ${buttonTheme.borderColor}`,
+      boxSizing: "border-box",
+      color: isLoading ? Colors.CLEAR : foregroundColor,
+      cursor: props.disabled ? "mouse" : "pointer",
+      ...style,
+    }
 
-  return (
-    <div className="relative">
+    return <div className="relative">
       <button
-        style={buttonStyle}
-        className="header-xs"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-        onMouseDown={() => setIsPressed(true)}
-        onMouseUp={() => setIsPressed(false)}
-        onTouchStart={() => setIsPressed(true)}
-        onTouchEnd={() => setIsPressed(false)}
+        style={buttonStyle}        
         onClick={isLoading ? undefined : onClick}
         {...props}
       >
-        {isLoading ? "" : title}
+        {title}
       </button>
       {isLoading && (
         <div className="centred">
@@ -64,5 +57,5 @@ export default function SmallButton({
         </div>
       )}
     </div>
-  )
+  }}</FeedbackProvider>
 }

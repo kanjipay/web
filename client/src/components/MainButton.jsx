@@ -3,6 +3,7 @@ import Spinner from "../assets/Spinner"
 import { ButtonTheme } from "./ButtonTheme"
 import "./MainButton.css"
 import { Colors } from "../enums/Colors"
+import { FeedbackProvider } from "../app/auth/AuthPage"
 
 export default function MainButton({
   buttonTheme = ButtonTheme.MONOCHROME,
@@ -14,55 +15,46 @@ export default function MainButton({
   onClick,
   ...props
 }) {
-  const [isPressed, setIsPressed] = useState(false)
-  const [isHovering, setIsHovering] = useState(false)
+  return <FeedbackProvider>{(isHovering, isPressed) => {
+    let backgroundColor
 
-  let backgroundColor
+    if (props.disabled) {
+      backgroundColor = buttonTheme.disabledBackgroundColor
+    } else if (isPressed || isHovering) {
+      backgroundColor = buttonTheme.pressedBackgroundColor
+    } else {
+      backgroundColor = buttonTheme.backgroundColor
+    }
 
-  if (props.disabled) {
-    backgroundColor = buttonTheme.disabledBackgroundColor
-  } else if (isPressed || isHovering) {
-    backgroundColor = buttonTheme.pressedBackgroundColor
-  } else {
-    backgroundColor = buttonTheme.backgroundColor
-  }
+    const foregroundColor = props.disabled
+      ? buttonTheme.disabledForegroundColor
+      : buttonTheme.foregroundColor
 
-  const foregroundColor = props.disabled
-    ? buttonTheme.disabledForegroundColor
-    : buttonTheme.foregroundColor
+    const buttonStyle = {
+      backgroundColor,
+      height: 48,
+      width: "100%",
+      border: `2px solid ${buttonTheme.borderColor}`,
+      display: "flex",
+      outline: "none",
+      boxSizing: "border-box",
+      alignItems: "center",
+      justifyContent: "center",
+      fontWeight: 500,
+      columnGap: 8,
+      borderRadius: 2,
+      color: foregroundColor,
+      cursor: props.disabled ? "mouse" : "pointer",
+      ...style,
+    }
 
-  const buttonStyle = {
-    backgroundColor,
-    height: 48,
-    width: "100%",
-    border: `1px solid ${buttonTheme.borderColor}`,
-    display: "flex",
-    outline: "none",
-    boxSizing: "border-box",
-    alignItems: "center",
-    justifyContent: "center",
-    columnGap: 8,
-    borderRadius: 2,
-    color: foregroundColor,
-    cursor: props.disabled ? "mouse" : "pointer",
-    ...style,
-  }
-
-  return (
-    <div className="MainButton relative">
+    return <div className="relative">
       <button
         style={buttonStyle}
-        className="header-xs"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-        onMouseDown={() => setIsPressed(true)}
-        onMouseUp={() => setIsPressed(false)}
-        onTouchStart={() => setIsPressed(true)}
-        onTouchEnd={() => setIsPressed(false)}
         onClick={isLoading ? undefined : onClick}
         {...props}
       >
-        { 
+        {
           !isLoading && !!icon && (
             typeof icon === "string" ?
               <img
@@ -73,7 +65,7 @@ export default function MainButton({
               icon
           )
         }
-        { !isLoading && title }
+        {!isLoading && title}
       </button>
       {isLoading && (
         <div className="centred">
@@ -95,7 +87,7 @@ export default function MainButton({
             borderRadius: "0 2px 2px 0",
             color: Colors.WHITE,
             backgroundColor: Colors.OFF_BLACK_LIGHT,
-            cursor: "pointer"
+            cursor: props.disabled ? "mouse" : "pointer"
           }}
           onClick={isLoading ? undefined : onClick}
         >
@@ -103,5 +95,5 @@ export default function MainButton({
         </div>
       )}
     </div>
-  )
+  }}</FeedbackProvider>
 }

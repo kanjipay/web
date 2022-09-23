@@ -38,6 +38,7 @@ export default function TicketChecker() {
       if (!newAuthUser || !newAuthUser.email) {
         openAuthPage({
           successPath: window.location.pathname,
+          message: "You need to be logged in to access the ticket checker.",
           successState: state ?? {},
           backPath,
         })

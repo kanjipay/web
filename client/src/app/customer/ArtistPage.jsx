@@ -9,6 +9,8 @@ import { getArtistStorageRef } from "../../utils/helpers/storage"
 import EventListing from "./events/event/EventListing"
 import EventsAppNavBar from "./events/secure/EventsAppNavBar"
 import { Helmet } from "react-helmet-async"
+import { Container } from "../brand/FAQsPage"
+import Content from "../../components/layout/Content"
 
 export default function ArtistPage() {
   const { artistId } = useParams()
@@ -32,7 +34,7 @@ export default function ArtistPage() {
 
   if (artist && events) {
     return (
-      <div className="container">
+      <Container>
         <EventsAppNavBar
           title={artist.name}
           transparentDepth={50}
@@ -48,7 +50,7 @@ export default function ArtistPage() {
           alt={artist.name}
         />
 
-        <div className="content">
+        <Content>
           <Spacer y={3} />
           <h1 className="header-l">{artist.name}</h1>
           <Spacer y={3} />
@@ -60,21 +62,16 @@ export default function ArtistPage() {
             <div>
               <h2 className="header-m">Upcoming events</h2>
               <Spacer y={2} />
-              {events.map((event) => {
-                return (
-                  <div key={event.id}>
-                    <EventListing
-                      event={event}
-                      linkPath={`/events/${event.merchantId}/${event.id}`}
-                    />
-                    <Spacer y={3} />
-                  </div>
-                )
-              })}
+              {events.map((event) => <EventListing
+                event={event}
+                key={event.id}
+                style={{ marginBottom: 24 }}
+                linkPath={`/events/${event.merchantId}/${event.id}`}
+              />)}
             </div>
           )}
-        </div>
-      </div>
+        </Content>
+      </Container>
     )
   } else {
     return <LoadingPage />

@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom"
 import Secure from "./secure/Secure"
 import Merchant from "./merchant/Merchant"
-import RedirectPageMercado from "./RedirectPageMercado"
 import { useEffect, useState } from "react"
 import { onAuthStateChanged } from "firebase/auth"
 import { auth } from "../../../utils/FirebaseUtils"
@@ -49,7 +48,6 @@ export default function EventsApp() {
         <Route path="s/*" element={<Secure user={user} />} />
         <Route path="artists/:artistId" element={<ArtistPage />} />
         <Route path=":merchantId/*" element={<Merchant user={user} />} />
-        <Route path="mcp-redirect" element={<RedirectPageMercado />} />
       </Routes>
     </div>
   )

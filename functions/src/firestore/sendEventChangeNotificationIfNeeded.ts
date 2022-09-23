@@ -15,7 +15,7 @@ export const sendEventChangeNotificationIfNeeded = async (change, context) => {
 
     logger.log("Event change", { before, after, eventId })
 
-    const { merchantId } = before
+    const { merchantId } = after
 
     if (
       !before || // Event newly created, don't need to do anything as hasn't been published yet

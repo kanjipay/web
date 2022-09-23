@@ -7,7 +7,15 @@ import SquareLabel from "./SquareLabel"
 import { useState } from "react"
 
 export function Flex({ children, columnGap, style, ...props }) {
-  return <div style={{ display: "flex", alignItems: "center", ...style }} {...props}>
+  return <div 
+    style={{ 
+      display: "flex",
+      alignItems: "center", 
+      columnGap, 
+      ...style 
+    }} 
+    {...props}
+  >
     {children}
   </div>
 }

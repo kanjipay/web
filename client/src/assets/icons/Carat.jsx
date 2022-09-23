@@ -1,8 +1,9 @@
-export default function Carat({ length = 32, color = "black" }) {
+export default function Carat({ length = 32, color = "black", style }) {
   return (
     <svg
       width={length}
       height={length}
+      style={style}
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

@@ -1,7 +1,8 @@
 import { format } from "date-fns";
 import { Helmet } from "react-helmet-async";
-import NavBar from "../../components/NavBar";
+import Content from "../../components/layout/Content";
 import Spacer from "../../components/Spacer";
+import { Container } from "../brand/FAQsPage";
 
 export function LegalDocument({ data }) {
   const { title, definitions, sections, version } = data;
@@ -9,13 +10,12 @@ export function LegalDocument({ data }) {
   const [year, month, day] = version.split(".").map(x => parseInt(x, 10))
   const lastUpdated = new Date(year, month - 1, day)
 
-  return <div className="container">
+  return <Container maxWidth={800}>
     <Helmet>
       <title>{title}</title>
     </Helmet>
-    <NavBar title={title} />
-    <div className="content">
-      <Spacer y={9} />
+    
+    <Content>
       <h1 className="header-l">{title}</h1>
       <Spacer y={2} />
       <p className="text-body-faded">Last updated {format(lastUpdated, "do MMM yyyy")}</p>
@@ -40,7 +40,6 @@ export function LegalDocument({ data }) {
         </div>)}
         <Spacer y={2} />
       </div>)}
-      <Spacer y={9} />
-    </div>
-  </div>
+    </Content>
+  </Container>
 }

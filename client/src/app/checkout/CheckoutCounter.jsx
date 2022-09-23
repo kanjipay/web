@@ -7,6 +7,7 @@ import IconActionPage from "../../components/IconActionPage";
 import Clock from "../../assets/icons/Clock";
 import { Colors } from "../../enums/Colors";
 import { cancelOrder } from "./cancelOrder";
+import { FixedBottom } from "../auth/AuthPage";
 
 
 export function CheckoutCounter({ order }) {
@@ -40,7 +41,7 @@ export function CheckoutCounter({ order }) {
   };
 
   if (isReserved) {
-    return <div className="anchored-bottom" style={{ textAlign: "center", zIndex: 100 }}>
+    return <FixedBottom padding={0} style={{ textAlign: "center" }}>
       <div style={{
         color: Colors.WHITE,
         backgroundColor: Colors.OFF_BLACK_LIGHT,
@@ -51,7 +52,7 @@ export function CheckoutCounter({ order }) {
       }}>
         Order reserved until {format(secondsLeftInReservation * 1000, "mm:ss")}
       </div>
-    </div>;
+    </FixedBottom>
   } else {
     return <IconActionPage
       style={{ position: "fixed", zIndex: 100, width: "100%", height: "100%" }}

@@ -5,7 +5,7 @@ import { Colors } from "../../enums/Colors";
 
 export default function ErrorPage() {
   const { state } = useLocation()
-  const { title, body, backPath } = state
+  const { title, body } = state
 
   return <IconActionPage 
     Icon={Cross}
