@@ -1,13 +1,16 @@
+import { useEffect } from "react"
 import { useState } from "react"
 import Carat from "../../assets/icons/Carat"
 import Content from "../../components/layout/Content"
 import { Flex } from "../../components/Listing"
 import Spacer from "../../components/Spacer"
 import { Colors } from "../../enums/Colors"
+import { AnalyticsManager } from "../../utils/AnalyticsManager"
 import { Body } from "../auth/AuthPage"
 
 function FAQ({ question, answer, style, ...props }) {
   const [isExpanded, setIsExpanded] = useState(false)
+  
   return <div 
     style={{ 
       borderRadius: 8, 
@@ -72,6 +75,8 @@ const faqs = [
 ]
 
 export default function FAQsPage() {
+  useEffect(() => AnalyticsManager.main.viewPage("FAQs"), [])
+
   return <Container maxWidth={800}>
     <Content paddingTop={96}>
       <h1 style={{ textAlign: "center", fontSize: "5em", fontFamily: "Rubik, sans-serif", fontWeight: 600 }}>FAQs</h1>

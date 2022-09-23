@@ -23,7 +23,6 @@ export default function App() {
   const userAgent = UAParser(navigator.userAgent)
   const browser = userAgent.browser.name
   const isMetaWebview = ["Instagram", "Facebook"].includes(browser)
-  const isIos = ["iOS"].includes(userAgent.os.name)
   const [isMetaBannerClosed, setIsMetaBannerClosed] = useState(false)
   const os = userAgent.os.name
 
@@ -77,7 +76,7 @@ export default function App() {
               color: Colors.WHITE,
             }}
           >
-            You're browsing on {browser}, so some features may not work. Tap the dots on the top right and select "Open in {isIos ? "browser" : "Chrome"}" for a better experience.
+            You're browsing on {browser}, so some features may not work. Tap the dots on the top right and select "Open in {os === "iOS" ? "browser" : "Chrome"}" for a better experience.
           </p>
           <IconButton
             length={20}

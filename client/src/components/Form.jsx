@@ -31,7 +31,10 @@ export default function Form({
   formGroupData,
   onSubmit,
   submitTitle,
+  disabled = false,
   isFormLoading = false,
+  style,
+  ...props
 }) {
   const allItems = (Array.isArray(formGroupData) ? formGroupData : formGroupData({})).flatMap(
     (formGroupDatum) => formGroupDatum.items
@@ -136,7 +139,7 @@ export default function Form({
   }
 
   return (
-    <div>
+    <div style={style} {...props}>
       {getFormGroupData().map((formGroupDatum, i) => {
         return (
           <FormGroup
@@ -152,7 +155,7 @@ export default function Form({
       <MainButton
         title={submitTitle}
         onClick={handleSubmit}
-        disabled={!areAllRequiredFieldsPopulated()}
+        disabled={disabled || !areAllRequiredFieldsPopulated()}
         isLoading={isFormLoading || isLoading}
         test-id={`form-submit-${submitTitle.toLowerCase().replace(" ", "-")}`}
         type="submit"

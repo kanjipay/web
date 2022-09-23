@@ -158,7 +158,7 @@ export default function OrderConfirmationPage({ user }) {
             </div>
           }
           <MainButton
-            title="View online"
+            title="See my tickets"
             test-id="ticket-order-confirmation-done-button"
             onClick={() => navigate(`/events/s/tickets`)}
           />

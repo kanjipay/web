@@ -181,7 +181,7 @@ export async function sendTicketReceipt(
   const attachmentData = passBuffers.map((buffer, index) => {
     return {
       content: buffer.toString("base64"),
-      filename: `${index}.pkpass`,
+      filename: `Apple Wallet ticket #${index + 1}.pkpass`,
       type: applePassConstants.PASS_MIME_TYPE,
       disposition: "attachment"
     }

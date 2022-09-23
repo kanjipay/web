@@ -7,6 +7,7 @@ import ordersRoutes from "./routes/ordersRoutes"
 import paymentAttemptsRoutes from "./routes/paymentAttemptsRoutes"
 import ticketsRoutes from "./routes/ticketsRoutes"
 import * as userAgent from "express-useragent"
+import { createAirtableProspect } from "./createAirtableProspect"
 
 const mainApiApp = express()
 
@@ -20,5 +21,7 @@ mainApiApp.use("/merchants", merchantsRoutes)
 mainApiApp.use("/tickets", ticketsRoutes)
 mainApiApp.use("/orders", ordersRoutes)
 mainApiApp.use("/payment-attempts", paymentAttemptsRoutes)
+
+mainApiApp.post("/airtable", createAirtableProspect)
 
 export default mainApiApp
