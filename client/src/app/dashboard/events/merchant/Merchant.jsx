@@ -6,6 +6,7 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom"
+import User from "../../../../assets/icons/User"
 import Analytics from "../../../../assets/icons/Analytics"
 import Clock from "../../../../assets/icons/Clock"
 import Settings from "../../../../assets/icons/Settings"
@@ -119,7 +120,7 @@ export default function Merchant({ user }) {
               Icon={Settings}
               test-id="nav-link-settings"
             />
-            {/* <SidebarItem to="users" title="Users" Icon={User} /> */}
+            <SidebarItem to="users" title="Users" Icon={User} />
           </nav>
         }
         

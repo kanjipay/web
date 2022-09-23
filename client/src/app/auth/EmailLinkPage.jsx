@@ -26,6 +26,10 @@ export default function EmailLinkPage() {
     base64.decode(searchParams.get(e))
   )
 
+  console.log('search params')
+  console.log({searchParams, 
+                back:base64.decode(searchParams.get('back')),
+                success:base64.decode(searchParams.get('success'))})
   const stateId = searchParams.get("stateId")
 
   let successState

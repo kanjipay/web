@@ -3,6 +3,7 @@ import mainApp from "./main/mainApp"
 import { cronFunction, cronFunctionDaily } from "./cron/cron"
 import applePayApp from "./applePayApp"
 import { onEventWrite } from "./firestore/onEventWrite"
+import { addMembershipsToUsers } from "./firestore/addMembershipsToUsers"
 
 const envProjectId = JSON.parse(process.env.FIREBASE_CONFIG).projectId
 const euFunctions = functions.region("europe-west2")
@@ -47,6 +48,11 @@ export const eventWrite = euFunctions
   .runWith({ secrets: ["SERVICE_ACCOUNT", "SENDGRID_API_KEY", "GOOGLE_WALLET_ISSUER_ID"] })
   .firestore.document('Event/{eventId}')
   .onWrite(onEventWrite)
+
+export const userCreate = euFunctions
+  .runWith({ secrets: ["SERVICE_ACCOUNT"] })
+  .firestore.document('User/{userId}')
+  .onCreate(addMembershipsToUsers)
 
 export const applePay = functions
   .region("us-central1")
