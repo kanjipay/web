@@ -14,7 +14,8 @@ export async function createMembership(
   userId: string,
   merchantId: string,
   merchantName: string,
-  role: OrganisationRole
+  role: OrganisationRole,
+  setCustomClaims: boolean = true
 ) {
   logger.log("Creating membership", { userId, merchantId, role })
 
@@ -44,14 +45,14 @@ export async function createMembership(
     id: doc.id,
     ...doc.data(),
   }))
+  if (setCustomClaims){
+    const claims = memberships.reduce((claims, membership) => {
+      const { role, merchantId } = membership
+      claims[merchantId] = role
+      return claims
+    }, {})
+    logger.log("setting user claims", { claims })
+    await auth().setCustomUserClaims(userId, claims)
+  }
 
-  const claims = memberships.reduce((claims, membership) => {
-    const { role, merchantId } = membership
-    claims[merchantId] = role
-    return claims
-  }, {})
-
-  logger.log("setting user claims", { claims })
-
-  await auth().setCustomUserClaims(userId, claims)
 }
