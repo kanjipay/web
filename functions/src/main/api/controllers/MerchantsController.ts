@@ -93,7 +93,8 @@ export class MerchantsController extends BaseController {
             memberId,
             merchantId,
             displayName,
-            OrganisationRole.ADMIN
+            OrganisationRole.ADMIN,
+            false
           )
         }))
       } catch (err) {
