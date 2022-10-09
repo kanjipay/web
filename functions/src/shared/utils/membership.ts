@@ -45,7 +45,8 @@ export async function createMembership(
     id: doc.id,
     ...doc.data(),
   }))
-  if (setCustomClaims){
+
+  if (setCustomClaims) {
     const claims = memberships.reduce((claims, membership) => {
       const { role, merchantId } = membership
       claims[merchantId] = role

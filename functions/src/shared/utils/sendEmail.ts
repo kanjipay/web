@@ -5,9 +5,22 @@ import { sendgridClient } from "./sendgridClient"
 import { constants as applePassConstants } from "@walletpass/pass-js"
 import { generateTicketPass } from "./applePass/generateTicketPass"
 import * as JSZip from "jszip"
+import Environment from "../enums/Environment"
 
 const fromEmail = "team@mercadopay.co"
 const fromName = " Mercado Team"
+
+const isProd = process.env.ENVIRONMENT === Environment.PROD
+
+const templateIds = { 
+  "TICKET_RECEIPT": isProd ? "d-4d034e3c47304ffa8e8446902e203216" : "d-152bff2074ed48bba71d4a549857ebf5", 
+  "MENU_RECEIPT": isProd ? "d-a888fe1bc7ac4154a40f8a299cfb30fb" : "d-61abb274bd7b4627bae926ecb90a7d42", 
+  "TICKET_SALE_ALERT": "d-8489d2902b1243e19dddc47012d78da5", 
+  "EVENT_CHANGE": isProd ? "d-c3bb8586eedd4199b97fe59d75b741a2" : "d-d075ee17551e4f79938ed8b455d03aac", 
+  "RETARGET": "d-f8e16f00ef83443eb5d7f294294a6f85", 
+  "NEW_EVENT": "d-a150e261a7b845e7ba065e38fe86655f", 
+  "MERCHANT_WELCOME": "d-4da5caa4421f48668602c5f807b6999c"
+}
 
 export enum TemplateName {
   TICKET_RECEIPT = "TICKET_RECEIPT",
@@ -38,8 +51,6 @@ export async function sendEmail(
   data: unknown,
   attachmentData?: Array<{ content: string, filename: string, type: string, disposition: string }>,
 ) {
-  const templateIds = JSON.parse(process.env.TEMPLATE_IDS)
-
   const templateId = templateIds[templateName]
 
   logger.log("Sending email", {
