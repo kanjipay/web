@@ -335,13 +335,16 @@ export default function ChooseBankCrezcoPage({ order }) {
     const personalBankData = filteredBankData.filter(
       (d) => !isBusinessBankAccount(d)
     )
-    const commonBankNames = ["monzo", "starling", "revolut", "mock"]
-    const commonBankData = personalBankData.filter((d) =>
-      commonBankNames.some((name) => d.bankName.toLowerCase().includes(name))
-    )
+    const commonBankNames = ["monzo", "starling", "mock"]
+    const commonBankData = personalBankData.filter((d) => {
+      return (commonBankNames.some((name) => d.bankName.toLowerCase().includes(name))
+      || d.bankName == 'revolut')
+    })
     const uncommonBankData = personalBankData.filter(
-      (d) =>
-        !commonBankNames.some((name) => d.bankName.toLowerCase().includes(name))
+      (d) => {
+        return !(commonBankNames.some((name) => d.bankName.toLowerCase().includes(name))
+        || d.bankName == 'revolut')
+      }
     )
 
     const sections = [
